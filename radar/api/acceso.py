@@ -35,8 +35,13 @@ class Identidad:
     id: int | None = None
 
     def publico(self) -> dict:
-        return {"id": self.id, "usuario": self.usuario, "nombre": self.nombre, "rol": self.rol,
-                "via": self.via}
+        return {
+            "id": self.id,
+            "usuario": self.usuario,
+            "nombre": self.nombre,
+            "rol": self.rol,
+            "via": self.via,
+        }
 
 
 def resolver_identidad(peticion: Request) -> Identidad | None:
@@ -69,9 +74,7 @@ def exigir_clave(request: Request) -> Identidad:
                 status.HTTP_503_SERVICE_UNAVAILABLE,
                 "La API no tiene CLAVE_ACCESO configurada.",
             )
-        raise HTTPException(
-            status.HTTP_401_UNAUTHORIZED, f"Inicia sesión o envía {CABECERA}."
-        )
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, f"Inicia sesión o envía {CABECERA}.")
     request.state.identidad = identidad
     return identidad
 

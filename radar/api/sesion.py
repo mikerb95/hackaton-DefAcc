@@ -52,9 +52,7 @@ def entrar(cuerpo: Ingreso, request: Request, respuesta: Response) -> dict:
                 "Demasiados intentos fallidos. Espera unos minutos y vuelve a intentar.",
             ) from error
         if usuario is None:
-            raise HTTPException(
-                status.HTTP_401_UNAUTHORIZED, "Usuario o contraseña incorrectos."
-            )
+            raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Usuario o contraseña incorrectos.")
         valor = cuentas.crear_sesion(conexion, usuario)
     finally:
         conexion.close()

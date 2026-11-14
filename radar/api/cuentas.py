@@ -171,7 +171,11 @@ def clave_correcta(clave: str, guardada: str) -> bool:
     if tipo != "scrypt":
         return False
     derivada = hashlib.scrypt(
-        clave.encode(), salt=bytes.fromhex(sal), n=int(n), r=int(r), p=int(p),
+        clave.encode(),
+        salt=bytes.fromhex(sal),
+        n=int(n),
+        r=int(r),
+        p=int(p),
         dklen=len(esperada) // 2,
     )
     return hmac.compare_digest(derivada.hex(), esperada)
@@ -268,8 +272,10 @@ def cambiar_usuario(
         return None
     if rol is not None and rol not in ROLES:
         raise ErrorCuenta(f"Rol desconocido: {rol}.")
-    pierde_admin = actual.rol == "admin" and actual.activo and (
-        (rol is not None and rol != "admin") or activo is False
+    pierde_admin = (
+        actual.rol == "admin"
+        and actual.activo
+        and ((rol is not None and rol != "admin") or activo is False)
     )
     if pierde_admin and _admins_activos(conexion) <= 1:
         raise ErrorCuenta("Tiene que quedar al menos un administrador activo.")
@@ -483,9 +489,7 @@ def hay_tokens_vigentes(conexion: Any) -> bool:
 
 
 def revocar_token(conexion: Any, token_id: int) -> bool:
-    cursor = conexion.execute(
-        "UPDATE tokens_inscripcion SET revocado = 1 WHERE id = ?", [token_id]
-    )
+    cursor = conexion.execute("UPDATE tokens_inscripcion SET revocado = 1 WHERE id = ?", [token_id])
     conexion.commit()
     return cursor.rowcount != 0
 
@@ -554,7 +558,8 @@ def main(argv: list[str] | None = None) -> int:
             print(f"Usuario {u.usuario} creado con rol {u.rol}.")
             return 0
         filas = _consultar(
-            conexion, "SELECT id FROM usuarios WHERE usuario = ?",
+            conexion,
+            "SELECT id FROM usuarios WHERE usuario = ?",
             [_normalizar_usuario(args.usuario)],
         )
         if not filas:

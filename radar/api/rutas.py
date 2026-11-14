@@ -136,9 +136,7 @@ class Aprobacion(BaseModel):
 def aprobar(producto: str, cuerpo: Aprobacion, request: Request) -> dict:
     por = quien(request, cuerpo.por.strip() if cuerpo.por else None)
     if not por:
-        raise HTTPException(
-            status.HTTP_422_UNPROCESSABLE_ENTITY, "Falta quién aprueba el comunicado."
-        )
+        raise HTTPException(422, "Falta quién aprueba el comunicado.")
     datos = obtener_datos()
     registro = datos.aprobar(producto, por)
     if registro is None:

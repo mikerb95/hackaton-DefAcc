@@ -136,8 +136,13 @@ def test_cambiar_mi_clave(cliente):
     nueva = "otra-clave-bien-larga"
     r = cliente.put("/api/sesion/clave", json={"actual": "mala-mala-mala", "nueva": nueva})
     assert r.status_code == 403
-    assert cliente.put("/api/sesion/clave", json={"actual": CLAVE, "nueva": "corta"}).status_code == 422
-    assert cliente.put("/api/sesion/clave", json={"actual": CLAVE, "nueva": nueva}).status_code == 200
+    assert (
+        cliente.put("/api/sesion/clave", json={"actual": CLAVE, "nueva": "corta"}).status_code
+        == 422
+    )
+    assert (
+        cliente.put("/api/sesion/clave", json={"actual": CLAVE, "nueva": nueva}).status_code == 200
+    )
     assert cliente.get("/api/resumen").status_code == 401
     assert _entrar(cliente, "ana", nueva).status_code == 200
 
@@ -149,7 +154,9 @@ def test_lector_no_cambia_nada(cliente):
     _usuario("lia", "lector")
     _entrar(cliente, "lia")
     hid = cliente.get("/api/hallazgos").json()["hallazgos"][0]["id"]
-    assert cliente.post(f"/api/hallazgos/{hid}/estado", json={"estado": "en_curso"}).status_code == 403
+    assert (
+        cliente.post(f"/api/hallazgos/{hid}/estado", json={"estado": "en_curso"}).status_code == 403
+    )
     assert cliente.post("/api/comunicado/WinRAR/aprobar", json={}).status_code == 403
     assert cliente.get("/api/usuarios").status_code == 403
     assert cliente.get("/api/tokens").status_code == 403
@@ -170,7 +177,9 @@ def test_clave_compartida_sigue_valiendo(cliente):
     assert cliente.get("/api/resumen", headers=cabecera).status_code == 200
     assert cliente.get("/api/usuarios", headers=cabecera).status_code == 200
     # Con la clave hay que decir quién aprueba, como antes.
-    assert cliente.post("/api/comunicado/WinRAR/aprobar", json={}, headers=cabecera).status_code == 422
+    assert (
+        cliente.post("/api/comunicado/WinRAR/aprobar", json={}, headers=cabecera).status_code == 422
+    )
 
 
 def test_admin_gestiona_usuarios(cliente):
@@ -193,7 +202,10 @@ def test_admin_gestiona_usuarios(cliente):
 @pytest.fixture
 def con_base(monkeypatch, tmp_path, base_temporal):
     c = _cliente(
-        monkeypatch, tmp_path, RADAR_DATOS="base", CLAVE_ACCESO="clave-compartida",
+        monkeypatch,
+        tmp_path,
+        RADAR_DATOS="base",
+        CLAVE_ACCESO="clave-compartida",
         RADAR_SQLITE=str(tmp_path / "base_temporal.db"),
     )
     _usuario("admin", "admin")

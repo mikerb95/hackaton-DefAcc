@@ -27,7 +27,10 @@ POR_SISTEMA = {
     "linux": {
         "modulos": ("linux.py",),
         "instalacion": (
-            "instalar.sh", "ejecutar.py", "radar-agente.service", "radar-agente.timer",
+            "instalar.sh",
+            "ejecutar.py",
+            "radar-agente.service",
+            "radar-agente.timer",
         ),
     },
 }
@@ -66,8 +69,7 @@ def archivos(sistema: str) -> list[tuple[str, Path]]:
     partes = POR_SISTEMA[sistema]
     lista = [(f"agente_local/{n}", AGENTE / n) for n in (*COMUNES, *partes["modulos"])]
     lista += [
-        (f"agente_local/instalacion/{n}", AGENTE / "instalacion" / n)
-        for n in partes["instalacion"]
+        (f"agente_local/instalacion/{n}", AGENTE / "instalacion" / n) for n in partes["instalacion"]
     ]
     return sorted(lista)
 
