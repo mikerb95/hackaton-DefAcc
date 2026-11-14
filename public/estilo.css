@@ -883,3 +883,8 @@ tr.abierta .chevron { transform: rotate(90deg); color: var(--acento); }
 .asis-reciente-meta { font-size: 12px; color: var(--texto-3); white-space: nowrap; }
 .asis-marca { font-size: 11px; color: var(--ambar-texto); background: rgba(var(--ambar-rgb), 0.12); padding: 1px 7px; border-radius: 999px; white-space: nowrap; }
 .asis-auditoria { margin: 0; padding-left: 18px; font-size: 13px; color: var(--texto-2); }
+
+/* Configuración: avisos por ntfy */
+.ntfy-datos { display: grid; grid-template-columns: max-content 1fr; gap: 6px 18px; margin: 0 0 12px; font-size: 14px; }
+.ntfy-datos dt { color: var(--texto-3); }
+.ntfy-datos dd { margin: 0; overflow-wrap: anywhere; }

@@ -258,6 +258,16 @@
               cortan el gasto del día; el consumo es una estimación con la tarifa pública del modelo.</p>
             <div id="asistente-topes"></div>
           </section>
+          <section class="panel" aria-labelledby="t-ntfy">
+            <h2 id="t-ntfy">Avisos por ntfy</h2>
+            <p class="nota">Cada cruce manda una notificación con las vulnerabilidades críticas nuevas
+              (productos, versiones, CVE y cuántos equipos, nunca sus nombres). Se configura con
+              <span class="mono">NTFY_TOPICO</span>, <span class="mono">NTFY_SERVIDOR</span> y <span class="mono">NTFY_TOKEN</span>.
+              La prueba manda un mensaje de confirmación sin datos del inventario.</p>
+            <div id="ajustes-ntfy"></div>
+            <p><button type="button" id="probar-ntfy" disabled>Enviar notificación de prueba</button></p>
+            <div class="resultado" id="ntfy-resultado" aria-live="polite"></div>
+          </section>
         </div>
       </main>
     </div>

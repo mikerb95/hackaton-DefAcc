@@ -78,7 +78,7 @@ function cambiarVista() {
   document.body.classList.remove("menu-abierto");
   $("#menu-movil").setAttribute("aria-expanded", "false");
   if (nombre === "usuarios") cargarUsuarios();
-  if (nombre === "configuracion") cargarAjustes();
+  if (nombre === "configuracion") { cargarAjustes(); cargarNtfy(); }
   if (nombre === "equipos" && puede("admin")) cargarTokens();
 }
 
@@ -501,6 +501,52 @@ $("#ajustes-modelo").addEventListener("change", async (e) => {
     await cargarAjustes();
     $("#ajustes-resultado").className = "resultado error";
     $("#ajustes-resultado").textContent = error.message;
+  }
+});
+
+// ---- avisos por ntfy (radar/avisos/ntfy.py) -------------------------------------
+
+function pintarNtfy(d) {
+  const caja = $("#ajustes-ntfy");
+  $("#probar-ntfy").disabled = !d.configurado;
+  if (!d.configurado) {
+    caja.innerHTML = `<p class="vacio">${d.topico_definido
+      ? "<span class=\"mono\">NTFY_TOPICO</span> no es válido (1 a 64 caracteres: letras, números, _ o -)."
+      : "Sin configurar: falta <span class=\"mono\">NTFY_TOPICO</span> en el entorno."}</p>`;
+    return;
+  }
+  caja.innerHTML = `<dl class="ntfy-datos">
+      <dt>Tópico</dt><dd class="mono">${esc(d.servidor)}/${esc(d.topico)}</dd>
+      <dt>Token</dt><dd>${d.con_token ? "Sí" : "No (tópico abierto)"}</dd>
+      <dt>Enlace al panel</dt><dd>${d.enlace_panel ? "Sí" : "No (falta <span class=\"mono\">RADAR_URL_PUBLICA</span>)"}</dd>
+    </dl>`;
+}
+
+async function cargarNtfy() {
+  if (!puede("admin")) return;
+  try {
+    pintarNtfy(await api("/api/ajustes/ntfy"));
+  } catch (error) {
+    $("#ajustes-ntfy").innerHTML = `<p class="vacio">${esc(error.message)}</p>`;
+  }
+}
+
+$("#probar-ntfy").addEventListener("click", async () => {
+  const boton = $("#probar-ntfy");
+  const salida = $("#ntfy-resultado");
+  boton.disabled = true;
+  salida.className = "resultado";
+  salida.textContent = "Enviando…";
+  try {
+    const d = await api("/api/ajustes/ntfy/prueba", { method: "POST" });
+    salida.className = "resultado ok";
+    salida.textContent = `Notificación enviada a ${d.topico}. Revisa la app de ntfy.`;
+  } catch (error) {
+    salida.className = "resultado error";
+    salida.textContent = error.message;
+  } finally {
+    // Pausa corta: el servidor rechaza pruebas seguidas.
+    setTimeout(() => { boton.disabled = false; }, 10000);
   }
 });
 

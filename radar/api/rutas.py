@@ -279,3 +279,45 @@ def cambiar_modelo(uso: str, cambio: CambioModelo, request: Request) -> dict:
     finally:
         conexion.close()
     return _ajustes_json()
+
+
+# ---- configuración: avisos por ntfy (radar/avisos/ntfy.py) ----------------------------------
+
+ESPERA_PRUEBA_NTFY_S = 10.0  # entre pruebas, para no inundar el tópico ni el límite de ntfy.sh
+_ultima_prueba_ntfy = 0.0
+
+
+@router.get("/ajustes/ntfy", dependencies=ADMIN)
+def leer_ntfy() -> dict:
+    from radar.avisos import ntfy
+
+    return ntfy.estado_publico()
+
+
+@router.post("/ajustes/ntfy/prueba", dependencies=ADMIN)
+def probar_ntfy() -> dict:
+    """Manda la notificación de confirmación al tópico configurado."""
+    import time
+
+    from radar.avisos import ntfy
+
+    global _ultima_prueba_ntfy
+    config = ntfy.configuracion()
+    if config is None:
+        raise HTTPException(
+            status.HTTP_409_CONFLICT,
+            "ntfy no está configurado: falta NTFY_TOPICO (o no es válido).",
+        )
+    if time.monotonic() - _ultima_prueba_ntfy < ESPERA_PRUEBA_NTFY_S:
+        raise HTTPException(
+            status.HTTP_429_TOO_MANY_REQUESTS, "Espera unos segundos antes de otra prueba."
+        )
+    _ultima_prueba_ntfy = time.monotonic()
+    try:
+        ntfy.enviar_prueba(config)
+    except Exception as error:  # se informa sin detalles internos
+        raise HTTPException(
+            status.HTTP_502_BAD_GATEWAY,
+            f"ntfy no aceptó la notificación ({type(error).__name__}).",
+        ) from error
+    return {"enviado": True, **ntfy.estado_publico(config)}

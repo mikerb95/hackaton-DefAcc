@@ -253,6 +253,38 @@ def notificar(
 
 
 # ---------------------------------------------------------------------------
+# Prueba y estado (CLI y sección Configuración del panel)
+# ---------------------------------------------------------------------------
+
+
+def estado_publico(config: Configuracion | None = None) -> dict[str, Any]:
+    """Lo que muestra el panel. Nunca devuelve el token, solo si hay uno."""
+    config = config or configuracion()
+    if config is None:
+        return {"configurado": False, "topico_definido": bool(os.environ.get("NTFY_TOPICO"))}
+    return {
+        "configurado": True,
+        "servidor": config.servidor,
+        "topico": config.topico,
+        "con_token": config.token is not None,
+        "enlace_panel": config.url_panel is not None,
+    }
+
+
+def enviar_prueba(config: Configuracion, cliente: httpx.Client | None = None) -> None:
+    """Mensaje de confirmación sin datos del inventario. Lanza si ntfy falla."""
+    cuerpo: dict[str, Any] = {
+        "title": "Radar: prueba de avisos",
+        "message": "Si ves esto, las vulnerabilidades críticas nuevas llegarán aquí.",
+        "priority": 3,
+        "tags": ["white_check_mark"],
+    }
+    if config.url_panel:
+        cuerpo["click"] = config.url_panel
+    enviar(config, cuerpo, cliente)
+
+
+# ---------------------------------------------------------------------------
 # Línea de comandos
 # ---------------------------------------------------------------------------
 
@@ -273,16 +305,7 @@ def principal(argv: list[str] | None = None) -> int:
         p.print_help()
         return 0
     try:
-        enviar(
-            config,
-            {
-                "title": "Radar: prueba de avisos",
-                "message": "Si ves esto, las vulnerabilidades críticas nuevas llegarán aquí.",
-                "priority": 3,
-                "tags": ["white_check_mark"],
-                **({"click": config.url_panel} if config.url_panel else {}),
-            },
-        )
+        enviar_prueba(config)
     except Exception as e:  # noqa: BLE001
         print(f"[ntfy] Falló: {type(e).__name__}: {e}", flush=True)
         return 1
