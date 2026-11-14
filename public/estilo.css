@@ -348,6 +348,20 @@ button:disabled { opacity: 0.5; cursor: default; }
 }
 .formulario-fila input:not([type="checkbox"]) { min-width: 180px; }
 
+/* Campo de contraseña con botón para mostrar u ocultar (clave.js) */
+.clave-campo { position: relative; display: block; }
+.clave-campo input { width: 100%; padding-right: 40px; }
+.clave-ver {
+  position: absolute; top: 50%; right: 4px; transform: translateY(-50%);
+  display: grid; place-items: center; width: 32px; height: 32px; padding: 0;
+  background: transparent; color: var(--texto-3); border-radius: 6px;
+}
+.clave-ver:hover { color: var(--texto); background: var(--ink-3); }
+.clave-ver svg { width: 18px; height: 18px; }
+.clave-ver .icono-ocultar, .clave-ver[aria-pressed="true"] .icono-ver { display: none; }
+.clave-ver[aria-pressed="true"] .icono-ocultar { display: block; }
+.clave-ver[aria-pressed="true"] { color: var(--acento); }
+
 /* Diálogos */
 .dialogo {
   width: min(460px, calc(100vw - 32px)); padding: 22px; border-radius: 14px;

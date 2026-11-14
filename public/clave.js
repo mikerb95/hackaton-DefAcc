@@ -16,15 +16,16 @@
   function preparar(campo) {
     if (campo.dataset.claveLista) return;
     campo.dataset.claveLista = "1";
+    // Mover el campo le quita el foco (admin.js enfoca la fila nueva apenas la crea).
+    const teniaFoco = document.activeElement === campo;
     const envoltura = document.createElement("span");
     envoltura.className = "clave-campo";
     campo.replaceWith(envoltura);
     envoltura.append(campo);
+    if (teniaFoco) campo.focus();
     const boton = document.createElement("button");
     boton.type = "button";
     boton.className = "clave-ver";
-    boton.setAttribute("aria-controls", campo.id || "");
-    if (!campo.id) boton.removeAttribute("aria-controls");
     boton.innerHTML = OJO + OJO_TACHADO;
     envoltura.append(boton);
     fijar(boton, campo, false);
