@@ -233,3 +233,49 @@ def trazas() -> dict:
     if lista is None:
         return {"disponible": False, "trazas": [], "motivo": "Las trazas las escribe el worker."}
     return {"disponible": True, "trazas": lista}
+
+
+# ---- configuración: modelo de Claude (radar/ajustes.py) -------------------------------------
+
+ADMIN = [Depends(exigir_rol("admin"))]
+
+
+def _ajustes_json() -> dict:
+    from radar import ajustes
+
+    return {
+        "modelos": [{"id": i, "nombre": n} for i, n in ajustes.MODELOS_CONOCIDOS.items()],
+        "por_defecto": ajustes.MODELO_POR_DEFECTO,
+        "usos": {uso: ajustes.modelo_vigente(uso).publico() for uso in ajustes.USOS},
+    }
+
+
+class CambioModelo(BaseModel):
+    # None borra lo elegido en la consola y vuelve a mandar la variable de entorno.
+    modelo: str | None = Field(default=None, max_length=64)
+
+
+@router.get("/ajustes")
+def leer_ajustes() -> dict:
+    from radar import ajustes
+
+    ajustes.olvidar_cache()
+    return _ajustes_json()
+
+
+@router.put("/ajustes/modelo/{uso}", dependencies=ADMIN)
+def cambiar_modelo(uso: str, cambio: CambioModelo, request: Request) -> dict:
+    from radar import ajustes, bd
+
+    if uso not in ajustes.USOS:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Uso desconocido.")
+    conexion = bd.conectar()
+    try:
+        ajustes.guardar_modelo(
+            conexion, uso, cambio.modelo, quien(request, request.state.identidad.nombre)
+        )
+    except ajustes.AjusteInvalido as error:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, str(error)) from error
+    finally:
+        conexion.close()
+    return _ajustes_json()

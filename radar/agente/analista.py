@@ -47,8 +47,8 @@ from radar.agente.hooks import (
     Traza,
     opciones_encierro,
 )
-from radar.ajustes import MODELO_POR_DEFECTO, modelo
 from radar.agente.instrucciones import ESQUEMA_ANALISIS, INSTRUCCIONES, armar_pedido
+from radar.ajustes import MODELO_POR_DEFECTO, modelo
 from radar.contratos import Analisis, Grupo
 
 # El modelo sale de radar/ajustes.py (consola > RADAR_MODELO_ANALISTA > RADAR_MODELO > defecto).

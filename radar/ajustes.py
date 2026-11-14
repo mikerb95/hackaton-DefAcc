@@ -20,6 +20,7 @@ tabla no existe, se sigue con la variable de entorno: un ajuste ilegible nunca d
 
 from __future__ import annotations
 
+import contextlib
 import os
 import re
 import sys
@@ -102,8 +103,11 @@ def modelo_de_entorno(uso: Uso) -> tuple[str, str | None]:
             continue
         if valido(valor):
             return valor, nombre
-        print(f"[radar] {nombre}={valor!r} no parece un modelo de Claude; se ignora.",
-              file=sys.stderr, flush=True)
+        print(
+            f"[radar] {nombre}={valor!r} no parece un modelo de Claude; se ignora.",
+            file=sys.stderr,
+            flush=True,
+        )
     return MODELO_POR_DEFECTO, None
 
 
@@ -136,14 +140,12 @@ def _leer_guardados(conexion: Any = None) -> dict[str, dict[str, Any]]:
         cursor = conexion.execute("SELECT clave, valor, por, cambiado FROM ajustes")
         nombres = [d[0] for d in cursor.description]
         filas = {f[0]: dict(zip(nombres, f, strict=True)) for f in cursor.fetchall()}
-    except Exception:  # tabla ausente, base caída o sqlite inexistente: se usa el entorno
+    except Exception:  # noqa: BLE001 - tabla ausente o base caída: manda el entorno
         filas = {}
     finally:
         if propia and conexion is not None:
-            try:
+            with contextlib.suppress(Exception):
                 conexion.close()
-            except Exception:
-                pass
     _cache[clave] = (time.monotonic(), filas)
     return filas
 
@@ -156,7 +158,10 @@ def modelo_vigente(uso: Uso, conexion: Any = None) -> ModeloVigente:
     guardado = _leer_guardados(conexion).get(_clave(uso))
     if guardado and valido(str(guardado["valor"])):
         return ModeloVigente(
-            uso, guardado["valor"], "consola", por=guardado.get("por"),
+            uso,
+            guardado["valor"],
+            "consola",
+            por=guardado.get("por"),
             cambiado=guardado.get("cambiado"),
         )
     modelo, variable = modelo_de_entorno(uso)

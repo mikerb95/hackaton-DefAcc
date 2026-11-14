@@ -5,6 +5,7 @@
 const VISTAS = {
   resumen: "Resumen", hallazgos: "Hallazgos", equipos: "Equipos", inventario: "Cargar inventario",
   umbrales: "Umbrales", actividad: "Actividad del agente", usuarios: "Usuarios",
+  configuracion: "Configuración",
 };
 const ROLES = { lector: "Lector", analista: "Analista", admin: "Administrador" };
 
@@ -77,6 +78,7 @@ function cambiarVista() {
   document.body.classList.remove("menu-abierto");
   $("#menu-movil").setAttribute("aria-expanded", "false");
   if (nombre === "usuarios") cargarUsuarios();
+  if (nombre === "configuracion") cargarAjustes();
   if (nombre === "equipos" && puede("admin")) cargarTokens();
 }
 
@@ -440,6 +442,64 @@ $("#nuevo-usuario").addEventListener("submit", async (e) => {
   } catch (error) {
     salida.className = "resultado error";
     salida.textContent = error.message;
+  }
+});
+
+// ---- configuración: modelo de Claude ------------------------------------------
+
+const USOS_MODELO = {
+  analista: ["Analista", "Redacta los análisis y comunicados de cada producto."],
+  desempate: ["Desempate del normalizador", "Elige entre CPE empatados (solo con RADAR_DESEMPATE_MODELO=1)."],
+};
+
+function origenModelo(u) {
+  if (u.origen === "consola") return `Consola${u.por ? `, ${esc(u.por)}` : ""}${u.cambiado ? `, ${esc(fmtHora(u.cambiado))}` : ""}`;
+  if (u.origen === "variable") return `Variable <span class="mono">${esc(u.variable)}</span>`;
+  return "Por defecto";
+}
+
+async function cargarAjustes() {
+  if (!puede("admin")) return;
+  const caja = $("#ajustes-modelo");
+  try {
+    const d = await api("/api/ajustes");
+    caja.innerHTML = `<div class="tabla-envoltura"><table class="tabla"><thead><tr>
+        <th>Uso</th><th>Modelo</th><th>De dónde sale</th>
+      </tr></thead><tbody>${Object.entries(USOS_MODELO).map(([uso, [titulo, detalle]]) => {
+        const u = d.usos[uso];
+        const entorno = d.modelos.find((m) => m.id === u.del_entorno)?.nombre || u.del_entorno;
+        const opciones = [`<option value=""${u.origen !== "consola" ? " selected" : ""}>Usar el del entorno (${esc(entorno)})</option>`]
+          .concat(d.modelos.map((m) =>
+            `<option value="${esc(m.id)}"${u.origen === "consola" && m.id === u.modelo ? " selected" : ""}>${esc(m.nombre)}</option>`))
+          .join("");
+        return `<tr>
+          <td><strong>${esc(titulo)}</strong><br><span class="nota">${esc(detalle)}</span></td>
+          <td><select data-uso="${esc(uso)}" aria-label="Modelo para ${esc(titulo)}">${opciones}</select>
+            <div class="mono nota">${esc(u.modelo)}</div></td>
+          <td>${origenModelo(u)}</td>
+        </tr>`;
+      }).join("")}</tbody></table></div><div class="resultado" id="ajustes-resultado" aria-live="polite"></div>`;
+  } catch (error) {
+    caja.innerHTML = `<p class="vacio">${esc(error.message)}</p>`;
+  }
+}
+
+$("#ajustes-modelo").addEventListener("change", async (e) => {
+  const select = e.target.closest("select[data-uso]");
+  if (!select) return;
+  select.disabled = true;
+  try {
+    await api(`/api/ajustes/modelo/${encodeURIComponent(select.dataset.uso)}`, {
+      method: "PUT", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ modelo: select.value || null }),
+    });
+    await cargarAjustes();
+    $("#ajustes-resultado").className = "resultado ok";
+    $("#ajustes-resultado").textContent = "Modelo guardado.";
+  } catch (error) {
+    await cargarAjustes();
+    $("#ajustes-resultado").className = "resultado error";
+    $("#ajustes-resultado").textContent = error.message;
   }
 });
 

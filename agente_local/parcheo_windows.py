@@ -78,11 +78,9 @@ def nombre_base(nombre: str) -> str:
     """'WinRAR 6.22 (64-bit)' y 'WinRAR 7.13 (64-bit)' -> 'winrar'. Sirve para encontrar
     el mismo programa en el registro después de actualizarlo (el nombre trae la versión)."""
     sin_arquitectura = _ARQUITECTURA.sub(" ", nombre or "")
-    tokens = [
-        t
-        for t in (_SIGNOS.sub(" ", p).strip() for p in sin_arquitectura.split())
-        if t and not _TOKEN_VERSION.match(t)
-    ]
+    crudos = [p.strip("()[]{},;:") for p in sin_arquitectura.split()]
+    tokens = [_SIGNOS.sub(" ", t).strip() for t in crudos if t and not _TOKEN_VERSION.match(t)]
+    tokens = [t for t in tokens if t]
     return " ".join(tokens).lower()
 
 

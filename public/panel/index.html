@@ -24,6 +24,7 @@
         <a href="#umbrales" data-vista="umbrales">Umbrales</a>
         <a href="#actividad" data-vista="actividad">Actividad del agente</a>
         <a href="#usuarios" data-vista="usuarios" data-rol="admin">Usuarios</a>
+        <a href="#configuracion" data-vista="configuracion" data-rol="admin">Configuración</a>
       </nav>
       <div class="cuenta" id="cuenta">
         <div class="cuenta-nombre" id="cuenta-nombre"></div>
@@ -209,6 +210,18 @@
               <button type="submit">Crear usuario</button>
             </form>
             <div class="resultado" id="nuevo-usuario-resultado" aria-live="polite"></div>
+          </section>
+        </div>
+
+        <!-- Configuración -->
+        <div class="vista" data-vista="configuracion" hidden>
+          <section class="panel" aria-labelledby="t-modelo">
+            <h2 id="t-modelo">Modelo de Claude</h2>
+            <p class="nota">Lo que elijas aquí manda sobre las variables de entorno
+              (<span class="mono">RADAR_MODELO_ANALISTA</span>, <span class="mono">RADAR_MODELO_DESEMPATE</span>
+              o la común <span class="mono">RADAR_MODELO</span>). Con "Usar el del entorno" vuelve a mandar la variable.
+              El worker toma el cambio en menos de un minuto, sin reiniciar.</p>
+            <div id="ajustes-modelo"></div>
           </section>
         </div>
       </main>
