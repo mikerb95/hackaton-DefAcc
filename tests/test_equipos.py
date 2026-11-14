@@ -48,9 +48,12 @@ def test_invalidos(nombre):
 
 
 def test_casos_de_inyeccion_por_el_equipo_quedan_fuera():
-    por_equipo = [c for c in TODOS if c.campo == "equipo"]
+    # r4-06 es a propósito una orden con forma de hostname válido: el saneado no la ve y
+    # queda para el verificador.
+    por_equipo = [c for c in TODOS if c.campo == "equipo" and c.id != "r4-06"]
     assert por_equipo
     assert not any(nombre_equipo_valido(c.equipo) for c in por_equipo)
+    assert nombre_equipo_valido(caso_por_numero(6, ronda=4).equipo)
 
 
 # --- Saneado ---
