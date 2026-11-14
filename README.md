@@ -18,6 +18,7 @@ secuestrar por un inventario envenenado (inyección indirecta). Proyecto de la h
 | Analista | `radar/agente/`, `worker/` | Agente encerrado de solo lectura, con verificador y texto de respaldo |
 | Seguridad | `radar/seguridad/`, `evals/` | Limpieza de texto no confiable y suite de inyección con y sin defensa |
 | Plugin | `plugin/`, `radar/mcp/` | Plugin de Claude Code con servidor MCP para cargar y consultar |
+| Agente local | `agente_local/`, `radar/equipos/` | Recolector para Windows y Linux que envía el inventario de cada PC; vista por equipo en el panel ([estado y cómo probarlo](docs/agente-local.md)) |
 
 ## Demo
 

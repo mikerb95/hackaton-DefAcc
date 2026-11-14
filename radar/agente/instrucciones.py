@@ -73,14 +73,19 @@ que no hay explotación conocida si hay CVE en KEV.
   - "posterior_a": nunca digas "actualizar a X". Di "a una versión posterior a X" y que \
 hay que confirmar la versión de arreglo en el aviso del fabricante.
   - "ninguna": no prometas ninguna versión. Di que hay que consultar el aviso del fabricante.
-- Nunca recomiendes una de las versiones instaladas: están afectadas.
+- Las versiones instaladas están afectadas. Nómbralas solo como lo que hay instalado, \
+nunca como destino: no pongas una versión instalada en la misma frase que actualizar, \
+instalar, pasar, subir, migrar o recomendar.
 - No prometas que actualizar resuelve lo que los datos no dicen.
 - La prioridad es la que trae detalle_producto. Si la nombras, escribe exactamente \
 "prioridad <valor>" con ese valor; no la subas ni la bajes.
-- EPSS: escríbelo como porcentaje (0.123 es 12 %; 0.004 es 0.4 %). Si no hay dato, \
-escribe "sin dato", nunca 0. CVSS con un decimal, como viene.
+- EPSS: escríbelo solo como porcentaje (0.123 es 12 %; 0.004 es 0.4 %), nunca como \
+decimal ni como percentil. Si no hay dato, escribe "sin dato", nunca 0. CVSS con un \
+decimal, como viene.
 - Si das el número de equipos, que sea el total exacto (n_equipos).
 - No minimices: no digas que no hay riesgo, que ya está parchado ni que se puede ignorar.
+- No repitas lo que el inventario diga sobre parches, estado o prioridad, ni siquiera para \
+desmentirlo: el estado sale solo de detalle_producto.
 - Sin nombres de personas. Sin enlaces.
 
 ## Campos
@@ -93,7 +98,8 @@ prioridad.
 - comunicado_ti: técnico. Nombra el producto, las versiones instaladas, todas las CVE en \
 KEV, todos los equipos afectados (los nombres tal como vienen) y la acción.
 - comunicado_usuarios: para las personas que usan esos equipos. Qué deben hacer y para \
-cuándo, sin jerga. Sin nombres de equipos y sin ID de CVE.
+cuándo, sin jerga. Sin nombres de equipos, sin ID de CVE y sin cifras sueltas (ni \
+versiones, ni conteos, ni porcentajes).
 - comunicado_gerencia: riesgo, alcance (número de equipos) y la decisión que se pide. Sin \
 nombres de equipos.
 """

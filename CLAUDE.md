@@ -58,7 +58,7 @@ pedido en su archivo de coordinación, no lo edites tú.
 
 | Frente | Carpetas y archivos | Piezas |
 |---|---|---|
-| `nucleo` | `radar/contratos.py`, `config.py`, `bd.py`, `esquema.sql`, `ejemplos.py`, `radar/fuentes/`, `radar/nucleo/`, `worker/descargar.py`, `pyproject.toml`, tests de versiones, cruce y prioridad | 1, 13 |
+| `nucleo` | `radar/contratos.py`, `config.py`, `bd.py`, `esquema.sql`, `ejemplos.py`, `radar/fuentes/`, `radar/nucleo/`, `radar/equipos/` (código del agente local, arreglos), `worker/descargar.py`, `pyproject.toml`, tests de versiones, cruce y prioridad | 1, 13 |
 | `normalizador` | `radar/ingesta/normalizador.py`, `datos_prueba/` (salvo `casos_inyeccion.py`), `tests/test_normalizador.py` | 3, 4 |
 | `analista` (contrato en `docs/contrato-analista.md`) | `radar/agente/analista.py`, `herramientas.py`, `instrucciones.py`, `worker/principal.py`, `worker/analizar.py` | 7, 15 |
 | `guarda` | `radar/seguridad/`, `radar/agente/hooks.py`, `verificador.py`, `respaldo.py`, `datos_prueba/casos_inyeccion.py`, `evals/`, `plugin/hooks/`, `plugin/scripts/`, `docs/AMENAZAS.md`, `docs/LIMITES.md`, tests de verificador, inyección y plugin, `.github/workflows/pruebas.yml` | 5, 6, 8, 12 |

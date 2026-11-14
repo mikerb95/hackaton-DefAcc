@@ -37,13 +37,27 @@ from radar.agente.herramientas import (
     FuenteBase,
     crear_servidor,
 )
-from radar.agente.hooks import HERRAMIENTAS_INTEGRADAS, Traza, opciones_encierro
+
+# SALIDA_ESTRUCTURADA: herramienta interna con que el CLI entrega ``output_format``. Tiene que
+# estar aprobada y en la lista de la guarda, o el agente nunca puede responder (primera
+# corrida real: 8 turnos sin structured_output).
+from radar.agente.hooks import (
+    HERRAMIENTAS_INTEGRADAS,
+    SALIDA_ESTRUCTURADA,
+    Traza,
+    opciones_encierro,
+)
 from radar.agente.instrucciones import ESQUEMA_ANALISIS, INSTRUCCIONES, armar_pedido
 from radar.contratos import Analisis, Grupo
 
 MODELO = "claude-opus-5-5"
 MAX_TURNOS = 8
 MAX_PRESUPUESTO_USD = 0.50
+
+# Sin búsqueda de herramientas: el CLI difiere las herramientas MCP y el agente gastaba un
+# turno pidiendo ToolSearch, que la guarda niega (segunda corrida real). Con esto las tres
+# herramientas del radar llegan cargadas desde el primer turno.
+ENTORNO_EXTRA = {"ENABLE_TOOL_SEARCH": "false"}
 
 
 def _log(mensaje: str) -> None:
@@ -64,18 +78,21 @@ def opciones(fuente: Fuente, defensa: bool, traza: Traza | None, cwd: str | None
         "cwd": cwd,
     }
     if defensa:
+        permitidas = [*LECTURA, SALIDA_ESTRUCTURADA]
+        encierro = opciones_encierro(permitidas, traza if traza is not None else Traza())
+        encierro["env"] = {**encierro["env"], **ENTORNO_EXTRA}
         return ClaudeAgentOptions(
             mcp_servers={SERVIDOR: crear_servidor(fuente, escritura=False)},
-            allowed_tools=list(LECTURA),
-            **opciones_encierro(LECTURA, traza if traza is not None else Traza()),
+            allowed_tools=permitidas,
+            **encierro,
             **comunes,
         )
     return ClaudeAgentOptions(
         mcp_servers={SERVIDOR: crear_servidor(fuente, escritura=True)},
-        allowed_tools=list(PERMITIDAS_SIN_DEFENSA),
+        allowed_tools=[*PERMITIDAS_SIN_DEFENSA, SALIDA_ESTRUCTURADA],
         disallowed_tools=list(HERRAMIENTAS_INTEGRADAS),
         setting_sources=[],
-        env={"CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1"},
+        env={"CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1", **ENTORNO_EXTRA},
         **comunes,
     )
 

@@ -154,21 +154,28 @@ def pares_de_so(equipos: Iterable[Equipo]) -> list[str]:
 
 @dataclass(frozen=True)
 class Soporte:
-    """Qué se sabe del soporte de un sistema. `fin` en None: no se sabe o no tiene fecha."""
+    """Qué se sabe del soporte de un sistema. `fin` en None: no se sabe o no tiene fecha.
+    `vencido_sin_fecha`: endoflife.date dice que ya no tiene soporte, sin publicar la fecha."""
 
     sistema: str  # nombre para las personas: "Windows 10 22H2", "Ubuntu 20.04"
     conocido: bool  # False: el ciclo no se reconoció, va a cobertura
     fin: date | None = None
+    vencido_sin_fecha: bool = False
 
     def vencido(self, hoy: date) -> bool:
-        return self.conocido and self.fin is not None and self.fin < hoy
+        if not self.conocido:
+            return False
+        return self.vencido_sin_fecha or (self.fin is not None and self.fin < hoy)
 
 
-def _fin(producto: str, ciclo: str, catalogo: dict[str, Any] | None) -> tuple[bool, date | None]:
+def _fin(
+    producto: str, ciclo: str, catalogo: dict[str, Any] | None
+) -> tuple[bool, date | None, bool]:
+    """(conocido, fecha de fin, vencido sin fecha)."""
     for c in finsoporte.ciclos(producto, catalogo):
         if c["ciclo"] == ciclo:
-            return True, finsoporte.fecha(c)
-    return False, None
+            return True, finsoporte.fecha(c), finsoporte.vencido_sin_fecha(c)
+    return False, None, False
 
 
 def soporte(so: SistemaReportado, catalogo: dict[str, Any] | None = None) -> Soporte:
@@ -177,8 +184,8 @@ def soporte(so: SistemaReportado, catalogo: dict[str, Any] | None = None) -> Sop
         if windows is None or windows.ciclo is None:
             return Soporte(so.nombre or "Windows", conocido=False)
         producto = "windows-server" if windows.servidor else "windows"
-        conocido, fin = _fin(producto, windows.ciclo, catalogo)
-        return Soporte(windows.producto, conocido, fin)
+        conocido, fin, sin_fecha = _fin(producto, windows.ciclo, catalogo)
+        return Soporte(windows.producto, conocido, fin, sin_fecha)
 
     nombre = " ".join(p for p in (so.nombre, so.version) if p) or "Linux"
     producto = _DISTRIBUCIONES.get((so.distro or "").lower())
@@ -188,5 +195,5 @@ def soporte(so: SistemaReportado, catalogo: dict[str, Any] | None = None) -> Sop
     if not partes[0].isdigit():
         return Soporte(nombre, conocido=False)
     ciclo = ".".join(partes[:2]) if producto == "ubuntu" and len(partes) >= 2 else partes[0]
-    conocido, fin = _fin(producto, ciclo, catalogo)
-    return Soporte(nombre, conocido, fin)
+    conocido, fin, sin_fecha = _fin(producto, ciclo, catalogo)
+    return Soporte(nombre, conocido, fin, sin_fecha)

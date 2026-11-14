@@ -189,6 +189,11 @@ def revisar(
                         f"El fabricante dejó de publicar parches de seguridad el "
                         f"{soporte.fin.isoformat()} (endoflife.date)"
                     )
+                    if soporte.fin is not None
+                    else (
+                        "El fabricante ya no publica parches de seguridad "
+                        "(endoflife.date, sin fecha de fin publicada)"
+                    )
                 ],
                 remediacion.arreglo_de_soporte(soporte.sistema, equipo.so.familia),
                 ahora,

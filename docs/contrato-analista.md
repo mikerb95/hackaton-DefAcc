@@ -60,8 +60,8 @@ producto)`, `leer_cves(conexion, pares)`, `leer_senales(conexion, cves)`.
 | Encierro | `radar/agente/hooks.py`: `opciones_encierro(permitidas, traza)` | Devuelve `permission_mode="dontAsk"`, `disallowed_tools` con las integradas, `setting_sources=[]`, memoria automática apagada y los hooks `PreToolUse` y `PostToolUse` con `on_failure="block"`. No lo armes a mano |
 | Formato de argumentos | `FORMATOS_ARGUMENTO` en `hooks.py` | La guarda niega un argumento `cve` que no sea `CVE-AAAA-NNNN` |
 | Limpieza | `radar/seguridad/limpieza.py` | Ya la aplica el hook posterior; no la dupliques |
-| Verificador | `radar/agente/verificador.py`: `decidir(analisis, grupo, *, textos_origen=(), cifras_permitidas=(), equipos_flota=())` | Devuelve la tupla `(Analisis, Veredicto)`: el análisis del agente con `verificado=True` si pasa, o el respaldo si no (o si `analisis` es `None`). `equipos_flota`: todos los equipos del inventario, para detectar fuga de equipos ajenos al grupo |
-| Respaldo | `radar/agente/respaldo.py`: `armar_respaldo(grupo)` | Texto armado por código. Úsalo también cuando el modelo falla o no hay clave |
+| Verificador | `radar/agente/verificador.py`: `decidir(analisis, grupo, *, textos_origen=(), cifras_permitidas=(), equipos_flota=(), comandos_permitidos=())` | Devuelve la tupla `(Analisis, Veredicto)`: el análisis del agente con `verificado=True` si pasa, o el respaldo si no (o si `analisis` es `None`). `equipos_flota`: todos los equipos del inventario, para detectar fuga de equipos ajenos al grupo. `comandos_permitidos`: comandos de remediación armados por código (`radar/equipos/remediacion.py`); todo lo que parezca un comando y no esté ahí descarta el comunicado. `verificar_analisis` y `verificar_texto` aceptan el mismo `comandos_permitidos` |
+| Respaldo | `radar/agente/respaldo.py`: `armar_respaldo(grupo, comandos=())` | Texto armado por código. Úsalo también cuando el modelo falla o no hay clave. `comandos`: los mismos comandos de plantilla, van solo en el comunicado de TI, uno por línea. `decidir` se los pasa al respaldo cuando cae |
 
 ## 4. Firma que espera la suite de inyección
 

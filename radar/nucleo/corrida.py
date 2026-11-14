@@ -193,7 +193,8 @@ def cargar_inventario(
     usar_modelo: bool = False,
     umbrales: Umbrales | None = None,
 ) -> tuple[Any, Any, ResultadoCruce]:
-    """Lee un archivo de inventario, lo normaliza, lo guarda y lo cruza.
+    """Lee un archivo de inventario, lo normaliza, lo guarda y lo cruza (todo el inventario
+    guardado si hay equipos con agente local; si no, solo el archivo).
 
     Devuelve (lectura, normalizacion, resultado). Por defecto sin el desempate con Claude, para
     que la base compartida sea reproducible; `usar_modelo=True` lo activa.
@@ -206,8 +207,19 @@ def cargar_inventario(
     filas = [a_contrato(f) for f in lectura.filas]
     normalizacion = normalizar(filas, usar_modelo=usar_modelo)
     bd.guardar_inventario(conexion, filas, reemplazar=True)
-    bd.guardar_decisiones_cpe(conexion, normalizacion.decisiones.values())
-    resultado = correr(conexion, normalizacion.activos, normalizacion.cobertura, umbrales)
+
+    # Con agentes locales inscritos el inventario tiene dos orígenes (archivo y reportes) más
+    # el sistema operativo de cada equipo: se cruza todo junto. Cruzar solo el archivo
+    # propondría como resueltos los hallazgos que vienen de los agentes.
+    from radar.equipos import almacen
+
+    if almacen.hay_equipos(conexion):
+        from radar.equipos.cruce import recruzar
+
+        resultado = recruzar(conexion, usar_modelo=usar_modelo, umbrales=umbrales).resultado
+    else:
+        bd.guardar_decisiones_cpe(conexion, normalizacion.decisiones.values())
+        resultado = correr(conexion, normalizacion.activos, normalizacion.cobertura, umbrales)
     return lectura, normalizacion, resultado
 
 

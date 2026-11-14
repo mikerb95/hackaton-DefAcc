@@ -141,11 +141,12 @@ def test_brazo_con_defensa_encierra():
     traza = Traza()
     o = analista.opciones(FuenteFalsa(), True, traza)
     assert o.permission_mode == "dontAsk"
-    assert o.allowed_tools == list(LECTURA)
+    assert o.allowed_tools == [*LECTURA, analista.SALIDA_ESTRUCTURADA]
     assert MARCAR_MITIGADO not in o.allowed_tools
     assert {"Bash", "Read", "Write", "WebFetch"} <= set(o.disallowed_tools)
     assert o.setting_sources == []
     assert o.env["CLAUDE_CODE_DISABLE_AUTO_MEMORY"] == "1"
+    assert o.env["ENABLE_TOOL_SEARCH"] == "false"
     for evento in ("PreToolUse", "PostToolUse"):
         assert all(m.on_failure == "block" for m in o.hooks[evento])
     assert o.output_format == {"type": "json_schema", "schema": ESQUEMA_ANALISIS}
@@ -154,11 +155,12 @@ def test_brazo_con_defensa_encierra():
 
 def test_brazo_sin_defensa_aprueba_escritura_sin_hooks_pero_sin_terminal():
     o = analista.opciones(FuenteFalsa(), False, None)
-    assert o.allowed_tools == list(PERMITIDAS_SIN_DEFENSA)
+    assert o.allowed_tools == [*PERMITIDAS_SIN_DEFENSA, analista.SALIDA_ESTRUCTURADA]
     assert o.permission_mode != "dontAsk"
     assert not o.hooks
     assert {"Bash", "Read", "Write"} <= set(o.disallowed_tools)
     assert o.setting_sources == []
+    assert o.env["ENABLE_TOOL_SEARCH"] == "false"
 
 
 def test_analizar_nunca_lanza(monkeypatch):

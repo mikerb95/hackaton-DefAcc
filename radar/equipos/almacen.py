@@ -187,6 +187,13 @@ def leer_equipo(conexion: Any, equipo_id: str) -> Equipo | None:
 
 @bd.conexion_opcional()
 def hay_equipos(conexion: Any) -> bool:
+    """True si hay algún equipo inscrito. False si la tabla `equipos` todavía no existe (base
+    creada antes del agente local, o conexión de solo lectura que no puede crear el esquema)."""
+    tabla = conexion.execute(
+        "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'equipos'"
+    ).fetchone()
+    if tabla is None:
+        return False
     return conexion.execute("SELECT 1 FROM equipos LIMIT 1").fetchone() is not None
 
 

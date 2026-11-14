@@ -63,6 +63,15 @@ HERRAMIENTAS_INTEGRADAS = (
     "ExitPlanMode",
 )
 
+# Herramienta interna con la que el CLI entrega ``output_format``: su entrada es el análisis
+# final del agente, no una acción, y **no tiene efectos fuera del proceso**. Excepción mínima:
+# - solo con el nombre exacto (nunca prefijo ni patrón: "StructuredOutputX" o
+#   "mcp__radar__StructuredOutput" no la heredan);
+# - se salta solo ``_argumento_sospechoso`` (el análisis es largo y lleva saltos de línea);
+#   sigue pasando por la lista de permitidas y se registra en la traza, recortada;
+# - su contenido igual pasa por ``decidir()``, que es la defensa real sobre la salida.
+SALIDA_ESTRUCTURADA = "StructuredOutput"
+
 RETENIDO = (
     "Resultado retenido por la guarda del radar: no se pudo limpiar. "
     "Continúa solo con los datos que ya tienes."
@@ -168,6 +177,8 @@ def crear_guarda(permitidas: Iterable[str], traza: Traza):
             entrada_limpia = limpiar_estructura(entrada)
             if nombre not in lista:
                 motivo = f"Herramienta fuera de la lista del radar: {nombre}"
+            elif nombre == SALIDA_ESTRUCTURADA:
+                motivo = None
             else:
                 motivo = _argumento_sospechoso(entrada)
             if motivo:

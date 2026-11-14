@@ -22,6 +22,12 @@ Si algo falla, el comunicado se descarta y se usa el respaldo armado por código
 decir, no el sentido: agregar más es perseguir frases. La cifra vigente es la ronda 4,
 escrita después de este estado (``evals/reporte.md``). Un cambio aquí invalida esa cifra y
 exige una ronda nueva escrita después del cambio, sin reajustar.
+
+Única excepción después del congelado: la regla ``comando_ajeno`` (agente local, PR #2). Es
+aditiva (solo descarta más) y sin ``comandos_permitidos`` no toca ningún texto de la suite:
+``evals/reporte.md`` regenerado con ella dio las mismas cifras en todas las rondas (14 nov,
+12:07). Límite: un comando permitido entra como origen y habilita sus cifras y URL en todo el
+texto (docs/LIMITES.md).
 """
 
 from __future__ import annotations

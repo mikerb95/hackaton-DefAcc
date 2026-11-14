@@ -115,8 +115,8 @@ Resumen de [LIMITES.md](LIMITES.md):
 - No detecta vulnerabilidades que NVD aún no asocia a un producto, ni el sistema operativo, ni
   dependencias de código. No es tiempo real.
 - No hay inicio de sesión ni permisos por usuario: una clave compartida protege la API.
-- Siguiente paso: un agente local de inventario para Windows y Linux que levante software,
-  sistema operativo y parches de cada PC y lo envíe al radar ([plan](plan-agente-local.md), sin construir).
+- Agente local de inventario para Windows y Linux: construido y probado en un PC con Windows 11;
+  faltan el agente empaquetado y firmado y un piloto con flota real ([estado](agente-local.md)).
 
 ## 6. Riesgo de uso dual
 
