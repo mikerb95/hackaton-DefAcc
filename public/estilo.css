@@ -95,11 +95,11 @@ h2 { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: 
   padding: 20px 14px; background: var(--ink-1); border-right: 1px solid var(--linea);
 }
 .marca { display: flex; align-items: center; gap: 10px; padding: 0 10px; color: var(--texto); text-decoration: none; }
-.marca-nombre { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; }
-.marca-punto {
-  width: 9px; height: 9px; border-radius: 50%; background: var(--acento);
-  box-shadow: 0 0 12px var(--acento); flex: none;
-}
+/* Logo de Lighthouse (SVG en línea): la torre toma el color del texto y la luz el acento. */
+.lh { display: block; height: 28px; width: auto; flex: none; }
+.lh-luz { fill: var(--acento); }
+.lh-haz { stop-color: var(--acento); }
+.entrar-caja .lh { height: 32px; }
 .nav { display: grid; gap: 2px; }
 .nav a {
   display: flex; align-items: center; justify-content: space-between; gap: 8px;

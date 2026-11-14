@@ -78,14 +78,11 @@ h3 { font-size: 19px; line-height: 1.25; font-weight: 650; }
   max-width: var(--ancho); margin: 0 auto; padding: 22px 24px;
   display: flex; align-items: center; justify-content: space-between; gap: 20px;
 }
-.logo {
-  display: inline-flex; align-items: center; gap: 10px; text-decoration: none;
-  font-weight: 700; font-stretch: 125%; font-size: 20px;
-}
-.logo-punto {
-  width: 10px; height: 10px; border-radius: 50%; background: var(--fosforo);
-  box-shadow: 0 0 14px var(--fosforo);
-}
+.logo { display: inline-flex; align-items: center; color: var(--texto); text-decoration: none; }
+/* Logo de Lighthouse (SVG en línea): la torre toma el color del texto y la luz el fósforo. */
+.lh { display: block; height: 32px; width: auto; }
+.lh-luz { fill: var(--fosforo); }
+.lh-haz { stop-color: var(--fosforo); }
 .cabecera-nav { display: flex; align-items: center; gap: 26px; font-size: 15px; }
 .cabecera-nav a { text-decoration: none; color: var(--texto-2); }
 .cabecera-nav a:hover { color: var(--texto); }

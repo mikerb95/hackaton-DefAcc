@@ -61,8 +61,12 @@ body {
 .cargando { color: var(--tinta-3); text-align: center; padding: 40px 0; }
 
 .portada { padding-bottom: 18px; margin-bottom: 22px; border-bottom: 2px solid var(--tinta); }
-.portada-marca { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--tinta-2); }
-.logo-punto { width: 10px; height: 10px; border-radius: 50%; background: var(--acento); box-shadow: 0 0 0 3px rgba(8, 127, 140, 0.15); }
+.portada-marca { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--tinta); }
+.portada-marca span { font-weight: 600; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--tinta-3); }
+/* Logo de Lighthouse (SVG en línea): la torre en tinta y la luz en el acento. */
+.lh { display: block; height: 26px; width: auto; }
+.lh-luz { fill: var(--acento); }
+.lh-haz { stop-color: var(--acento); }
 .portada h1 { font-size: 30px; line-height: 1.15; letter-spacing: -0.02em; margin: 14px 0 6px; font-weight: 700; }
 .portada-equipo { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: 17px; font-weight: 600; margin-bottom: 16px; }
 
