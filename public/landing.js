@@ -131,6 +131,9 @@
     const botones = [...caja.querySelectorAll(".banco-control button")];
     let tocado = false;
     let espera = null;
+    // El modo "con" es el más largo: su alto queda fijo para que el texto vecino no salte.
+    const fijarAlto = () => { caja.style.minHeight = ""; caja.style.minHeight = `${caja.offsetHeight}px`; };
+    if (caja.dataset.modo === "con") { fijarAlto(); document.fonts.ready.then(() => { if (caja.dataset.modo === "con") fijarAlto(); }); }
 
     function mostrar(modo) {
       caja.dataset.modo = modo;
