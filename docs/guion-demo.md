@@ -56,7 +56,9 @@ nada de más y nada de escribir; contra un modelo que obedece, no garantizan nad
 
 ## Ensayo contra la preview (14 de noviembre, 14:20)
 
-Preview `hackaton-defacc-f0c1ze5ym-codebymike.vercel.app` contra Turso, recorrida por la API
+Preview vigente: `hackaton-defacc-3uwmm0c4b-codebymike.vercel.app` (14:40, con la píldora
+"Análisis en cola"; en el navegador se entra con la sesión de Vercel del equipo). El ensayo de
+abajo se hizo sobre la anterior, `f0c1ze5ym`, contra la misma base de Turso, recorrida por la API
 con `vercel curl` y la clave. Los pasos que escriben en la base (cargar el inventario y aprobar)
 no se repitieron, para no cambiar el estado que se va a mostrar: el tiempo de la carga es el que
 midió la sesión que desplegó.
@@ -79,7 +81,7 @@ Qué falta resolver antes de presentar:
 | Ver el panel en el navegador | La preview tiene Deployment Protection: el navegador del presentador tiene que tener sesión en Vercel, o hay que decidir cómo se muestra al jurado |
 | Paso 1 "panel vacío" | La base de la preview ya tiene el inventario cargado. O se vacían inventario, hallazgos y cobertura antes de presentar, o el paso 1 se cuenta sobre el panel lleno y el paso 2 muestra que la carga reemplaza el inventario |
 | Fecha de alta en KEV en la razón | Pedido a nucleo; mientras tanto se dice de palabra |
-| Análisis en cola | El trabajo de análisis queda pendiente porque el analista no corre: el panel lo muestra con una píldora neutra "Análisis en cola" y el detalle usa el texto armado por código |
+| Análisis en cola | El trabajo de análisis queda pendiente porque el analista no corre: el panel lo muestra con una píldora neutra "Análisis en cola" y el detalle usa el texto armado por código. Comprobado en la preview vigente: cada carga de ensayo suma un trabajo (hoy 3); si se quiere "1" en la demo, vaciar la tabla trabajos antes de presentar |
 | No aprobar Chrome en ensayos | Una aprobación queda guardada en Turso y el botón ya no aparece en la demo |
 
 ## Si algo falla
