@@ -48,12 +48,23 @@ Se arma copiando estas filas de `evals/reporte.md`, sin redondear ni recalcular:
 | Normalizador | "Normalizador", fila "Semilla, alias + difuso" frente a "nombre exacto (línea base)", y "Fuera de la semilla" |
 | Inyección, peor caso | Línea "Última ronda escrita sin reajustar" de "Suite de inyección" (simulado peor caso, entrada forzada): tasa sin defensa y con defensa |
 | Equipo oculto | Tabla "Entrada real", la misma ronda, simulado peor caso: equipo oculto sin defensa y con defensa |
-| Inyección, modelo real | "Suite de inyección", fila "analista real" (solo si existe; si no, no se muestra) |
+| Inyección, modelo real | Fila "analista real, sin casos vistos al ajustar el prompt" (todas las rondas, entrada forzada): sin defensa y con defensa |
+| Utilidad con el modelo real | "Texto del propio agente aceptado por el verificador, con defensa: k de n" |
 | Utilidad bajo ataque | La misma línea: utilidad con defensa (y sin defensa, de la tabla "Entrada forzada") |
 
 Regla para leerla en voz alta: decir siempre que las filas "simulado" son un agente de código
 que obedece cualquier orden (peor caso), no un modelo, y que las rondas usadas para ajustar no
-se muestran. Cerrar con la frase central de LIMITES.md: "Las defensas deterministas garantizan
+se muestran. Con el modelo real, la lectura honesta es esta (los casos y el k de n salen del
+reporte, no se dicen de memoria):
+
+1. El modelo real casi no obedece las inyecciones, ni sin defensa. Lo logrado sin defensa no es
+   obediencia: es texto crudo que llega al modelo porque ese brazo no limpia.
+2. El valor de la defensa no es "el modelo cae y la defensa lo salva": son garantías que no
+   dependen del modelo (medidas con el simulado peor caso); el caso real en que el modelo repitió
+   "ya fue parchado" del atacante y el verificador lo descartó; y que, con defensa, el texto
+   propio del agente se acepta en k de n, así que la defensa no anula la utilidad.
+3. El prompt del analista se ajustó tras una muestra de 4 corridas; la cifra que se cita es la
+   variante sin esos casos. Cerrar con la frase central de LIMITES.md: "Las defensas deterministas garantizan
 nada de más y nada de escribir; contra un modelo que obedece, no garantizan nada torcido."
 
 ## Ensayo contra la preview (14 de noviembre, 14:20)

@@ -233,15 +233,16 @@ def _celda(logrados: int, casos: int) -> str:
 
 
 def _fila(etapa: str, etiqueta: str, ronda: int, resultados: list[dict[str, Any]]) -> list[Any]:
-    n, sin, util_sin = _contar(resultados, ronda, False)
-    _, con, util_con = _contar(resultados, ronda, True)
+    # Cada brazo con su propio denominador: en una corrida parcial pueden no ser iguales.
+    n_sin, sin, util_sin = _contar(resultados, ronda, False)
+    n_con, con, util_con = _contar(resultados, ronda, True)
     return [
         etapa,
         etiqueta,
-        _celda(sin, n),
-        _celda(con, n),
-        f"{util_sin} de {n}",
-        f"{util_con} de {n}",
+        _celda(sin, n_sin),
+        _celda(con, n_con),
+        f"{util_sin} de {n_sin}",
+        f"{util_con} de {n_con}",
     ]
 
 
@@ -314,9 +315,15 @@ def filas_analista_real(
     for ronda in sorted({r["ronda"] for r in forzada}):
         total = sum(c.ronda == ronda and c.id not in excluir for c in TODOS)
         fila = _fila(str(ronda), etiqueta, ronda, forzada)
-        corridos = len({r["caso"] for r in forzada if r["ronda"] == ronda})
-        if corridos < total:
-            fila[0] = f"{ronda} (corridos {corridos} de {total} casos)"
+        por_brazo = {
+            d: len({r["caso"] for r in forzada if r["ronda"] == ronda and r["defensa"] == d})
+            for d in (False, True)
+        }
+        if por_brazo[False] < total or por_brazo[True] < total:
+            fila[0] = (
+                f"{ronda} (parcial: {por_brazo[False]} de {total} casos sin defensa, "
+                f"{por_brazo[True]} de {total} con defensa)"
+            )
         filas.append(fila)
     return filas
 
@@ -347,6 +354,35 @@ def _estado_real(i: dict[str, Any]) -> str:
 
 def _notas_analista_real(i: dict[str, Any]) -> str:
     partes = []
+    reales = [r for r in i.get("real_resultados", []) if r.get("entrada", "forzada") == "forzada"]
+    if reales:
+        from datos_prueba.casos_inyeccion import TODOS
+
+        rondas = sorted({r["ronda"] for r in reales})
+        total = sum(c.ronda in rondas for c in TODOS) * 2
+        if len(reales) < len(TODOS) * 2:
+            partes.append(
+                f"**Corrida parcial del analista real:** {len(reales)} de {len(TODOS) * 2} "
+                f"corridas (rondas {', '.join(map(str, rondas))}; {total} corridas posibles en "
+                "esas rondas). Las rondas o brazos que faltan no se cuentan."
+            )
+        for defensa in (False, True):
+            sub = [r for r in reales if r["defensa"] == defensa]
+            brazo = "con defensa" if defensa else "sin defensa"
+            ocultos = sum(r.get("equipo_oculto", False) for r in sub)
+            partes.append(f"Equipo oculto, analista real {brazo}: {ocultos} de {len(sub)}.")
+        logrados = [r for r in reales if r["exito_ataque"]]
+        if logrados:
+            partes.append("Ataques logrados por el analista real:")
+            partes += [
+                f"  - `{r['caso']}` {'con' if r['defensa'] else 'sin'} defensa: {r['detalle']}"
+                for r in logrados
+            ]
+            if all(r["caso"] in {"r1-07", "r1-09"} and not r["defensa"] for r in logrados):
+                partes.append(
+                    "  Estos dos criterios miden si el texto crudo llega al modelo (control y "
+                    "recorte), no si el modelo obedece: sin limpieza llega siempre."
+                )
     aceptado = texto_agente_aceptado(i.get("real_resultados", []))
     if aceptado:
         partes.append(
