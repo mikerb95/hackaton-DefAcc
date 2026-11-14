@@ -2,32 +2,37 @@
 
 Dos grupos, con credenciales distintas:
 
-- `/api/agente/*` lo llaman los equipos. No usa la clave compartida del panel: la
-  inscripción pide el token de la organización (`AGENTE_TOKEN_INSCRIPCION`) y cada reporte
-  pide la credencial propia del equipo en `X-Credencial-Equipo`. Robar la credencial de un
+- `/api/agente/*` lo llaman los equipos. No usa la clave compartida del panel. Para
+  inscribirse, el agente genera su credencial y un código de activación; el token es
+  opcional (uno creado en el panel, con vencimiento y tope de usos, `radar/api/cuentas.py`,
+  o el de la organización en `AGENTE_TOKEN_INSCRIPCION`, que si está definido se exige). Cada
+  reporte pide la credencial propia del equipo en `X-Credencial-Equipo`. Robar la credencial de un
   equipo solo sirve para enviar reportes de ese equipo, y se revoca sin tocar a los demás.
 - `/api/equipos*` lo llama el panel, con la clave compartida, como el resto de la API.
 
 El servidor nunca devuelve órdenes: la respuesta a un reporte es `202` con el intervalo
 deseado y nada más. Tomar el servidor no da ejecución en los PC.
 
-Activación en la consola (como Acronis): al instalarse, el agente genera un código de
-activación y lo muestra en la pantalla del equipo. El equipo queda pendiente: reporta y se
-ve en el panel, pero su inventario no entra al cruce hasta que una persona escribe ese
-código en el panel (`POST /api/equipos/activar`). Rechazar es retirarlo.
-`AGENTE_APROBACION=automatica` quita ese paso.
+Activación en la consola (como Acronis): el instalador muestra en la pantalla del equipo un
+código de activación. El equipo queda pendiente: reporta y se ve en el panel, pero su
+inventario no entra al cruce hasta que una persona escribe ese código en el panel
+(`POST /api/equipos/activar`) o un administrador lo aprueba (`POST /api/equipos/{id}/aprobar`).
+Rechazar es retirarlo. `AGENTE_APROBACION=automatica` quita ese paso. El instalador de doble
+clic se descarga del asistente del panel (`POST /api/agente-instalador`).
 """
 
 from __future__ import annotations
 
 import hmac
 import os
+from typing import Literal
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Request, Response, status
 from pydantic import BaseModel, Field
 
-from radar.api.acceso import exigir_clave
+from radar.api.acceso import exigir_clave, exigir_rol, quien
 from radar.api.datos import obtener_datos
+from radar.api.termometro import termometro
 from radar.equipos.contratos import TAMANO_MAXIMO_REPORTE
 
 CABECERA_CREDENCIAL = "X-Credencial-Equipo"
@@ -88,18 +93,39 @@ class Inscripcion(BaseModel):
 def inscribir(cuerpo: Inscripcion) -> dict:
     """Inscribe un equipo con la credencial y el código de activación que generó el agente.
 
-    El equipo queda pendiente hasta que TI escribe ese código en el panel. Si el radar
-    define `AGENTE_TOKEN_INSCRIPCION`, además hace falta ese token (capa extra para un
-    radar expuesto en internet); sin él la inscripción está abierta y el filtro es el código.
-    """
+    El equipo queda pendiente hasta que TI escribe el código en el panel. El token es
+    opcional: si llega, tiene que ser válido (uno creado en el panel, vigente, sin revocar y
+    con usos, o el de `AGENTE_TOKEN_INSCRIPCION`). Si el radar define
+    `AGENTE_TOKEN_INSCRIPCION`, se exige (capa extra para un radar expuesto en internet).
+    Si la inscripción falla después de gastar un uso del token, el uso se devuelve."""
+    from radar.api import cuentas
     from radar.equipos import almacen
     from radar.seguridad.equipos import sanear_nombre_equipo
     from radar.seguridad.limpieza import limpiar_texto
 
     _exigir_base()
     esperado = os.environ.get("AGENTE_TOKEN_INSCRIPCION", "")
-    if esperado and not hmac.compare_digest((cuerpo.token or "").encode(), esperado.encode()):
+    token_id = None
+    token = cuerpo.token or ""
+    if token.startswith(cuentas.PREFIJO_TOKEN):
+        conexion_tokens = cuentas.conectar()
+        try:
+            token_id = cuentas.consumir_token(conexion_tokens, token)
+        finally:
+            conexion_tokens.close()
+        if token_id is None:
+            raise HTTPException(
+                status.HTTP_401_UNAUTHORIZED,
+                "Token de inscripción no válido, vencido, revocado o sin usos.",
+            )
+    elif (token or esperado) and (
+        not esperado or not hmac.compare_digest(token.encode(), esperado.encode())
+    ):
+        # Un token que no es del panel tiene que ser el de la organización; y si la
+        # organización definió uno, sin él no se entra.
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Token de inscripción no válido.")
+    # Sin token y sin AGENTE_TOKEN_INSCRIPCION la inscripción está abierta: el filtro es el
+    # código de activación, que solo se ve en la pantalla del equipo.
     automatica = aprobacion_automatica()
     conexion = _conexion()
     try:
@@ -121,6 +147,8 @@ def inscribir(cuerpo: Inscripcion) -> dict:
             aprobar=automatica,
         )
     except almacen.EquipoYaInscrito as error:
+        if token_id is not None:
+            cuentas.devolver_uso(conexion, token_id)
         raise HTTPException(
             status.HTTP_409_CONFLICT,
             "Ese equipo ya está inscrito. Hay que retirarlo en el radar antes de repetir.",
@@ -176,6 +204,18 @@ async def reporte(
 # ---------------------------------------------------------------------------
 
 
+def _inscripcion_abierta() -> bool:
+    from radar.api import cuentas
+
+    if os.environ.get("AGENTE_TOKEN_INSCRIPCION"):
+        return True
+    conexion = cuentas.conectar()
+    try:
+        return cuentas.hay_tokens_vigentes(conexion)
+    finally:
+        conexion.close()
+
+
 @router_equipos.get("/equipos")
 def equipos() -> dict:
     from radar.equipos import vista
@@ -191,9 +231,12 @@ def equipos() -> dict:
         lista = vista.lista(conexion)
     finally:
         conexion.close()
+    for fila in lista:
+        fila["termometro"] = termometro(fila)
     return {
         "disponible": True,
         "total": len(lista),
+        "inscripcion_abierta": _inscripcion_abierta(),
         "token_exigido": bool(os.environ.get("AGENTE_TOKEN_INSCRIPCION")),
         "aprobacion": "automatica" if aprobacion_automatica() else "manual",
         "pendientes": sum(1 for e in lista if e["pendiente"] and not e["revocado"]),
@@ -213,7 +256,41 @@ def equipo(equipo_id: str) -> dict:
         conexion.close()
     if datos is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Equipo no encontrado.")
+    datos["equipo"]["termometro"] = termometro(datos["equipo"])
     return datos
+
+
+ADMIN = [Depends(exigir_rol("admin"))]
+
+
+class Aprobacion(BaseModel):
+    # La aprobación la hace una persona con nombre. Con sesión sale de la sesión; con la
+    # clave compartida o en local hay que decir quién aprueba.
+    por: str | None = Field(default=None, min_length=1, max_length=100, pattern=r"\S")
+
+
+@router_equipos.post("/equipos/{equipo_id}/aprobar", dependencies=ADMIN)
+def aprobar(equipo_id: str, cuerpo: Aprobacion, request: Request) -> dict:
+    """TI aprueba un equipo pendiente desde la consola. Desde ese momento su inventario
+    entra al cruce. Rechazar es retirarlo (DELETE)."""
+    from radar.equipos import recepcion
+    from radar.seguridad.limpieza import limpiar_texto
+
+    por = quien(request, cuerpo.por.strip() if cuerpo.por else None)
+    if not por:
+        raise HTTPException(422, "Falta quién aprueba el equipo.")
+    _exigir_base()
+    conexion = _conexion()
+    try:
+        recibido = recepcion.aprobar(conexion, equipo_id, limpiar_texto(por, 100))
+    except recepcion.ErrorAprobacion as error:
+        raise HTTPException(
+            status.HTTP_409_CONFLICT,
+            "El equipo no existe, está revocado o ya estaba aprobado.",
+        ) from error
+    finally:
+        conexion.close()
+    return {"aprobado": True, "cruzado": recibido is not None}
 
 
 def url_publica(peticion: Request) -> str:
@@ -222,33 +299,47 @@ def url_publica(peticion: Request) -> str:
     return (forzada or str(peticion.base_url)).rstrip("/")
 
 
-@router_equipos.get("/agente-instalador.zip")
-def instalador(peticion: Request) -> Response:
-    """Paquete de instalación del agente con la URL de este radar: se descomprime y se le da
-    doble clic. Pide la clave del panel porque, si el radar exige token, el token va dentro."""
-    from radar.equipos import paquete
+class PedidoInstalador(BaseModel):
+    sistema: Literal["windows", "linux"]
+    # El token recién creado en el asistente. Va por POST, no en la URL, para que no quede
+    # en registros de acceso.
+    token: str | None = Field(default=None, max_length=200)
 
-    datos = paquete.armar(url_publica(peticion), os.environ.get("AGENTE_TOKEN_INSCRIPCION") or None)
+
+@router_equipos.post("/agente-instalador", dependencies=ADMIN)
+def instalador(cuerpo: PedidoInstalador, peticion: Request) -> Response:
+    """Paquete del agente con la URL de este radar y el token: se descomprime y se le da
+    doble clic. Solo para administradores, porque lleva el token dentro."""
+    from radar.api import paquetes
+
+    token = cuerpo.token or os.environ.get("AGENTE_TOKEN_INSCRIPCION") or None
+    datos = paquetes.armar(cuerpo.sistema, url_publica(peticion), token)
+    nombre = paquetes.nombre_zip(cuerpo.sistema)
     return Response(
         datos,
         media_type="application/zip",
-        headers={"Content-Disposition": f'attachment; filename="{paquete.NOMBRE_ARCHIVO}"'},
+        headers={"Content-Disposition": f'attachment; filename="{nombre}"'},
     )
 
 
 class Activacion(BaseModel):
     codigo: str = Field(min_length=8, max_length=20)
-    # La activación la hace una persona con nombre: sin "por" no se activa.
-    por: str = Field(min_length=1, max_length=100, pattern=r"\S")
+    # Con sesión, quién activa sale de la sesión; con la clave compartida o en local hay que
+    # decirlo.
+    por: str | None = Field(default=None, min_length=1, max_length=100, pattern=r"\S")
 
 
-@router_equipos.post("/equipos/activar")
-def activar(cuerpo: Activacion) -> dict:
+@router_equipos.post("/equipos/activar", dependencies=ADMIN)
+def activar(cuerpo: Activacion, request: Request) -> dict:
     """TI activa un equipo con el código que el instalador mostró en su pantalla. Desde ese
-    momento su inventario entra al cruce. Rechazar es retirarlo (DELETE)."""
+    momento su inventario entra al cruce. Activar exige haber visto ese código: nadie
+    activa un equipo impostor copiando un nombre. Rechazar es retirarlo (DELETE)."""
     from radar.equipos import almacen, recepcion
     from radar.seguridad.limpieza import limpiar_texto
 
+    por = quien(request, cuerpo.por.strip() if cuerpo.por else None)
+    if not por:
+        raise HTTPException(422, "Falta quién activa el equipo.")
     _exigir_base()
     conexion = _conexion()
     try:
@@ -258,7 +349,7 @@ def activar(cuerpo: Activacion) -> dict:
                 status.HTTP_404_NOT_FOUND,
                 "Ningún equipo pendiente tiene ese código. Revísalo en la pantalla del equipo.",
             )
-        recibido = recepcion.aprobar(conexion, equipo_id, limpiar_texto(cuerpo.por, 100))
+        recibido = recepcion.aprobar(conexion, equipo_id, limpiar_texto(por, 100))
         equipo = almacen.leer_equipo(conexion, equipo_id)
     except recepcion.ErrorAprobacion as error:
         raise HTTPException(status.HTTP_409_CONFLICT, "El equipo ya no está pendiente.") from error
@@ -271,7 +362,7 @@ def activar(cuerpo: Activacion) -> dict:
     }
 
 
-@router_equipos.post("/equipos/{equipo_id}/revocar")
+@router_equipos.post("/equipos/{equipo_id}/revocar", dependencies=ADMIN)
 def revocar(equipo_id: str) -> dict:
     """Deja de aceptar reportes de un equipo (credencial robada o equipo perdido)."""
     from radar.equipos import almacen
@@ -287,7 +378,7 @@ def revocar(equipo_id: str) -> dict:
     return {"revocado": True}
 
 
-@router_equipos.delete("/equipos/{equipo_id}")
+@router_equipos.delete("/equipos/{equipo_id}", dependencies=ADMIN)
 def retirar(equipo_id: str) -> dict:
     """Borra el equipo y lo que reportó (desinstalación), y vuelve a cruzar."""
     from radar.equipos import almacen

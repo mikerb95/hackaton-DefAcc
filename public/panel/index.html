@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Panel · Radar de vulnerabilidades</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/estilo.css">
+</head>
+<body class="cargando-sesion">
+  <div class="app">
+    <aside class="lateral" id="lateral">
+      <a class="marca" href="/">
+        <span class="marca-punto" aria-hidden="true"></span>
+        <span class="marca-nombre">Radar</span>
+      </a>
+      <nav class="nav" aria-label="Secciones">
+        <a href="#resumen" data-vista="resumen">Resumen</a>
+        <a href="#hallazgos" data-vista="hallazgos">Hallazgos <span class="nav-n" id="nav-hallazgos"></span></a>
+        <a href="#equipos" data-vista="equipos">Equipos <span class="nav-n" id="nav-equipos"></span></a>
+        <a href="#inventario" data-vista="inventario" data-rol="analista">Cargar inventario</a>
+        <a href="#umbrales" data-vista="umbrales">Umbrales</a>
+        <a href="#actividad" data-vista="actividad">Actividad del agente</a>
+        <a href="#usuarios" data-vista="usuarios" data-rol="admin">Usuarios</a>
+      </nav>
+      <div class="cuenta" id="cuenta">
+        <div class="cuenta-nombre" id="cuenta-nombre"></div>
+        <div class="cuenta-rol" id="cuenta-rol"></div>
+        <div class="cuenta-acciones">
+          <button type="button" class="boton-texto" id="abrir-clave">Cambiar contraseña</button>
+          <button type="button" class="boton-texto" id="salir">Salir</button>
+        </div>
+      </div>
+    </aside>
+
+    <div class="contenido">
+      <header class="barra">
+        <button type="button" class="boton-texto menu-movil" id="menu-movil" aria-controls="lateral" aria-expanded="false">Menú</button>
+        <h1 id="titulo-vista">Resumen</h1>
+        <div id="estado" class="estado" role="status" aria-live="polite">
+          <span class="cargando">Consultando la API...</span>
+        </div>
+      </header>
+
+      <main>
+        <section id="aviso-fuentes" class="aviso" hidden></section>
+        <section id="aviso-memoria" class="aviso aviso-suave" hidden>
+          Datos de ejemplo y cambios en memoria: todavía no hay base conectada.
+        </section>
+
+        <!-- Resumen -->
+        <div class="vista" data-vista="resumen">
+          <section class="cifras" id="cifras" aria-label="Cifras"></section>
+          <div class="rejilla">
+            <section class="panel" aria-labelledby="t-productos">
+              <h2 id="t-productos">Por producto</h2>
+              <div class="tabla-envoltura">
+                <table class="tabla" id="productos">
+                  <thead>
+                    <tr>
+                      <th>Producto</th><th>Versiones</th><th class="num">Equipos</th>
+                      <th class="num">CVE</th><th class="num">KEV</th><th class="num">Peor CVSS</th>
+                      <th>Objetivo</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </section>
+            <section class="panel" aria-labelledby="t-cobertura">
+              <h2 id="t-cobertura">Cobertura</h2>
+              <div id="cobertura"></div>
+            </section>
+          </div>
+          <section class="panel" id="detalle" aria-labelledby="t-detalle" hidden>
+            <div class="panel-cabeza">
+              <h2 id="t-detalle"></h2>
+              <button type="button" class="boton-texto" id="cerrar-detalle">Cerrar</button>
+            </div>
+            <div id="detalle-cuerpo"></div>
+          </section>
+        </div>
+
+        <!-- Hallazgos -->
+        <div class="vista" data-vista="hallazgos" hidden>
+          <section class="panel" aria-labelledby="t-hallazgos">
+            <div class="panel-cabeza">
+              <h2 id="t-hallazgos">Hallazgos <span class="contador" id="total-hallazgos"></span></h2>
+              <form class="filtros" id="filtros">
+                <select name="prioridad" aria-label="Prioridad">
+                  <option value="">Toda prioridad</option>
+                  <option value="inmediato">Inmediato</option>
+                  <option value="semanal">Semanal</option>
+                  <option value="informativo">Informativo</option>
+                  <option value="boletin">Boletín</option>
+                </select>
+                <label class="casilla"><input type="checkbox" name="kev"> Solo KEV</label>
+                <input type="search" name="texto" placeholder="CVE, producto o equipo" maxlength="100" aria-label="Buscar">
+              </form>
+            </div>
+            <div class="tabla-envoltura">
+              <table class="tabla" id="hallazgos">
+                <thead>
+                  <tr>
+                    <th>Prioridad</th><th>CVE</th><th>Producto</th><th class="num">Equipos</th>
+                    <th class="num">CVSS</th><th class="num">EPSS</th><th>Por qué</th><th>Estado</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <button type="button" class="boton-texto boton-mas" id="mas-hallazgos" hidden></button>
+          </section>
+        </div>
+
+        <!-- Equipos -->
+        <div class="vista" data-vista="equipos" hidden>
+          <section class="panel" id="panel-equipos" aria-labelledby="t-equipos">
+            <div class="panel-cabeza">
+              <h2 id="t-equipos">Equipos con agente <span class="contador" id="total-equipos"></span></h2>
+              <button type="button" id="agregar-equipo" data-rol="admin">Agregar equipo</button>
+            </div>
+            <div class="tabla-envoltura">
+              <table class="tabla" id="equipos">
+                <thead>
+                  <tr>
+                    <th>Equipo</th><th>Exposición</th><th>Sistema</th><th>Último reporte</th>
+                    <th class="num">Inmediatas</th><th class="num">Semanales</th><th>Postura</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <div class="vacio-grande" id="equipos-vacio" hidden></div>
+          </section>
+
+          <section class="panel" id="detalle-equipo" aria-labelledby="t-detalle-equipo" hidden>
+            <div class="panel-cabeza">
+              <h2 id="t-detalle-equipo"></h2>
+              <button type="button" class="boton-texto" id="cerrar-equipo">Cerrar</button>
+            </div>
+            <div id="detalle-equipo-cuerpo"></div>
+          </section>
+
+          <section class="panel" id="panel-tokens" aria-labelledby="t-tokens" data-rol="admin">
+            <h2 id="t-tokens">Tokens de inscripción</h2>
+            <p class="nota">Cada token vence y tiene un tope de equipos. El valor completo solo se ve al crearlo.</p>
+            <div id="tokens"></div>
+          </section>
+        </div>
+
+        <!-- Inventario -->
+        <div class="vista" data-vista="inventario" hidden>
+          <section class="panel" aria-labelledby="t-carga">
+            <h2 id="t-carga">Cargar inventario</h2>
+            <p class="nota">CSV o Excel con una fila por programa y equipo. Las filas sin versión no se pierden: van a cobertura.
+              Si hay equipos con agente, la carga reemplaza solo lo que vino por archivo.</p>
+            <form id="carga" class="carga">
+              <input type="file" name="archivo" id="archivo" accept=".csv,.xlsx,.txt" required>
+              <button type="submit">Subir y cruzar</button>
+            </form>
+            <div id="carga-resultado" class="carga-resultado" aria-live="polite"></div>
+          </section>
+        </div>
+
+        <!-- Umbrales -->
+        <div class="vista" data-vista="umbrales" hidden>
+          <section class="panel" aria-labelledby="t-umbrales">
+            <h2 id="t-umbrales">Umbrales</h2>
+            <div id="umbrales" class="vacio">Sin datos todavía.</div>
+          </section>
+        </div>
+
+        <!-- Actividad -->
+        <div class="vista" data-vista="actividad" hidden>
+          <section class="panel" aria-labelledby="t-trazas">
+            <h2 id="t-trazas">Llamadas del agente a sus herramientas</h2>
+            <p class="nota">Cada llamada del analista pasa por la guarda: queda permitida, negada, limpiada o a la espera de una persona.</p>
+            <div id="trazas" class="vacio">Sin datos todavía.</div>
+          </section>
+        </div>
+
+        <!-- Usuarios -->
+        <div class="vista" data-vista="usuarios" hidden>
+          <section class="panel" aria-labelledby="t-usuarios">
+            <h2 id="t-usuarios">Usuarios</h2>
+            <p class="nota">Lector mira. Analista además cambia estados, aprueba comunicados y carga inventarios.
+              Administrador además gestiona usuarios, equipos y tokens.</p>
+            <div id="usuarios"></div>
+          </section>
+          <section class="panel" aria-labelledby="t-nuevo-usuario">
+            <h2 id="t-nuevo-usuario">Crear usuario</h2>
+            <form id="nuevo-usuario" class="formulario-fila">
+              <label>Usuario<input name="usuario" required maxlength="60" autocomplete="off" pattern="[A-Za-z0-9._@\-]+"></label>
+              <label>Nombre<input name="nombre" required maxlength="100" autocomplete="off"></label>
+              <label>Rol
+                <select name="rol">
+                  <option value="lector">Lector</option>
+                  <option value="analista" selected>Analista</option>
+                  <option value="admin">Administrador</option>
+                </select>
+              </label>
+              <label>Contraseña inicial<input name="clave" type="password" required minlength="10" maxlength="200" autocomplete="new-password"></label>
+              <button type="submit">Crear usuario</button>
+            </form>
+            <div class="resultado" id="nuevo-usuario-resultado" aria-live="polite"></div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Agregar equipo -->
+  <dialog id="asistente" class="dialogo dialogo-ancho" aria-labelledby="t-asistente">
+    <div class="dialogo-cabeza">
+      <h2 id="t-asistente">Agregar equipo</h2>
+      <button type="button" class="boton-texto" data-cerrar>Cerrar</button>
+    </div>
+    <ol class="pasos" id="pasos">
+      <li data-paso="1">Sistema</li>
+      <li data-paso="2">Token</li>
+      <li data-paso="3">Instalar</li>
+      <li data-paso="4">Primer reporte</li>
+    </ol>
+
+    <div class="paso" data-paso="1">
+      <p>¿En qué sistema se va a instalar el agente?</p>
+      <div class="sistemas" role="radiogroup" aria-label="Sistema">
+        <label class="sistema">
+          <input type="radio" name="sistema" value="windows" checked>
+          <span class="sistema-nombre">Windows</span>
+          <span class="sistema-detalle">10 y 11, Server 2016 o posterior. Pide Python 3.10 o superior.</span>
+        </label>
+        <label class="sistema">
+          <input type="radio" name="sistema" value="linux">
+          <span class="sistema-nombre">Linux</span>
+          <span class="sistema-detalle">Ubuntu, Debian, Rocky o AlmaLinux con systemd y python3.</span>
+        </label>
+      </div>
+      <div class="dialogo-pie"><button type="button" data-ir="2">Continuar</button></div>
+    </div>
+
+    <div class="paso" data-paso="2" hidden>
+      <p>El equipo canjea este token por una credencial propia. Después el token ya no hace falta en ese equipo.</p>
+      <form id="form-token" class="formulario-fila">
+        <label>Válido por
+          <select name="horas">
+            <option value="1">1 hora</option>
+            <option value="24" selected>24 horas</option>
+            <option value="168">7 días</option>
+            <option value="720">30 días</option>
+          </select>
+        </label>
+        <label>Equipos que puede inscribir
+          <select name="usos_max">
+            <option value="1" selected>1</option>
+            <option value="5">5</option>
+            <option value="25">25</option>
+            <option value="100">100</option>
+          </select>
+        </label>
+        <label>Etiqueta (opcional)<input name="etiqueta" maxlength="80" placeholder="Ej.: contabilidad, piso 3" autocomplete="off"></label>
+      </form>
+      <div class="dialogo-pie">
+        <button type="button" class="boton-texto" data-ir="1">Atrás</button>
+        <button type="submit" form="form-token">Crear token</button>
+      </div>
+      <div class="resultado" id="token-error" aria-live="polite"></div>
+    </div>
+
+    <div class="paso" data-paso="3" hidden>
+      <div class="instalar">
+        <div>
+          <h3>1. Descarga el agente</h3>
+          <a class="boton" id="descarga" href="#" download>Descargar</a>
+          <p class="nota" id="descarga-nota"></p>
+        </div>
+        <div>
+          <h3>2. Instálalo</h3>
+          <p class="nota" id="comando-donde"></p>
+          <div class="comando comando-copiar">
+            <code id="comando"></code>
+            <button type="button" class="boton-texto" id="copiar-comando">Copiar</button>
+          </div>
+          <p class="nota">Al terminar, el instalador muestra un código de activación: escríbelo en la
+            ficha del equipo para que su inventario entre al cruce. El token va dentro del zip; si
+            lo pierdes, revócalo. El agente no abre puertos ni recibe órdenes: solo envía su reporte.</p>
+        </div>
+      </div>
+      <div class="dialogo-pie"><button type="button" data-ir="4">Ya lo instalé</button></div>
+    </div>
+
+    <div class="paso" data-paso="4" hidden>
+      <div class="espera" id="espera" aria-live="polite"></div>
+      <div class="dialogo-pie">
+        <button type="button" class="boton-texto" data-ir="3">Volver a la descarga</button>
+        <button type="button" data-cerrar>Terminar</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Confirmación (sin confirm() del navegador) -->
+  <dialog id="confirmar" class="dialogo" aria-labelledby="t-confirmar">
+    <h2 id="t-confirmar"></h2>
+    <p id="confirmar-texto"></p>
+    <div class="dialogo-pie">
+      <button type="button" class="boton-texto" value="no" id="confirmar-no">Cancelar</button>
+      <button type="button" class="boton-peligro" value="si" id="confirmar-si"></button>
+    </div>
+  </dialog>
+
+  <!-- Cambiar contraseña -->
+  <dialog id="dialogo-clave" class="dialogo" aria-labelledby="t-clave">
+    <div class="dialogo-cabeza">
+      <h2 id="t-clave">Cambiar contraseña</h2>
+      <button type="button" class="boton-texto" data-cerrar>Cerrar</button>
+    </div>
+    <form id="form-clave" class="formulario-columna">
+      <label>Contraseña actual<input name="actual" type="password" required autocomplete="current-password"></label>
+      <label>Contraseña nueva (10 caracteres o más)<input name="nueva" type="password" required minlength="10" autocomplete="new-password"></label>
+      <div class="dialogo-pie"><button type="submit">Cambiar contraseña</button></div>
+      <div class="resultado" id="clave-resultado" aria-live="polite"></div>
+    </form>
+  </dialog>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="/panel.js"></script>
+  <script src="/admin.js"></script>
+</body>
+</html>

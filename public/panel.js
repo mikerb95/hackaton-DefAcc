@@ -1,9 +1,10 @@
 // Panel del radar: consulta la API cada pocos segundos (sin SSE, PLAN sección 11).
 // Todo texto que viene del inventario es no confiable: se escapa siempre antes de pintarlo.
+// La sesión va en una cookie HttpOnly (radar/api/sesion.py); este archivo no la ve ni la guarda.
+// admin.js (cargado después) revisa la sesión, arma la navegación y arranca el ciclo.
 "use strict";
 
 const INTERVALO_MS = 8000;
-const CLAVE_LOCAL = "radar.clave";
 const ESTADOS = { nuevo: "Nuevo", en_curso: "En curso", mitigado: "Mitigado", descartado: "Descartado" };
 const PRIORIDADES = { inmediato: "Inmediato", semanal: "Semanal", informativo: "Informativo", boletin: "Boletín" };
 const MOTIVOS = { sin_version: "Sin versión", no_comparable: "Versión no comparable", sin_cpe: "Sin CPE" };
@@ -16,28 +17,24 @@ function esc(valor) {
   ));
 }
 
-function leerClave() {
-  try { return localStorage.getItem(CLAVE_LOCAL) || ""; } catch { return ""; }
-}
-function guardarClave(valor) {
-  try { localStorage.setItem(CLAVE_LOCAL, valor); } catch { /* sin almacenamiento */ }
-}
-
-function leerAprobador() {
-  try { return localStorage.getItem("radar.aprobador") || ""; } catch { return ""; }
-}
-function guardarAprobador(valor) {
-  try { localStorage.setItem("radar.aprobador", valor); } catch { /* sin almacenamiento */ }
-}
+// Sesión vigente: la llena admin.js con GET /api/sesion antes de arrancar.
+let SESION = null;
+const NIVELES = { lector: 0, analista: 1, admin: 2 };
+const puede = (rol) => SESION && NIVELES[SESION.rol] >= NIVELES[rol];
 
 class SinClave extends Error {}
 
+function irAlLogin() {
+  const volver = encodeURIComponent(location.pathname + location.hash);
+  location.replace(`/entrar/?volver=${volver}`);
+}
+
 async function api(ruta, opciones = {}) {
-  const cabeceras = { ...(opciones.headers || {}) };
-  const clave = leerClave();
-  if (clave) cabeceras["X-Clave-Acceso"] = clave;
-  const respuesta = await fetch(ruta, { ...opciones, headers: cabeceras });
-  if (respuesta.status === 401) throw new SinClave();
+  const respuesta = await fetch(ruta, { credentials: "same-origin", ...opciones });
+  if (respuesta.status === 401) {
+    irAlLogin();
+    throw new SinClave("La sesión venció.");
+  }
   const cuerpo = await respuesta.json().catch(() => ({}));
   if (!respuesta.ok) {
     const detalle = typeof cuerpo.detail === "string" ? cuerpo.detail : "Datos inválidos.";
@@ -93,11 +90,16 @@ function pintarResumen(r) {
     ["semanal", "Al resumen semanal", false],
     ["equipos_afectados", "Equipos afectados", false],
   ];
-  $("#cifras").innerHTML = cifras.map(([clave, etiqueta, destacada]) => `
-    <div class="cifra${destacada ? " destacada" : ""}">
-      <div class="cifra-valor">${esc(c[clave] ?? "-")}</div>
-      <div class="cifra-etiqueta">${esc(etiqueta)}</div>
-    </div>`).join("");
+  // Las cifras se arman una vez; después solo cambia el número, y si cambió, gira hasta el
+  // valor nuevo (ej.: "Exigen acción" baja tras mitigar). Con movimiento reducido, salta.
+  if (!$("#cifras").children.length) {
+    $("#cifras").innerHTML = cifras.map(([clave, etiqueta, destacada]) => `
+      <div class="cifra${destacada ? " destacada" : ""}">
+        <div class="cifra-valor" data-clave="${clave}">-</div>
+        <div class="cifra-etiqueta">${esc(etiqueta)}</div>
+      </div>`).join("");
+  }
+  cifras.forEach(([clave]) => animarCifra($(`.cifra-valor[data-clave="${clave}"]`), c[clave]));
 
   const cob = r.cobertura || {};
   const total = (cob.cruzados || 0) + (cob.sin_evaluar || 0);
@@ -112,6 +114,43 @@ function pintarResumen(r) {
     <div class="barra-cobertura" role="img" aria-label="${pct} % cruzado"><span style="width:${pct}%"></span></div>
     <ul class="cobertura-lista">${motivos || '<li class="vacio">Todo se pudo comparar.</li>'}</ul>`;
 }
+
+const MOVIMIENTO_REDUCIDO = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+function animarCifra(el, valor) {
+  const nuevo = Number(valor);
+  const previo = Number(el.dataset.valor);
+  el.dataset.valor = valor ?? "";
+  if (valor == null || Number.isNaN(nuevo)) { el.textContent = valor ?? "-"; return; }
+  if (Number.isNaN(previo) || previo === nuevo || MOVIMIENTO_REDUCIDO.matches) {
+    el.textContent = nuevo;
+    return;
+  }
+  el.classList.remove("cambio");
+  void el.offsetWidth;
+  el.classList.add("cambio");
+  const inicio = performance.now();
+  const paso = (t) => {
+    const k = Math.min((t - inicio) / 700, 1);
+    const suave = 1 - Math.pow(1 - k, 3);
+    el.textContent = Math.round(previo + (nuevo - previo) * suave);
+    if (k < 1) requestAnimationFrame(paso);
+  };
+  requestAnimationFrame(paso);
+}
+
+// Destello en las filas que cambiaron desde el último pintado (nunca en el primero).
+// Con `nuevas`, también las filas que no estaban (un equipo recién inscrito); sin él, una
+// fila que aparece por cambiar el filtro no destella.
+function marcarCambios(memoria, clave, firma, nuevas = false) {
+  const previa = memoria.get(clave);
+  memoria.set(clave, firma);
+  if (memoria.primera || previa === firma) return "";
+  if (previa === undefined && !nuevas) return "";
+  return " destello";
+}
+const firmasHallazgos = Object.assign(new Map(), { primera: true });
+const firmasEquipos = Object.assign(new Map(), { primera: true });
 
 let productoAbierto = null;
 
@@ -137,6 +176,7 @@ let ultimosHallazgos = null;
 function pintarHallazgos(datos) {
   ultimosHallazgos = datos;
   $("#total-hallazgos").textContent = datos.total ?? "";
+  $("#nav-hallazgos").textContent = datos.total ?? "";
   const lista = datos.hallazgos || [];
   const filas = lista.slice(0, visibles).map((h) => {
     const opciones = Object.entries(ESTADOS).map(([v, t]) =>
@@ -146,8 +186,9 @@ function pintarHallazgos(datos) {
       h.ransomware ? '<span class="pildora p-kev">ransomware</span>' : "",
       h.preciso ? "" : '<span class="pildora">no preciso</span>',
     ].join("");
+    const destello = marcarCambios(firmasHallazgos, h.id, `${h.estado}|${h.comentario || ""}`);
     return `
-    <tr>
+    <tr class="${destello.trim()}">
       <td>${pildoraPrioridad(h.prioridad)}</td>
       <td class="cve">${esc(h.cve)}<div class="etiquetas">${etiquetas}</div></td>
       <td>${esc(h.producto)} <span class="mono" style="color:var(--texto-3)">${esc(h.version_instalada)}</span></td>
@@ -155,11 +196,12 @@ function pintarHallazgos(datos) {
       <td class="num">${fmtCvss(h.cvss)}</td>
       <td class="num">${fmtEpss(h.epss)}</td>
       <td class="por-que">${esc(h.por_que.join(" · "))}</td>
-      <td><select data-hallazgo="${esc(h.id)}" aria-label="Estado de ${esc(h.cve)}">${opciones}</select>
+      <td><select data-hallazgo="${esc(h.id)}" aria-label="Estado de ${esc(h.cve)}"${puede("analista") ? "" : " disabled"}>${opciones}</select>
         ${h.comentario ? `<div class="por-que">${esc(h.comentario)}</div>` : ""}</td>
     </tr>`;
   }).join("");
   $("#hallazgos tbody").innerHTML = filas || '<tr><td colspan="8" class="vacio">Ningún hallazgo con esos filtros.</td></tr>';
+  firmasHallazgos.primera = false;
   const resto = lista.length - visibles;
   $("#mas-hallazgos").hidden = resto <= 0;
   $("#mas-hallazgos").textContent = `Mostrar ${Math.min(resto, TANDA)} más (quedan ${resto})`;
@@ -209,12 +251,15 @@ function pintarDetalle(d) {
   const origen = a.origen === "agente"
     ? '<span class="pildora p-agente"><span class="punto"></span>Redactado por el agente</span>'
     : `<span class="pildora p-respaldo" title="${d.guardado ? "El verificador no aceptó el texto del agente o el agente falló" : "El agente todavía no entregó análisis para este producto"}"><span class="punto"></span>Texto armado por código</span>`;
+  // Quien aprueba sale de la sesión: no se escribe a mano.
   const aprobado = d.aprobacion
-    ? `<span class="aprobado">Aprobado por ${esc(d.aprobacion.por)} · ${esc(fmtHora(d.aprobacion.aprobado))}</span>`
-    : `<form id="aprobar" class="aprobar">
-        <input name="por" placeholder="Quién aprueba" maxlength="100" required aria-label="Quién aprueba" value="${esc(leerAprobador())}">
-        <button type="submit">Aprobar comunicado</button>
-      </form>`;
+    ? `<span class="aprobado">Aprobado por ${esc(d.aprobacion.por)}, ${esc(fmtHora(d.aprobacion.aprobado))}</span>`
+    : (puede("analista")
+      ? `<form id="aprobar" class="aprobar">
+          <button type="submit">Aprobar comunicado</button>
+          <span class="nota">como ${esc(SESION.nombre)}</span>
+        </form>`
+      : '<span class="nota">Sin aprobar. Lo aprueba un analista.</span>');
   $("#detalle-cuerpo").innerHTML = datos + `
     <div class="detalle-rejilla">
       <div class="bloque">
@@ -241,14 +286,11 @@ function pintarDetalle(d) {
     formulario.addEventListener("submit", async (e) => {
       e.preventDefault();
       const boton = formulario.querySelector("button");
-      const por = formulario.elements.por.value.trim();
-      if (!por) return;
       boton.disabled = true;
       try {
         await api(`/api/comunicado/${encodeURIComponent(g.producto)}/aprobar`, {
-          method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ por }),
+          method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({}),
         });
-        guardarAprobador(por);
         await abrirDetalle(g.producto);
       } catch (error) {
         boton.disabled = false;
@@ -296,15 +338,105 @@ function nombreSistema(so) {
 
 let equipoAbierto = null;
 
+// ---- termómetro de exposición ------------------------------------------------
+// La lectura la calcula la API (radar/api/termometro.py) con las acciones abiertas del
+// equipo. Aquí solo se dibuja. Sin lectura (pendiente o sin reporte) no se pinta un 0.
+
+const BANDAS_TERMOMETRO = [
+  { clave: "bajo", desde: 0, hasta: 24, etiqueta: "bajo" },
+  { clave: "medio", desde: 25, hasta: 59, etiqueta: "medio" },
+  { clave: "alto", desde: 60, hasta: 84, etiqueta: "alto" },
+  { clave: "critico", desde: 85, hasta: 100, etiqueta: "crítico" },
+];
+const EXPOSICION = { bajo: "baja", medio: "media", alto: "alta", critico: "crítica" };
+
+function svgTermometro(t) {
+  // Escala: 0 en y=232 y 100 en y=28 dentro del tubo.
+  const y = (v) => 232 - (204 * v) / 100;
+  const medido = t.medido && t.nivel != null;
+  const clase = medido ? `t-${t.banda}` : "t-sin";
+  const tope = medido ? y(Math.max(t.nivel, 1)) : 232;
+  const marcas = [];
+  for (let v = 0; v <= 100; v += 5) {
+    const mayor = v % 25 === 0;
+    marcas.push(`<line x1="86" x2="${mayor ? 98 : 92}" y1="${y(v)}" y2="${y(v)}" class="t-marca${mayor ? " mayor" : ""}"/>`);
+    if (mayor) marcas.push(`<text x="104" y="${y(v) + 4}" class="t-numero">${v}</text>`);
+  }
+  const franjas = BANDAS_TERMOMETRO.map((b) =>
+    `<line x1="40" x2="40" y1="${y(b.hasta) + 1}" y2="${y(b.desde) - 1}" class="t-franja t-${b.clave}"/>`).join("");
+  return `
+    <svg class="termometro-svg ${clase}" viewBox="0 0 130 290" role="img"
+      aria-label="${medido ? `Exposición ${esc(t.nivel)} de 100, ${esc(t.etiqueta)}` : esc(t.etiqueta)}">
+      <defs><clipPath id="tubo-interior"><rect x="57" y="20" width="16" height="230" rx="8"/></clipPath></defs>
+      ${franjas}
+      <rect x="51" y="12" width="28" height="236" rx="14" class="t-vidrio"/>
+      <circle cx="65" cy="254" r="28" class="t-vidrio"/>
+      <rect x="57" y="20" width="16" height="230" rx="8" class="t-fondo"/>
+      <g clip-path="url(#tubo-interior)">
+        <rect x="57" y="${tope}" width="16" height="${252 - tope}" class="t-liquido"/>
+      </g>
+      <circle cx="65" cy="254" r="21" class="t-bulbo"/>
+      <circle cx="58" cy="247" r="4" class="t-brillo"/>
+      ${marcas.join("")}
+    </svg>`;
+}
+
+function bloqueTermometro(d) {
+  const t = d.equipo.termometro;
+  if (!t) return "";
+  const a = t.acciones;
+  const total = a.inmediato + a.semanal + a.informativo;
+  const kev = d.productos.reduce((n, p) => n + p.en_kev.length, 0);
+  const leyenda = BANDAS_TERMOMETRO.map((b) =>
+    `<span class="pildora mono${t.banda === b.clave ? " activa" : ""}"><span class="punto t-${b.clave}"></span>${b.desde}-${b.hasta} ${b.etiqueta}</span>`).join("");
+  const lectura = t.medido
+    ? `<div class="termometro-valor">${esc(t.nivel)}<span>/100</span></div>
+       <span class="pildora termometro-banda t-${esc(t.banda)}"><span class="punto"></span>${esc(t.nivel === 0 ? "Sin acciones pendientes" : `Exposición ${EXPOSICION[t.banda] || t.etiqueta.toLowerCase()}`)}</span>
+       <p class="termometro-texto">${total
+         ? `Sale de ${esc(total)} ${total === 1 ? "acción abierta" : "acciones abiertas"} en este equipo. La peor prioridad fija el tramo y la cantidad lo sube dentro de él: con una sola acción inmediata ya marca alto.`
+         : "Con lo que se pudo revisar no queda nada por hacer en este equipo."}</p>`
+    : `<div class="termometro-valor sin">sin lectura</div>
+       <span class="pildora termometro-banda"><span class="punto"></span>${esc(t.etiqueta)}</span>
+       <p class="termometro-texto">${esc(t.motivo)} Un equipo sin revisar no se cuenta como sano.</p>`;
+  const sinEvaluar = d.cobertura.sin_evaluar
+    ? `<p class="termometro-nota">${esc(d.cobertura.sin_evaluar)} ${d.cobertura.sin_evaluar === 1 ? "programa sin evaluar no suma: está" : "programas sin evaluar no suman: están"} en "Sin revisar".</p>` : "";
+  return `
+    <div class="termometro">
+      <div class="termometro-dibujo">${svgTermometro(t)}</div>
+      <div class="termometro-cuerpo">
+        <div class="termometro-titulo">Exposición del equipo</div>
+        ${lectura}
+        <div class="termometro-leyenda">${leyenda}</div>
+        <div class="termometro-cifras">
+          <div><strong>${esc(a.inmediato)}</strong><span>Inmediatas</span></div>
+          <div><strong>${esc(a.semanal)}</strong><span>Semanales</span></div>
+          <div><strong>${esc(a.informativo)}</strong><span>Informativas</span></div>
+          <div><strong>${esc(kev)}</strong><span>CVE en KEV</span></div>
+        </div>
+        ${sinEvaluar}
+      </div>
+    </div>`;
+}
+
+function miniTermometro(t) {
+  if (!t) return "";
+  if (!t.medido) return `<span class="sin-dato">${esc(t.etiqueta.toLowerCase())}</span>`;
+  return `<div class="mini-termometro t-${esc(t.banda)}" title="Exposición ${esc(t.nivel)} de 100: ${esc(t.etiqueta)}">
+      <span class="mini-tubo"><span style="width:${Math.max(t.nivel, 2)}%"></span></span>
+      <span class="mono">${esc(t.nivel)}</span></div>`;
+}
+
 function pildoraEstadoEquipo(e) {
   if (e.revocado) return '<span class="pildora p-caida"><span class="punto"></span>revocado</span>';
   if (e.pendiente) return '<span class="pildora p-semanal"><span class="punto"></span>por activar</span>';
   return "";
 }
 
-// Aprobación en la consola: hasta que TI lo aprueba, el inventario del equipo no se cruza.
+// Activación en la consola: hasta que TI escribe el código que mostró el instalador en la
+// pantalla del equipo, su inventario no se cruza. El código prueba que alguien vio ese equipo.
 function bloqueAprobacion(e) {
   if (e.revocado || !e.pendiente) return "";
+  if (!puede("admin")) return '<div class="aprobacion-equipo"><p><strong>Por activar.</strong> Un administrador tiene que activar este equipo con su código antes de que su inventario entre al cruce.</p></div>';
   return `
     <div class="aprobacion-equipo">
       <p><strong>Por activar.</strong> El equipo se instaló y ya reporta, pero su inventario no
@@ -312,24 +444,11 @@ function bloqueAprobacion(e) {
       pantalla. Si no reconoces el equipo, recházalo.</p>
       <form id="aprobar-equipo" class="aprobar">
         <input name="codigo" class="mono" placeholder="XXXX-XXXX" maxlength="9" autocomplete="off" required aria-label="Código de activación">
-        <input name="por" placeholder="Quién activa" maxlength="100" required aria-label="Quién activa" value="${esc(leerAprobador())}">
         <button type="submit">Activar equipo</button>
-        <button type="button" class="boton-texto" id="rechazar-equipo">Rechazar</button>
+        <button type="button" class="boton-texto texto-peligro" id="rechazar-equipo">Rechazar</button>
+        <span class="nota">como ${esc(SESION.nombre)}</span>
       </form>
     </div>`;
-}
-
-// Activa por código: el código solo se ve en la pantalla del equipo, así que activar exige
-// haberlo visto. No hay forma de activar un equipo solo por su nombre.
-async function activarConCodigo(codigo, por) {
-  const r = await api("/api/equipos/activar", {
-    method: "POST", headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ codigo: codigo.trim().toUpperCase(), por }),
-  });
-  guardarAprobador(por);
-  refrescar();
-  refrescarAuxiliares();
-  return r;
 }
 
 function conectarAprobacion(e) {
@@ -338,21 +457,31 @@ function conectarAprobacion(e) {
   const avisar = (error) => formulario.insertAdjacentHTML("beforeend", ` <span class="clave-error">${esc(error.message)}</span>`);
   formulario.addEventListener("submit", async (ev) => {
     ev.preventDefault();
-    const por = formulario.elements.por.value.trim();
-    const codigo = formulario.elements.codigo.value;
-    if (!por || !codigo) return;
     const boton = formulario.querySelector("button");
+    const codigo = formulario.elements.codigo.value.trim().toUpperCase();
+    if (!codigo) return;
     boton.disabled = true;
     try {
-      const r = await activarConCodigo(codigo, por);
-      await abrirEquipo(r.equipo.id);
+      const r = await api("/api/equipos/activar", {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ codigo }),
+      });
+      if (r.equipo.id !== e.id) {
+        // El código era de otro equipo pendiente: se activó ese, se abre su ficha.
+        await abrirEquipo(r.equipo.id);
+        refrescar();
+        refrescarAuxiliares();
+        return;
+      }
+      await abrirEquipo(e.id);
+      refrescar();
+      refrescarAuxiliares();
     } catch (error) {
       boton.disabled = false;
       avisar(error);
     }
   });
   $("#rechazar-equipo").addEventListener("click", async () => {
-    if (!confirm(`¿Rechazar ${e.nombre}? Se borra el equipo y su credencial deja de servir.`)) return;
+    if (!(await confirmar("Rechazar equipo", `Se borra ${e.nombre} y su credencial deja de servir.`, "Rechazar"))) return;
     try {
       await api(`/api/equipos/${encodeURIComponent(e.id)}`, { method: "DELETE" });
       equipoAbierto = null;
@@ -365,24 +494,32 @@ function conectarAprobacion(e) {
 }
 
 function pintarEquipos(datos) {
-  // La sección se ve siempre que haya base: desde ahí se descarga el instalador.
-  $("#panel-equipos").hidden = !datos.disponible;
-  if (!datos.disponible) return;
-  $("#equipos-vacio").hidden = datos.equipos.length > 0;
-  $("#equipos").hidden = datos.equipos.length === 0;
-  $("#total-equipos").textContent = datos.pendientes
-    ? `${datos.total} · ${datos.pendientes} por activar` : datos.total;
-  const por = $("#activar-equipo").elements.por;
-  if (!por.value) por.value = leerAprobador();
+  const hay = datos.disponible && datos.equipos.length > 0;
+  const vacio = $("#equipos-vacio");
+  $("#equipos").closest(".tabla-envoltura").hidden = !hay;
+  $("#total-equipos").textContent = hay
+    ? (datos.pendientes ? `${datos.total}, ${datos.pendientes} por activar` : datos.total) : "";
+  $("#nav-equipos").textContent = hay ? datos.total : "";
+  vacio.hidden = hay;
+  if (!hay) {
+    vacio.innerHTML = !datos.disponible
+      ? `<p>${esc(datos.motivo || "Los equipos con agente necesitan una base conectada.")}</p>`
+      : (puede("admin")
+        ? '<p>Todavía no hay equipos con agente.</p><p class="nota">El agente levanta el software, el sistema y la postura de cada PC y lo envía al radar. Instálalo con "Agregar equipo".</p>'
+        : '<p>Todavía no hay equipos con agente.</p><p class="nota">Un administrador los agrega desde esta sección.</p>');
+    return;
+  }
   $("#equipos tbody").innerHTML = datos.equipos.map((e) => `
-    <tr class="clic${e.id === equipoAbierto ? " activa" : ""}" data-equipo="${esc(e.id)}" tabindex="0">
+    <tr class="clic${e.id === equipoAbierto ? " activa" : ""}${marcarCambios(firmasEquipos, e.id, [e.pendiente, e.revocado, e.ultimo_reporte, e.acciones.inmediato, e.acciones.semanal].join("|"), true)}" data-equipo="${esc(e.id)}" tabindex="0">
       <td><div class="mono">${esc(e.nombre)}</div><div class="etiquetas">${pildoraPrioridad(e.peor_prioridad)}${pildoraEstadoEquipo(e)}</div></td>
+      <td>${miniTermometro(e.termometro)}</td>
       <td>${nombreSistema(e.so)}</td>
       <td class="mono">${esc(e.ultimo_reporte ? fmtHora(e.ultimo_reporte) : "sin reporte")}</td>
       <td class="num">${esc(e.acciones.inmediato)}</td>
       <td class="num">${esc(e.acciones.semanal)}</td>
       <td><div class="etiquetas" style="margin-top:0">${pildorasPostura(e.postura)}</div></td>
     </tr>`).join("");
+  firmasEquipos.primera = false;
 }
 
 async function abrirEquipo(id) {
@@ -450,8 +587,10 @@ function pintarEquipo(d) {
     : "Nada que hacer con lo que se pudo revisar.";
   $("#detalle-equipo-cuerpo").innerHTML = `
     ${bloqueAprobacion(e)}
+    ${bloqueTermometro(d)}
     <div class="datos-clave">${pildoraPrioridad(e.peor_prioridad)}${pildoraEstadoEquipo(e)}${pildorasPostura(e.postura)}
-      ${e.revocado ? "" : `<button type="button" class="boton-texto" id="revocar-equipo">Revocar credencial</button>`}</div>
+      ${e.revocado ? '<span class="pildora p-caida">revocado</span>' : (puede("admin") ? '<button type="button" class="boton-texto" id="revocar-equipo">Revocar credencial</button>' : "")}
+      ${puede("admin") ? '<button type="button" class="boton-texto texto-peligro" id="retirar-equipo">Retirar equipo</button>' : ""}</div>
     <div class="detalle-rejilla">
       <div class="bloque">
         <h3>Qué hacer en este equipo</h3>
@@ -467,7 +606,10 @@ function pintarEquipo(d) {
   const revocar = $("#revocar-equipo");
   if (revocar) {
     revocar.addEventListener("click", async () => {
-      if (!confirm(`¿Dejar de aceptar reportes de ${e.nombre}?`)) return;
+      const ok = await confirmar("Revocar credencial",
+        `${e.nombre} no podrá enviar más reportes. Sus datos quedan para la auditoría. Para volver a inscribirlo hay que retirarlo.`,
+        "Revocar");
+      if (!ok) return;
       revocar.disabled = true;
       try {
         await api(`/api/equipos/${encodeURIComponent(e.id)}/revocar`, { method: "POST" });
@@ -476,6 +618,25 @@ function pintarEquipo(d) {
       } catch (error) {
         revocar.disabled = false;
         revocar.insertAdjacentHTML("afterend", ` <span class="clave-error">${esc(error.message)}</span>`);
+      }
+    });
+  }
+  const retirar = $("#retirar-equipo");
+  if (retirar) {
+    retirar.addEventListener("click", async () => {
+      const ok = await confirmar("Retirar equipo",
+        `Se borran ${e.nombre} y todo lo que reportó, y el inventario se vuelve a cruzar. Úsalo al desinstalar el agente.`,
+        "Retirar equipo");
+      if (!ok) return;
+      retirar.disabled = true;
+      try {
+        await api(`/api/equipos/${encodeURIComponent(e.id)}`, { method: "DELETE" });
+        equipoAbierto = null;
+        $("#detalle-equipo").hidden = true;
+        refrescarAuxiliares();
+      } catch (error) {
+        retirar.disabled = false;
+        retirar.insertAdjacentHTML("afterend", ` <span class="clave-error">${esc(error.message)}</span>`);
       }
     });
   }
@@ -644,16 +805,11 @@ async function refrescar() {
       api("/api/productos"),
       api(`/api/hallazgos?${parametrosFiltro()}`),
     ]);
-    $("#clave").hidden = true;
     pintarResumen(resumen);
     pintarProductos(productos);
     if (!editandoEstado()) pintarHallazgos(hallazgos);
   } catch (error) {
-    if (error instanceof SinClave) {
-      $("#clave").hidden = false;
-      $("#estado").innerHTML = '<span class="pildora p-caida"><span class="punto"></span>Falta la clave</span>';
-      return;
-    }
+    if (error instanceof SinClave) return;
     $("#estado").innerHTML = `<span class="pildora p-caida"><span class="punto"></span>API sin respuesta</span> <span>${esc(error.message)}</span>`;
   }
 }
@@ -670,14 +826,6 @@ async function refrescarAuxiliares() {
 }
 
 // ---- eventos ---------------------------------------------------------------
-
-$("#clave").addEventListener("submit", (e) => {
-  e.preventDefault();
-  guardarClave($("#clave-valor").value);
-  $("#clave-valor").value = "";
-  refrescar();
-  refrescarAuxiliares();
-});
 
 $("#mas-hallazgos").addEventListener("click", () => {
   visibles += TANDA;
@@ -733,49 +881,6 @@ function abrirEquipoDesdeFila(e) {
 $("#equipos").addEventListener("click", abrirEquipoDesdeFila);
 $("#equipos").addEventListener("keydown", abrirEquipoDesdeFila);
 
-$("#descargar-instalador").addEventListener("click", async (ev) => {
-  const boton = ev.currentTarget;
-  boton.disabled = true;
-  try {
-    const cabeceras = {};
-    const clave = leerClave();
-    if (clave) cabeceras["X-Clave-Acceso"] = clave;
-    const respuesta = await fetch("/api/agente-instalador.zip", { headers: cabeceras });
-    if (!respuesta.ok) throw new Error(`Error ${respuesta.status}`);
-    const enlace = document.createElement("a");
-    enlace.href = URL.createObjectURL(await respuesta.blob());
-    enlace.download = "radar-agente.zip";
-    document.body.appendChild(enlace);
-    enlace.click();
-    enlace.remove();
-    setTimeout(() => URL.revokeObjectURL(enlace.href), 10000);
-  } catch (error) {
-    boton.insertAdjacentHTML("afterend", ` <span class="clave-error">${esc(error.message)}</span>`);
-  } finally {
-    boton.disabled = false;
-  }
-});
-
-$("#activar-equipo").addEventListener("submit", async (ev) => {
-  ev.preventDefault();
-  const formulario = ev.currentTarget;
-  const salida = $("#activar-resultado");
-  const boton = formulario.querySelector("button");
-  boton.disabled = true;
-  try {
-    const r = await activarConCodigo(formulario.elements.codigo.value, formulario.elements.por.value.trim());
-    salida.className = "activar-resultado ok";
-    salida.textContent = `${r.equipo.nombre} activado.`;
-    formulario.elements.codigo.value = "";
-    abrirEquipo(r.equipo.id);
-  } catch (error) {
-    salida.className = "activar-resultado clave-error";
-    salida.textContent = error.message;
-  } finally {
-    boton.disabled = false;
-  }
-});
-
 $("#cerrar-equipo").addEventListener("click", () => {
   equipoAbierto = null;
   $("#detalle-equipo").hidden = true;
@@ -813,13 +918,15 @@ $("#carga").addEventListener("submit", async (e) => {
       ${descartes ? `<ul>${descartes}</ul>` : ""}`;
     refrescar();
   } catch (error) {
-    salida.innerHTML = `<span class="error">${esc(error instanceof SinClave ? "Falta la clave de acceso." : error.message)}</span>`;
+    salida.innerHTML = `<span class="error">${esc(error.message)}</span>`;
   } finally {
     boton.disabled = false;
   }
 });
 
-refrescar();
-refrescarAuxiliares();
-setInterval(refrescar, INTERVALO_MS);
-setInterval(refrescarAuxiliares, INTERVALO_MS * 2);
+function iniciarCiclo() {
+  refrescar();
+  refrescarAuxiliares();
+  setInterval(refrescar, INTERVALO_MS);
+  setInterval(refrescarAuxiliares, INTERVALO_MS * 2);
+}

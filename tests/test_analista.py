@@ -342,3 +342,78 @@ def test_costo_y_turnos_quedan_en_la_traza_recibida(monkeypatch, defensa):
     assert analisis is not None and analisis.origen == "agente"
     assert traza.costo_usd == 0.1234 and traza.turnos == 3
     assert len(vistas) == 1
+
+
+def test_escritura_reintenta_con_otra_conexion_si_el_stream_vencio():
+    from worker.analizar import Escritura
+
+    class Conexion:
+        def __init__(self, viva):
+            self.viva, self.cerrada = viva, False
+
+        def close(self):
+            self.cerrada = True
+
+    abiertas = []
+
+    def abrir():
+        abiertas.append(Conexion(viva=len(abiertas) > 0))  # la primera ya venció
+        return abiertas[-1]
+
+    def guardar(conexion, dato):
+        if not conexion.viva:
+            raise RuntimeError("HTTP status 404: stream not found")
+        return dato
+
+    escritura = Escritura(abrir=abrir)
+    assert escritura.usar(guardar, "analisis") == "analisis"
+    assert len(abiertas) == 2 and abiertas[0].cerrada
+    escritura.cerrar()
+    assert abiertas[1].cerrada
+
+
+def test_escritura_falla_si_tambien_falla_el_reintento():
+    from worker.analizar import Escritura
+
+    def guardar(conexion):
+        raise RuntimeError("caída")
+
+    class Conexion:
+        def close(self):
+            pass
+
+    with pytest.raises(RuntimeError):
+        Escritura(abrir=Conexion).usar(guardar)
+
+
+def test_escritura_fija_no_cierra_la_conexion_recibida(base_temporal):
+    from worker.analizar import Escritura
+
+    escritura = Escritura(base_temporal)
+    escritura.cerrar()
+    assert escritura.usar(bd.contar, "cves") > 0
+
+
+def test_cifras_origen_trae_cvss_y_epss_de_cada_cve(base_con_hallazgos):
+    from radar.agente.verificador import porcentaje
+
+    grupos = bd.leer_grupos(base_con_hallazgos, Umbrales())
+    grupo = max(grupos, key=lambda g: g.n_cves)
+    fuente = FuenteBase(grupo, base_con_hallazgos)
+    cifras = set(fuente.cifras_origen())
+    for c in fuente.cves.values():
+        if c.cvss is not None:
+            assert f"{c.cvss:.1f}" in cifras
+    for cve in grupo.cves:
+        if e := fuente.senales.epss.get(cve):
+            assert porcentaje(e.epss) in cifras
+
+
+def test_cvss_de_otra_cve_del_grupo_no_descarta_el_comunicado():
+    otra = GRUPO.model_copy(update={"cves": ["CVE-2018-20250", "CVE-2018-20251"]})
+    salida = _salida_modelo(resumen="WinRAR 5.61 en 2 equipos, prioridad inmediato. CVSS 6.5.")
+    analisis = analista.a_analisis(salida, otra)
+    _, sin_cifras = decidir(analisis, otra)
+    assert not sin_cifras.aprobado
+    _, con_cifras = decidir(analisis, otra, cifras_permitidas=["6.5"])
+    assert con_cifras.aprobado, con_cifras.problemas

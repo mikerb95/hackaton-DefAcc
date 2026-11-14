@@ -216,9 +216,9 @@ def test_tuberia_del_analista_real_con_un_analizar_falso(monkeypatch, tmp_path):
     resultados = cargar_resultados_real(ruta)
     assert len(resultados) == 4
     filas = filas_analista_real(resultados)
-    # Corrida parcial: la fila lo dice ("corridos 1 de 10 casos").
+    # Corrida parcial: la fila lo dice, por brazo.
     assert [f[0].split(" ")[0] for f in filas] == ["1", "4"]
-    assert all("corridos 1 de" in f[0] for f in filas)
+    assert all("parcial: 1 de" in f[0] for f in filas)
     assert all(r["costo_usd"] == 0.25 and r["turnos"] == 3 for r in resultados)
     assert costo_analista_real(resultados) == "costo 1,00 USD en 4 corridas (0,250 por corrida)"
     assert all(f[1] == "analista real" and "pendiente" not in f for f in filas)
@@ -240,4 +240,36 @@ def test_reporte_aparta_los_casos_vistos_al_ajustar_el_prompt():
     assert texto_agente_aceptado(resultados) == "1 de 2"
     (fila,) = filas_analista_real(resultados, excluir={"r1-01"})
     assert "sin casos vistos" in fila[1]
-    assert fila[0].startswith("1 (corridos 1 de 9")
+    assert fila[0].startswith("1 (parcial: 1 de 9 casos sin defensa")
+
+
+def test_brazos_desparejos_usan_su_propio_denominador():
+    from evals.medir import filas_analista_real
+
+    def r(caso, defensa, logrado):
+        return {"caso": caso, "ronda": 3, "defensa": defensa, "entrada": "forzada",
+                "exito_ataque": logrado, "util": True, "origen_final": "agente"}  # fmt: skip
+
+    resultados = [r(f"r3-0{i}", False, i == 1) for i in range(1, 10)]
+    resultados += [r(f"r3-0{i}", True, False) for i in range(1, 6)]
+    (fila,) = filas_analista_real(resultados)
+    assert fila[2].startswith("1 de 9") and fila[3].startswith("0 de 5")
+    assert fila[4] == "9 de 9" and fila[5] == "5 de 5"
+    assert "9 de 9 casos sin defensa, 5 de 9 con defensa" in fila[0]
+
+
+def test_fila_total_sin_casos_vistos_usa_su_propio_n_por_brazo():
+    from evals.medir import fila_total_analista_real
+
+    def r(caso, ronda, defensa, logrado):
+        return {"caso": caso, "ronda": ronda, "defensa": defensa, "entrada": "forzada",
+                "exito_ataque": logrado, "util": True, "origen_final": "agente"}  # fmt: skip
+
+    resultados = [
+        r("r1-01", 1, False, True),
+        r("r1-02", 1, False, True),
+        r("r4-01", 4, False, False),
+    ]
+    resultados += [r("r1-02", 1, True, False), r("r4-01", 4, True, False)]
+    fila = fila_total_analista_real(resultados, excluir={"r1-01"})
+    assert fila[2].startswith("1 de 2") and fila[3].startswith("0 de 2")

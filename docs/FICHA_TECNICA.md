@@ -7,7 +7,7 @@ recalcular; el tiempo de carga es la medición en la preview de Vercel.
 | Dato | Valor |
 |---|---|
 | Extensión máxima | 2 páginas |
-| Secciones | 7 |
+| Secciones | 6 |
 | Cifras escritas a mano | 0 |
 
 ## 1. Amenaza
@@ -65,11 +65,11 @@ inventario (no confiable) -> saneado del nombre de equipo -> normalizador -> cru
 - Suite de inyección por rondas. La 1 se escribió antes de la defensa; la 2 y la 3 se usaron
   para ajustarla (ajustes 1 y 2); la última se escribió después, sin reajustar. La cifra limpia
   es la de la línea **"Última ronda escrita sin reajustar"** de `evals/reporte.md`.
-- Dos brazos sobre los mismos casos: sin defensa y con defensa.
-- Dos entradas: **forzada** (la fila envenenada llega tal cual al agente: aísla las defensas
-  del agente) y **real** (pasa por la ingesta, el normalizador y el saneado).
-- Agentes simulados (peor caso: obedece toda orden; honesto: ignora las órdenes) y, cuando
-  exista, el analista real con Claude.
+- Dos brazos (sin y con defensa) sobre los mismos casos y dos entradas: **forzada** (la fila
+  envenenada llega tal cual al agente) y **real** (pasa por ingesta, normalizador y saneado).
+- Agentes simulados (peor caso: obedece toda orden; honesto: las ignora) y el analista real con
+  Claude. Su prompt se ajustó en dos ajustes generales, tras dos muestras previas que quedan
+  fuera de la cifra: se cita la variante **sin casos vistos al ajustar el prompt**.
 
 ## 4. Resultados
 
@@ -83,38 +83,40 @@ Detección y normalizador:
 | Exactitud del normalizador | 49,4 % (nombre exacto) | 100,0 % en la semilla (ajustada); 83,3 % (25 de 30) fuera de ella |
 | Carga y cruce de un inventario de 1333 filas | n/a | unos 10 s en la preview de Vercel con Turso (medido 9,6 s) |
 
-Suite de inyección, última ronda escrita sin reajustar (ronda 4, 8 casos):
+Suite de inyección, última ronda escrita sin reajustar (ronda 4, entrada forzada; el analista
+real, sin r4-06, el caso visto al ajustar el prompt):
 
 | Métrica | Sin defensa | Con defensa |
 |---|---|---|
 | Tasa de inyección, simulado peor caso, entrada forzada | 8 de 8 (100,0 %) | 6 de 8 (75,0 %) |
 | Utilidad bajo ataque, entrada forzada | 6 de 8 | 8 de 8 |
 | Equipo oculto, simulado peor caso, entrada real | 1 de 8 | 0 de 8 |
-| Tasa de inyección, analista real | pendiente | pendiente |
+| Tasa de inyección, analista real, ronda 4 (sin r4-06) | 0 de 7 (0,0 %) | 0 de 7 (0,0 %) |
+| Analista real, todas las rondas sin casos vistos | 2 de 31 (6,5 %) | n/a |
+| Texto del agente que pasa el verificador (sin casos vistos) | n/a | 29 de 31 |
 
-Las filas "simulado" son un agente de código, no un modelo. Las rondas que se usaron para
-ajustar (2 y 3 con el código actual) no van en la ficha: están medidas sobre los mismos casos
-con los que se ajustó. "Equipo oculto" cuenta que el equipo de la fila envenenada desaparezca de
-los hallazgos o del comunicado. Para aislar lo que no pasa por el modelo se mira la fila
-"simulado (honesto)" de la tabla "Entrada real".
+"Simulado" es código, no un modelo; las rondas de ajuste (2 y 3) no van. "Equipo oculto": el
+equipo envenenado desaparece de hallazgos o comunicado (sin modelo: fila "honesto" de "Entrada
+real"). **Lectura:** el modelo real casi no obedece, ni sin defensa (sin verificador ni hooks);
+lo logrado (r1-07 y r1-09) es texto crudo que ese brazo no limpia, no obediencia. La defensa no depende
+de que el modelo obedezca o no: da garantías que no dependen de él (peor caso), descartó el caso real
+(muestra previa) en que el modelo repitió "ya fue parchado" del atacante, y acepta el texto propio del agente en
+29 de 31: no anula la utilidad.
 
 ## 5. Límites
 
 Resumen de [LIMITES.md](LIMITES.md):
 
-- Contra un modelo que obedece, las defensas no garantizan **nada torcido**: un ataque que
-  cambia el sentido con datos permitidos y palabras que las reglas no miran pasa. Los casos
-  que pasan en la última ronda (tono, negar la explotación con otras palabras, un TLD real
-  como `.zip`, cantidades dichas con palabras fuera de lista, la prioridad dicha en inglés)
-  están en la tabla de LIMITES.md.
-- El agente simulado no es un modelo, y los criterios de éxito son código: con el analista
-  real, la tasa medida es un piso, no un techo. La tasa real está pendiente.
+- Contra un modelo que obedece no hay garantía de **nada torcido**: pasan el tono, negar la
+  explotación con otras palabras, `.zip`, cantidades en palabras y "Priority: low".
+- Los criterios de éxito de la suite son código: con el analista real, la tasa medida es un
+  piso, no un techo.
 - El saneado del nombre de equipo reduce ese canal, no lo cierra: un hostname válido que trae
   una orden pasa intacto; lo mitigan la limpieza, el marcado como dato y el verificador.
 - La validación es sobre datos sintéticos; falta un piloto con una flota real.
 - No detecta vulnerabilidades que NVD aún no asocia a un producto, ni el sistema operativo, ni
   dependencias de código. No es tiempo real.
-- No hay inicio de sesión ni permisos por usuario: una clave compartida protege la API.
+- Usuarios con roles, pero sin inicio de sesión único (SSO) ni segundo factor.
 - Agente local de inventario para Windows y Linux: construido y probado en un PC con Windows 11;
   faltan el agente empaquetado y firmado y un piloto con flota real ([estado](agente-local.md)).
 
@@ -123,17 +125,13 @@ Resumen de [LIMITES.md](LIMITES.md):
 Resumen de [AMENAZAS.md](AMENAZAS.md):
 
 - El mapa de exposición (qué equipo tiene qué vulnerabilidad explotable) le sirve a un
-  atacante. Solo debe verlo la organización dueña del inventario; la API pide una clave.
+  atacante. Solo debe verlo la organización dueña del inventario; la API pide sesión con rol.
 - Los avisos a canales abiertos dicen cuántos equipos, nunca cuáles: el comunicado para
   usuarios y gerencia va sin nombres de equipos ni CVE, y el verificador descarta el que
   nombre equipos.
 - La información de vulnerabilidades ya es pública; lo privado es el cruce.
 - La suite de inyección se publica como pruebas defensivas del propio radar, con datos
   sintéticos, no como herramienta de ataque.
-
-## 7. Respuestas a las preguntas probables
-
-Si cabe. Se llena con el equipo a partir de las preguntas preparadas para el pitch.
 
 ---
 

@@ -7,7 +7,7 @@ Para el detalle de cada pieza, ve a [componentes.md](componentes.md).
 | Cifra | Valor |
 |---|---|
 | Bases de datos | 1 (Turso, compartida por panel, worker y plugin) |
-| Lugares de ejecución | 4 |
+| Lugares de ejecución | 5 (con los PC que llevan el agente local) |
 | Tiempo máximo de una función de la API | 300 s (`vercel.json`) |
 | Tamaño máximo de un inventario subido | 4.5 MB (límite de Vercel) |
 
@@ -16,7 +16,7 @@ Para el detalle de cada pieza, ve a [componentes.md](componentes.md).
 ```mermaid
 flowchart TB
     subgraph Navegador["Navegador del responsable de TI"]
-        UI["Panel HTML/JS<br/>consulta cada 8 s"]
+        UI["Landing en /, entrada en /entrar/<br/>panel en /panel/, consulta cada 8 s"]
     end
 
     subgraph Vercel["Vercel"]
@@ -41,7 +41,8 @@ flowchart TB
     Claude["API de Claude"]
 
     UI -->|HTML, JS, CSS| CDN
-    UI -->|/api/* con X-Clave-Acceso| Fn
+    UI -->|/api/* con sesión de usuario<br/>cookie radar_sesion| Fn
+    PC["PC con agente local<br/>Windows o Linux"] -->|/api/agente/* con credencial del equipo| Fn
     Fn -->|TURSO_AUTH_TOKEN| BD
     W -->|lectura y escritura| BD
     W -->|TURSO_AUTH_TOKEN_LECTURA<br/>herramientas del agente| BD
@@ -67,7 +68,9 @@ flowchart TB
 | `.vercelignore` deja fuera `pyproject.toml` y `uv.lock` | Con los dos presentes, el builder de Python de Vercel (`@vercel/python` 6.58.0) instala desde `uv.lock` con `uv sync --no-dev` sin extras e ignora `requirements.txt`: FastAPI, que está en el extra `api`, no se instalaría |
 | `requirements.txt` sin `claude-agent-sdk` | El SDK trae el binario de Claude Code y no se usa en Vercel |
 | Driver `turso_serverless` | Es Python puro sobre HTTP, sin extensión nativa: funciona en una función de Vercel |
-| Clave compartida en `X-Clave-Acceso` | La URL es pública y cada carga gasta créditos de Claude. En Vercel, sin `CLAVE_ACCESO` configurada la API responde 503 en vez de quedar abierta |
+| Sesión por usuario con roles (lector, analista, admin) | La URL es pública y cada carga gasta créditos de Claude. Las personas entran en `/entrar/` y la sesión vive en la base (se revoca de verdad); el rol decide qué pueden cambiar (RF-610 a RF-612) |
+| Clave compartida en `X-Clave-Acceso` solo para programas | Scripts, pruebas y el agente en `subir-csv`. En Vercel, sin sesión y sin `CLAVE_ACCESO` la API responde 503 en vez de quedar abierta |
+| Agentes con credencial propia y aprobación | Cada PC se inscribe con un token que caduca y queda pendiente hasta que una persona lo aprueba en el panel (RF-819); su credencial solo sirve para reportar por ese equipo y se revoca sin tocar a los demás |
 | Consulta periódica en vez de SSE | Más simple en funciones sin estado |
 | Token de solo lectura para el agente | `turso db tokens create <base> --read-only`. Además, la conexión del agente rechaza toda sentencia que no sea `SELECT` |
 

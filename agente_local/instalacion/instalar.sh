@@ -1,7 +1,7 @@
 #!/bin/sh
 # Instala el agente local del radar en Linux (docs/agente-local.md).
 #
-#   sudo sh instalar.sh                  # la URL sale de configuracion.txt (paquete del panel)
+#   sudo sh agente_local/instalacion/instalar.sh   # la URL sale de configuracion.txt (zip del panel)
 #   sudo sh instalar.sh https://radar    # o se pasa a mano
 #
 # Qué hace: copia el agente a /opt/radar-agente, inscribe el equipo, hace el primer envío,
@@ -13,7 +13,9 @@
 set -eu
 
 AQUI="$(cd "$(dirname "$0")" && pwd)"
+# configuracion.txt va junto al instalador o en la raíz del zip (dos carpetas arriba).
 CONFIGURACION="$AQUI/configuracion.txt"
+[ -f "$CONFIGURACION" ] || CONFIGURACION="$AQUI/../../configuracion.txt"
 
 leer() {
     [ -f "$CONFIGURACION" ] || return 0

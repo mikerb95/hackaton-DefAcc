@@ -191,19 +191,20 @@ presentan como construidos ni validados por estas pruebas.
 
 Como en Acronis: se instala sin escribir comandos y se activa desde la consola.
 
-1. En el panel, sección "Equipos con agente", botón **Descargar instalador**. Baja
-   `radar-agente.zip`, ya configurado con la URL del radar (`configuracion.txt`).
-2. En el PC, descomprímelo y dale **doble clic a `instalar.cmd`**. Pide permiso de
+1. En el panel, sección "Equipos", botón **Agregar equipo**. El asistente crea el token y
+   descarga `radar-agente-windows.zip` (o `-linux`), ya configurado con la URL del radar y
+   ese token (`configuracion.txt`).
+2. En el PC, descomprímelo y dale **doble clic a `INSTALAR.cmd`**. Pide permiso de
    administrador. Si no hay un Python instalado para todos los usuarios, lo instala con
    winget. Copia el agente a `Program Files`, inscribe el equipo, hace el primer envío y
    registra la tarea programada.
 3. Al terminar muestra una ventana con el **código de activación** (por ejemplo
    `CYNF-U89G`), que además queda copiado en el portapapeles. Lo genera el propio agente.
-4. En el panel, escribe ese código en "Activar un equipo" y quién activa. Desde ese momento
+4. En el panel, abre la ficha del equipo (aparece "por activar") y escribe ese código. Desde ese momento
    el inventario del equipo entra al cruce. Si el equipo ya había reportado, su último
    reporte se cruza en ese instante.
 
-En Linux el mismo paquete se instala con `sudo sh instalar.sh`, que lee la URL de
+En Linux el paquete se instala con `sudo sh agente_local/instalacion/instalar.sh`, que lee la URL de
 `configuracion.txt` y muestra el código en la consola. Para quitar el agente en Windows:
 doble clic en `desinstalar.cmd`, y luego retirar el equipo en el panel.
 
@@ -215,8 +216,12 @@ lo rechaza (se borra y su credencial deja de servir). Una inscripción que nadie
 **Por qué es seguro.** El agente genera su credencial y su código; el radar guarda solo sus
 huellas (SHA-256). El código solo se ve en la pantalla del equipo, así que activar exige
 haberlo visto: nadie puede activar un equipo impostor copiando un nombre. El token de la
-organización ya no hace falta; si el radar define `AGENTE_TOKEN_INSCRIPCION`, se exige además
-y va dentro del zip (por eso la descarga pide la clave del panel). La consola activa al
+creado en el asistente va dentro del zip; si se usa, tiene que ser válido. Si el radar define
+`AGENTE_TOKEN_INSCRIPCION`, se exige. Sin token y sin esa variable la inscripción está
+abierta y el filtro es el código. Por llevar el token, la descarga es solo para
+administradores y va por POST. Los zips genéricos de `public/descargas/` no traen
+configuración: el instalador pregunta la dirección del radar. Un administrador también
+puede aprobar un equipo por id (`POST /api/equipos/{id}/aprobar`), sin código. La consola activa al
 equipo pero no le da órdenes: el agente sigue sin canal de órdenes.
 
 `AGENTE_APROBACION=automatica` quita la activación (útil en pruebas). `RADAR_URL_PUBLICA`

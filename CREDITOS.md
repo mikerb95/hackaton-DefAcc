@@ -25,6 +25,7 @@ de trabajo, coordinadas por archivos de estado compartidos:
 | Guarda | Limpieza de texto no confiable, verificador, texto de respaldo, hooks, suite de inyección y evals |
 | Panel | API, dashboard y documentación consolidada |
 | Plugin | Ingesta de CSV y Excel, servidor MCP y plugin de Claude Code |
+| Frontend | Landing pública, inicio de sesión con usuarios y roles, panel de administración por secciones, alta de equipos con tokens de inscripción y paquetes del agente (`radar/api/cuentas.py`, `sesion.py`, `paquetes.py`, `public/`) |
 | Coordinación e infraestructura | Reparto de tareas, integración y despliegue en Vercel y Turso |
 
 Archivos del analista generados con Claude Code (`claude-opus-5-5`):

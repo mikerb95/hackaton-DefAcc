@@ -370,7 +370,8 @@ def test_las_rutas_del_panel_piden_la_clave(cliente, monkeypatch):
     monkeypatch.setenv("CLAVE_ACCESO", "secreta")
     assert cliente.get("/api/equipos").status_code == 401
     assert cliente.get("/api/equipos", headers={"X-Clave-Acceso": "secreta"}).status_code == 200
-    assert cliente.get("/api/agente-instalador.zip").status_code == 401
+    pedido = {"sistema": "windows"}
+    assert cliente.post("/api/agente-instalador", json=pedido).status_code == 401
     assert (
         cliente.post("/api/equipos/activar", json={"codigo": "x" * 8, "por": "ti"}).status_code
         == 401
@@ -527,33 +528,43 @@ def test_tope_de_pendientes_y_limpieza_de_los_viejos(manual, base_temporal, monk
     assert almacen.leer_equipo(base_temporal, viejo) is None
 
 
-def test_el_instalador_trae_la_url_del_radar(manual, monkeypatch):
-    r = manual.get("/api/agente-instalador.zip")
-    assert r.status_code == 200 and r.headers["content-type"] == "application/zip"
-    zipeado = zipfile.ZipFile(io.BytesIO(r.content))
-    nombres = set(zipeado.namelist())
+def _zip(cliente, sistema: str, token: str | None = None) -> zipfile.ZipFile:
+    r = cliente.post("/api/agente-instalador", json={"sistema": sistema, "token": token})
+    assert r.status_code == 200 and r.headers["content-type"] == "application/zip", r.text
+    return zipfile.ZipFile(io.BytesIO(r.content))
+
+
+def test_el_instalador_trae_la_url_y_el_token(manual, monkeypatch):
+    windows = _zip(manual, "windows", "rdr_token-del-asistente")
+    nombres = set(windows.namelist())
     for esperado in (
-        "radar-agente/instalar.cmd",
-        "radar-agente/instalar.ps1",
-        "radar-agente/instalar.sh",
-        "radar-agente/seguridad.ps1",
-        "radar-agente/ejecutar.py",
-        "radar-agente/configuracion.txt",
-        "radar-agente/LEEME.txt",
-        "radar-agente/agente_local/__main__.py",
+        "INSTALAR.cmd",
+        "configuracion.txt",
+        "LEEME.txt",
+        "agente_local/__main__.py",
+        "agente_local/instalacion/instalar.cmd",
+        "agente_local/instalacion/instalar.ps1",
+        "agente_local/instalacion/seguridad.ps1",
     ):
         assert esperado in nombres, esperado
-    configuracion = zipeado.read("radar-agente/configuracion.txt").decode()
-    assert "url=http://testserver" in configuracion and "token=" not in configuracion
-    # Doble clic en Windows: el .cmd con CRLF y el .ps1 con BOM (tildes en PowerShell 5.1).
-    assert b"\r\n" in zipeado.read("radar-agente/instalar.cmd")
-    assert zipeado.read("radar-agente/instalar.ps1").startswith(b"\xef\xbb\xbf")
-    assert b"\r\n" not in zipeado.read("radar-agente/instalar.sh")
-    # Con URL pública forzada y token exigido, los dos van en la configuración.
+    configuracion = windows.read("configuracion.txt").decode()
+    assert "url=http://testserver\r\n" in configuracion
+    assert "token=rdr_token-del-asistente" in configuracion
+    # Doble clic en Windows: los .cmd en CRLF y el .ps1 con BOM (tildes en PowerShell 5.1).
+    assert b"instalar.cmd" in windows.read("INSTALAR.cmd")
+    assert b"\r\n" in windows.read("agente_local/instalacion/instalar.cmd")
+    assert windows.read("agente_local/instalacion/instalar.ps1").startswith(b"\xef\xbb\xbf")
+
+    linux = _zip(manual, "linux")
+    assert "INSTALAR.cmd" not in linux.namelist()
+    assert b"\r\n" not in linux.read("agente_local/instalacion/instalar.sh")
+    assert "token=" not in linux.read("configuracion.txt").decode()
+    assert manual.post("/api/agente-instalador", json={"sistema": "mac"}).status_code == 422
+
+    # Con URL pública forzada y token de la organización, los dos van en la configuración.
     monkeypatch.setenv("RADAR_URL_PUBLICA", "https://radar.ejemplo/")
     monkeypatch.setenv("AGENTE_TOKEN_INSCRIPCION", TOKEN)
-    configuracion = zipfile.ZipFile(io.BytesIO(manual.get("/api/agente-instalador.zip").content))
-    texto = configuracion.read("radar-agente/configuracion.txt").decode()
+    texto = _zip(manual, "linux").read("configuracion.txt").decode()
     assert "url=https://radar.ejemplo\r\n" in texto and f"token={TOKEN}" in texto
 
 

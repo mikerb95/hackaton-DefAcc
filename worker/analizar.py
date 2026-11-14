@@ -26,7 +26,7 @@ import argparse
 import os
 import sys
 import time
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from typing import Any
 
 from radar import bd, config
@@ -58,6 +58,45 @@ def conectar_destino(turso: bool = False) -> Any:
             "verdad quieres escribir ahí, o RADAR_SQLITE=<ruta> para una base local."
         )
     return bd.conectar()
+
+
+class Escritura:
+    """Conexión de escritura del worker que se renueva.
+
+    Turso cierra el stream HTTP de una conexión que quedó quieta mientras el agente
+    trabaja ("stream not found"): con una sola conexión abierta al inicio, los análisis más
+    largos se perdían al guardarse. Con ``abrir``, cada escritura usa una conexión viva y,
+    si falla, reintenta una vez con una nueva. Las escrituras del worker son idempotentes
+    (``INSERT OR REPLACE`` del análisis, cierre del trabajo); la traza puede quedar repetida.
+    Sin ``abrir`` usa la conexión fija que recibe y nunca la cierra (pruebas, sqlite).
+    """
+
+    def __init__(self, conexion: Any = None, abrir: Callable[[], Any] | None = None) -> None:
+        self._abrir = abrir
+        self._conexion = conexion if abrir is None else None
+
+    def usar(self, funcion: Callable[..., Any], *args: Any) -> Any:
+        if self._abrir is None:
+            return funcion(self._conexion, *args)
+        for intento in (1, 2):
+            try:
+                if self._conexion is None:
+                    self._conexion = self._abrir()
+                return funcion(self._conexion, *args)
+            except Exception as error:  # se reintenta una vez con otra conexión
+                self.cerrar()
+                if intento == 2:
+                    raise
+                _log(f"escritura falló ({type(error).__name__}); se reintenta con otra conexión")
+        return None
+
+    def cerrar(self) -> None:
+        if self._abrir is not None and self._conexion is not None:
+            try:
+                self._conexion.close()
+            except Exception:  # noqa: BLE001, S110 - una conexión muerta no se puede cerrar
+                pass
+            self._conexion = None
 
 
 def modo_sin_agente(forzado: bool = False) -> str | None:
@@ -96,7 +135,8 @@ def analizar_grupo(
     final, veredicto = decidir(
         analisis,
         grupo,
-        textos_origen=fuente.textos_origen(),  # solo NVD, nunca el inventario
+        textos_origen=fuente.textos_origen(),  # solo NVD y KEV, nunca el inventario
+        cifras_permitidas=fuente.cifras_origen(),  # CVSS y EPSS por CVE
         equipos_flota=flota,
     )
     problemas = [f"{p.tipo}: {p.detalle}" for p in veredicto.problemas]
@@ -104,9 +144,14 @@ def analizar_grupo(
 
 
 def correr(
-    conexion: Any, productos: Iterable[str] | None = None, sin_agente: bool = False
+    conexion: Any,
+    productos: Iterable[str] | None = None,
+    sin_agente: bool = False,
+    abrir: Callable[[], Any] | None = None,
 ) -> dict[str, Any]:
-    """Analiza y guarda. ``conexion`` es de escritura. Devuelve un resumen con conteos."""
+    """Analiza y guarda. ``conexion`` es de escritura y sirve para leer los grupos al
+    inicio. Con ``abrir``, cada guardado usa una conexión renovable (``Escritura``), como
+    hace falta con Turso. Devuelve un resumen con conteos."""
     motivo = modo_sin_agente(sin_agente)
     if motivo:
         _log(f"modo sin créditos ({motivo}): se guarda el respaldo")
@@ -119,12 +164,27 @@ def correr(
         else [g for g in todos if exige_accion(g)]
     )
     resumen = {"grupos": len(grupos), "agente": 0, "respaldo": 0, "descartados": 0, "errores": 0}
+    escritura = Escritura(conexion, abrir)
+    try:
+        _analizar_todos(grupos, flota, bool(motivo), escritura, resumen)
+    finally:
+        escritura.cerrar()
+    return resumen
+
+
+def _analizar_todos(
+    grupos: list[Grupo],
+    flota: list[str],
+    sin_agente: bool,
+    escritura: Escritura,
+    resumen: dict[str, Any],
+) -> None:
     for grupo in grupos:
         inicio = time.monotonic()
         try:
-            final, traza, problemas = analizar_grupo(grupo, flota, sin_agente=bool(motivo))
-            bd.guardar_analisis(conexion, final)
-            guardar_traza(conexion, traza)
+            final, traza, problemas = analizar_grupo(grupo, flota, sin_agente=sin_agente)
+            escritura.usar(bd.guardar_analisis, final)
+            escritura.usar(guardar_traza, traza)
         except Exception as error:  # noqa: BLE001 - un producto que falla no frena al resto
             resumen["errores"] += 1
             _log(f"{grupo.producto}: error ({type(error).__name__}: {error})")
@@ -134,7 +194,6 @@ def correr(
             resumen["descartados"] += 1
             _log(f"{grupo.producto}: verificador descartó: {'; '.join(problemas[:5])}")
         _log(f"{grupo.producto}: {final.origen} en {time.monotonic() - inicio:.1f} s")
-    return resumen
 
 
 def principal(argv: list[str] | None = None) -> int:
@@ -149,7 +208,9 @@ def principal(argv: list[str] | None = None) -> int:
         _log(f"no se corre: {error}")
         return 2
     try:
-        resumen = correr(conexion, args.producto, args.sin_agente)
+        resumen = correr(
+            conexion, args.producto, args.sin_agente, abrir=lambda: conectar_destino(args.turso)
+        )
     finally:
         conexion.close()
     print(resumen)

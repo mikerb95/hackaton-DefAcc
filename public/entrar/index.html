@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Entrar · Radar de vulnerabilidades</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/estilo.css">
+</head>
+<body>
+  <main class="entrar">
+    <div class="entrar-radar" aria-hidden="true"><span></span></div>
+    <div class="entrar-caja">
+      <a class="marca" href="/">
+        <span class="marca-punto" aria-hidden="true"></span>
+        <span class="marca-nombre">Radar</span>
+      </a>
+      <h1>Entrar al panel</h1>
+      <p>Con el usuario que te dio quien administra el radar.</p>
+      <form id="entrar" novalidate>
+        <label>Usuario
+          <input name="usuario" autocomplete="username" autocapitalize="none" spellcheck="false" required maxlength="60" autofocus>
+        </label>
+        <label>Contraseña
+          <input name="clave" type="password" autocomplete="current-password" required maxlength="200">
+        </label>
+        <button type="submit">Entrar</button>
+        <div class="resultado error" id="error" role="alert"></div>
+      </form>
+      <div class="entrar-aviso" id="sin-usuarios" hidden>
+        Este radar todavía no tiene usuarios. Crea el primer administrador desde la terminal del servidor:
+        <code>uv run python -m radar.api.cuentas crear --usuario tu-usuario --nombre "Tu nombre" --rol admin</code>
+      </div>
+      <p class="entrar-pie"><a href="/">Volver al inicio</a></p>
+    </div>
+  </main>
+  <script>
+    "use strict";
+    (function () {
+      const form = document.getElementById("entrar");
+      const error = document.getElementById("error");
+      // Solo se vuelve a rutas del propio panel: nunca a otro sitio.
+      const pedido = new URLSearchParams(location.search).get("volver") || "";
+      const destino = /^\/panel\/[A-Za-z0-9/#._-]*$/.test(pedido) ? pedido : "/panel/";
+
+      fetch("/api/sesion", { credentials: "same-origin" })
+        .then((r) => r.json())
+        .then((d) => {
+          if (d.usuario) location.replace(destino);
+          else if (d.hay_usuarios === false) document.getElementById("sin-usuarios").hidden = false;
+        })
+        .catch(() => { error.textContent = "El servidor no responde. Prueba de nuevo en un momento."; });
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const usuario = form.elements.usuario.value.trim();
+        const clave = form.elements.clave.value;
+        if (!usuario || !clave) {
+          error.textContent = "Escribe tu usuario y tu contraseña.";
+          return;
+        }
+        const boton = form.querySelector("button");
+        boton.disabled = true;
+        error.textContent = "";
+        try {
+          const r = await fetch("/api/sesion", {
+            method: "POST", credentials: "same-origin",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ usuario, clave }),
+          });
+          if (r.ok) {
+            // El barrido completa la vuelta y funde al panel (sin espera con movimiento reducido).
+            const quieto = matchMedia("(prefers-reduced-motion: reduce)").matches;
+            document.body.classList.add("entrando");
+            setTimeout(() => location.replace(destino), quieto ? 0 : 520);
+            return;
+          }
+          const d = await r.json().catch(() => ({}));
+          error.textContent = typeof d.detail === "string" ? d.detail : "No se pudo entrar. Revisa los datos.";
+          form.elements.clave.value = "";
+          form.elements.clave.focus();
+          form.classList.remove("temblor");
+          void form.offsetWidth;
+          form.classList.add("temblor");
+        } catch {
+          error.textContent = "El servidor no responde. Prueba de nuevo en un momento.";
+        } finally {
+          boton.disabled = false;
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

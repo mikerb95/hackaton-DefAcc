@@ -39,8 +39,11 @@ function Avisar([string]$Texto, [string]$Icono = 'Information') {
 function Leer-Configuracion {
     # configuracion.txt: líneas clave=valor (url, token). Lo arma el panel al descargar.
     $datos = @{}
-    $ruta = Join-Path $PSScriptRoot 'configuracion.txt'
-    if (Test-Path -LiteralPath $ruta) {
+    # Junto al instalador o en la raíz del zip (dos carpetas arriba).
+    $ruta = @((Join-Path $PSScriptRoot 'configuracion.txt'),
+        (Join-Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) 'configuracion.txt')) |
+        Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
+    if ($ruta) {
         foreach ($linea in Get-Content -LiteralPath $ruta -Encoding UTF8) {
             if ($linea -match '^\s*([a-z_]+)\s*=\s*(.+?)\s*$') { $datos[$Matches[1]] = $Matches[2] }
         }
