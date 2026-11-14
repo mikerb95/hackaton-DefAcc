@@ -10,9 +10,9 @@ está se dice con su estado, no se esconde.
 | Cifra | Valor |
 |---|---|
 | Historias | 30 |
-| Aceptadas | 26 |
-| En desarrollo | 1 |
-| En cola | 3 |
+| Aceptadas | 25 |
+| En desarrollo | 3 |
+| En cola | 2 |
 | Actores con historias | 5 |
 
 Estados: **Aceptada** (implementada, con prueba automática y con su requerimiento), **En
@@ -165,7 +165,7 @@ el radar sin salir de la terminal.**
 - ✓ Una acción por producto, equipos más expuestos y detalle por producto (RF-701).
 - ✓ Cada respuesta dice de dónde salen los datos y si son de ejemplo (RF-702).
 
-### HU-TI-13 · Historia · Aceptada
+### HU-TI-13 · Historia · En desarrollo
 
 **Como responsable de TI, quiero saber si alguna fuente no respondió en la última revisión, y
 pedir una nueva, para no leer como "sin riesgo" lo que en realidad es "sin dato".**
@@ -174,7 +174,8 @@ pedir una nueva, para no leer como "sin riesgo" lo que en realidad es "sin dato"
 
 - ✓ Se registra qué fuente respondió en cada descarga (RF-108).
 - ✓ El panel lo dice arriba si alguna falló (RF-602).
-- ✓ El botón de revisión encola una descarga para el worker (`POST /api/revisar`).
+- ✓ `POST /api/revisar` encola una descarga para el worker (`tests/test_api.py`).
+- · Un botón en el panel que la pida.
 
 ### HU-TI-14 · Historia · Aceptada
 
@@ -193,8 +194,8 @@ copiar a mano los datos que el radar ya tiene.**
 
 `#escalamiento` · [escalamiento.md](escalamiento.md)
 
-- ✓ El radar deja la lista de pendientes de aviso por producto (RF-111).
-- · Abrir el ticket en la herramienta de la empresa.
+- · Abrir el ticket en la herramienta de la empresa con lo que ya deja la lista de pendientes
+  de aviso por producto (RF-111).
 
 ### HU-TI-16 · Historia · Cola
 
@@ -216,7 +217,7 @@ nada, para enterarme del riesgo sin tocar decisiones de TI.**
 `#roles` `#panel` · CU-08, CU-09
 
 - ✓ El rol `lector` ve el panel completo (`radar/api/acceso.py`).
-- ✓ Cambiar estados, aprobar o cargar inventarios responde 403 con el rol `lector`.
+- ✓ Cambiar estados o aprobar responde 403 con el rol `lector` (`tests/test_cuentas.py`).
 
 ### HU-LE-02 · Historia · Aceptada
 
@@ -230,14 +231,15 @@ sin leer CVE.**
 
 ## Como administrador (5)
 
-### HU-AD-01 · Historia · Aceptada
+### HU-AD-01 · Historia · En desarrollo
 
 **Como administrador, quiero crear cuentas con rol lector, analista o admin, para que cada
 persona solo pueda cambiar lo que le toca.**
 
 `#roles` `#sesión` · CU-11
 
-- ✓ Sesión por cookie con rol; el rol decide qué rutas puede usar (`radar/api/cuentas.py`).
+- ✓ Sesión por cookie con rol; el rol decide qué rutas puede usar (`radar/api/cuentas.py`, `tests/test_cuentas.py`).
+- ✓ Claves cifradas con scrypt y bloqueo tras fallos (`tests/test_cuentas.py`).
 - ✓ En Vercel, sin sesión y sin clave configurada la API responde error, no queda abierta (RF-601).
 - · Su requerimiento en `requerimientos-funcionales.md`.
 

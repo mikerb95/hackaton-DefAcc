@@ -21,11 +21,12 @@ salida de pytest. Si un número no coincide entre páginas, es un error.
 | [planteamiento.md](planteamiento.md) | Qué es el radar, para quién, la tesis y las cuatro preguntas de la entrega | Track 1 |
 | [requerimientos-funcionales.md](requerimientos-funcionales.md) | Requerimientos `RF-NNN` por módulo, con estado, archivos y pruebas | implementados / total por módulo |
 | [requerimientos-no-funcionales.md](requerimientos-no-funcionales.md) | Costo, tiempos, topes de gasto, límites de fuentes, privacidad, reproducibilidad | `RNF-NN` |
-| [casos-de-uso.md](casos-de-uso.md) | Casos `CU-NN`: cargar inventario, cruce y priorización, análisis con aprobación, ataque por inventario envenenado, consulta desde el plugin | 5 casos (CU-01 a CU-05) |
+| [casos-de-uso.md](casos-de-uso.md) | Actores, diagrama y catálogo de casos `CU-NN`, con los extendidos: cargar inventario, cruce y priorización, análisis con aprobación, ataque por inventario envenenado, consulta desde el plugin | 11 casos, 5 extendidos |
+| [historias-de-usuario.md](historias-de-usuario.md) | Historias "Como..., quiero..., para..." por actor, con estado y criterios de aceptación que citan sus RF | 30 historias, 25 aceptadas |
 | [diagramas/componentes.md](diagramas/componentes.md) | Piezas del sistema y qué datos pasan entre ellas | 4 lugares de ejecución |
 | [diagramas/despliegue.md](diagramas/despliegue.md) | Dónde corre cada pieza: Vercel, Turso, worker, portátil del plugin | 1 base compartida |
 | [diagramas/secuencia.md](diagramas/secuencia.md) | Carga y cruce, ataque bloqueado en el plugin y en el analista (análisis con verificador, pendiente) | 3 diagramas |
-| [diagramas/actividades.md](diagramas/actividades.md) | Actividades del responsable de TI | si alcanza |
+| [diagramas/actividades.md](diagramas/actividades.md) | Decisiones de la normalización, la afectación y prioridad, el análisis con verificador y la carga con la guarda | 4 diagramas |
 | [testing.md](testing.md) | Pirámide de pruebas, qué cubre cada archivo y cómo correrlo | total de pytest |
 | [reportes-pruebas.md](reportes-pruebas.md) | Resultados de los evals con defensa y sin defensa | tasa de inyección |
 | [verificacion-validacion.md](verificacion-validacion.md) | Decisiones que cambian cifras y por qué | decisiones con prueba |
