@@ -390,3 +390,11 @@ button:disabled { opacity: 0.5; cursor: default; }
 .entrar-aviso code { color: var(--acento); overflow-wrap: anywhere; }
 .entrar-caja > .entrar-pie { margin: 26px 0 0; font-size: 13px; }
 .entrar-pie a { color: var(--texto-3); }
+
+/* Equipo pendiente de aprobación en la consola */
+.aprobacion-equipo {
+  background: rgba(251, 191, 36, 0.08); border: 1px solid rgba(251, 191, 36, 0.3);
+  border-radius: var(--radio); padding: 12px 14px; margin-bottom: 16px;
+}
+.aprobacion-equipo p { margin: 0 0 10px; color: var(--texto-2); }
+.aprobacion-equipo strong { color: #fcd877; }

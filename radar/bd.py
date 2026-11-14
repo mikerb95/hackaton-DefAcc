@@ -147,12 +147,16 @@ _MIGRACIONES = (
     ("hallazgos", "propuesto_resuelto", "INTEGER DEFAULT 0"),
     ("analisis", "aprobado", "TEXT"),
     ("analisis", "aprobado_por", "TEXT"),
+    ("equipos", "aprobado", "TEXT"),
+    ("equipos", "aprobado_por", "TEXT"),
+    ("equipos", "reporte_pendiente", "TEXT"),
 )
 
 
 def crear_esquema(conexion: Any) -> None:
     """Crea las tablas que falten y agrega las columnas nuevas a las que ya existen."""
     conexion.executescript(ESQUEMA.read_text(encoding="utf-8"))
+    agregadas: set[tuple[str, str]] = set()
     for tabla, columna, definicion in _MIGRACIONES:
         existentes = {
             f[0]
@@ -160,6 +164,14 @@ def crear_esquema(conexion: Any) -> None:
         }
         if columna not in existentes:
             conexion.execute(f"ALTER TABLE {tabla} ADD COLUMN {columna} {definicion}")
+            agregadas.add((tabla, columna))
+    if ("equipos", "aprobado") in agregadas:
+        # Los equipos inscritos antes de que existiera la aprobación ya se cruzaban: quedan
+        # aprobados para no esconderlos de golpe.
+        conexion.execute(
+            "UPDATE equipos SET aprobado = inscrito, "
+            "aprobado_por = 'inscrito antes de la aprobación'"
+        )
     conexion.commit()
 
 

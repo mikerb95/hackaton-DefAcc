@@ -11,6 +11,11 @@ Dos grupos, con credenciales distintas:
 
 El servidor nunca devuelve órdenes: la respuesta a un reporte es `202` con el intervalo
 deseado y nada más. Tomar el servidor no da ejecución en los PC.
+
+Aprobación en la consola (como Acronis): un equipo recién inscrito queda pendiente. Reporta
+y se ve en el panel, pero su inventario no entra al cruce hasta que una persona lo aprueba
+(`POST /api/equipos/{id}/aprobar`). Rechazar es retirarlo. `AGENTE_APROBACION=automatica`
+quita ese paso.
 """
 
 from __future__ import annotations
@@ -30,6 +35,15 @@ INTERVALO_POR_DEFECTO = 12  # horas
 
 router_agente = APIRouter(prefix="/api/agente")
 router_equipos = APIRouter(prefix="/api", dependencies=[Depends(exigir_clave)])
+
+
+MAX_PENDIENTES = 200
+
+
+def aprobacion_automatica() -> bool:
+    """`AGENTE_APROBACION=automatica` deja entrar a los equipos sin pasar por la consola.
+    Por defecto es manual: cada equipo nuevo espera a que TI lo apruebe."""
+    return os.environ.get("AGENTE_APROBACION", "").strip().lower() == "automatica"
 
 
 def intervalo_horas() -> int:
@@ -101,13 +115,21 @@ def inscribir(cuerpo: Inscripcion) -> dict:
         )
     elif not esperado or not hmac.compare_digest(cuerpo.token.encode(), esperado.encode()):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Token de inscripción no válido.")
+    automatica = aprobacion_automatica()
     conexion = _conexion()
     try:
+        # Con el token filtrado se podrían crear equipos pendientes sin fin: hay un tope.
+        if not automatica and almacen.contar_pendientes(conexion) >= MAX_PENDIENTES:
+            raise HTTPException(
+                status.HTTP_429_TOO_MANY_REQUESTS,
+                "Hay demasiados equipos esperando aprobación en la consola.",
+            )
         credencial = almacen.inscribir(
             conexion,
             cuerpo.equipo_id.lower(),
             sanear_nombre_equipo(cuerpo.nombre_equipo, 0),
             limpiar_texto(cuerpo.agente_version, 40) or None,
+            aprobar=automatica,
         )
     except almacen.EquipoYaInscrito as error:
         if token_id is not None:
@@ -156,7 +178,7 @@ async def reporte(
             raise HTTPException(
                 status.HTTP_403_FORBIDDEN, "La credencial no corresponde a ese equipo."
             )
-        recepcion.procesar(conexion, equipo, datos, recortes)
+        recepcion.recibir(conexion, equipo, datos, recortes)
     finally:
         conexion.close()
     return {"recibido": True, "intervalo_horas": intervalo_horas()}
@@ -198,6 +220,8 @@ def equipos() -> dict:
         "disponible": True,
         "total": len(lista),
         "inscripcion_abierta": _inscripcion_abierta(),
+        "aprobacion": "automatica" if aprobacion_automatica() else "manual",
+        "pendientes": sum(1 for e in lista if e["pendiente"] and not e["revocado"]),
         "equipos": lista,
     }
 
@@ -218,6 +242,32 @@ def equipo(equipo_id: str) -> dict:
 
 
 ADMIN = [Depends(exigir_rol("admin"))]
+
+
+class Aprobacion(BaseModel):
+    # La aprobación la hace una persona con nombre: sin "por" no se aprueba.
+    por: str = Field(min_length=1, max_length=100, pattern=r"\S")
+
+
+@router_equipos.post("/equipos/{equipo_id}/aprobar", dependencies=ADMIN)
+def aprobar(equipo_id: str, cuerpo: Aprobacion) -> dict:
+    """TI aprueba un equipo pendiente desde la consola. Desde ese momento su inventario
+    entra al cruce. Rechazar es retirarlo (DELETE)."""
+    from radar.equipos import recepcion
+    from radar.seguridad.limpieza import limpiar_texto
+
+    _exigir_base()
+    conexion = _conexion()
+    try:
+        recibido = recepcion.aprobar(conexion, equipo_id, limpiar_texto(cuerpo.por, 100))
+    except recepcion.ErrorAprobacion as error:
+        raise HTTPException(
+            status.HTTP_409_CONFLICT,
+            "El equipo no existe, está revocado o ya estaba aprobado.",
+        ) from error
+    finally:
+        conexion.close()
+    return {"aprobado": True, "cruzado": recibido is not None}
 
 
 @router_equipos.post("/equipos/{equipo_id}/revocar", dependencies=ADMIN)

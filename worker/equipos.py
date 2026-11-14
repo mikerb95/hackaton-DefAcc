@@ -81,7 +81,7 @@ def cruzar_todos(conexion: Any, cliente: httpx.Client | None = None, con_epss: b
     lineas: list[str] = []
     errores: list[str] = []
     for equipo in almacen.leer_equipos(conexion):
-        if equipo.revocado or equipo.so is None or equipo.so.familia != "linux":
+        if equipo.revocado or equipo.pendiente or equipo.so is None or equipo.so.familia != "linux":
             continue
         ok, texto = cruzar_equipo(conexion, equipo.id, cliente, con_epss)
         (lineas if ok else errores).append(texto)

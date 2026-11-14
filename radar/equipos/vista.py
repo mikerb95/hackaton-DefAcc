@@ -68,6 +68,8 @@ def lista(conexion: Any) -> list[dict[str, Any]]:
     return sorted(
         filas,
         key=lambda f: (
+            # Los pendientes de aprobación van arriba: esperan una decisión de TI.
+            not f["pendiente"],
             ORDEN_PRIORIDAD.get(f["peor_prioridad"] or "", 9),
             -f["acciones"]["inmediato"],
             f["nombre"].lower(),

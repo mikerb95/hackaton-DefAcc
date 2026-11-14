@@ -45,6 +45,11 @@ class Equipo:
     hardware: HardwareReportado | None = None
     postura: PosturaReportada | None = None
     recortes: dict[str, int] = field(default_factory=dict)
+    # Aprobación en la consola: un equipo pendiente reporta, se ve en el panel y no entra
+    # al cruce hasta que una persona lo aprueba.
+    pendiente: bool = False
+    aprobado: str | None = None
+    aprobado_por: str | None = None
 
     def resumen(self) -> dict[str, Any]:
         return {
@@ -54,6 +59,9 @@ class Equipo:
             "ultimo_reporte": self.ultimo_reporte,
             "agente_version": self.agente_version,
             "revocado": self.revocado,
+            "pendiente": self.pendiente,
+            "aprobado": self.aprobado,
+            "aprobado_por": self.aprobado_por,
             "so": self.so.model_dump() if self.so else None,
             "hardware": self.hardware.model_dump() if self.hardware else None,
             "postura": self.postura.model_dump() if self.postura else None,
@@ -80,13 +88,17 @@ def _equipo(f: dict[str, Any]) -> Equipo:
         hardware=modelo(HardwareReportado, f["hardware"]),
         postura=modelo(PosturaReportada, f["postura"]),
         recortes=json.loads(f["recortes"]) if f["recortes"] else {},
+        pendiente=f["aprobado"] is None,
+        aprobado=f["aprobado"],
+        aprobado_por=f["aprobado_por"],
     )
 
 
 _COLUMNAS = (
     "id, nombre, inscrito, ultimo_reporte, agente_version, revocado, so, hardware, postura, "
-    "recortes"
+    "recortes, aprobado, aprobado_por"
 )
+APROBACION_AUTOMATICA = "aprobación automática"
 
 
 # ---------------------------------------------------------------------------
@@ -109,27 +121,70 @@ def nombre_libre(conexion: Any, nombre: str, equipo_id: str) -> str:
     return f"{nombre[:240]}-{equipo_id[:8]}"
 
 
-def inscribir(conexion: Any, equipo_id: str, nombre: str, agente_version: str | None) -> str:
+def inscribir(
+    conexion: Any,
+    equipo_id: str,
+    nombre: str,
+    agente_version: str | None,
+    aprobar: bool = False,
+) -> str:
     """Crea el equipo y devuelve su credencial (única vez que existe en claro).
 
-    Un equipo retirado puede volver a inscribirse; uno vigente o revocado, no.
+    Por defecto queda pendiente de aprobación; con `aprobar` (modo automático) entra
+    aprobado. Un equipo retirado puede volver a inscribirse; uno vigente o revocado, no.
     """
     existente = conexion.execute("SELECT 1 FROM equipos WHERE id = ?", [equipo_id]).fetchone()
     if existente is not None:
         raise EquipoYaInscrito(equipo_id)
     credencial = secrets.token_urlsafe(BYTES_CREDENCIAL)
+    momento = bd.ahora()
     conexion.execute(
-        "INSERT INTO equipos (id, nombre, credencial, inscrito, agente_version) VALUES (?,?,?,?,?)",
+        "INSERT INTO equipos (id, nombre, credencial, inscrito, agente_version, aprobado, "
+        "aprobado_por) VALUES (?,?,?,?,?,?,?)",
         [
             equipo_id,
             nombre_libre(conexion, nombre, equipo_id),
             huella(credencial),
-            bd.ahora(),
+            momento,
             agente_version,
+            momento if aprobar else None,
+            APROBACION_AUTOMATICA if aprobar else None,
         ],
     )
     conexion.commit()
     return credencial
+
+
+def contar_pendientes(conexion: Any) -> int:
+    return conexion.execute(
+        "SELECT count(*) FROM equipos WHERE aprobado IS NULL AND revocado = 0"
+    ).fetchone()[0]
+
+
+def guardar_reporte_pendiente(conexion: Any, equipo_id: str, reporte_json: str) -> None:
+    """Guarda el último reporte de un equipo pendiente, para cruzarlo cuando se apruebe."""
+    conexion.execute(
+        "UPDATE equipos SET reporte_pendiente = ? WHERE id = ?", [reporte_json, equipo_id]
+    )
+    conexion.commit()
+
+
+def leer_reporte_pendiente(conexion: Any, equipo_id: str) -> str | None:
+    fila = conexion.execute(
+        "SELECT reporte_pendiente FROM equipos WHERE id = ?", [equipo_id]
+    ).fetchone()
+    return fila[0] if fila else None
+
+
+def marcar_aprobado(conexion: Any, equipo_id: str, por: str) -> bool:
+    """Aprueba un equipo pendiente. False si no existe, está revocado o ya estaba aprobado."""
+    cursor = conexion.execute(
+        "UPDATE equipos SET aprobado = ?, aprobado_por = ?, reporte_pendiente = NULL "
+        "WHERE id = ? AND aprobado IS NULL AND revocado = 0",
+        [bd.ahora(), por, equipo_id],
+    )
+    conexion.commit()
+    return cursor.rowcount > 0
 
 
 def equipo_de_credencial(conexion: Any, credencial: str) -> Equipo | None:
