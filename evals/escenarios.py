@@ -123,7 +123,9 @@ def _entrada_real(caso_id: str, sanear_equipo: bool) -> tuple[str, str]:
     from radar.seguridad.equipos import sanear_nombre_equipo
 
     caso = next(c for c in TODOS if c.id == caso_id)
-    equipo = sanear_nombre_equipo(caso.equipo) if sanear_equipo else caso.equipo
+    # Fila 2: la primera de datos de un CSV con encabezado. El número solo identifica la
+    # fila a corregir; no cambia el cruce.
+    equipo = sanear_nombre_equipo(caso.equipo, 2) if sanear_equipo else caso.equipo
     fila = FilaInventario(
         equipo=equipo,
         programa=caso.programa,

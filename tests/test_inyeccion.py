@@ -189,5 +189,7 @@ def test_tuberia_del_analista_real_con_un_analizar_falso(monkeypatch, tmp_path):
     resultados = cargar_resultados_real(ruta)
     assert len(resultados) == 4
     filas = filas_analista_real(resultados)
-    assert [f[0] for f in filas] == ["1", "4"]
+    # Corrida parcial: la fila lo dice ("corridos 1 de 10 casos").
+    assert [f[0].split(" ")[0] for f in filas] == ["1", "4"]
+    assert all("corridos 1 de" in f[0] for f in filas)
     assert all(f[1] == "analista real" and "pendiente" not in f for f in filas)

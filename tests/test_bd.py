@@ -1,6 +1,7 @@
 """bd.py sobre sqlite local (mismo esquema que Turso) y worker/descargar.py --desde-snapshot."""
 
 import shutil
+import sqlite3
 
 import pytest
 
@@ -171,8 +172,14 @@ def test_insercion_por_lotes_de_varias_filas(conexion):
     contador = Contador(conexion)
     filas = [(f"CVE-2099-{i:05d}", 0.5, 0.5, "2026-11-14") for i in range(1000)]
     bd._en_lotes(contador, "INSERT INTO epss (cve, epss, percentil, fecha) VALUES (?,?,?,?)", filas)
-    assert contador.llamadas == 5  # 225 filas por sentencia (900 parámetros / 4)
+    assert contador.llamadas == 5  # sqlite local: 225 filas por sentencia (900 parámetros / 4)
     assert bd.contar(conexion, "epss") == 1000
+
+    class Remota:  # no envuelve sqlite: se trata como Turso
+        pass
+
+    assert bd.filas_por_sentencia(Remota(), 4) == 500  # tope de filas
+    assert bd.filas_por_sentencia(Remota(), 100) == 300  # tope de parámetros (30 000 / 100)
 
 
 def test_aislamiento_de_pruebas():
@@ -191,3 +198,22 @@ def test_base_con_hallazgos(base_con_hallazgos):
     assert set(hallazgos) == {"WinRAR", "Google Chrome", "Docker Desktop"}
     assert hallazgos["Docker Desktop"].prioridad == "semanal"
     assert bd.contar(base_con_hallazgos, "inventario") == len(ejemplos.FILAS)
+
+
+def test_radar_sqlite_gana_sobre_turso(monkeypatch, tmp_path, capsys):
+    """Con TURSO_* y RADAR_SQLITE a la vez, se usa el sqlite: una copia local nunca escribe
+    en Turso sin querer. Sin RADAR_SQLITE, el destino es Turso (no se conecta en la prueba)."""
+    monkeypatch.setenv("TURSO_DATABASE_URL", "libsql://falsa.example")
+    monkeypatch.setenv("TURSO_AUTH_TOKEN", "token-falso")
+    ruta = tmp_path / "copia.db"
+    monkeypatch.setenv("RADAR_SQLITE", str(ruta))
+    assert bd.destino() == f"local {ruta}"
+    c = bd.conectar()
+    assert isinstance(c, sqlite3.Connection)
+    c.close()
+    assert f"datos: local {ruta}" in capsys.readouterr().err
+
+    monkeypatch.setenv("RADAR_SQLITE", "  ")  # vacío cuenta como no definido
+    assert bd.destino() == "turso"
+    monkeypatch.delenv("RADAR_SQLITE")
+    assert bd.destino() == "turso"

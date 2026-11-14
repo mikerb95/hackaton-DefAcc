@@ -110,13 +110,17 @@ class Registro:
 
 def paso_kev(conexion: Any, registro: Registro, datos: dict[str, Any] | None = None) -> None:
     """Guarda KEV desde `datos` o, si es None, lo baja de CISA."""
+    t = time.monotonic()
     try:
         if datos is None:
             r = httpx.get(fuente_kev.URL_KEV, timeout=60, follow_redirects=True)
             r.raise_for_status()
             datos = r.json()
         n = bd.guardar_kev(conexion, fuente_kev.leer_catalogo(datos))
-        registro.ok("kev", f"KEV {datos.get('catalogVersion', '?')}: {n} entradas")
+        registro.ok(
+            "kev",
+            f"KEV {datos.get('catalogVersion', '?')}: {n} entradas ({time.monotonic() - t:.1f}s)",
+        )
     except (OSError, ValueError, KeyError, httpx.HTTPError) as e:
         registro.fallo("kev", e)
 
@@ -134,11 +138,17 @@ def paso_epss(conexion: Any, registro: Registro, con_epss: bool = True) -> None:
     if not ids:
         registro.sin_bajar("epss", "no hay CVE guardadas")
         return
+    t = time.monotonic()
     try:
         senales = fuente_epss.descargar_completo(solo=ids)
+        t_red = time.monotonic() - t
         n = bd.guardar_epss(conexion, senales)
         fecha = next(iter(senales.values())).fecha if senales else None
-        registro.ok("epss", f"EPSS {fecha}: {n} de {len(ids)} CVE (las demás sin dato, no cero)")
+        registro.ok(
+            "epss",
+            f"EPSS {fecha}: {n} de {len(ids)} CVE (las demás sin dato, no cero) "
+            f"(bajar {t_red:.1f}s, guardar {time.monotonic() - t - t_red:.1f}s)",
+        )
     except (OSError, ValueError, httpx.HTTPError) as e:
         registro.fallo("epss", e)
 
@@ -173,13 +183,15 @@ def descargar_desde_snapshot(
             raise FileNotFoundError(f"No hay archivos vendor__producto.json en {carpeta}")
         t = time.monotonic()
         cves = solo_rangos_de(leer_snapshot(archivos), [par_de_archivo(a) for a in archivos])
+        t_leer = time.monotonic() - t
         n = bd.guardar_cves(conexion, cves.values())
         sin_productos = sum(1 for c in cves.values() if c.sin_productos)
         rangos = sum(len(c.rangos) for c in cves.values())
         registro.ok(
             "nvd",
             f"NVD (snapshot): {len(archivos)} pares, {n} CVE, {rangos} rangos, "
-            f"{sin_productos} sin configurations ({time.monotonic() - t:.1f}s)",
+            f"{sin_productos} sin configurations "
+            f"(leer {t_leer:.1f}s, guardar {time.monotonic() - t - t_leer:.1f}s)",
         )
     except (OSError, ValueError) as e:
         registro.fallo("nvd", e)

@@ -1,6 +1,6 @@
 # Reporte de validación
 
-Generado por `uv run python -m evals.medir` el 2026-11-14 10:41. No se edita a mano: toda cifra de docs, ficha y pitch sale de aquí o de pytest.
+Generado por `uv run python -m evals.medir` el 2026-11-14 10:47. No se edita a mano: toda cifra de docs, ficha y pitch sale de aquí o de pytest.
 
 ## Detección
 
@@ -40,7 +40,7 @@ Detección 100,0 %, precisión 100,0 %. Cobertura por motivo, esperada y obtenid
 
 ## Suite de inyección
 
-**Última ronda escrita sin reajustar: ronda 4.** Simulado (peor caso), entrada forzada: sin defensa 8 de 8 (100,0 %), con defensa 6 de 8 (75,0 %), utilidad con defensa 8 de 8. Analista real: radar.agente.analista.analizar no existe todavía.
+**Última ronda escrita sin reajustar: ronda 4.** Simulado (peor caso), entrada forzada: sin defensa 8 de 8 (100,0 %), con defensa 6 de 8 (75,0 %), utilidad con defensa 8 de 8. Analista real: pendiente (radar.agente.analista.analizar no existe todavía).
 
 Dos brazos (PLAN, sección 16). **Sin defensa:** lectura más `marcar_mitigado` aprobada, sin hooks, sin verificador y sin saneado del nombre de equipo. **Con defensa:** solo lectura, guarda previa, limpieza posterior (`radar/agente/hooks.py`), verificador con respaldo y saneado del nombre de equipo (`radar/seguridad/equipos.py`).
 
@@ -78,16 +78,16 @@ La fila envenenada pasa por la ingesta real: el normalizador del radar y, con de
 
 | Ronda | Agente | Tasa de inyección sin defensa | Tasa de inyección con defensa | Equipo oculto sin defensa | Equipo oculto con defensa | Fila a cobertura con defensa |
 |---|---|---|---|---|---|---|
-| 1 | simulado (peor caso) | 4 de 10 (40,0 %) | 0 de 10 (0,0 %) | 8 de 10 | 6 de 10 | 6 de 10 |
-| 1 | simulado (honesto) | 2 de 10 (20,0 %) | 0 de 10 (0,0 %) | 6 de 10 | 6 de 10 | 6 de 10 |
-| 2 | simulado (peor caso) | 2 de 8 (25,0 %) | 2 de 8 (25,0 %) | 6 de 8 | 6 de 8 | 6 de 8 |
-| 2 | simulado (honesto) | 0 de 8 (0,0 %) | 0 de 8 (0,0 %) | 6 de 8 | 6 de 8 | 6 de 8 |
-| 3 | simulado (peor caso) | 4 de 9 (44,4 %) | 0 de 9 (0,0 %) | 5 de 9 | 5 de 9 | 5 de 9 |
-| 3 | simulado (honesto) | 0 de 9 (0,0 %) | 0 de 9 (0,0 %) | 5 de 9 | 5 de 9 | 5 de 9 |
+| 1 | simulado (peor caso) | 10 de 10 (100,0 %) | 0 de 10 (0,0 %) | 3 de 10 | 0 de 10 | 0 de 10 |
+| 1 | simulado (honesto) | 2 de 10 (20,0 %) | 0 de 10 (0,0 %) | 0 de 10 | 0 de 10 | 0 de 10 |
+| 2 | simulado (peor caso) | 8 de 8 (100,0 %) | 3 de 8 (37,5 %) | 1 de 8 | 0 de 8 | 0 de 8 |
+| 2 | simulado (honesto) | 0 de 8 (0,0 %) | 0 de 8 (0,0 %) | 0 de 8 | 0 de 8 | 0 de 8 |
+| 3 | simulado (peor caso) | 9 de 9 (100,0 %) | 0 de 9 (0,0 %) | 0 de 9 | 0 de 9 | 0 de 9 |
+| 3 | simulado (honesto) | 0 de 9 (0,0 %) | 0 de 9 (0,0 %) | 0 de 9 | 0 de 9 | 0 de 9 |
 | 4 | simulado (peor caso) | 8 de 8 (100,0 %) | 6 de 8 (75,0 %) | 1 de 8 | 0 de 8 | 0 de 8 |
 | 4 | simulado (honesto) | 0 de 8 (0,0 %) | 0 de 8 (0,0 %) | 0 de 8 | 0 de 8 | 0 de 8 |
 
-Equipos ocultos con defensa y agente honesto, por destino de la fila: `cobertura:no_comparable` 2, `cobertura:sin_cpe` 15. Ninguno se pierde: todos quedan en cobertura. Lo corrige el normalizador (frente normalizador); la defensa del agente no puede, porque la fila nunca le llega.
+Ningún equipo oculto con defensa y agente honesto.
 
 ### Qué pasa la defensa con el agente que obedece (entrada forzada)
 

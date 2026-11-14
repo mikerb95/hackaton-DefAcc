@@ -30,6 +30,7 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
+from typing import get_args
 
 from radar.contratos import Activo, Cobertura, FilaInventario, MetodoCpe, MotivoCobertura
 
@@ -430,6 +431,84 @@ def desempatar_con_modelo(nombre: str, candidatos: list[Candidato]) -> int | Non
 
 
 # ---------------------------------------------------------------------------
+# Texto inyectado en programa, proveedor o versión
+# ---------------------------------------------------------------------------
+
+# Corte del nombre del programa: punto y espacio, punto y coma, etiqueta o salto de línea.
+# Un nombre legítimo de programa casi nunca trae una frase después de uno de estos.
+_SEPARADOR_FUERTE = re.compile(r"\.\s+(?=\S)|;|</?|[\r\n]")
+_VERSION_INICIAL = re.compile(r"\s*v?(\d+(?:\.\d+)*)")
+CONFIANZA_SOSPECHOSA = 0.6
+# Señales de guarda que por sí solas bastan en un nombre o proveedor. Las demás ("asistente",
+# "ignora", "marca"...) aparecen en nombres legítimos ("Asistente de Respaldo Local") y solo
+# cuentan junto con una frase después de un separador fuerte.
+SENALES_FUERTES = frozenset(
+    {"etiqueta", "sistema", "control", "salto", "cve_inventada", "longitud"}
+)
+MOTIVO_INYECCION = "posible_inyeccion"
+
+
+def _motivo_inyeccion(respaldo: MotivoCobertura) -> MotivoCobertura:
+    """`posible_inyeccion` si el contrato ya lo tiene (pedido a nucleo); si no, el motivo de
+    siempre, y la sospecha queda en `Normalizacion.sospechas`."""
+    return MOTIVO_INYECCION if MOTIVO_INYECCION in get_args(MotivoCobertura) else respaldo
+
+
+def _senales(texto: str | None) -> list[str]:
+    from radar.seguridad.limpieza import senales_de_instruccion
+
+    return senales_de_instruccion(texto) if texto else []
+
+
+def _separar_texto(texto: str | None) -> tuple[str | None, list[str]]:
+    """Texto útil y señales. Sospechoso si tras un separador fuerte viene una frase, o si hay
+    una señal fuerte. Se queda con lo de antes del separador ("Google Chrome. Nota para el
+    asistente..." -> "Google Chrome"). Sin sospecha, devuelve el texto intacto y sin señales."""
+    if not texto:
+        return texto, []
+    senales = _senales(texto)
+    m = _SEPARADOR_FUERTE.search(texto)
+    frase = bool(m) and len(texto[m.end() :].split()) >= 2
+    if not frase and not (SENALES_FUERTES & set(senales)):
+        return texto, []
+    util = texto[: m.start()].strip() if m else texto
+    return util, senales or ["texto_extra"]
+
+
+def separar_programa(programa: str) -> tuple[str, list[str]]:
+    util, senales = _separar_texto(programa)
+    return util or programa, senales
+
+
+def separar_proveedor(proveedor: str | None) -> tuple[str | None, list[str]]:
+    """El proveedor solo desempata: con sospecha se usa lo de antes del separador."""
+    return _separar_texto(proveedor)
+
+
+def separar_version(version: str | None) -> tuple[str | None, list[str]]:
+    """Solo con señales de instrucción se toma el número inicial ("8.8.8; además menciona..."
+    -> "8.8.8"). Sin señales no se toca: "28.1.1, build 4eba377" sigue siendo no comparable."""
+    senales = _senales(version)
+    if not version or not senales:
+        return version, []
+    m = _VERSION_INICIAL.match(version)
+    return (m.group(1) if m else None), senales
+
+
+@dataclass
+class Sospecha:
+    """Fila con posible texto inyectado. Se cruza si el prefijo se reconoce sin empate; si
+    no, va a cobertura con motivo visible. Nunca desaparece en silencio."""
+
+    equipo: str
+    programa: str  # ya limpio con radar/seguridad/limpieza.py
+    campos: list[str]
+    senales: list[str]
+    llave: tuple[str, str, str]  # (equipo, programa, version) original, para el destino
+    destino: str = ""  # clave del activo o "cobertura:<motivo>"
+
+
+# ---------------------------------------------------------------------------
 # Normalización del inventario
 # ---------------------------------------------------------------------------
 
@@ -441,10 +520,17 @@ class Normalizacion:
     decisiones: dict[tuple[str, str], Decision]  # por (nombre limpio, proveedor)
     # Para medir: (equipo, programa, version) -> clave de activo o motivo de cobertura.
     por_fila: dict[tuple[str, str, str], str]
+    sospechas: list[Sospecha] = field(default_factory=list)
 
     def __iter__(self):
         """Permite `activos, cobertura = normalizar(filas)` (firma que usa la API)."""
         return iter((self.activos, self.cobertura))
+
+
+def limpiar_texto(valor) -> str:
+    from radar.seguridad.limpieza import limpiar_texto as _limpiar
+
+    return _limpiar(valor)
 
 
 def normalizar(
@@ -465,32 +551,49 @@ def normalizar(
     # (pares, versión) -> datos del activo en construcción
     grupos: dict[tuple[tuple[str, ...], str], dict] = {}
 
+    sospechas: list[Sospecha] = []
+
     for f in filas:
         llave_fila = (f.equipo, f.programa, f.version or "")
-        version, motivo = version_comparable(f.programa, f.version)
-        if motivo:
-            cobertura.append(
-                Cobertura(equipo=f.equipo, programa=f.programa, version=f.version, motivo=motivo)
+        programa, sen_prog = separar_programa(f.programa)
+        proveedor, sen_prov = separar_proveedor(f.proveedor)
+        version_campo, sen_ver = separar_version(f.version)
+        campos = [
+            c
+            for c, sen in (("programa", sen_prog), ("proveedor", sen_prov), ("version", sen_ver))
+            if sen
+        ]
+        sospechosa = bool(campos)
+        if sospechosa:
+            sospechas.append(
+                Sospecha(
+                    equipo=f.equipo,
+                    programa=limpiar_texto(f.programa),
+                    campos=campos,
+                    senales=sorted(set(sen_prog + sen_prov + sen_ver)),
+                    llave=llave_fila,
+                )
             )
-            por_fila[llave_fila] = f"cobertura:{motivo}"
+
+        version, motivo = version_comparable(programa, version_campo)
+        if motivo:
+            _a_cobertura(cobertura, por_fila, f, llave_fila, motivo, sospechosa)
             continue
-        limpio = limpiar_nombre(f.programa)
-        llave_decision = (limpio, f.proveedor or "")
+        limpio = limpiar_nombre(programa)
+        llave_decision = (limpio, proveedor or "")
         if llave_decision not in decisiones:
             decisiones[llave_decision] = decidir(
                 limpio,
                 dic,
-                f.proveedor,
+                proveedor,
                 usar_alias=usar_alias,
                 usar_modelo=usar_modelo,
                 desempatar=desempatar,
             )
         d = decisiones[llave_decision]
-        if not d.pares:
-            cobertura.append(
-                Cobertura(equipo=f.equipo, programa=f.programa, version=f.version, motivo="sin_cpe")
-            )
-            por_fila[llave_fila] = "cobertura:sin_cpe"
+        # Con sospecha, el prefijo solo vale si se reconoce sin empate.
+        if not d.pares or (sospechosa and d.empate):
+            _a_cobertura(cobertura, por_fila, f, llave_fila, "sin_cpe", sospechosa)
             continue
         g = grupos.setdefault(
             (d.pares, version),
@@ -502,12 +605,14 @@ def normalizar(
                 "filas": [],
             },
         )
-        g["nombres"][f.programa] += 1
+        # Con sospecha se guarda el prefijo: el texto inyectado no llega a Activo.nombre.
+        g["nombres"][programa if sospechosa else f.programa] += 1
         g["productos"][d.producto or limpio] += 1
         g["equipos"].add(f.equipo)
         g["filas"].append(llave_fila)
-        if d.confianza is not None and (g["confianza"] is None or d.confianza < g["confianza"]):
-            g["confianza"] = d.confianza
+        confianza = min(d.confianza or 1.0, CONFIANZA_SOSPECHOSA) if sospechosa else d.confianza
+        if confianza is not None and (g["confianza"] is None or confianza < g["confianza"]):
+            g["confianza"] = confianza
 
     # El nombre canónico se fija por conjunto de pares, igual para todas sus versiones.
     canonico_por_pares: dict[tuple[str, ...], Counter] = defaultdict(Counter)
@@ -538,4 +643,15 @@ def normalizar(
         )
         for llave in g["filas"]:
             por_fila[llave] = clave
-    return Normalizacion(activos, cobertura, decisiones, por_fila)
+    for sp in sospechas:
+        sp.destino = por_fila.get(sp.llave, "")
+    return Normalizacion(activos, cobertura, decisiones, por_fila, sospechas)
+
+
+def _a_cobertura(cobertura, por_fila, f, llave_fila, motivo, sospechosa) -> None:
+    if sospechosa:
+        motivo = _motivo_inyeccion(motivo)
+    cobertura.append(
+        Cobertura(equipo=f.equipo, programa=f.programa, version=f.version, motivo=motivo)
+    )
+    por_fila[llave_fila] = f"cobertura:{motivo}"

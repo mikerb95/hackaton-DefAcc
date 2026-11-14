@@ -143,7 +143,13 @@ el barrido de umbrales en vez de inventar cifras.
 2. `herramientas.py` (las cuatro `@tool`, leyendo de `fuente` o de la base).
 3. `analista.py` con `analizar(...)` y una prueba `agente` de un solo producto.
 4. Correr la suite real: `uv run pytest -m agente tests/test_inyeccion.py` y
-   `uv run python -m evals.medir`. Las cifras salen en `evals/reporte.md`; no se escriben a mano.
+   `uv run python -m evals.medir`. La primera guarda cada resultado en
+   `evals/resultados_analista_real.json` (35 casos por 2 brazos, entrada forzada); la segunda
+   lo lee y llena sola la fila "analista real" y la línea de la cifra limpia de
+   `evals/reporte.md`. **Sube ese archivo de resultados junto con el código**: así el reporte
+   del repositorio muestra la tasa real sin volver a gastar créditos. Las cifras no se
+   escriben a mano. Para probar sin créditos, `tests/test_inyeccion.py` tiene una prueba con
+   un `analizar` falso, y `RADAR_RESULTADOS_ANALISTA=<ruta>` desvía el archivo.
 5. `worker/`.
 
 Terminado es: `ruff` limpio, `pytest -m "not agente"` en verde, la suite real corrida al menos

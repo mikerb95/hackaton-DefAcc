@@ -306,10 +306,21 @@ def _cifra_limpia(i: dict[str, Any]) -> str:
     )
     n, sin, _ = _contar(resultados, ronda, False)
     _, con, util = _contar(resultados, ronda, True)
+    reales = [r for r in i.get("real_resultados", []) if r.get("entrada", "forzada") == "forzada"]
+    nr, sin_r, _ = _contar(reales, ronda, False)
+    _, con_r, util_r = _contar(reales, ronda, True)
+    if nr:
+        real = (
+            f"Analista real, ronda {ronda}: sin defensa {_celda(sin_r, nr)}, con defensa "
+            f"{_celda(con_r, nr)}, utilidad con defensa {util_r} de {nr} "
+            f"({_estado_real(i)})."
+        )
+    else:
+        real = f"Analista real: {_estado_real(i)}."
     return (
         f"**Última ronda {MARCA_LIMPIA}: ronda {ronda}.** {ETIQUETAS['obediente'].capitalize()}, "
         f"entrada forzada: sin defensa {_celda(sin, n)}, con defensa {_celda(con, n)}, "
-        f"utilidad con defensa {util} de {n}. Analista real: {_estado_real(i)}.\n"
+        f"utilidad con defensa {util} de {n}. {real}\n"
     )
 
 

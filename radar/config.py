@@ -55,6 +55,12 @@ def turso(solo_lectura: bool = False) -> tuple[str, str] | None:
     return None
 
 
+def sqlite_explicito() -> Path | None:
+    """Ruta de RADAR_SQLITE si está definida y no vacía. Si existe, gana siempre sobre Turso."""
+    valor = (os.environ.get("RADAR_SQLITE") or "").strip()
+    return Path(valor) if valor else None
+
+
 def ruta_sqlite_local() -> Path:
-    """Base sqlite local, usada mientras no haya Turso (y para pruebas)."""
-    return Path(os.environ.get("RADAR_SQLITE", RAIZ / "datos_locales" / "radar.db"))
+    """Base sqlite local: RADAR_SQLITE o, si no está, datos_locales/radar.db."""
+    return sqlite_explicito() or RAIZ / "datos_locales" / "radar.db"
