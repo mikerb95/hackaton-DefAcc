@@ -356,12 +356,14 @@ def usuarios_y_tokens(_e: SinEntrada, _ctx: Contexto) -> Any:
 
     if not _hay_base():
         return fallo("Las cuentas viven en la base y ahora no hay base conectada.")
-    conexion = cuentas.conectar()
-    try:
-        usuarios = cuentas.listar_usuarios(conexion)
-        tokens = cuentas.listar_tokens(conexion, limite=20)
-    finally:
-        conexion.close()
+    def leer(conexion: Any) -> tuple[list, list]:
+        try:
+            return cuentas.listar_usuarios(conexion), cuentas.listar_tokens(conexion, limite=20)
+        except Exception:  # noqa: BLE001 - tablas de cuentas aún sin crear: no hay nadie
+            return [], []
+
+    # Solo lectura: `cuentas.conectar()` crearía las tablas.
+    usuarios, tokens = _con_base(leer)
     return {
         "usuarios": [
             {"usuario": u.usuario, "nombre": u.nombre, "rol": u.rol, "activo": u.activo}
