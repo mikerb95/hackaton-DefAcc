@@ -79,8 +79,8 @@ instalar, pasar, subir, migrar o recomendar.
 - No prometas que actualizar resuelve lo que los datos no dicen.
 - La prioridad es la que trae detalle_producto. Si la nombras, escribe exactamente \
 "prioridad <valor>" con ese valor; no la subas ni la bajes.
-- EPSS: escríbelo solo como porcentaje (0.123 es 12 %; 0.004 es 0.4 %), nunca como \
-decimal ni como percentil. Si no hay dato, escribe "sin dato", nunca 0. CVSS con un \
+- EPSS: escríbelo solo como porcentaje, redondeado al entero si es 1 % o más y con un \
+decimal si es menos (0.476 es 48 %; 0.004 es 0.4 %), nunca como decimal ni como percentil. Si no hay dato, escribe "sin dato", nunca 0. CVSS con un \
 decimal, como viene.
 - Si das el número de equipos, que sea el total exacto (n_equipos).
 - No minimices: no digas que no hay riesgo, que ya está parchado ni que se puede ignorar.
