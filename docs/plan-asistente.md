@@ -138,7 +138,7 @@ un cambio; mi-equipo preguntando por otro equipo; pedir un EPSS que ninguna herr
 | Fase | Estado |
 |---|---|
 | 1 a 4 | Hechas. `radar/asistente/`, `radar/api/asistente.py`, `public/asistente*.js`, `public/mi-equipo/asistente.js` |
-| 5 | Hecha. `tests/test_asistente.py` (32) y `tests/e2e/asistente.spec.mjs` (8), modelo simulado, US$0 |
+| 5 | Hecha. `tests/test_asistente.py` (32) y `tests/e2e/asistente.spec.mjs` (9), modelo simulado, US$0 |
 | 6 | Pendiente: banco con el modelo real, con permiso explícito en el momento |
 
 Decisiones de implementación:

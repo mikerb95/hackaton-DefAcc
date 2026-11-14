@@ -223,7 +223,7 @@ def _preparar_equipo(e: EntradaEquipo, _ctx: Contexto) -> Preparada:
         vista=vista_cambio(
             "Equipo",
             equipo.nombre,
-            f"Inscrito {equipo.inscrito}"
+            f"Inscrito el {str(equipo.inscrito)[:10]}"
             + (f", agente {equipo.agente_version}" if equipo.agente_version else ""),
             [("Estado", "Pendiente de aprobar", "Aprobado")],
             [
