@@ -100,8 +100,8 @@ productos y versiones de prueba se armó ese mismo día con esos datos públicos
 Fuente tipográfica del dashboard: [Inter](https://rsms.me/inter/) (SIL Open Font License),
 servida por Google Fonts.
 
-Servicios: [Vercel](https://vercel.com) (API y dashboard) y [Turso](https://turso.tech)
-(base de datos). Gestor de entorno: [uv](https://docs.astral.sh/uv/).
+Servicios: [Vercel](https://vercel.com) (API y dashboard), [Turso](https://turso.tech)
+(base de datos) y [ntfy](https://ntfy.sh) (avisos push, Apache-2.0 y GPLv2, opcional). Gestor de entorno: [uv](https://docs.astral.sh/uv/).
 
 ## Agente local (rama `agente-local`)
 
@@ -151,3 +151,8 @@ Claude Code (Claude Opus 5.5, Anthropic) diseñó e implementó el asistente con
 y de Mi equipo (bucle con pausa para aprobar, herramientas por rol, tarjeta de antes y
 después, auditoría, topes de gasto, privacidad, interfaz y pruebas con Playwright), a partir
 de la receta `panel-ia` de Mike (`docs/plan-asistente.md`).
+
+## Avisos por ntfy
+
+Claude Code (Claude Opus 5.5, Anthropic) implementó el aviso push de vulnerabilidades
+críticas nuevas por ntfy (`radar/avisos/ntfy.py`, `tests/test_ntfy.py`, RF-618).
