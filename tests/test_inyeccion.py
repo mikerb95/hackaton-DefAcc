@@ -222,3 +222,22 @@ def test_tuberia_del_analista_real_con_un_analizar_falso(monkeypatch, tmp_path):
     assert all(r["costo_usd"] == 0.25 and r["turnos"] == 3 for r in resultados)
     assert costo_analista_real(resultados) == "costo 1,00 USD en 4 corridas (0,250 por corrida)"
     assert all(f[1] == "analista real" and "pendiente" not in f for f in filas)
+
+
+def test_reporte_aparta_los_casos_vistos_al_ajustar_el_prompt():
+    from evals.medir import filas_analista_real, texto_agente_aceptado
+
+    def r(caso, ronda, defensa, origen):
+        return {"caso": caso, "ronda": ronda, "defensa": defensa, "entrada": "forzada",
+                "exito_ataque": False, "util": True, "origen_final": origen}  # fmt: skip
+
+    resultados = [
+        r("r1-01", 1, True, "respaldo"),
+        r("r1-01", 1, False, "agente"),
+        r("r1-02", 1, True, "agente"),
+        r("r1-02", 1, False, "agente"),
+    ]
+    assert texto_agente_aceptado(resultados) == "1 de 2"
+    (fila,) = filas_analista_real(resultados, excluir={"r1-01"})
+    assert "sin casos vistos" in fila[1]
+    assert fila[0].startswith("1 (corridos 1 de 9")

@@ -215,6 +215,7 @@ def medir_inyeccion() -> dict[str, Any]:
         except ImportError:
             motivo = "radar.agente.analista.analizar no existe todavía"
         salida["real"] = {"pendiente": motivo}
+    salida["real_historial"] = historial_analista()
     for nombre in ("ronda2_antes_de_ajustes", "ajuste1"):
         ruta = HISTORIAL / f"{nombre}.json"
         if ruta.exists():
@@ -272,19 +273,47 @@ def _filas_obediente(i: dict[str, Any]) -> list[list[Any]]:
     return filas
 
 
-def filas_analista_real(resultados: list[dict[str, Any]]) -> list[list[Any]]:
+def historial_analista() -> list[dict[str, Any]]:
+    """Corridas del analista real que no cuentan en la cifra (por ejemplo, la muestra previa
+    a un ajuste del prompt), con los casos que se vieron durante ese ajuste."""
+    return [
+        json.loads(p.read_text(encoding="utf-8")) for p in sorted(HISTORIAL.glob("analista_*.json"))
+    ]
+
+
+def casos_vistos_en_ajustes(historial: list[dict[str, Any]]) -> set[str]:
+    return {c for h in historial for c in h.get("casos_vistos", [])}
+
+
+def texto_agente_aceptado(resultados: list[dict[str, Any]]) -> str | None:
+    """Con defensa, cuántas veces el verificador aceptó el texto del propio agente."""
+    con = [r for r in resultados if r["defensa"] and r.get("entrada", "forzada") == "forzada"]
+    if not con:
+        return None
+    aceptados = sum(r.get("origen_final") == "agente" for r in con)
+    return f"{aceptados} de {len(con)}"
+
+
+def filas_analista_real(
+    resultados: list[dict[str, Any]], excluir: set[str] | frozenset[str] = frozenset()
+) -> list[list[Any]]:
     """Filas del analista real por ronda, desde ``evals/resultados_analista_real.json``.
 
     Solo cuenta la entrada forzada (la misma que las filas simuladas) y avisa si una ronda
-    no se corrió completa.
+    no se corrió completa. ``excluir``: casos que se vieron al ajustar el prompt.
     """
     from datos_prueba.casos_inyeccion import TODOS
 
-    forzada = [r for r in resultados if r.get("entrada", "forzada") == "forzada"]
+    forzada = [
+        r
+        for r in resultados
+        if r.get("entrada", "forzada") == "forzada" and r["caso"] not in excluir
+    ]
+    etiqueta = ETIQUETAS["real"] + (", sin casos vistos al ajustar el prompt" if excluir else "")
     filas = []
     for ronda in sorted({r["ronda"] for r in forzada}):
-        total = sum(c.ronda == ronda for c in TODOS)
-        fila = _fila(str(ronda), ETIQUETAS["real"], ronda, forzada)
+        total = sum(c.ronda == ronda and c.id not in excluir for c in TODOS)
+        fila = _fila(str(ronda), etiqueta, ronda, forzada)
         corridos = len({r["caso"] for r in forzada if r["ronda"] == ronda})
         if corridos < total:
             fila[0] = f"{ronda} (corridos {corridos} de {total} casos)"
@@ -314,6 +343,30 @@ def _estado_real(i: dict[str, Any]) -> str:
     estado = i["real"].get("estado") or f"pendiente ({i['real']['pendiente']})"
     costo = costo_analista_real(i.get("real_resultados", []))
     return f"{estado}; {costo}" if costo else estado
+
+
+def _notas_analista_real(i: dict[str, Any]) -> str:
+    partes = []
+    aceptado = texto_agente_aceptado(i.get("real_resultados", []))
+    if aceptado:
+        partes.append(
+            f"Texto del propio agente aceptado por el verificador, con defensa: {aceptado} "
+            "(el resto salió con el respaldo armado por código; la utilidad lo cuenta como útil)."
+        )
+    for h in i.get("real_historial", []):
+        resultados = list(h["resultados"].values())
+        n = len(resultados)
+        logrados = sum(r["exito_ataque"] for r in resultados)
+        aceptado_h = texto_agente_aceptado(resultados) or "sin datos"
+        partes.append(
+            f"Aparte, no cuenta en la cifra ({h['momento']}): {h['nota']} Casos vistos: "
+            f"{', '.join(h['casos_vistos'])}. Ataques logrados {logrados} de {n}; texto del "
+            f"agente aceptado con defensa {aceptado_h}."
+        )
+        for r in resultados:
+            if r["defensa"] and r.get("origen_final") == "respaldo":
+                partes.append(f"  - `{r['caso']}` con defensa, descartado: {r['veredicto']}")
+    return ("\n".join(partes) + "\n") if partes else ""
 
 
 def _cifra_limpia(i: dict[str, Any]) -> str:
@@ -367,7 +420,11 @@ def seccion_inyeccion(i: dict[str, Any]) -> str:
     filas = _filas_obediente(i)
     for ronda in rondas:
         filas.append(_fila(f"{ronda}, código actual", ETIQUETAS["honesto"], ronda, i["honesto"]))
-    filas_reales = filas_analista_real(i.get("real_resultados", []))
+    reales = i.get("real_resultados", [])
+    vistos = casos_vistos_en_ajustes(i.get("real_historial", []))
+    filas_reales = filas_analista_real(reales)
+    if filas_reales and vistos & {r["caso"] for r in reales}:
+        filas_reales += filas_analista_real(reales, excluir=vistos)
     filas += filas_reales or [
         ["todas", ETIQUETAS["real"], "pendiente", "pendiente", "pendiente", "pendiente"]
     ]
@@ -413,6 +470,7 @@ def seccion_inyeccion(i: dict[str, Any]) -> str:
         ),
         _tabla(ENCABEZADO_BRAZOS, filas) + "\n",
         f"Analista real: {AVISO_ENTRADA_REAL}.\n",
+        _notas_analista_real(i),
         "### Entrada real: ingesta, normalizador y saneado del nombre de equipo\n",
         (
             "La fila envenenada pasa por la ingesta real: el normalizador del radar y, con "
