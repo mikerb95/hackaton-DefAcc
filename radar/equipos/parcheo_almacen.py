@@ -21,7 +21,7 @@ ACTIVOS = (APROBADO, ENTREGADO)
 
 _COLUMNAS = (
     "id, equipo_id, estado, canonico, firma, clave, aprobado_por, creado, vence, entregado, "
-    "entregas, antes, resultado, recibido, cancelado_por"
+    "entregas, antes, resultado, recibido, posterior, cancelado_por"
 )
 
 
@@ -184,3 +184,15 @@ def cancelar(conexion: Any, plan_id: str, por: str) -> bool:
     )
     conexion.commit()
     return cursor.rowcount > 0
+
+
+def marcar_inventario_posterior(conexion: Any, equipo_id: str, momento: str) -> int:
+    """Llegó un inventario del equipo después del resultado: desde ahora el cruce sirve de
+    verificación independiente de lo que dijo el agente."""
+    cursor = conexion.execute(
+        "UPDATE planes_parcheo SET posterior = ? "
+        "WHERE equipo_id = ? AND resultado IS NOT NULL AND posterior IS NULL",
+        [momento, equipo_id],
+    )
+    conexion.commit()
+    return cursor.rowcount

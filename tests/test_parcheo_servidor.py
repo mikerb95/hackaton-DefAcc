@@ -4,6 +4,7 @@ Usa la API del agente sobre la base temporal de `test_agente_api.py`: un Windows
 WinRAR 5.61 (CVE en KEV), una CVE del propio Windows y el firewall apagado.
 """
 
+# ruff: noqa: F811
 from __future__ import annotations
 
 import base64
@@ -28,37 +29,37 @@ def _b64(datos: bytes) -> str:
 
 
 @pytest.fixture
-def equipo(cliente):  # noqa: F811
+def equipo(cliente):
     equipo_id, credencial = _inscribir(cliente)
     assert _enviar(cliente, credencial, _reporte(equipo_id)).status_code == 202
     return equipo_id, credencial
 
 
 @pytest.fixture
-def con_clave(cliente):  # noqa: F811
+def con_clave(cliente):
     r = cliente.post("/api/parcheo/claves", json={"publica": _b64(PUBLICA), "nombre": "TI"})
     assert r.status_code == 200, r.text
     return r.json()["huella"]
 
 
-def _propuesta(cliente, equipo_id):  # noqa: F811
+def _propuesta(cliente, equipo_id):
     r = cliente.get(f"/api/equipos/{equipo_id}/parcheo")
     assert r.status_code == 200, r.text
     return r.json()
 
 
-def _borrador(cliente, equipo_id, ids):  # noqa: F811
+def _borrador(cliente, equipo_id, ids):
     return cliente.post(f"/api/equipos/{equipo_id}/parcheo/borrador", json={"acciones": ids})
 
 
-def _firmado(cliente, equipo_id, ids, semilla=SEMILLA):  # noqa: F811
+def _firmado(cliente, equipo_id, ids, semilla=SEMILLA):
     r = _borrador(cliente, equipo_id, ids)
     assert r.status_code == 200, r.text
     canonico = r.json()["plan"]
     return canonico, _b64(ed25519.firmar(semilla, canonico.encode("ascii")))
 
 
-def _registrar(cliente, equipo_id, canonico, firma):  # noqa: F811
+def _registrar(cliente, equipo_id, canonico, firma):
     return cliente.post(
         f"/api/equipos/{equipo_id}/parcheo", json={"plan": canonico, "firma": firma}
     )
@@ -67,7 +68,7 @@ def _registrar(cliente, equipo_id, canonico, firma):  # noqa: F811
 # -- propuesta (RF-821) --------------------------------------------------------
 
 
-def test_propuesta_sale_del_catalogo_cerrado(cliente, equipo):  # noqa: F811
+def test_propuesta_sale_del_catalogo_cerrado(cliente, equipo):
     equipo_id, _ = equipo
     propuesta = _propuesta(cliente, equipo_id)["propuesta"]
     ids = [a["id"] for a in propuesta["acciones"]]
@@ -82,7 +83,7 @@ def test_propuesta_sale_del_catalogo_cerrado(cliente, equipo):  # noqa: F811
     assert any("cifr" in m["titulo"].lower() for m in propuesta["manuales"])
 
 
-def test_equipo_pendiente_no_tiene_propuesta(cliente, monkeypatch):  # noqa: F811
+def test_equipo_pendiente_no_tiene_propuesta(cliente, monkeypatch):
     monkeypatch.setenv("AGENTE_APROBACION", "manual")
     equipo_id, credencial = _inscribir(cliente, nombre="PENDIENTE-1")
     _enviar(cliente, credencial, _reporte(equipo_id, "PENDIENTE-1"))
@@ -94,7 +95,7 @@ def test_equipo_pendiente_no_tiene_propuesta(cliente, monkeypatch):  # noqa: F81
 # -- borrador, firma y registro (RF-822) ---------------------------------------
 
 
-def test_flujo_completo_firma_entrega_y_resultado(cliente, equipo, con_clave):  # noqa: F811
+def test_flujo_completo_firma_entrega_y_resultado(cliente, equipo, con_clave):
     equipo_id, credencial = equipo
     canonico, firma = _firmado(cliente, equipo_id, ["postura:firewall", "app:RARLab.WinRAR"])
     plan = json.loads(canonico)
@@ -163,7 +164,7 @@ def test_flujo_completo_firma_entrega_y_resultado(cliente, equipo, con_clave):  
     assert historial[0]["plan_id"] == plan["plan_id"] and historial[0]["estado"] == "ejecutado"
 
 
-def test_inventario_posterior_confirma_en_el_radar(cliente, equipo, con_clave):  # noqa: F811
+def test_inventario_posterior_confirma_en_el_radar(cliente, equipo, con_clave):
     equipo_id, credencial = equipo
     canonico, firma = _firmado(cliente, equipo_id, ["app:RARLab.WinRAR", "postura:firewall"])
     assert _registrar(cliente, equipo_id, canonico, firma).status_code == 200
@@ -196,14 +197,14 @@ def test_inventario_posterior_confirma_en_el_radar(cliente, equipo, con_clave): 
     assert informe["estado_general"] == "exito"
 
 
-def test_firma_de_otra_clave_no_se_guarda(cliente, equipo, con_clave):  # noqa: F811
+def test_firma_de_otra_clave_no_se_guarda(cliente, equipo, con_clave):
     equipo_id, _ = equipo
     canonico, _ = _firmado(cliente, equipo_id, ["postura:firewall"])
     ajena = _b64(ed25519.firmar(os.urandom(32), canonico.encode()))
     assert _registrar(cliente, equipo_id, canonico, ajena).status_code == 403
 
 
-def test_plan_alterado_despues_de_firmar(cliente, equipo, con_clave):  # noqa: F811
+def test_plan_alterado_despues_de_firmar(cliente, equipo, con_clave):
     equipo_id, _ = equipo
     canonico, firma = _firmado(cliente, equipo_id, ["app:RARLab.WinRAR"])
     plan = json.loads(canonico)
@@ -217,7 +218,7 @@ def test_plan_alterado_despues_de_firmar(cliente, equipo, con_clave):  # noqa: F
     assert _registrar(cliente, equipo_id, raro, firma_rara).status_code == 422
 
 
-def test_accion_que_no_esta_en_la_propuesta(cliente, equipo, con_clave):  # noqa: F811
+def test_accion_que_no_esta_en_la_propuesta(cliente, equipo, con_clave):
     equipo_id, _ = equipo
     canonico, _ = _firmado(cliente, equipo_id, ["app:RARLab.WinRAR"])
     plan = json.loads(canonico)
@@ -227,7 +228,7 @@ def test_accion_que_no_esta_en_la_propuesta(cliente, equipo, con_clave):  # noqa
     assert r.status_code == 409 and "no coincide" in r.json()["detail"]
 
 
-def test_plan_de_otro_equipo_y_borrador_vencido(cliente, equipo, con_clave):  # noqa: F811
+def test_plan_de_otro_equipo_y_borrador_vencido(cliente, equipo, con_clave):
     equipo_id, _ = equipo
     otro_id, credencial_otro = _inscribir(cliente, nombre="EQUIPO-099")
     _enviar(cliente, credencial_otro, _reporte(otro_id, "EQUIPO-099"))
@@ -240,7 +241,7 @@ def test_plan_de_otro_equipo_y_borrador_vencido(cliente, equipo, con_clave):  # 
     assert r.status_code == 409 and "venció" in r.json()["detail"]
 
 
-def test_clave_revocada_y_un_plan_activo_por_equipo(cliente, equipo, con_clave):  # noqa: F811
+def test_clave_revocada_y_un_plan_activo_por_equipo(cliente, equipo, con_clave):
     equipo_id, credencial = equipo
     canonico, firma = _firmado(cliente, equipo_id, ["postura:firewall"])
     assert _registrar(cliente, equipo_id, canonico, firma).status_code == 200
@@ -261,7 +262,7 @@ def test_clave_revocada_y_un_plan_activo_por_equipo(cliente, equipo, con_clave):
 # -- lo que llama el agente (RF-823) -------------------------------------------
 
 
-def test_el_agente_solo_ve_sus_planes(cliente, equipo, con_clave):  # noqa: F811
+def test_el_agente_solo_ve_sus_planes(cliente, equipo, con_clave):
     equipo_id, credencial = equipo
     otro_id, credencial_otro = _inscribir(cliente, nombre="EQUIPO-100")
     assert cliente.get("/api/agente/plan").status_code == 401
@@ -269,7 +270,9 @@ def test_el_agente_solo_ve_sus_planes(cliente, equipo, con_clave):  # noqa: F811
     canonico, firma = _firmado(cliente, equipo_id, ["postura:firewall"])
     _registrar(cliente, equipo_id, canonico, firma)
     assert (
-        cliente.get("/api/agente/plan", headers={"X-Credencial-Equipo": credencial_otro}).status_code
+        cliente.get(
+            "/api/agente/plan", headers={"X-Credencial-Equipo": credencial_otro}
+        ).status_code
         == 204
     )
     # El resultado de un plan ajeno o con otra huella se rechaza.
@@ -306,7 +309,7 @@ def test_el_agente_solo_ve_sus_planes(cliente, equipo, con_clave):  # noqa: F811
     assert r.status_code == 422
 
 
-def test_revocar_el_equipo_corta_la_entrega(cliente, equipo, con_clave):  # noqa: F811
+def test_revocar_el_equipo_corta_la_entrega(cliente, equipo, con_clave):
     equipo_id, credencial = equipo
     canonico, firma = _firmado(cliente, equipo_id, ["postura:firewall"])
     _registrar(cliente, equipo_id, canonico, firma)
@@ -317,12 +320,13 @@ def test_revocar_el_equipo_corta_la_entrega(cliente, equipo, con_clave):  # noqa
     )
 
 
-def test_claves_mal_formadas(cliente):  # noqa: F811
+def test_claves_mal_formadas(cliente):
     corta = cliente.post("/api/parcheo/claves", json={"publica": _b64(b"x" * 31), "nombre": "a"})
     assert corta.status_code == 422
     assert (
-        cliente.post("/api/parcheo/claves", json={"publica": "no-es-base64!" * 4, "nombre": "a"})
-        .status_code
+        cliente.post(
+            "/api/parcheo/claves", json={"publica": "no-es-base64!" * 4, "nombre": "a"}
+        ).status_code
         == 422
     )
     ok = cliente.post("/api/parcheo/claves", json={"publica": _b64(PUBLICA), "nombre": "a"})
@@ -341,7 +345,7 @@ def test_plan_entregado_cuenta_las_entregas(cliente, equipo, con_clave, base_tem
     assert plan["estado"] == "entregado" and plan["entregas"] == 2
 
 
-def test_id_de_plan_es_uuid_nuevo(cliente, equipo, con_clave):  # noqa: F811
+def test_id_de_plan_es_uuid_nuevo(cliente, equipo, con_clave):
     equipo_id, _ = equipo
     a = json.loads(_borrador(cliente, equipo_id, ["postura:firewall"]).json()["plan"])
     b = json.loads(_borrador(cliente, equipo_id, ["postura:firewall"]).json()["plan"])

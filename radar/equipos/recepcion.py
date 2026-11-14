@@ -20,6 +20,7 @@ El servidor nunca devuelve órdenes al agente.
 from __future__ import annotations
 
 import json
+import sys
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from typing import Any
@@ -192,7 +193,19 @@ def procesar(
             recibido.trabajos.append(bd.crear_trabajo(conexion, "analizar", DETALLE_ANALISIS))
     if paquetes and not almacen.trabajo_pendiente(conexion, TRABAJO_SO, equipo.id):
         recibido.trabajos.append(bd.crear_trabajo(conexion, TRABAJO_SO, equipo.id))
+    _marcar_planes(conexion, equipo.id)
     return recibido
+
+
+def _marcar_planes(conexion: Any, equipo_id: str) -> None:
+    """Planes de parcheo con resultado: este inventario es su verificación independiente.
+    Un fallo aquí no puede tumbar la recepción del reporte (docs/plan-parcheo.md)."""
+    from radar.equipos import parcheo_almacen
+
+    try:
+        parcheo_almacen.marcar_inventario_posterior(conexion, equipo_id, bd.ahora())
+    except Exception as error:  # noqa: BLE001
+        print(f"[radar] no se marcaron los planes de {equipo_id}: {error}", file=sys.stderr)
 
 
 # ---------------------------------------------------------------------------

@@ -231,6 +231,7 @@ CREATE TABLE IF NOT EXISTS planes_parcheo (
   antes TEXT,                    -- JSON: exposición del equipo al aprobar
   resultado TEXT,                -- JSON del resultado que envió el agente (limpio)
   recibido TEXT,
+  posterior TEXT,                -- primer inventario del equipo llegado después del resultado
   cancelado_por TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_planes_equipo ON planes_parcheo (equipo_id);

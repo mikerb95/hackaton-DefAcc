@@ -190,15 +190,6 @@ def _cves_abiertas(conexion: Any, equipo: almacen.Equipo) -> set[str]:
     return abiertas
 
 
-def _momento(texto: str | None) -> datetime | None:
-    if not texto:
-        return None
-    try:
-        return datetime.fromisoformat(texto)
-    except ValueError:
-        return None
-
-
 def estado_general(plan: dict[str, Any]) -> str:
     """exito, parcial, requiere_atencion, rechazado, pendiente o cancelado."""
     if plan["estado"] == tablas.CANCELADO:
@@ -268,10 +259,8 @@ def informe(conexion: Any, plan_id: str) -> dict[str, Any] | None:
     equipo = almacen.leer_equipo(conexion, plan["equipo_id"])
     resultado = plan.get("resultado")
     por_id = {a["id"]: a for a in (resultado or {}).get("acciones", [])}
-    # Las dos horas son del servidor: el reloj del equipo no es confiable.
-    recibido = _momento(plan.get("recibido"))
-    ultimo = _momento(equipo.ultimo_reporte) if equipo else None
-    verificable = bool(resultado and recibido and ultimo and ultimo >= recibido)
+    # Lo marca la recepción del primer inventario posterior al resultado (hora del servidor).
+    verificable = bool(resultado and plan.get("posterior") and equipo)
     abiertas = _cves_abiertas(conexion, equipo) if equipo else set()
     postura = equipo.postura.model_dump() if equipo and equipo.postura else None
 
