@@ -24,21 +24,26 @@ def agrupar_producto(
     producto: str, hallazgos: list[Hallazgo], umbrales: Umbrales | None = None
 ) -> Grupo:
     umbrales = umbrales or Umbrales()
-    versiones = sorted({h.version_instalada for h in hallazgos}, key=_orden_version)
-    equipos = sorted({e for h in hallazgos for e in h.equipos})
-    cves = sorted({h.cve for h in hallazgos})
-    en_kev = sorted({h.cve for h in hallazgos if h.kev})
-    ransomware = any(h.ransomware for h in hallazgos)
-    cvss = [h.cvss for h in hallazgos if h.cvss is not None]
-    epss = [h.epss for h in hallazgos if h.epss is not None]
+    # El grupo se arma con los hallazgos precisos. Los no precisos (NVD no acota versión) no
+    # suman equipos, versiones ni CVE, y no bloquean la versión objetivo: quedan como razón
+    # aparte para que una persona los confirme. Si el producto solo tiene no precisos, el grupo
+    # sale de ellos (informativo y sin versión objetivo).
+    precisos = [h for h in hallazgos if h.preciso]
+    base = precisos or hallazgos
+    no_precisas = sorted({h.cve for h in hallazgos if not h.preciso} - {h.cve for h in precisos})
+
+    versiones = sorted({h.version_instalada for h in base}, key=_orden_version)
+    equipos = sorted({e for h in base for e in h.equipos})
+    cves = sorted({h.cve for h in base})
+    en_kev = sorted({h.cve for h in base if h.kev})
+    ransomware = any(h.ransomware for h in base)
+    cvss = [h.cvss for h in base if h.cvss is not None]
+    epss = [h.epss for h in base if h.epss is not None]
     peor_cvss = max(cvss) if cvss else None
     peor_epss = max(epss) if epss else None
-    no_precisas = sorted({h.cve for h in hallazgos if not h.preciso})
 
-    objetivo = objetivo_de_producto(
-        objetivo_de_rango(h.rango if h.preciso else None) for h in hallazgos
-    )
-    prioridad = min((h.prioridad for h in hallazgos), key=ORDEN_PRIORIDAD.__getitem__)
+    objetivo = objetivo_de_producto(objetivo_de_rango(h.rango if h.preciso else None) for h in base)
+    prioridad = min((h.prioridad for h in base), key=ORDEN_PRIORIDAD.__getitem__)
 
     razones: list[str] = []
     if en_kev:
