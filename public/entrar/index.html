@@ -65,7 +65,7 @@
           error.textContent = "Escribe tu usuario y tu contraseña.";
           return;
         }
-        const boton = form.querySelector("button");
+        const boton = form.querySelector("button[type=\"submit\"]");
         boton.disabled = true;
         error.textContent = "";
         try {

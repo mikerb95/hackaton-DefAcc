@@ -350,7 +350,7 @@ button:disabled { opacity: 0.5; cursor: default; }
 
 /* Campo de contraseña con botón para mostrar u ocultar (clave.js) */
 .clave-campo { position: relative; display: block; }
-.clave-campo input { width: 100%; padding-right: 40px; }
+.clave-campo .clave-entrada { width: 100%; padding-right: 40px; }
 .clave-ver {
   position: absolute; top: 50%; right: 4px; transform: translateY(-50%);
   display: grid; place-items: center; width: 32px; height: 32px; padding: 0;

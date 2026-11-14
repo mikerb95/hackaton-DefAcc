@@ -16,6 +16,7 @@
   function preparar(campo) {
     if (campo.dataset.claveLista) return;
     campo.dataset.claveLista = "1";
+    campo.classList.add("clave-entrada");
     // Mover el campo le quita el foco (admin.js enfoca la fila nueva apenas la crea).
     const teniaFoco = document.activeElement === campo;
     const envoltura = document.createElement("span");
