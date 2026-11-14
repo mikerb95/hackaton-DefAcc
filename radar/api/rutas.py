@@ -75,7 +75,19 @@ def analisis(producto: str) -> dict:
         "guardado": guardado,
         "pendiente": analisis is None,
         "aprobacion": datos.aprobacion(producto),
+        "comandos": _comandos(grupo, datos.hallazgos(texto=producto)),
     }
+
+
+def _comandos(grupo: Grupo, hallazgos: list) -> list[dict]:
+    """Comandos de remediación del producto, armados por plantillas del código (nunca por el
+    modelo). Vacío si el producto no tiene plantilla."""
+    from radar.equipos.remediacion import comandos_de_grupo
+
+    propios = [h for h in hallazgos if h.producto == grupo.producto]
+    return [
+        {"plataforma": c.plataforma, "texto": c.texto} for c in comandos_de_grupo(grupo, propios)
+    ]
 
 
 def _respaldo(grupo: Grupo):
@@ -126,6 +138,18 @@ def _normalizador():
     return normalizar
 
 
+def _cruce_con_agentes(conexion):
+    """Si hay equipos con agente local, cruza todo el inventario guardado (archivos, reportes
+    y sistema operativo) y devuelve el resultado; si no hay, None y el cruce es el de siempre.
+    Cruzar solo el archivo propondría como resueltos los hallazgos que vienen de los agentes."""
+    from radar.equipos import almacen
+    from radar.equipos.cruce import recruzar
+
+    if not almacen.hay_equipos(conexion):
+        return None
+    return recruzar(conexion).resultado
+
+
 def _cruzar_inventario(filas: list) -> dict:
     """Guarda el inventario, normaliza, cruza contra las CVE guardadas y deja un trabajo de
     análisis. Sin normalizador solo guarda las filas y lo dice."""
@@ -139,8 +163,10 @@ def _cruzar_inventario(filas: list) -> dict:
         bd.guardar_inventario(conexion, filas)
         if normalizar is None:
             return {"cruce": "pendiente", "motivo": "Falta el normalizador."}
-        activos, cobertura = normalizar(filas)
-        resultado = correr(conexion, activos, cobertura)
+        resultado = _cruce_con_agentes(conexion)
+        if resultado is None:
+            activos, cobertura = normalizar(filas)
+            resultado = correr(conexion, activos, cobertura)
         trabajo = bd.crear_trabajo(conexion, "analizar", "inventario cargado desde el panel")
     finally:
         conexion.close()

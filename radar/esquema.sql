@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS inventario (
   version TEXT,
   proveedor TEXT,
   sistema TEXT,
-  fuente TEXT NOT NULL,          -- csv, excel, mcp, rmm
+  fuente TEXT NOT NULL,          -- csv, excel, mcp, rmm, agente
   cargado TEXT NOT NULL
 );
 
@@ -119,7 +119,7 @@ CREATE TABLE IF NOT EXISTS cobertura (
 
 CREATE TABLE IF NOT EXISTS trabajos (
   id INTEGER PRIMARY KEY,
-  tipo TEXT NOT NULL,            -- descargar, analizar
+  tipo TEXT NOT NULL,            -- descargar, analizar, cruzar_so
   estado TEXT NOT NULL DEFAULT 'pendiente',  -- pendiente, en_curso, hecho, fallido
   creado TEXT,
   terminado TEXT,
@@ -142,4 +142,57 @@ CREATE TABLE IF NOT EXISTS trazas (
   herramienta TEXT,
   entrada TEXT,
   decision TEXT                  -- permitida, negada, limpiada, aprobacion_pedida
+);
+
+-- ---------------------------------------------------------------------------
+-- Agente local (docs/plan-agente-local.md). Lo escribe radar/equipos/almacen.py.
+-- ---------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS equipos (
+  id TEXT PRIMARY KEY,           -- uuid que genera el agente al instalarse
+  nombre TEXT NOT NULL,          -- nombre saneado (RFC 1123): el que va a inventario.equipo
+  credencial TEXT NOT NULL,      -- SHA-256 de la credencial del equipo, nunca la credencial
+  inscrito TEXT NOT NULL,
+  ultimo_reporte TEXT,           -- NULL: inscrito pero todavía sin reporte
+  agente_version TEXT,
+  revocado INTEGER DEFAULT 0,
+  so TEXT,                       -- JSON (SistemaReportado)
+  hardware TEXT,                 -- JSON (HardwareReportado)
+  postura TEXT,                  -- JSON (PosturaReportada)
+  recortes TEXT                  -- JSON: qué se recortó o descartó del último reporte
+);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_equipos_credencial ON equipos (credencial);
+
+-- Paquetes de la distribución (dpkg, rpm). No van a `inventario`: se cruzan contra OSV,
+-- no contra el CPE de NVD.
+CREATE TABLE IF NOT EXISTS paquetes_so (
+  equipo_id TEXT NOT NULL,
+  nombre TEXT NOT NULL,
+  version TEXT NOT NULL,
+  fuente TEXT NOT NULL,          -- dpkg, rpm
+  origen TEXT,                   -- paquete fuente
+  version_origen TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_paquetes_equipo ON paquetes_so (equipo_id);
+
+CREATE TABLE IF NOT EXISTS hallazgos_equipo (
+  id TEXT PRIMARY KEY,           -- equipo_id|tipo|clave
+  equipo_id TEXT NOT NULL,
+  tipo TEXT NOT NULL,            -- postura, so_sin_soporte, paquete
+  clave TEXT NOT NULL,
+  titulo TEXT NOT NULL,
+  prioridad TEXT NOT NULL,
+  por_que TEXT,                  -- JSON
+  pasos TEXT,
+  comandos TEXT,                 -- JSON: solo comandos armados por plantillas del código
+  detalle TEXT,                  -- JSON
+  detectado TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_hallazgos_equipo ON hallazgos_equipo (equipo_id);
+
+-- Caché de avisos de OSV (un GET por aviso; no se vuelve a pedir si no cambió).
+CREATE TABLE IF NOT EXISTS osv_avisos (
+  id TEXT PRIMARY KEY,
+  modificado TEXT,
+  contenido TEXT                 -- JSON del aviso, reducido a lo que se usa
 );

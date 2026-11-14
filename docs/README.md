@@ -32,6 +32,8 @@ salida de pytest. Si un número no coincide entre páginas, es un error.
 | [contrato-analista.md](contrato-analista.md) | Contrato autocontenido del analista con Agent SDK (frente externo): archivos, funciones disponibles, firma que espera la suite de inyección y reglas | 1 frente externo |
 | [escalamiento.md](escalamiento.md) | Escalera de escalamiento: qué pasa con una alerta según su prioridad, de panel a ticket y a teléfono | peldaños |
 | [guion-demo.md](guion-demo.md) | Guion de la demo de 3 minutos: preparación, seis pasos con lo que se dice, lámina de números y qué hacer si algo falla | 3 minutos |
+| [plan-agente-local.md](plan-agente-local.md) | Plan del agente local de inventario para Windows y Linux | 6 fases |
+| [agente-local.md](agente-local.md) | Qué se construyó del agente local, cómo probarlo, qué se comprobó contra las fuentes y qué falta | estado por fase |
 | [AMENAZAS.md](AMENAZAS.md) | Modelo de amenazas del agente y del inventario | vectores |
 | [LIMITES.md](LIMITES.md) | Lo que el radar no detecta y el riesgo de uso dual | límites conocidos |
 | [../CREDITOS.md](../CREDITOS.md) | Lo generado con IA y las fuentes de datos usadas | se completa al cierre |
@@ -51,6 +53,7 @@ salida de pytest. Si un número no coincide entre páginas, es un error.
 | RF-5NN | Seguridad (verificador, hooks, guarda, suite de inyección) |
 | RF-6NN | API y panel |
 | RF-7NN | Plugin de Claude Code |
+| RF-8NN | Agente local (recolector, recepción, sistema operativo, postura, remediación) |
 
 ## Córrelo tú mismo
 

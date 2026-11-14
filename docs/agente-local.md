@@ -1,0 +1,154 @@
+# Agente local de inventario
+
+Qué se construyó del plan de [plan-agente-local.md](plan-agente-local.md), cómo se usa y qué
+falta. Todo esto vive en la rama `agente-local`.
+
+El agente es un programa pequeño que corre en cada PC con Windows o Linux, levanta el
+inventario (software, sistema operativo, parches, hardware y postura de seguridad) y lo envía
+al radar. El radar lo cruza y muestra, por equipo, qué está mal y cómo resolverlo. Reemplaza
+al CSV y al RMM para quien no tiene ninguno de los dos.
+
+## Estado por fase del plan
+
+| Fase del plan | Estado | Dónde |
+|---|---|---|
+| 0. Colector que escribe el CSV actual y lo sube | Hecho y probado en un PC con Windows 11 | `agente_local/`, orden `subir-csv` |
+| 1. Contrato `ReporteEquipo`, inscripción, reporte, tablas, vista por equipo | Hecho | `radar/equipos/`, `radar/api/agente.py`, `public/` |
+| 2. Cruce de sistema operativo: Windows con NVD, Linux con OSV, fin de soporte | Hecho. Falta MSRC (qué KB corrige cada CVE) | `radar/equipos/so.py`, `paquetes.py`, `radar/fuentes/osv.py`, `finsoporte.py` |
+| 3. Agente empaquetado y firmado | Parcial: agente en Python con instaladores de desarrollo. Faltan el binario en Go, el MSI, el `.deb` y el `.rpm` firmados | `agente_local/instalacion/` |
+| 4. Remediación con plantillas, verificador ampliado y reglas de postura | Hecho | `radar/equipos/remediacion.py`, `comandos.py`, `postura.py`, `radar/agente/verificador.py` |
+| 5. Piloto con una flota real | No hecho: necesita equipos reales y permiso escrito | |
+
+## Probarlo en cinco pasos
+
+Todo en local, con sqlite. Solo en máquinas del equipo (regla del evento).
+
+```bash
+uv sync --all-extras
+
+# 1. Radar con base y la inscripción abierta
+export RADAR_DATOS=base AGENTE_TOKEN_INSCRIPCION=un-token-largo
+uv run python -m worker.descargar --en-linea --pares rarlab:winrar google:chrome
+uv run uvicorn app:app --port 8000
+
+# 2. En el PC: ver qué recoge, sin enviar nada
+python -m agente_local recoger --salida reporte.json
+
+# 3. Inscribir el PC (canjea el token por la credencial del equipo)
+RADAR_AGENTE_TOKEN=un-token-largo python -m agente_local inscribir --url http://localhost:8000
+
+# 4. Enviar el reporte
+python -m agente_local enviar
+
+# 5. Si el PC es Linux, cruzar sus paquetes contra OSV
+uv run python -m worker.equipos
+```
+
+El panel (http://localhost:8000/) muestra la sección "Equipos con agente". Al abrir un equipo
+se ve qué hacer en él, con el comando cuando hay plantilla, y qué no se pudo revisar.
+
+Para que el sistema operativo Windows se cruce, el worker tiene que bajar sus CVE:
+`uv run python -m worker.descargar --en-linea` ya incluye los pares de los Windows de la flota
+(por ejemplo `microsoft:windows_11_23h2`).
+
+La fase 0, sin inscripción ni contratos nuevos, es una sola orden:
+
+```bash
+RADAR_CLAVE_ACCESO=la-clave python -m agente_local subir-csv --url https://radar.ejemplo
+```
+
+## Qué recoge
+
+| Dato | Windows | Linux |
+|---|---|---|
+| Software | Las claves `Uninstall` del registro (64 bits, 32 bits y una por perfil). Nunca `Win32_Product` | `dpkg-query` o `rpm`, con el paquete fuente; `snap` y `flatpak` |
+| Sistema | `CurrentBuild` más `UBR` (`10.0.22631.4317`), versión y edición | `os-release` y kernel |
+| Parches | Lista de KB (informativa: manda el build) | No aplica |
+| Hardware | Fabricante, modelo, BIOS, procesador, memoria, TPM, si es portátil | Lo mismo, desde `/sys` y `/proc` |
+| Postura | Firewall, antimalware, firmas, BitLocker, Secure Boot, Windows Update | Firewall, SELinux o AppArmor, cifrado, Secure Boot, actualizaciones automáticas |
+
+No recoge archivos, historial, nombres de usuario ni contenido de documentos. Cada dato de
+postura es `si`, `no` o `desconocido`; nunca se adivina, y `desconocido` va a cobertura, no a
+hallazgo. Sin privilegios de administrador varios datos de postura quedan en `desconocido`.
+
+## Cómo se cruza cada cosa
+
+| Qué | Contra qué | Por qué así |
+|---|---|---|
+| Aplicaciones (registro, snap, flatpak) | NVD por CPE, con el núcleo de siempre | Entran a `inventario` con `fuente = agente` |
+| Sistema operativo Windows | NVD por CPE (`microsoft:windows_11_23h2`) y rango de build | El sistema entra al cruce como un activo más: misma regla de afectación, misma prioridad |
+| Paquetes de la distribución (dpkg, rpm) | OSV.dev | Las distribuciones parchan sin cambiar la versión de origen: cruzar por CPE daría falsos positivos en masa |
+| Fin de soporte | Copia de endoflife.date | Un sistema sin soporte es hallazgo inmediato aunque no empareje ninguna CVE |
+| Postura | Reglas fijas | Tabla en `radar/equipos/postura.py` |
+
+KEV y EPSS se aplican igual en todos los casos, por ID de CVE.
+
+Los paquetes Linux se cruzan en `worker/equipos.py` y no en la API, porque OSV se consulta
+por red. La API deja un trabajo `cruzar_so` y el worker lo toma.
+
+Con equipos con agente, una carga de CSV o Excel ya no reemplaza todo el inventario: reemplaza
+lo cargado por archivo, y el cruce se hace sobre todo (archivos, reportes y sistema
+operativo). Sin agentes, la carga se comporta como antes.
+
+## Seguridad
+
+| Amenaza | Defensa |
+|---|---|
+| Instrucción escondida en un `DisplayName` (cualquier usuario puede escribir en `HKCU`) | El agente no interpreta nada. El radar limpia y recorta cada cadena al recibirla (160 caracteres) y otra vez antes de que un modelo la vea. El normalizador solo elige entre CPE reales |
+| Nombre de equipo envenenado | Se sanea a un hostname (RFC 1123) y el equipo se cruza igual |
+| Comando malicioso en las instrucciones (`curl ... \| sh`) | Los comandos salen de plantillas cerradas del código y cada pieza variable se valida. El verificador extrae del texto todo lo que parezca un comando y descarta el texto si alguno no lo armó el código |
+| Robo de la credencial de un equipo | Solo sirve para enviar reportes de ese equipo. En la base se guarda su SHA-256, no la credencial. Se revoca sin tocar a los demás |
+| Alguien con el token de inscripción | Puede inscribir equipos nuevos, pero no reemplazar la credencial de uno ya inscrito |
+| El servidor como objetivo | No hay canal de órdenes. La respuesta a un reporte es `202` y el intervalo; el agente no lee nada más |
+| Redirección que se lleva la credencial | El agente no sigue redirecciones y solo envía por HTTPS |
+| Reporte enorme | 1 MB y 5000 programas por reporte; lo que excede se recorta y se cuenta |
+
+La API del agente (`/api/agente/*`) no usa la clave compartida del panel: la inscripción pide
+`AGENTE_TOKEN_INSCRIPCION` y cada reporte pide la credencial del equipo. Sin esa variable, la
+inscripción está cerrada.
+
+## Comprobado contra las fuentes reales
+
+Hecho el 14 de noviembre de 2026, sobre lo que el plan dejó "por verificar":
+
+- **CPE de Windows en NVD.** Las CVE traen un CPE por versión (`windows_10_22h2`,
+  `windows_11_23h2`, `windows_11_24h2`) con `versionEndExcluding` por build.
+- **OSV.** `POST /v1/querybatch` responde para `Ubuntu:22.04:LTS`, `Debian:12`,
+  `Rocky Linux:9` y `AlmaLinux:9`. Debian y Ubuntu publican por paquete fuente; Rocky y
+  AlmaLinux por binario, con la época en la versión. El ID de CVE viene en `upstream`.
+- **endoflife.date.** Responde sin clave. En Windows el ciclo depende de la edición (Home y
+  Pro, o Enterprise y Education).
+- **De punta a punta.** El colector corrió en un PC con Windows 11; su reporte se inscribió,
+  se envió y se cruzó. Un Ubuntu 22.04 simulado con `openssl` desactualizado se cruzó contra
+  OSV en línea y dio la versión de arreglo y el comando de `apt-get`.
+
+## Límites y lo que falta
+
+- **El reporte puede mentir.** Un equipo comprometido puede reportar versiones falsas. Es un
+  límite de integridad de la fuente, no se resuelve aquí.
+- **El radar no detecta compromisos.** No es un EDR.
+- **Sin MSRC.** Para Windows se dice el build al que hay que llegar, no el KB que lo instala.
+- **Tabla de winget curada a mano.** Un producto que no está en `WINGET`
+  (`radar/equipos/remediacion.py`) no recibe comando. Los identificadores están por verificar
+  con `winget show`.
+- **Distribuciones cubiertas:** Ubuntu, Debian, Rocky y AlmaLinux. RHEL, Fedora y las demás
+  quedan como "sin cruzar" (visible en el panel), no como "sin hallazgos".
+- **Sin estado humano en los hallazgos por equipo.** Los de postura y de paquetes se
+  recalculan en cada reporte; todavía no se pueden marcar como mitigados o descartados.
+- **El analista no usa todavía los comandos.** El verificador ya acepta `comandos_permitidos`
+  y el respaldo ya los incluye, pero `radar/agente/analista.py` está vacío: falta que el
+  analista los pase al llamar a `decidir`.
+- **Instaladores sin firmar y sin probar en una flota.** `instalar.ps1` e `instalar.sh` son
+  de desarrollo. No se corrieron en este trabajo: registran una tarea como SYSTEM o un
+  temporizador como root.
+- **Apps de la Store (`appx`)** no se recogen.
+- **Falsos positivos del cruce de sistema operativo** sin medir contra un escáner de
+  referencia (fase 5 del plan).
+
+## Riesgo dual
+
+Un agente en todos los PC con el inventario completo es, en manos equivocadas, una
+herramienta de reconocimiento. Por eso no tiene canal de órdenes, solo envía, y los datos
+quedan en la base de la organización. Las instrucciones de remediación son de defensa
+(actualizar, activar, configurar) y nunca dicen cómo explotar una falla. El código del agente
+es corto y solo usa la librería estándar, para que cualquiera lo lea antes de instalarlo.

@@ -9,6 +9,9 @@ Compara lo que dice el texto contra los datos de origen del grupo:
   con ``"ninguna"`` no se puede prometer ninguna versión (cae en "nada de más").
 - **Nada de menos** (solo sobre un ``Analisis`` completo): el comunicado de TI nombra el
   producto, todas las CVE en KEV y todos los equipos o su número exacto (casos 1, 2, 3).
+- **Comandos solo de plantilla:** todo lo que parezca un comando (``winget``, ``apt-get``,
+  ``curl ... | sh``) tiene que estar en ``comandos_permitidos``, el conjunto que armó el
+  código (``radar/equipos/remediacion.py``). El modelo explica; nunca inventa un comando.
 - **Sin minimizar:** si el grupo exige acción, frases como "no hay riesgos" o "ya fue
   parchado" descartan el comunicado (casos 2 y 10).
 
@@ -26,6 +29,7 @@ from dataclasses import dataclass, field
 from typing import Literal
 
 from radar.contratos import Analisis, Grupo
+from radar.equipos.comandos import comandos_ajenos
 
 TipoProblema = Literal[
     "cve_ajena",
@@ -45,6 +49,8 @@ TipoProblema = Literal[
     "niega_explotacion",
     "objetivo_instalado",
     "equipo_en_canal_abierto",
+    # Agente local (docs/plan-agente-local.md, sección 9)
+    "comando_ajeno",
 ]
 
 _CVE = re.compile(r"\bCVE-\d{4}-\d{4,}\b", re.IGNORECASE)
@@ -271,13 +277,19 @@ class _Origen:
     equipos: list[str]
     cifras: set[str]
     numeros: set[tuple[float, bool]]
+    comandos: frozenset[str] = frozenset()
 
 
 def _origen(
-    grupo: Grupo, textos_origen: Iterable[str], cifras_permitidas: Iterable[str]
+    grupo: Grupo,
+    textos_origen: Iterable[str],
+    cifras_permitidas: Iterable[str],
+    comandos_permitidos: Iterable[str] = (),
 ) -> _Origen:
     volcado = json.dumps(grupo.model_dump(mode="json"), ensure_ascii=False)
-    extras = list(textos_origen)
+    comandos = frozenset(comandos_permitidos)
+    # Un comando permitido es origen: sus cifras y enlaces no cuentan como ajenos.
+    extras = [*textos_origen, *comandos]
     cifras = extraer_cifras(volcado)
     for texto in extras:
         cifras |= extraer_cifras(texto)
@@ -306,7 +318,9 @@ def _origen(
     for texto in extras:
         equipos += list(extraer_equipos(texto))
     urls = {u for texto in [volcado, *extras] for u in extraer_urls(texto)}
-    return _Origen(cves=cves, urls=urls, equipos=equipos, cifras=cifras, numeros=numeros)
+    return _Origen(
+        cves=cves, urls=urls, equipos=equipos, cifras=cifras, numeros=numeros, comandos=comandos
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -369,15 +383,19 @@ def verificar_texto(
     textos_origen: Iterable[str] = (),
     cifras_permitidas: Iterable[str] = (),
     equipos_flota: Iterable[str] = (),
+    comandos_permitidos: Iterable[str] = (),
 ) -> Veredicto:
     """Revisa que el texto no traiga nada que no esté en el origen.
+
+    ``comandos_permitidos``: comandos de remediación armados por código. Cualquier otro
+    comando del texto lo descarta.
 
     ``textos_origen``: textos que el agente recibió de sus herramientas (por ejemplo la
     descripción de NVD de una CVE); sus CVE, cifras y equipos cuentan como origen.
     ``equipos_flota``: todos los equipos del inventario; si aparece uno que no está en
     el grupo, es fuga de datos (caso 6) aunque no tenga forma de host.
     """
-    origen = _origen(grupo, textos_origen, cifras_permitidas)
+    origen = _origen(grupo, textos_origen, cifras_permitidas, comandos_permitidos)
     return _verificar(texto, grupo, origen, campo, list(equipos_flota))
 
 
@@ -420,6 +438,11 @@ def _verificar(
 
     for url in sorted(extraer_urls(texto) - origen.urls):
         agregar(Problema("enlace_ajeno", f"{url} no está en el origen", campo))
+
+    for comando in comandos_ajenos(texto, origen.comandos):
+        agregar(
+            Problema("comando_ajeno", f"'{comando[:80]}' no lo armó el código del radar", campo)
+        )
 
     mezcladas = palabras_mezcladas(texto)
     if mezcladas:
@@ -477,10 +500,11 @@ def verificar_analisis(
     textos_origen: Iterable[str] = (),
     cifras_permitidas: Iterable[str] = (),
     equipos_flota: Iterable[str] = (),
+    comandos_permitidos: Iterable[str] = (),
 ) -> Veredicto:
     """Revisa todos los campos del análisis y que el comunicado de TI esté completo."""
     extras = list(textos_origen)
-    origen = _origen(grupo, extras, cifras_permitidas)
+    origen = _origen(grupo, extras, cifras_permitidas, comandos_permitidos)
     flota = list(equipos_flota)
     veredicto = Veredicto()
     for campo in _CAMPOS_ANALISIS:
@@ -536,6 +560,7 @@ def decidir(
     textos_origen: Iterable[str] = (),
     cifras_permitidas: Iterable[str] = (),
     equipos_flota: Iterable[str] = (),
+    comandos_permitidos: Iterable[str] = (),
 ) -> tuple[Analisis, Veredicto]:
     """Devuelve el análisis del agente si pasa el verificador; si no, el respaldo.
 
@@ -545,15 +570,17 @@ def decidir(
     """
     from radar.agente.respaldo import armar_respaldo
 
+    comandos = list(comandos_permitidos)
     if analisis is None:
-        return armar_respaldo(grupo), Veredicto()
+        return armar_respaldo(grupo, comandos), Veredicto()
     veredicto = verificar_analisis(
         analisis,
         grupo,
         textos_origen=textos_origen,
         cifras_permitidas=cifras_permitidas,
         equipos_flota=equipos_flota,
+        comandos_permitidos=comandos,
     )
     if veredicto.aprobado:
         return analisis.model_copy(update={"verificado": True, "origen": "agente"}), veredicto
-    return armar_respaldo(grupo), veredicto
+    return armar_respaldo(grupo, comandos), veredicto

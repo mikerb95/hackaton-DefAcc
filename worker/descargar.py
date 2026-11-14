@@ -189,8 +189,14 @@ def descargar_desde_snapshot(
 
 
 def pares_a_consultar(conexion: Any) -> list[str]:
-    """Pares que asignó el normalizador; si no hay, los del snapshot."""
-    asignados = bd.pares_asignados(conexion)
+    """Pares que asignó el normalizador más los del sistema operativo de los equipos con
+    agente local (Windows); si no hay ninguno, los del snapshot."""
+    from radar.equipos import almacen
+    from radar.equipos.so import pares_de_so
+
+    asignados = sorted(
+        set(bd.pares_asignados(conexion)) | set(pares_de_so(almacen.leer_equipos(conexion)))
+    )
     if asignados:
         return asignados
     return sorted(par_de_archivo(a) for a in archivos_nvd(SNAPSHOT)) if SNAPSHOT.exists() else []

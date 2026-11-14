@@ -13,12 +13,15 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
+from radar.api.agente import router_agente, router_equipos
 from radar.api.rutas import router
 
 load_dotenv()
 
 app = FastAPI(title="Radar de vulnerabilidades", docs_url=None, redoc_url=None)
 app.include_router(router)
+app.include_router(router_agente)
+app.include_router(router_equipos)
 
 PUBLICO = Path(__file__).parent / "public"
 if not os.environ.get("VERCEL") and PUBLICO.is_dir():

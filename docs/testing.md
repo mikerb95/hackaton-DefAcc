@@ -46,3 +46,16 @@ Córrelo tú mismo: `uv run pytest tests/test_api.py`. El panel en local: `uv ru
 | `tests/test_mcp.py` | Herramientas y anotaciones de solo lectura; origen `ejemplo`, `local` o `turso` y aviso; base caída como error; orden, filtros, cerrados, acciones por producto, CVE distintas frente a hallazgos; fuente caída y fuente sin dato; equipos expuestos; detalle con y sin grupo y pidiendo solo los pares del producto; `cargar_inventario` con ruta, filas, rutas rechazadas, carga real que guarda, normaliza, cruza y deja trabajo, y función compartida; error por el protocolo MCP con cliente en proceso; `posible_inyeccion` por programa o versión y por equipo saneado, señal débil sola sin marca (RF-204, RF-205, RF-701 a RF-703, RF-705) | `datos_prueba/generados/` para una prueba |
 
 Córrelo tú mismo: `uv run pytest tests/test_mcp.py`. De punta a punta con Claude Code (no corre en CI): `claude plugin validate .` y el guion de `.coordinacion/plugin.md` con `claude --plugin-dir`.
+
+
+## Agente local
+
+| Prueba | Qué cubre | Requiere |
+|---|---|---|
+| `tests/test_agente_local.py` | Recolectores con las salidas de las herramientas como texto (registro, `dpkg-query`, `rpm`, `os-release`, `lsblk`, `ufw`, `mokutil`), build de Windows, postura que nunca adivina, reporte, CSV que lee la ingesta, HTTPS obligatorio, credencial guardada sin el token, respuesta de la que solo se lee el intervalo, reporte pendiente sin red, sin redirecciones (RF-801 a RF-803) | nada |
+| `tests/test_agente_api.py` | Inscripción con token y cerrada sin él, credencial como SHA-256, sin reemplazo de credencial, reporte con la credencial del propio equipo, respuesta sin órdenes, reportes mal formados y enormes, revocación por equipo, topes y limpieza, cruce de aplicaciones y de Windows, cierre propuesto al parchar, CSV que no borra a los agentes, nombre de equipo envenenado, paquetes de distribución fuera del cruce por CPE, vista por equipo con comandos, retiro (RF-811 a RF-815) | nada |
+| `tests/test_postura.py` | Windows reconocido por build y versión, activos por build, fin de soporte por edición y por distribución, copia de endoflife.date, cada regla de postura con su prioridad, `desconocido` a cobertura, plantillas de `winget`, `apt-get` y `dnf` con nombres hostiles, regla 5 en los comandos, extracción de comandos frente a menciones, verificador con `comando_ajeno`, respaldo con comandos (RF-814, RF-823 a RF-826) | nada |
+| `tests/test_osv.py` | Ecosistemas, aviso reducido, lote con paginación, agrupación por paquete fuente o binario, mayor versión de arreglo, KEV y EPSS por ID, caché de avisos, aviso sin detalle, distribución sin fuente, OSV caído que no borra lo guardado, worker y su ejecución (RF-816 a RF-818) | nada: OSV va con transporte simulado |
+| `tests/test_versiones_paquete.py` | Orden de dpkg y de rpm en los dos sentidos, mayor de una lista, CVSS 3.x desde el vector y vectores sin puntaje (RF-821, RF-822) | nada |
+
+Córrelo tú mismo: `uv run pytest tests/test_agente_local.py tests/test_agente_api.py tests/test_postura.py tests/test_osv.py tests/test_versiones_paquete.py`. De punta a punta en local, los cinco pasos de [agente-local.md](agente-local.md). RF-804 (instaladores) no tiene prueba automática.
