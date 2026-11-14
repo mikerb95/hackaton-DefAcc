@@ -150,6 +150,7 @@ _MIGRACIONES = (
     ("equipos", "aprobado", "TEXT"),
     ("equipos", "aprobado_por", "TEXT"),
     ("equipos", "reporte_pendiente", "TEXT"),
+    ("equipos", "codigo", "TEXT"),
 )
 
 

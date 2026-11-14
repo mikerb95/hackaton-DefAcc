@@ -187,21 +187,44 @@ la infraestructura de empaquetado y las claves/certificados de firma del proyect
 presentan como construidos ni validados por estas pruebas.
 
 
-## Aprobación en la consola
+## Instalar con doble clic y activar con código
 
-Como en Acronis, la consola es la que activa al equipo. El flujo es este:
+Como en Acronis: se instala sin escribir comandos y se activa desde la consola.
 
-1. Se instala el agente con el token de la organización y el equipo se inscribe solo.
-2. El equipo aparece en el panel, arriba de la lista, como **por aprobar**. Ya reporta, y TI
-   ve su nombre, sistema, hardware y postura para reconocerlo.
-3. Mientras está pendiente, su software no entra a `inventario`, no se cruza y no genera
-   hallazgos. El radar guarda su último reporte.
-4. TI lo aprueba con su nombre (`POST /api/equipos/{id}/aprobar`). En ese momento se cruza el
-   último reporte guardado; si todavía no había reportado, entra con el próximo.
-5. Si TI no reconoce el equipo, lo rechaza: se borra y su credencial deja de servir.
+1. En el panel, sección "Equipos con agente", botón **Descargar instalador**. Baja
+   `radar-agente.zip`, ya configurado con la URL del radar (`configuracion.txt`).
+2. En el PC, descomprímelo y dale **doble clic a `instalar.cmd`**. Pide permiso de
+   administrador. Si no hay un Python instalado para todos los usuarios, lo instala con
+   winget. Copia el agente a `Program Files`, inscribe el equipo, hace el primer envío y
+   registra la tarea programada.
+3. Al terminar muestra una ventana con el **código de activación** (por ejemplo
+   `CYNF-U89G`), que además queda copiado en el portapapeles. Lo genera el propio agente.
+4. En el panel, escribe ese código en "Activar un equipo" y quién activa. Desde ese momento
+   el inventario del equipo entra al cruce. Si el equipo ya había reportado, su último
+   reporte se cruza en ese instante.
 
-La consola activa al equipo, pero no le da órdenes: aprobar cambia lo que el radar hace con
-los datos del equipo, no lo que el equipo ejecuta. El agente sigue sin canal de órdenes.
+En Linux el mismo paquete se instala con `sudo sh instalar.sh`, que lee la URL de
+`configuracion.txt` y muestra el código en la consola. Para quitar el agente en Windows:
+doble clic en `desinstalar.cmd`, y luego retirar el equipo en el panel.
 
-`AGENTE_APROBACION=automatica` quita el paso de aprobación (útil en pruebas). Por defecto es
-manual. Los equipos que ya estaban inscritos cuando apareció la aprobación quedan aprobados.
+Mientras no se activa, el equipo aparece "por activar": reporta y TI ve su nombre, sistema,
+hardware y postura, pero su software no se cruza ni genera hallazgos. Si TI no lo reconoce,
+lo rechaza (se borra y su credencial deja de servir). Una inscripción que nadie activa en
+7 días se borra sola, y hay un tope de 200 pendientes.
+
+**Por qué es seguro.** El agente genera su credencial y su código; el radar guarda solo sus
+huellas (SHA-256). El código solo se ve en la pantalla del equipo, así que activar exige
+haberlo visto: nadie puede activar un equipo impostor copiando un nombre. El token de la
+organización ya no hace falta; si el radar define `AGENTE_TOKEN_INSCRIPCION`, se exige además
+y va dentro del zip (por eso la descarga pide la clave del panel). La consola activa al
+equipo pero no le da órdenes: el agente sigue sin canal de órdenes.
+
+`AGENTE_APROBACION=automatica` quita la activación (útil en pruebas). `RADAR_URL_PUBLICA`
+fija la URL que va en el zip si la de la petición no sirve (detrás de un proxy). Los equipos
+inscritos antes de que existiera la activación quedan activos.
+
+**Comprobado en este PC (14 de noviembre de 2026):** se descargó el zip del panel, el agente
+se inscribió desde él, mostró el código, envió 111 programas, el equipo quedó "por activar"
+sin cruzarse, un código equivocado dio 404 y el correcto (escrito en minúsculas) lo activó y
+cruzó las 111 filas. `instalar.cmd` no se corrió completo: instala Python para todos los
+usuarios y registra una tarea como SYSTEM, y eso se prueba en una máquina virtual.

@@ -11,10 +11,11 @@ Dos grupos, con credenciales distintas:
 El servidor nunca devuelve órdenes: la respuesta a un reporte es `202` con el intervalo
 deseado y nada más. Tomar el servidor no da ejecución en los PC.
 
-Aprobación en la consola (como Acronis): un equipo recién inscrito queda pendiente. Reporta
-y se ve en el panel, pero su inventario no entra al cruce hasta que una persona lo aprueba
-(`POST /api/equipos/{id}/aprobar`). Rechazar es retirarlo. `AGENTE_APROBACION=automatica`
-quita ese paso.
+Activación en la consola (como Acronis): al instalarse, el agente genera un código de
+activación y lo muestra en la pantalla del equipo. El equipo queda pendiente: reporta y se
+ve en el panel, pero su inventario no entra al cruce hasta que una persona escribe ese
+código en el panel (`POST /api/equipos/activar`). Rechazar es retirarlo.
+`AGENTE_APROBACION=automatica` quita ese paso.
 """
 
 from __future__ import annotations
@@ -22,7 +23,7 @@ from __future__ import annotations
 import hmac
 import os
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
+from fastapi import APIRouter, Depends, Header, HTTPException, Request, Response, status
 from pydantic import BaseModel, Field
 
 from radar.api.acceso import exigir_clave
@@ -74,42 +75,49 @@ def _conexion(solo_lectura: bool = False):
 
 
 class Inscripcion(BaseModel):
-    token: str = Field(min_length=1, max_length=200)
     equipo_id: str = Field(pattern=r"^[0-9a-fA-F]{8}-(?:[0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$")
     nombre_equipo: str = Field(min_length=1, max_length=2000)
     agente_version: str | None = Field(default=None, max_length=40)
+    # La credencial y el código los genera el agente. El radar guarda solo sus huellas.
+    credencial: str = Field(min_length=32, max_length=200, pattern=r"^[A-Za-z0-9_-]+$")
+    codigo: str = Field(pattern=r"^[A-Za-z0-9]{4}-[A-Za-z0-9]{4}$")
+    token: str | None = Field(default=None, max_length=200)
 
 
 @router_agente.post("/inscribir")
 def inscribir(cuerpo: Inscripcion) -> dict:
-    """Canjea el token de inscripción de la organización por la credencial del equipo."""
+    """Inscribe un equipo con la credencial y el código de activación que generó el agente.
+
+    El equipo queda pendiente hasta que TI escribe ese código en el panel. Si el radar
+    define `AGENTE_TOKEN_INSCRIPCION`, además hace falta ese token (capa extra para un
+    radar expuesto en internet); sin él la inscripción está abierta y el filtro es el código.
+    """
     from radar.equipos import almacen
     from radar.seguridad.equipos import sanear_nombre_equipo
     from radar.seguridad.limpieza import limpiar_texto
 
     _exigir_base()
     esperado = os.environ.get("AGENTE_TOKEN_INSCRIPCION", "")
-    if not esperado:
-        raise HTTPException(
-            status.HTTP_503_SERVICE_UNAVAILABLE,
-            "La inscripción está cerrada: falta AGENTE_TOKEN_INSCRIPCION.",
-        )
-    if not hmac.compare_digest(cuerpo.token.encode(), esperado.encode()):
+    if esperado and not hmac.compare_digest((cuerpo.token or "").encode(), esperado.encode()):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Token de inscripción no válido.")
     automatica = aprobacion_automatica()
     conexion = _conexion()
     try:
-        # Con el token filtrado se podrían crear equipos pendientes sin fin: hay un tope.
+        # Una inscripción que nadie activa en una semana se borra, y hay un tope de
+        # pendientes: la inscripción abierta no puede llenar la base.
+        almacen.borrar_pendientes_viejos(conexion)
         if not automatica and almacen.contar_pendientes(conexion) >= MAX_PENDIENTES:
             raise HTTPException(
                 status.HTTP_429_TOO_MANY_REQUESTS,
                 "Hay demasiados equipos esperando aprobación en la consola.",
             )
-        credencial = almacen.inscribir(
+        almacen.inscribir(
             conexion,
             cuerpo.equipo_id.lower(),
             sanear_nombre_equipo(cuerpo.nombre_equipo, 0),
             limpiar_texto(cuerpo.agente_version, 40) or None,
+            cuerpo.credencial,
+            cuerpo.codigo,
             aprobar=automatica,
         )
     except almacen.EquipoYaInscrito as error:
@@ -119,7 +127,7 @@ def inscribir(cuerpo: Inscripcion) -> dict:
         ) from error
     finally:
         conexion.close()
-    return {"credencial": credencial, "intervalo_horas": intervalo_horas()}
+    return {"inscrito": True, "intervalo_horas": intervalo_horas()}
 
 
 @router_agente.post("/reporte", status_code=status.HTTP_202_ACCEPTED)
@@ -186,7 +194,7 @@ def equipos() -> dict:
     return {
         "disponible": True,
         "total": len(lista),
-        "inscripcion_abierta": bool(os.environ.get("AGENTE_TOKEN_INSCRIPCION")),
+        "token_exigido": bool(os.environ.get("AGENTE_TOKEN_INSCRIPCION")),
         "aprobacion": "automatica" if aprobacion_automatica() else "manual",
         "pendientes": sum(1 for e in lista if e["pendiente"] and not e["revocado"]),
         "equipos": lista,
@@ -208,30 +216,59 @@ def equipo(equipo_id: str) -> dict:
     return datos
 
 
-class Aprobacion(BaseModel):
-    # La aprobación la hace una persona con nombre: sin "por" no se aprueba.
+def url_publica(peticion: Request) -> str:
+    """URL del radar que va en el paquete: `RADAR_URL_PUBLICA` o la de la petición."""
+    forzada = os.environ.get("RADAR_URL_PUBLICA", "").strip()
+    return (forzada or str(peticion.base_url)).rstrip("/")
+
+
+@router_equipos.get("/agente-instalador.zip")
+def instalador(peticion: Request) -> Response:
+    """Paquete de instalación del agente con la URL de este radar: se descomprime y se le da
+    doble clic. Pide la clave del panel porque, si el radar exige token, el token va dentro."""
+    from radar.equipos import paquete
+
+    datos = paquete.armar(url_publica(peticion), os.environ.get("AGENTE_TOKEN_INSCRIPCION") or None)
+    return Response(
+        datos,
+        media_type="application/zip",
+        headers={"Content-Disposition": f'attachment; filename="{paquete.NOMBRE_ARCHIVO}"'},
+    )
+
+
+class Activacion(BaseModel):
+    codigo: str = Field(min_length=8, max_length=20)
+    # La activación la hace una persona con nombre: sin "por" no se activa.
     por: str = Field(min_length=1, max_length=100, pattern=r"\S")
 
 
-@router_equipos.post("/equipos/{equipo_id}/aprobar")
-def aprobar(equipo_id: str, cuerpo: Aprobacion) -> dict:
-    """TI aprueba un equipo pendiente desde la consola. Desde ese momento su inventario
-    entra al cruce. Rechazar es retirarlo (DELETE)."""
-    from radar.equipos import recepcion
+@router_equipos.post("/equipos/activar")
+def activar(cuerpo: Activacion) -> dict:
+    """TI activa un equipo con el código que el instalador mostró en su pantalla. Desde ese
+    momento su inventario entra al cruce. Rechazar es retirarlo (DELETE)."""
+    from radar.equipos import almacen, recepcion
     from radar.seguridad.limpieza import limpiar_texto
 
     _exigir_base()
     conexion = _conexion()
     try:
+        equipo_id = almacen.equipo_de_codigo(conexion, cuerpo.codigo)
+        if equipo_id is None:
+            raise HTTPException(
+                status.HTTP_404_NOT_FOUND,
+                "Ningún equipo pendiente tiene ese código. Revísalo en la pantalla del equipo.",
+            )
         recibido = recepcion.aprobar(conexion, equipo_id, limpiar_texto(cuerpo.por, 100))
+        equipo = almacen.leer_equipo(conexion, equipo_id)
     except recepcion.ErrorAprobacion as error:
-        raise HTTPException(
-            status.HTTP_409_CONFLICT,
-            "El equipo no existe, está revocado o ya estaba aprobado.",
-        ) from error
+        raise HTTPException(status.HTTP_409_CONFLICT, "El equipo ya no está pendiente.") from error
     finally:
         conexion.close()
-    return {"aprobado": True, "cruzado": recibido is not None}
+    return {
+        "activado": True,
+        "equipo": {"id": equipo.id, "nombre": equipo.nombre},
+        "cruzado": recibido is not None,
+    }
 
 
 @router_equipos.post("/equipos/{equipo_id}/revocar")

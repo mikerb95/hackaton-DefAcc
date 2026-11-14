@@ -6,8 +6,11 @@ Desktop, con KEV y EPSS) más una CVE de Windows 11 23H2 con el rango real visto
 
 from __future__ import annotations
 
+import io
 import json
+import secrets
 import uuid
+import zipfile
 
 import pytest
 from fastapi.testclient import TestClient
@@ -85,7 +88,7 @@ def cliente(monkeypatch, tmp_path, base_temporal):
         monkeypatch.delenv(nombre, raising=False)
     monkeypatch.setenv("RADAR_DATOS", "base")
     monkeypatch.setenv("RADAR_SQLITE", str(tmp_path / "base_temporal.db"))
-    monkeypatch.setenv("AGENTE_TOKEN_INSCRIPCION", TOKEN)
+    monkeypatch.delenv("AGENTE_TOKEN_INSCRIPCION", raising=False)
     # Estas pruebas miden el cruce: los equipos entran aprobados. El flujo de aprobación
     # en la consola se prueba aparte, con el modo manual por defecto.
     monkeypatch.setenv("AGENTE_APROBACION", "automatica")
@@ -95,16 +98,31 @@ def cliente(monkeypatch, tmp_path, base_temporal):
     return TestClient(app.app)
 
 
+# Código de activación de cada equipo inscrito en la prueba (lo genera el agente).
+CODIGOS: dict[str, str] = {}
+
+
+def _cuerpo(equipo_id: str | None = None, nombre: str = "EQUIPO-017", **cambios) -> dict:
+    """Lo que envía el agente al inscribirse: credencial y código los genera él."""
+    from agente_local.envio import nuevo_codigo
+
+    return {
+        "equipo_id": equipo_id or str(uuid.uuid4()),
+        "nombre_equipo": nombre,
+        "credencial": secrets.token_urlsafe(32),
+        "codigo": nuevo_codigo(),
+    } | cambios
+
+
 def _inscribir(
     cliente, equipo_id: str | None = None, nombre: str = "EQUIPO-017"
 ) -> tuple[str, str]:
-    equipo_id = equipo_id or str(uuid.uuid4())
-    r = cliente.post(
-        "/api/agente/inscribir",
-        json={"token": TOKEN, "equipo_id": equipo_id, "nombre_equipo": nombre},
-    )
+    cuerpo = _cuerpo(equipo_id, nombre)
+    r = cliente.post("/api/agente/inscribir", json=cuerpo)
     assert r.status_code == 200, r.text
-    return equipo_id, r.json()["credencial"]
+    assert "credencial" not in r.json()
+    CODIGOS[cuerpo["equipo_id"]] = cuerpo["codigo"]
+    return cuerpo["equipo_id"], cuerpo["credencial"]
 
 
 def _enviar(cliente, credencial: str, reporte: dict):
@@ -116,34 +134,32 @@ def _enviar(cliente, credencial: str, reporte: dict):
 # -- inscripción (RF-811) ------------------------------------------------------
 
 
-def test_inscripcion_pide_el_token_de_la_organizacion(cliente, monkeypatch):
-    cuerpo = {"token": "otro", "equipo_id": str(uuid.uuid4()), "nombre_equipo": "PC1"}
-    assert cliente.post("/api/agente/inscribir", json=cuerpo).status_code == 401
-    assert (
-        cliente.post("/api/agente/inscribir", json=cuerpo | {"equipo_id": "x"}).status_code == 422
-    )
-    monkeypatch.delenv("AGENTE_TOKEN_INSCRIPCION")
-    cerrada = cliente.post("/api/agente/inscribir", json=cuerpo | {"token": TOKEN})
-    assert cerrada.status_code == 503
+def test_inscripcion_abierta_y_token_opcional(cliente, monkeypatch):
+    # Sin AGENTE_TOKEN_INSCRIPCION la inscripción está abierta: el filtro es el código.
+    assert cliente.post("/api/agente/inscribir", json=_cuerpo()).status_code == 200
+    for malo in ({"equipo_id": "x"}, {"codigo": "ABC"}, {"credencial": "corta"}):
+        assert cliente.post("/api/agente/inscribir", json=_cuerpo(**malo)).status_code == 422
+    # Con el token definido en el radar, hace falta el mismo token.
+    monkeypatch.setenv("AGENTE_TOKEN_INSCRIPCION", TOKEN)
+    assert cliente.post("/api/agente/inscribir", json=_cuerpo()).status_code == 401
+    assert cliente.post("/api/agente/inscribir", json=_cuerpo(token="otro")).status_code == 401
+    assert cliente.post("/api/agente/inscribir", json=_cuerpo(token=TOKEN)).status_code == 200
 
 
 def test_la_credencial_no_se_guarda_en_claro_y_no_se_reemplaza(cliente, base_temporal):
     equipo_id, credencial = _inscribir(cliente)
-    guardada = base_temporal.execute("SELECT credencial FROM equipos").fetchone()[0]
+    guardada, codigo = base_temporal.execute("SELECT credencial, codigo FROM equipos").fetchone()
     assert credencial not in guardada and guardada == almacen.huella(credencial)
-    # Quien tenga el token de la organización no puede quitarle la credencial a un equipo.
-    repetida = cliente.post(
-        "/api/agente/inscribir",
-        json={"token": TOKEN, "equipo_id": equipo_id, "nombre_equipo": "otro"},
-    )
+    assert CODIGOS[equipo_id] not in codigo and codigo == almacen.huella(CODIGOS[equipo_id])
+    # Nadie puede quitarle la credencial a un equipo ya inscrito volviendo a inscribirlo.
+    repetida = cliente.post("/api/agente/inscribir", json=_cuerpo(equipo_id, "otro"))
     assert repetida.status_code == 409
 
 
 def test_sin_base_no_hay_agente(cliente, monkeypatch):
     monkeypatch.setenv("RADAR_DATOS", "ejemplos")
     monkeypatch.setattr(modulo_datos, "_datos", None)
-    cuerpo = {"token": TOKEN, "equipo_id": str(uuid.uuid4()), "nombre_equipo": "PC1"}
-    assert cliente.post("/api/agente/inscribir", json=cuerpo).status_code == 503
+    assert cliente.post("/api/agente/inscribir", json=_cuerpo()).status_code == 503
     assert cliente.get("/api/equipos").json()["disponible"] is False
 
 
@@ -314,7 +330,7 @@ def test_vista_por_equipo(cliente):
     equipo_id, credencial = _inscribir(cliente)
     _enviar(cliente, credencial, _reporte(equipo_id))
     lista = cliente.get("/api/equipos").json()
-    assert lista["disponible"] and lista["total"] == 1 and lista["inscripcion_abierta"]
+    assert lista["disponible"] and lista["total"] == 1 and not lista["token_exigido"]
     fila = lista["equipos"][0]
     assert fila["nombre"] == "EQUIPO-017" and fila["peor_prioridad"] == "inmediato"
     assert "credencial" not in json.dumps(lista)
@@ -354,9 +370,13 @@ def test_las_rutas_del_panel_piden_la_clave(cliente, monkeypatch):
     monkeypatch.setenv("CLAVE_ACCESO", "secreta")
     assert cliente.get("/api/equipos").status_code == 401
     assert cliente.get("/api/equipos", headers={"X-Clave-Acceso": "secreta"}).status_code == 200
-    # Las rutas del agente no usan esa clave: piden token o credencial.
-    cuerpo = {"token": TOKEN, "equipo_id": str(uuid.uuid4()), "nombre_equipo": "PC1"}
-    assert cliente.post("/api/agente/inscribir", json=cuerpo).status_code == 200
+    assert cliente.get("/api/agente-instalador.zip").status_code == 401
+    assert (
+        cliente.post("/api/equipos/activar", json={"codigo": "x" * 8, "por": "ti"}).status_code
+        == 401
+    )
+    # Las rutas del agente no usan esa clave: el filtro es el código o la credencial.
+    assert cliente.post("/api/agente/inscribir", json=_cuerpo()).status_code == 200
 
 
 @pytest.mark.parametrize("longitud", [None, "1"])
@@ -405,13 +425,17 @@ def test_reporte_no_lee_cuerpo_con_credencial_invalida(cliente):
     assert error.value.status_code == 401
 
 
-# -- aprobación en la consola (RF-816) -----------------------------------------
+# -- activación con código en la consola (RF-819) ------------------------------
 
 
 @pytest.fixture
 def manual(cliente, monkeypatch):
     monkeypatch.delenv("AGENTE_APROBACION")
     return cliente
+
+
+def _activar(cliente, codigo: str, por: str = "ti"):
+    return cliente.post("/api/equipos/activar", json={"codigo": codigo, "por": por})
 
 
 def test_un_equipo_nuevo_queda_pendiente_y_no_se_cruza(manual, base_temporal):
@@ -430,12 +454,19 @@ def test_un_equipo_nuevo_queda_pendiente_y_no_se_cruza(manual, base_temporal):
     assert lista["equipos"][0]["pendiente"] is True
 
 
-def test_aprobar_cruza_el_ultimo_reporte(manual, base_temporal):
+def test_activar_con_el_codigo_cruza_el_ultimo_reporte(manual, base_temporal):
     equipo_id, credencial = _inscribir(manual)
     _enviar(manual, credencial, _reporte(equipo_id))
-    assert manual.post(f"/api/equipos/{equipo_id}/aprobar", json={}).status_code == 422
-    r = manual.post(f"/api/equipos/{equipo_id}/aprobar", json={"por": "ti"})
-    assert r.json() == {"aprobado": True, "cruzado": True}
+    codigo = CODIGOS[equipo_id]
+    assert manual.post("/api/equipos/activar", json={"codigo": codigo}).status_code == 422
+    assert _activar(manual, "ZZZZ-ZZZZ").status_code == 404
+    # El código se acepta en minúsculas, con espacio o sin guion.
+    r = _activar(manual, codigo.lower().replace("-", " "))
+    assert r.json() == {
+        "activado": True,
+        "equipo": {"id": equipo_id, "nombre": "EQUIPO-017"},
+        "cruzado": True,
+    }
     equipo = almacen.leer_equipo(base_temporal, equipo_id)
     assert not equipo.pendiente and equipo.aprobado_por == "ti"
     assert {h.producto for h in bd.leer_hallazgos(base_temporal)} == {"WinRAR", "Windows 11 23H2"}
@@ -445,17 +476,23 @@ def test_aprobar_cruza_el_ultimo_reporte(manual, base_temporal):
         "cifrado_disco",
         "soporte",
     }
-    # Aprobar dos veces no repite nada.
-    assert manual.post(f"/api/equipos/{equipo_id}/aprobar", json={"por": "ti"}).status_code == 409
-    # Ya aprobado, el siguiente reporte se cruza directo.
+    # El código sirve una sola vez.
+    assert _activar(manual, codigo).status_code == 404
+    # Ya activo, el siguiente reporte se cruza directo.
     assert _enviar(manual, credencial, _reporte(equipo_id)).status_code == 202
     assert len(bd.leer_inventario(base_temporal)) == 2
 
 
-def test_aprobar_antes_del_primer_reporte(manual, base_temporal):
+def test_el_codigo_de_un_equipo_no_activa_a_otro(manual, base_temporal):
+    uno, _ = _inscribir(manual, nombre="PC-1")
+    otro, _ = _inscribir(manual, nombre="PC-2")
+    assert _activar(manual, CODIGOS[uno]).json()["equipo"]["id"] == uno
+    assert almacen.leer_equipo(base_temporal, otro).pendiente
+
+
+def test_activar_antes_del_primer_reporte(manual, base_temporal):
     equipo_id, credencial = _inscribir(manual)
-    r = manual.post(f"/api/equipos/{equipo_id}/aprobar", json={"por": "ti"})
-    assert r.json() == {"aprobado": True, "cruzado": False}
+    assert _activar(manual, CODIGOS[equipo_id]).json()["cruzado"] is False
     _enviar(manual, credencial, _reporte(equipo_id))
     assert any(h.producto == "WinRAR" for h in bd.leer_hallazgos(base_temporal))
 
@@ -465,23 +502,59 @@ def test_rechazar_borra_el_equipo_pendiente(manual, base_temporal):
     _enviar(manual, credencial, _reporte(equipo_id))
     assert manual.delete(f"/api/equipos/{equipo_id}").json() == {"retirado": True}
     assert _enviar(manual, credencial, _reporte(equipo_id)).status_code == 401
-    assert manual.post(f"/api/equipos/{equipo_id}/aprobar", json={"por": "ti"}).status_code == 409
+    assert _activar(manual, CODIGOS[equipo_id]).status_code == 404
 
 
-def test_un_equipo_revocado_no_se_aprueba(manual):
+def test_un_equipo_revocado_no_se_activa(manual):
     equipo_id, _ = _inscribir(manual)
     manual.post(f"/api/equipos/{equipo_id}/revocar")
-    assert manual.post(f"/api/equipos/{equipo_id}/aprobar", json={"por": "ti"}).status_code == 409
+    assert _activar(manual, CODIGOS[equipo_id]).status_code == 404
 
 
-def test_tope_de_equipos_pendientes(manual, monkeypatch):
+def test_tope_de_pendientes_y_limpieza_de_los_viejos(manual, base_temporal, monkeypatch):
     from radar.api import agente
 
     monkeypatch.setattr(agente, "MAX_PENDIENTES", 2)
     _inscribir(manual, nombre="PC-1")
-    _inscribir(manual, nombre="PC-2")
-    cuerpo = {"token": TOKEN, "equipo_id": str(uuid.uuid4()), "nombre_equipo": "PC-3"}
-    assert manual.post("/api/agente/inscribir", json=cuerpo).status_code == 429
+    viejo, _ = _inscribir(manual, nombre="PC-2")
+    assert manual.post("/api/agente/inscribir", json=_cuerpo(nombre="PC-3")).status_code == 429
+    # Una inscripción que nadie activó en una semana se borra y libera su lugar.
+    base_temporal.execute(
+        "UPDATE equipos SET inscrito = '2026-11-01T00:00:00+00:00' WHERE id = ?", [viejo]
+    )
+    base_temporal.commit()
+    assert manual.post("/api/agente/inscribir", json=_cuerpo(nombre="PC-3")).status_code == 200
+    assert almacen.leer_equipo(base_temporal, viejo) is None
+
+
+def test_el_instalador_trae_la_url_del_radar(manual, monkeypatch):
+    r = manual.get("/api/agente-instalador.zip")
+    assert r.status_code == 200 and r.headers["content-type"] == "application/zip"
+    zipeado = zipfile.ZipFile(io.BytesIO(r.content))
+    nombres = set(zipeado.namelist())
+    for esperado in (
+        "radar-agente/instalar.cmd",
+        "radar-agente/instalar.ps1",
+        "radar-agente/instalar.sh",
+        "radar-agente/seguridad.ps1",
+        "radar-agente/ejecutar.py",
+        "radar-agente/configuracion.txt",
+        "radar-agente/LEEME.txt",
+        "radar-agente/agente_local/__main__.py",
+    ):
+        assert esperado in nombres, esperado
+    configuracion = zipeado.read("radar-agente/configuracion.txt").decode()
+    assert "url=http://testserver" in configuracion and "token=" not in configuracion
+    # Doble clic en Windows: el .cmd con CRLF y el .ps1 con BOM (tildes en PowerShell 5.1).
+    assert b"\r\n" in zipeado.read("radar-agente/instalar.cmd")
+    assert zipeado.read("radar-agente/instalar.ps1").startswith(b"\xef\xbb\xbf")
+    assert b"\r\n" not in zipeado.read("radar-agente/instalar.sh")
+    # Con URL pública forzada y token exigido, los dos van en la configuración.
+    monkeypatch.setenv("RADAR_URL_PUBLICA", "https://radar.ejemplo/")
+    monkeypatch.setenv("AGENTE_TOKEN_INSCRIPCION", TOKEN)
+    configuracion = zipfile.ZipFile(io.BytesIO(manual.get("/api/agente-instalador.zip").content))
+    texto = configuracion.read("radar-agente/configuracion.txt").decode()
+    assert "url=https://radar.ejemplo\r\n" in texto and f"token={TOKEN}" in texto
 
 
 def test_los_equipos_inscritos_antes_quedan_aprobados(tmp_path):

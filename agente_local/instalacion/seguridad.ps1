@@ -1,4 +1,4 @@
-# Falla cerrado: SYSTEM solo ejecuta un runtime completo protegido contra escritura.
+﻿# Falla cerrado: SYSTEM solo ejecuta un runtime completo protegido contra escritura.
 function Assert-RuntimeProtegido([string]$Ruta) {
     $archivo = Get-Item -LiteralPath $Ruta -ErrorAction Stop
     $raiz = $archivo.Directory.FullName

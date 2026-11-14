@@ -298,7 +298,7 @@ let equipoAbierto = null;
 
 function pildoraEstadoEquipo(e) {
   if (e.revocado) return '<span class="pildora p-caida"><span class="punto"></span>revocado</span>';
-  if (e.pendiente) return '<span class="pildora p-semanal"><span class="punto"></span>por aprobar</span>';
+  if (e.pendiente) return '<span class="pildora p-semanal"><span class="punto"></span>por activar</span>';
   return "";
 }
 
@@ -307,15 +307,29 @@ function bloqueAprobacion(e) {
   if (e.revocado || !e.pendiente) return "";
   return `
     <div class="aprobacion-equipo">
-      <p><strong>Pendiente de aprobación.</strong> El equipo se inscribió y ya reporta, pero su
-      inventario no entra al cruce hasta que alguien de TI lo apruebe. Revisa la ficha antes:
-      si no reconoces el equipo, recházalo.</p>
+      <p><strong>Por activar.</strong> El equipo se instaló y ya reporta, pero su inventario no
+      entra al cruce hasta que escribas el código de activación que el instalador mostró en su
+      pantalla. Si no reconoces el equipo, recházalo.</p>
       <form id="aprobar-equipo" class="aprobar">
-        <input name="por" placeholder="Quién aprueba" maxlength="100" required aria-label="Quién aprueba" value="${esc(leerAprobador())}">
-        <button type="submit">Aprobar equipo</button>
+        <input name="codigo" class="mono" placeholder="XXXX-XXXX" maxlength="9" autocomplete="off" required aria-label="Código de activación">
+        <input name="por" placeholder="Quién activa" maxlength="100" required aria-label="Quién activa" value="${esc(leerAprobador())}">
+        <button type="submit">Activar equipo</button>
         <button type="button" class="boton-texto" id="rechazar-equipo">Rechazar</button>
       </form>
     </div>`;
+}
+
+// Activa por código: el código solo se ve en la pantalla del equipo, así que activar exige
+// haberlo visto. No hay forma de activar un equipo solo por su nombre.
+async function activarConCodigo(codigo, por) {
+  const r = await api("/api/equipos/activar", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ codigo: codigo.trim().toUpperCase(), por }),
+  });
+  guardarAprobador(por);
+  refrescar();
+  refrescarAuxiliares();
+  return r;
 }
 
 function conectarAprobacion(e) {
@@ -325,17 +339,13 @@ function conectarAprobacion(e) {
   formulario.addEventListener("submit", async (ev) => {
     ev.preventDefault();
     const por = formulario.elements.por.value.trim();
-    if (!por) return;
+    const codigo = formulario.elements.codigo.value;
+    if (!por || !codigo) return;
     const boton = formulario.querySelector("button");
     boton.disabled = true;
     try {
-      await api(`/api/equipos/${encodeURIComponent(e.id)}/aprobar`, {
-        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ por }),
-      });
-      guardarAprobador(por);
-      await abrirEquipo(e.id);
-      refrescar();
-      refrescarAuxiliares();
+      const r = await activarConCodigo(codigo, por);
+      await abrirEquipo(r.equipo.id);
     } catch (error) {
       boton.disabled = false;
       avisar(error);
@@ -355,11 +365,15 @@ function conectarAprobacion(e) {
 }
 
 function pintarEquipos(datos) {
-  const hay = datos.disponible && datos.equipos.length > 0;
-  $("#panel-equipos").hidden = !hay;
-  if (!hay) return;
+  // La sección se ve siempre que haya base: desde ahí se descarga el instalador.
+  $("#panel-equipos").hidden = !datos.disponible;
+  if (!datos.disponible) return;
+  $("#equipos-vacio").hidden = datos.equipos.length > 0;
+  $("#equipos").hidden = datos.equipos.length === 0;
   $("#total-equipos").textContent = datos.pendientes
-    ? `${datos.total} · ${datos.pendientes} por aprobar` : datos.total;
+    ? `${datos.total} · ${datos.pendientes} por activar` : datos.total;
+  const por = $("#activar-equipo").elements.por;
+  if (!por.value) por.value = leerAprobador();
   $("#equipos tbody").innerHTML = datos.equipos.map((e) => `
     <tr class="clic${e.id === equipoAbierto ? " activa" : ""}" data-equipo="${esc(e.id)}" tabindex="0">
       <td><div class="mono">${esc(e.nombre)}</div><div class="etiquetas">${pildoraPrioridad(e.peor_prioridad)}${pildoraEstadoEquipo(e)}</div></td>
@@ -718,6 +732,49 @@ function abrirEquipoDesdeFila(e) {
 }
 $("#equipos").addEventListener("click", abrirEquipoDesdeFila);
 $("#equipos").addEventListener("keydown", abrirEquipoDesdeFila);
+
+$("#descargar-instalador").addEventListener("click", async (ev) => {
+  const boton = ev.currentTarget;
+  boton.disabled = true;
+  try {
+    const cabeceras = {};
+    const clave = leerClave();
+    if (clave) cabeceras["X-Clave-Acceso"] = clave;
+    const respuesta = await fetch("/api/agente-instalador.zip", { headers: cabeceras });
+    if (!respuesta.ok) throw new Error(`Error ${respuesta.status}`);
+    const enlace = document.createElement("a");
+    enlace.href = URL.createObjectURL(await respuesta.blob());
+    enlace.download = "radar-agente.zip";
+    document.body.appendChild(enlace);
+    enlace.click();
+    enlace.remove();
+    setTimeout(() => URL.revokeObjectURL(enlace.href), 10000);
+  } catch (error) {
+    boton.insertAdjacentHTML("afterend", ` <span class="clave-error">${esc(error.message)}</span>`);
+  } finally {
+    boton.disabled = false;
+  }
+});
+
+$("#activar-equipo").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  const formulario = ev.currentTarget;
+  const salida = $("#activar-resultado");
+  const boton = formulario.querySelector("button");
+  boton.disabled = true;
+  try {
+    const r = await activarConCodigo(formulario.elements.codigo.value, formulario.elements.por.value.trim());
+    salida.className = "activar-resultado ok";
+    salida.textContent = `${r.equipo.nombre} activado.`;
+    formulario.elements.codigo.value = "";
+    abrirEquipo(r.equipo.id);
+  } catch (error) {
+    salida.className = "activar-resultado clave-error";
+    salida.textContent = error.message;
+  } finally {
+    boton.disabled = false;
+  }
+});
 
 $("#cerrar-equipo").addEventListener("click", () => {
   equipoAbierto = null;

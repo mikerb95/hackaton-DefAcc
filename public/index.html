@@ -60,7 +60,19 @@
     </div>
 
     <section class="panel" id="panel-equipos" aria-labelledby="t-equipos" hidden>
-      <h2 id="t-equipos">Equipos con agente <span class="contador" id="total-equipos"></span></h2>
+      <div class="panel-cabeza">
+        <h2 id="t-equipos">Equipos con agente <span class="contador" id="total-equipos"></span></h2>
+        <button type="button" id="descargar-instalador">Descargar instalador</button>
+      </div>
+      <form id="activar-equipo" class="activar">
+        <label for="activar-codigo">Activar un equipo con el código que mostró el instalador</label>
+        <input id="activar-codigo" name="codigo" class="mono" placeholder="XXXX-XXXX" maxlength="9" autocomplete="off" required>
+        <input name="por" placeholder="Quién activa" maxlength="100" required aria-label="Quién activa">
+        <button type="submit">Activar</button>
+        <span id="activar-resultado" class="activar-resultado" aria-live="polite"></span>
+      </form>
+      <p class="vacio" id="equipos-vacio" hidden>Todavía no hay equipos. Descarga el instalador, descomprímelo
+        en el PC y dale doble clic a <span class="mono">instalar.cmd</span>.</p>
       <div class="tabla-envoltura">
         <table class="tabla" id="equipos">
           <thead>
