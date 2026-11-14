@@ -1,0 +1,12 @@
+# Despierta cada cinco minutos; el agente decide si vence el intervalo del servidor.
+[Unit]
+Description=Reporte periodico del agente local del radar
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=5min
+RandomizedDelaySec=1min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,16 @@
+# Corre el agente una vez y termina (oneshot). Lo dispara radar-agente.timer.
+[Unit]
+Description=Agente local del radar de vulnerabilidades (recoge y envia el inventario)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/radar-agente
+ExecStart=/usr/bin/python3 -I /opt/radar-agente/ejecutar.py enviar --programado
+# El agente solo lee el sistema y escribe en su carpeta de datos.
+ProtectSystem=strict
+ReadWritePaths=/var/lib/radar-agente
+ProtectHome=true
+PrivateTmp=true
+NoNewPrivileges=true

@@ -214,3 +214,17 @@ button:disabled { opacity: 0.5; cursor: default; }
   .barra { padding: 12px 16px; flex-direction: column; align-items: flex-start; }
   .cifra-valor { font-size: 26px; }
 }
+
+/* Equipos con agente local: acciones por equipo y comandos de plantilla */
+.acciones { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.accion { background: var(--ink-2); border: 1px solid var(--linea); border-radius: var(--radio); padding: 12px 14px; }
+.accion-cabeza { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; }
+.accion .por-que { color: var(--texto-2); font-size: 13px; margin: 6px 0; }
+.accion p { margin: 0 0 8px; }
+.comando {
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; justify-content: space-between;
+  background: var(--ink-0); border: 1px solid var(--linea); border-radius: 6px; padding: 8px 10px; margin-bottom: 6px;
+}
+.comando code { color: var(--acento); white-space: pre-wrap; word-break: break-word; }
+.comando-donde { color: var(--texto-3); font-size: 12px; }
+.comando-nota { color: var(--texto-3); font-size: 12px; margin: 0 0 14px; }
