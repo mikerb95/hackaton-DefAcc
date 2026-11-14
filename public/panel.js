@@ -1,9 +1,10 @@
 // Panel del radar: consulta la API cada pocos segundos (sin SSE, PLAN sección 11).
 // Todo texto que viene del inventario es no confiable: se escapa siempre antes de pintarlo.
+// La sesión va en una cookie HttpOnly (radar/api/sesion.py); este archivo no la ve ni la guarda.
+// admin.js (cargado después) revisa la sesión, arma la navegación y arranca el ciclo.
 "use strict";
 
 const INTERVALO_MS = 8000;
-const CLAVE_LOCAL = "radar.clave";
 const ESTADOS = { nuevo: "Nuevo", en_curso: "En curso", mitigado: "Mitigado", descartado: "Descartado" };
 const PRIORIDADES = { inmediato: "Inmediato", semanal: "Semanal", informativo: "Informativo", boletin: "Boletín" };
 const MOTIVOS = { sin_version: "Sin versión", no_comparable: "Versión no comparable", sin_cpe: "Sin CPE" };
@@ -16,28 +17,24 @@ function esc(valor) {
   ));
 }
 
-function leerClave() {
-  try { return localStorage.getItem(CLAVE_LOCAL) || ""; } catch { return ""; }
-}
-function guardarClave(valor) {
-  try { localStorage.setItem(CLAVE_LOCAL, valor); } catch { /* sin almacenamiento */ }
-}
-
-function leerAprobador() {
-  try { return localStorage.getItem("radar.aprobador") || ""; } catch { return ""; }
-}
-function guardarAprobador(valor) {
-  try { localStorage.setItem("radar.aprobador", valor); } catch { /* sin almacenamiento */ }
-}
+// Sesión vigente: la llena admin.js con GET /api/sesion antes de arrancar.
+let SESION = null;
+const NIVELES = { lector: 0, analista: 1, admin: 2 };
+const puede = (rol) => SESION && NIVELES[SESION.rol] >= NIVELES[rol];
 
 class SinClave extends Error {}
 
+function irAlLogin() {
+  const volver = encodeURIComponent(location.pathname + location.hash);
+  location.replace(`/entrar/?volver=${volver}`);
+}
+
 async function api(ruta, opciones = {}) {
-  const cabeceras = { ...(opciones.headers || {}) };
-  const clave = leerClave();
-  if (clave) cabeceras["X-Clave-Acceso"] = clave;
-  const respuesta = await fetch(ruta, { ...opciones, headers: cabeceras });
-  if (respuesta.status === 401) throw new SinClave();
+  const respuesta = await fetch(ruta, { credentials: "same-origin", ...opciones });
+  if (respuesta.status === 401) {
+    irAlLogin();
+    throw new SinClave("La sesión venció.");
+  }
   const cuerpo = await respuesta.json().catch(() => ({}));
   if (!respuesta.ok) {
     const detalle = typeof cuerpo.detail === "string" ? cuerpo.detail : "Datos inválidos.";
@@ -137,6 +134,7 @@ let ultimosHallazgos = null;
 function pintarHallazgos(datos) {
   ultimosHallazgos = datos;
   $("#total-hallazgos").textContent = datos.total ?? "";
+  $("#nav-hallazgos").textContent = datos.total ?? "";
   const lista = datos.hallazgos || [];
   const filas = lista.slice(0, visibles).map((h) => {
     const opciones = Object.entries(ESTADOS).map(([v, t]) =>
@@ -155,7 +153,7 @@ function pintarHallazgos(datos) {
       <td class="num">${fmtCvss(h.cvss)}</td>
       <td class="num">${fmtEpss(h.epss)}</td>
       <td class="por-que">${esc(h.por_que.join(" · "))}</td>
-      <td><select data-hallazgo="${esc(h.id)}" aria-label="Estado de ${esc(h.cve)}">${opciones}</select>
+      <td><select data-hallazgo="${esc(h.id)}" aria-label="Estado de ${esc(h.cve)}"${puede("analista") ? "" : " disabled"}>${opciones}</select>
         ${h.comentario ? `<div class="por-que">${esc(h.comentario)}</div>` : ""}</td>
     </tr>`;
   }).join("");
@@ -209,12 +207,15 @@ function pintarDetalle(d) {
   const origen = a.origen === "agente"
     ? '<span class="pildora p-agente"><span class="punto"></span>Redactado por el agente</span>'
     : `<span class="pildora p-respaldo" title="${d.guardado ? "El verificador no aceptó el texto del agente o el agente falló" : "El agente todavía no entregó análisis para este producto"}"><span class="punto"></span>Texto armado por código</span>`;
+  // Quien aprueba sale de la sesión: no se escribe a mano.
   const aprobado = d.aprobacion
-    ? `<span class="aprobado">Aprobado por ${esc(d.aprobacion.por)} · ${esc(fmtHora(d.aprobacion.aprobado))}</span>`
-    : `<form id="aprobar" class="aprobar">
-        <input name="por" placeholder="Quién aprueba" maxlength="100" required aria-label="Quién aprueba" value="${esc(leerAprobador())}">
-        <button type="submit">Aprobar comunicado</button>
-      </form>`;
+    ? `<span class="aprobado">Aprobado por ${esc(d.aprobacion.por)}, ${esc(fmtHora(d.aprobacion.aprobado))}</span>`
+    : (puede("analista")
+      ? `<form id="aprobar" class="aprobar">
+          <button type="submit">Aprobar comunicado</button>
+          <span class="nota">como ${esc(SESION.nombre)}</span>
+        </form>`
+      : '<span class="nota">Sin aprobar. Lo aprueba un analista.</span>');
   $("#detalle-cuerpo").innerHTML = datos + `
     <div class="detalle-rejilla">
       <div class="bloque">
@@ -241,14 +242,11 @@ function pintarDetalle(d) {
     formulario.addEventListener("submit", async (e) => {
       e.preventDefault();
       const boton = formulario.querySelector("button");
-      const por = formulario.elements.por.value.trim();
-      if (!por) return;
       boton.disabled = true;
       try {
         await api(`/api/comunicado/${encodeURIComponent(g.producto)}/aprobar`, {
-          method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ por }),
+          method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({}),
         });
-        guardarAprobador(por);
         await abrirDetalle(g.producto);
       } catch (error) {
         boton.disabled = false;
@@ -298,9 +296,19 @@ let equipoAbierto = null;
 
 function pintarEquipos(datos) {
   const hay = datos.disponible && datos.equipos.length > 0;
-  $("#panel-equipos").hidden = !hay;
-  if (!hay) return;
-  $("#total-equipos").textContent = datos.total;
+  const vacio = $("#equipos-vacio");
+  $("#equipos").closest(".tabla-envoltura").hidden = !hay;
+  $("#total-equipos").textContent = hay ? datos.total : "";
+  $("#nav-equipos").textContent = hay ? datos.total : "";
+  vacio.hidden = hay;
+  if (!hay) {
+    vacio.innerHTML = !datos.disponible
+      ? `<p>${esc(datos.motivo || "Los equipos con agente necesitan una base conectada.")}</p>`
+      : (puede("admin")
+        ? '<p>Todavía no hay equipos con agente.</p><p class="nota">El agente levanta el software, el sistema y la postura de cada PC y lo envía al radar. Instálalo con "Agregar equipo".</p>'
+        : '<p>Todavía no hay equipos con agente.</p><p class="nota">Un administrador los agrega desde esta sección.</p>');
+    return;
+  }
   $("#equipos tbody").innerHTML = datos.equipos.map((e) => `
     <tr class="clic${e.id === equipoAbierto ? " activa" : ""}" data-equipo="${esc(e.id)}" tabindex="0">
       <td><div class="mono">${esc(e.nombre)}</div><div class="etiquetas">${pildoraPrioridad(e.peor_prioridad)}${e.revocado ? '<span class="pildora p-caida">revocado</span>' : ""}</div></td>
@@ -374,7 +382,8 @@ function pintarEquipo(d) {
   ];
   $("#detalle-equipo-cuerpo").innerHTML = `
     <div class="datos-clave">${pildoraPrioridad(e.peor_prioridad)}${pildorasPostura(e.postura)}
-      ${e.revocado ? '<span class="pildora p-caida">revocado</span>' : `<button type="button" class="boton-texto" id="revocar-equipo">Revocar credencial</button>`}</div>
+      ${e.revocado ? '<span class="pildora p-caida">revocado</span>' : (puede("admin") ? '<button type="button" class="boton-texto" id="revocar-equipo">Revocar credencial</button>' : "")}
+      ${puede("admin") ? '<button type="button" class="boton-texto texto-peligro" id="retirar-equipo">Retirar equipo</button>' : ""}</div>
     <div class="detalle-rejilla">
       <div class="bloque">
         <h3>Qué hacer en este equipo</h3>
@@ -389,7 +398,10 @@ function pintarEquipo(d) {
   const revocar = $("#revocar-equipo");
   if (revocar) {
     revocar.addEventListener("click", async () => {
-      if (!confirm(`¿Dejar de aceptar reportes de ${e.nombre}?`)) return;
+      const ok = await confirmar("Revocar credencial",
+        `${e.nombre} no podrá enviar más reportes. Sus datos quedan para la auditoría. Para volver a inscribirlo hay que retirarlo.`,
+        "Revocar");
+      if (!ok) return;
       revocar.disabled = true;
       try {
         await api(`/api/equipos/${encodeURIComponent(e.id)}/revocar`, { method: "POST" });
@@ -398,6 +410,25 @@ function pintarEquipo(d) {
       } catch (error) {
         revocar.disabled = false;
         revocar.insertAdjacentHTML("afterend", ` <span class="clave-error">${esc(error.message)}</span>`);
+      }
+    });
+  }
+  const retirar = $("#retirar-equipo");
+  if (retirar) {
+    retirar.addEventListener("click", async () => {
+      const ok = await confirmar("Retirar equipo",
+        `Se borran ${e.nombre} y todo lo que reportó, y el inventario se vuelve a cruzar. Úsalo al desinstalar el agente.`,
+        "Retirar equipo");
+      if (!ok) return;
+      retirar.disabled = true;
+      try {
+        await api(`/api/equipos/${encodeURIComponent(e.id)}`, { method: "DELETE" });
+        equipoAbierto = null;
+        $("#detalle-equipo").hidden = true;
+        refrescarAuxiliares();
+      } catch (error) {
+        retirar.disabled = false;
+        retirar.insertAdjacentHTML("afterend", ` <span class="clave-error">${esc(error.message)}</span>`);
       }
     });
   }
@@ -566,16 +597,11 @@ async function refrescar() {
       api("/api/productos"),
       api(`/api/hallazgos?${parametrosFiltro()}`),
     ]);
-    $("#clave").hidden = true;
     pintarResumen(resumen);
     pintarProductos(productos);
     if (!editandoEstado()) pintarHallazgos(hallazgos);
   } catch (error) {
-    if (error instanceof SinClave) {
-      $("#clave").hidden = false;
-      $("#estado").innerHTML = '<span class="pildora p-caida"><span class="punto"></span>Falta la clave</span>';
-      return;
-    }
+    if (error instanceof SinClave) return;
     $("#estado").innerHTML = `<span class="pildora p-caida"><span class="punto"></span>API sin respuesta</span> <span>${esc(error.message)}</span>`;
   }
 }
@@ -592,14 +618,6 @@ async function refrescarAuxiliares() {
 }
 
 // ---- eventos ---------------------------------------------------------------
-
-$("#clave").addEventListener("submit", (e) => {
-  e.preventDefault();
-  guardarClave($("#clave-valor").value);
-  $("#clave-valor").value = "";
-  refrescar();
-  refrescarAuxiliares();
-});
 
 $("#mas-hallazgos").addEventListener("click", () => {
   visibles += TANDA;
@@ -692,13 +710,15 @@ $("#carga").addEventListener("submit", async (e) => {
       ${descartes ? `<ul>${descartes}</ul>` : ""}`;
     refrescar();
   } catch (error) {
-    salida.innerHTML = `<span class="error">${esc(error instanceof SinClave ? "Falta la clave de acceso." : error.message)}</span>`;
+    salida.innerHTML = `<span class="error">${esc(error.message)}</span>`;
   } finally {
     boton.disabled = false;
   }
 });
 
-refrescar();
-refrescarAuxiliares();
-setInterval(refrescar, INTERVALO_MS);
-setInterval(refrescarAuxiliares, INTERVALO_MS * 2);
+function iniciarCiclo() {
+  refrescar();
+  refrescarAuxiliares();
+  setInterval(refrescar, INTERVALO_MS);
+  setInterval(refrescarAuxiliares, INTERVALO_MS * 2);
+}
