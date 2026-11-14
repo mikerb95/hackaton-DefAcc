@@ -1,6 +1,6 @@
 """Ajustes que se cambian sin redesplegar: hoy, el modelo de Claude de cada uso.
 
-Dos usos del modelo:
+Tres usos del modelo:
 
 - `analista`: el agente que redacta análisis y comunicados (`radar/agente/analista.py`).
 - `desempate`: la llamada corta del normalizador cuando dos CPE empatan
@@ -29,8 +29,8 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import Any, Literal
 
-Uso = Literal["analista", "desempate"]
-USOS: tuple[Uso, ...] = ("analista", "desempate")
+Uso = Literal["analista", "desempate", "asistente"]
+USOS: tuple[Uso, ...] = ("analista", "desempate", "asistente")
 
 MODELO_POR_DEFECTO = "claude-opus-5-5"
 
@@ -46,7 +46,12 @@ VARIABLE_COMUN = "RADAR_MODELO"
 VARIABLES: dict[Uso, str] = {
     "analista": "RADAR_MODELO_ANALISTA",
     "desempate": "RADAR_MODELO_DESEMPATE",
+    "asistente": "RADAR_MODELO_ASISTENTE",
 }
+# Defecto propio de un uso, si no es MODELO_POR_DEFECTO.
+DEFECTO_DE_USO: dict[str, str] = {"asistente": "claude-sonnet-5-5"}
+# Usos que no leen la variable común.
+SIN_VARIABLE_COMUN = frozenset({"asistente"})
 
 _FORMA = re.compile(r"^claude-[a-z0-9][a-z0-9.\-]{1,62}$")
 CACHE_S = 30  # el worker pide el modelo por producto; así no consulta la base cada vez
@@ -97,7 +102,8 @@ def _clave(uso: Uso) -> str:
 
 def modelo_de_entorno(uso: Uso) -> tuple[str, str | None]:
     """(modelo, variable que lo dio) sin mirar la base. Un valor mal formado se ignora."""
-    for nombre in (VARIABLES[uso], VARIABLE_COMUN):
+    nombres = (VARIABLES[uso],) if uso in SIN_VARIABLE_COMUN else (VARIABLES[uso], VARIABLE_COMUN)
+    for nombre in nombres:
         valor = (os.environ.get(nombre) or "").strip()
         if not valor:
             continue
@@ -108,7 +114,7 @@ def modelo_de_entorno(uso: Uso) -> tuple[str, str | None]:
             file=sys.stderr,
             flush=True,
         )
-    return MODELO_POR_DEFECTO, None
+    return DEFECTO_DE_USO.get(uso, MODELO_POR_DEFECTO), None
 
 
 # ---------------------------------------------------------------------------

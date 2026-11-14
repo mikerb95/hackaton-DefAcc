@@ -450,6 +450,7 @@ $("#nuevo-usuario").addEventListener("submit", async (e) => {
 const USOS_MODELO = {
   analista: ["Analista", "Redacta los análisis y comunicados de cada producto."],
   desempate: ["Desempate del normalizador", "Elige entre CPE empatados (solo con RADAR_DESEMPATE_MODELO=1)."],
+  asistente: ["Asistente", "Responde las preguntas de la caja del panel y de Mi equipo. Por defecto, Sonnet 5.5."],
 };
 
 function origenModelo(u) {
