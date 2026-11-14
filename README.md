@@ -1,6 +1,6 @@
 # Lighthouse
 
-# deface.vercel.app
+# defacc.vercel.app
 
 Cruza el inventario de software de una empresa (CSV, Excel o MCP) con NVD, CISA KEV y EPSS,
 dice qué equipos están expuestos y prioriza lo que ya se está explotando. Un agente hecho con
