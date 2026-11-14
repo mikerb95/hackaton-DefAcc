@@ -15,6 +15,7 @@ import time
 import urllib.parse
 from collections.abc import Callable, Iterable, Iterator
 from datetime import UTC, datetime, timedelta
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, Self
 
@@ -48,6 +49,7 @@ def partir_cpe(criterio: str) -> tuple[str, str, str | None]:
     return vendor, producto, None if version in ("*", "-", "") else version
 
 
+@lru_cache(maxsize=4096)
 def normalizar_par(par: str) -> str:
     """Par 'vendor:producto' sin los escapes de CPE (notepad\\+\\+ -> notepad++)."""
     return par.replace("\\", "").lower()

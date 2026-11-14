@@ -32,7 +32,7 @@ from radar import bd
 from radar.config import Umbrales
 from radar.contratos import CVE, Activo, Cobertura, Grupo, Hallazgo, Prioridad, Senales
 from radar.nucleo.agrupar import ESTADOS_CERRADOS, agrupar
-from radar.nucleo.cruce import cruzar_activo
+from radar.nucleo.cruce import candidatas, cruzar_activo, indexar
 from radar.nucleo.prioridad import hallazgos_de_activo, ordenar
 
 VENTANA_LINEA_BASE = timedelta(days=7)
@@ -73,11 +73,11 @@ def cruzar(
     fuera (sin CPE, por ejemplo) y se suman a la cobertura del resultado."""
     umbrales = umbrales or Umbrales.desde_entorno()
     detectado = detectado or datetime.now(UTC)
-    lista_cves = list(cves)
+    indice = indexar(cves)
     hallazgos: list[Hallazgo] = []
     cobertura = list(cobertura_previa)
     for activo in activos:
-        r = cruzar_activo(activo, lista_cves)
+        r = cruzar_activo(activo, candidatas(indice, activo.cpes))
         cobertura += r.cobertura
         hallazgos += hallazgos_de_activo(activo, r, senales, umbrales, detectado)
     return ResultadoCruce(

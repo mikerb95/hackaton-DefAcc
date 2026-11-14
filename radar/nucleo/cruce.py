@@ -107,6 +107,25 @@ def evaluar_cve(cve: CVE, pares: set[str], instalada: Version) -> Coincidencia |
     return None
 
 
+def indexar(cves: Iterable[CVE]) -> dict[str, list[CVE]]:
+    """Índice par normalizado -> CVE con algún rango de ese par. Se arma una vez por corrida
+    para que cada activo revise solo las CVE de sus pares, no todas."""
+    indice: dict[str, list[CVE]] = {}
+    for cve in cves:
+        for par in {normalizar_par(r.par) for r in cve.rangos}:
+            indice.setdefault(par, []).append(cve)
+    return indice
+
+
+def candidatas(indice: dict[str, list[CVE]], pares: Iterable[str]) -> list[CVE]:
+    """CVE del índice que tocan alguno de los pares, sin repetir."""
+    vistas: dict[str, CVE] = {}
+    for par in pares:
+        for cve in indice.get(normalizar_par(par), []):
+            vistas.setdefault(cve.id, cve)
+    return list(vistas.values())
+
+
 def cruzar_activo(activo: Activo, cves: Iterable[CVE]) -> ResultadoActivo:
     """Cruza un activo contra las CVE. Sin comparación no hay hallazgo (regla 1)."""
     if not activo.cpes:

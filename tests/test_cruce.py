@@ -268,3 +268,29 @@ def test_respuesta_conocida_completa(respuesta_conocida, cves_por_par, snapshot_
 def test_objetivo_contra_snapshot(cves_por_par, par, version, objetivo):
     r = cruzar_activo(activo(version, cpes=(par,)), cves_por_par(par))
     assert objetivo_de_producto(objetivo_de_rango(c.rango) for c in r.coincidencias) == objetivo
+
+
+def test_indice_por_par():
+    from radar.nucleo.cruce import candidatas, indexar
+
+    npp = cve_desde_nvd(
+        _cve_nvd(
+            "CVE-2099-0010",
+            [
+                {
+                    "criteria": "cpe:2.3:a:notepad-plus-plus:notepad\\+\\+:*:*:*:*:*:*:*:*",
+                    "vulnerable": True,
+                    "versionEndExcluding": "8.8.9",
+                },
+                {"criteria": CPE, "vulnerable": True, "versionEndExcluding": "7.13"},
+            ],
+        )
+    )
+    winrar = cve_desde_nvd(_cve_nvd("CVE-2099-0011", [{"criteria": CPE, "vulnerable": True}]))
+    indice = indexar([npp, winrar])
+    assert [c.id for c in indice["notepad-plus-plus:notepad++"]] == ["CVE-2099-0010"]
+    assert [c.id for c in candidatas(indice, ["rarlab:winrar", "RARLAB:WinRAR"])] == [
+        "CVE-2099-0010",
+        "CVE-2099-0011",
+    ]
+    assert candidatas(indice, ["otro:producto"]) == []
