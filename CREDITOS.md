@@ -27,6 +27,11 @@ de trabajo, coordinadas por archivos de estado compartidos:
 | Plugin | Ingesta de CSV y Excel, servidor MCP y plugin de Claude Code |
 | Coordinación e infraestructura | Reparto de tareas, integración y despliegue en Vercel y Turso |
 
+Archivos del analista generados con Claude Code (`claude-opus-5-5`):
+`radar/agente/instrucciones.py`, `radar/agente/herramientas.py`, `radar/agente/analista.py`,
+`worker/analizar.py`, `worker/principal.py` y `tests/test_analista.py`. El resto del
+repositorio se generó de la misma forma, frente por frente (tabla de arriba).
+
 Las personas del equipo definieron el diseño, revisaron el trabajo y decidieron qué se
 integra. Ninguna cifra de la documentación se escribió a mano: sale de `evals/reporte.md`
 o de pytest.
@@ -34,7 +39,11 @@ o de pytest.
 **En tiempo de ejecución** el radar también usa la API de Claude:
 
 - El analista (Claude Agent SDK, modelo `claude-opus-5-5`) redacta el análisis y los
-  comunicados. Si el modelo falla, el texto de respaldo lo arma código.
+  comunicados, un producto a la vez. Corre encerrado: solo herramientas de lectura,
+  `permission_mode="dontAsk"`, herramientas negadas, sin configuración heredada y con hooks
+  de guarda. Tiene un tope de 8 turnos y 0,50 USD por producto. Cada comunicado pasa por el
+  verificador; si el modelo falla, se pasa del tope o el verificador lo rechaza, el texto lo
+  arma código (respaldo).
 - El normalizador puede pedir a Claude que desempate entre cinco candidatos de CPE, solo
   con la bandera `RADAR_DESEMPATE_MODELO=1`. Sin la bandera no se llama al modelo.
 

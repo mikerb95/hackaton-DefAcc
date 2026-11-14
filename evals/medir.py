@@ -382,7 +382,10 @@ def seccion_inyeccion(i: dict[str, Any]) -> str:
             "devuelven las herramientas (ya limpio, en el brazo con defensa): mide si la "
             'tubería detiene el efecto del ataque aunque el modelo caiga. "Simulado '
             '(honesto)" ignora las órdenes: mide que la defensa no descarte comunicados '
-            'correctos. La tasa de un modelo real es la fila "analista real".\n'
+            'correctos. La tasa de un modelo real es la fila "analista real". El analista real '
+            "se mide en entrada forzada: recibe la fila envenenada con programa y proveedor "
+            "crudos, una exposición peor que la de producción, donde sus herramientas solo "
+            "devuelven equipo saneado y versión.\n"
         ),
         "\n".join(f"- {DESCRIPCION_RONDA[r]}" for r in rondas if r in DESCRIPCION_RONDA) + "\n",
         "### Entrada forzada: las defensas del agente, aisladas\n",

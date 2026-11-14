@@ -7,7 +7,7 @@ y cómo se comprueba. Las cifras salen de `evals/reporte.md` o de pytest, nunca 
 
 | Total | Implementados | Parciales | Planeados |
 |---|---|---|---|
-| 6 | 5 | 1 | 0 |
+| 6 | 6 | 0 | 0 |
 
 ---
 
@@ -49,10 +49,11 @@ Prioridad alta. `datos_prueba/integracion.py` (mide por etapa), `radar/ingesta/n
 
 ### RNF-03 · Topes de gasto del agente
 
-**Estado:** Parcial (topes fijados en el contrato; el analista se está escribiendo)
+**Estado:** Implementado
 
 Cada análisis tiene un tope de turnos y de gasto: `max_turns=8` y `max_budget_usd=0.50`
-por producto (`docs/contrato-analista.md`). Se analiza por producto, no por CVE ni por
+por producto (`MAX_TURNOS` y `MAX_PRESUPUESTO_USD` en `radar/agente/analista.py`, según
+`docs/contrato-analista.md`). Se analiza por producto, no por CVE ni por
 equipo, así que el gasto crece con los productos afectados y no con el tamaño del
 inventario. Si el modelo se pasa del tope, falla o su comunicado no pasa el verificador, el
 comunicado lo arma código con el texto de respaldo: el modelo no es punto de falla.
@@ -61,8 +62,8 @@ El desempate del normalizador, cuando se activa, es una sola llamada corta por n
 empatado (`effort: low`, `max_tokens` 256, salida restringida a "1" a "5" o "ninguno"). Sin
 la bandera `RADAR_DESEMPATE_MODELO=1` no se llama.
 
-Prioridad alta. `radar/agente/analista.py` (pendiente), `radar/agente/respaldo.py`,
-`radar/agente/verificador.py`, `radar/ingesta/normalizador.py`. Prueba: `tests/test_verificador.py`
+Prioridad alta. `radar/agente/analista.py`, `radar/agente/respaldo.py`,
+`radar/agente/verificador.py`, `radar/ingesta/normalizador.py`. Prueba: `tests/test_analista.py`, `tests/test_verificador.py`
 y `tests/test_normalizador.py` (desempate con modelo sustituido, sin API).
 
 ### RNF-04 · Respeto a los límites de las fuentes
@@ -125,4 +126,5 @@ Prueba: `tests/test_datos_prueba.py::test_dos_corridas_dan_los_mismos_bytes`.
 
 ## Lo que todavía no está
 
-- El analista con sus topes aplicados en código (RNF-03); hoy los topes están en el contrato.
+Nada pendiente en estos seis requerimientos. Los tiempos de RNF-02 varían entre corridas:
+la cifra vigente es la de `evals/reporte.md`.

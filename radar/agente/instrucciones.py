@@ -24,9 +24,7 @@ def _esquema_analisis() -> dict[str, Any]:
     opcionales admiten ``null``), para que la salida estructurada no omita ninguno.
     """
     esquema = copy.deepcopy(Analisis.model_json_schema())
-    propiedades = {
-        k: v for k, v in esquema["properties"].items() if k not in CAMPOS_DEL_CODIGO
-    }
+    propiedades = {k: v for k, v in esquema["properties"].items() if k not in CAMPOS_DEL_CODIGO}
     return {
         "type": "object",
         "title": "Analisis",

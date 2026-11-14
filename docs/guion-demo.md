@@ -8,6 +8,7 @@ si algo falla. Las cifras de la lámina final no se escriben aquí: se copian de
 |---|---|
 | Duración | 3 minutos |
 | Pantallas | Panel (navegador) y Claude Code con el plugin |
+| Cómo lo ve el jurado | Clip grabado de este recorrido dentro del pitch, y el despliegue de producción abierto (sin Deployment Protection) para quien quiera probarlo |
 | Pasos | 6 |
 | Cifras escritas a mano | 0 (todas salen de `evals/reporte.md` o de lo que muestra el panel en vivo) |
 
@@ -18,7 +19,8 @@ si algo falla. Las cifras de la lámina final no se escriben aquí: se copian de
 | Base con fuentes cargadas | `uv run python -m worker.descargar --desde-snapshot` (o la preview de Vercel con Turso ya cargado) |
 | Base sin inventario | Para que la carga del paso 2 se vea desde cero |
 | Archivos a mano | `datos_prueba/generados/inventario.csv` y `datos_prueba/generados/inventario_inyeccion.csv` |
-| Panel abierto | Preview de Vercel con la clave ya guardada, o `uv run uvicorn app:app --port 8000` en local |
+| Panel abierto | Despliegue de producción con la clave ya guardada (o, de respaldo, `uv run uvicorn app:app --port 8000` en local) |
+| Antes de grabar el clip | Turso vaciado (decisión del usuario) y token de Turso rotado antes de abrir producción (lo hace la sesión vercel) |
 | Nombre para aprobar | Escrito una vez en "Quién aprueba" (el panel lo recuerda) |
 | Claude Code | Sesión interactiva con el plugin `radar` cargado (preparación en `.coordinacion/plugin.md`) |
 | Lámina de números | Copiada de `evals/reporte.md` (ver paso 6) |
@@ -79,7 +81,7 @@ Qué falta resolver antes de presentar:
 
 | Tema | Estado |
 |---|---|
-| Ver el panel en el navegador | La preview tiene Deployment Protection: el navegador del presentador tiene que tener sesión en Vercel, o hay que decidir cómo se muestra al jurado |
+| Ver el panel en el navegador | Decidido: clip grabado en el pitch más despliegue de producción sin protección, después de rotar el token de Turso. La API sigue pidiendo la clave de acceso. Revisión visual del panel en producción: pendiente de la URL |
 | Paso 1 "panel vacío" | Resuelto: Turso se vacía entero antes de grabar (decisión del usuario) |
 | Fecha de alta en KEV en la razón | Resuelto: comprobado en la preview vigente por API |
 | Análisis en cola | Comprobado en la preview vigente: el resumen trae los trabajos y `panel.js` desplegado trae la píldora. El trabajo de análisis queda pendiente porque el analista no corre: el panel lo muestra con una píldora neutra "Análisis en cola" y el detalle usa el texto armado por código. Cada carga de ensayo suma un trabajo. Decisión del usuario: Turso se vacía entero antes de grabar, cuando él lo diga |
@@ -89,7 +91,7 @@ Qué falta resolver antes de presentar:
 
 | Falla | Qué hacer |
 |---|---|
-| La preview de Vercel no responde | Panel local: `uv run uvicorn app:app --port 8000` contra el sqlite local |
+| Producción no responde | Se pasa el clip grabado; si hace falta en vivo, panel local: `uv run uvicorn app:app --port 8000` contra el sqlite local |
 | La carga tarda | Seguir hablando del paso 2; el cruce del inventario completo tarda unos segundos |
 | Una fuente aparece en rojo | Mostrarlo como parte del producto: "fuente caída no es cero, y el panel lo dice arriba" |
 | El agente no entregó análisis | El detalle muestra el texto armado por código con su píldora; se aprueba igual |
