@@ -356,6 +356,7 @@ def usuarios_y_tokens(_e: SinEntrada, _ctx: Contexto) -> Any:
 
     if not _hay_base():
         return fallo("Las cuentas viven en la base y ahora no hay base conectada.")
+
     def leer(conexion: Any) -> tuple[list, list]:
         try:
             return cuentas.listar_usuarios(conexion), cuentas.listar_tokens(conexion, limite=20)

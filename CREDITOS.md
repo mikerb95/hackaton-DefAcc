@@ -144,3 +144,10 @@ Claude Code (Claude Opus 5.5, Anthropic) diseñó el logo: un faro cuyo haz evoc
 del radar, en SVG (`public/lighthouse.svg`, `public/marca.svg` como ícono de pestaña y en
 línea en cada página). El nombre está convertido a trazos desde Geist SemiBold (Vercel,
 SIL Open Font License 1.1).
+
+## Asistente del panel y de Mi equipo
+
+Claude Code (Claude Opus 5.5, Anthropic) diseñó e implementó el asistente con IA del panel
+y de Mi equipo (bucle con pausa para aprobar, herramientas por rol, tarjeta de antes y
+después, auditoría, topes de gasto, privacidad, interfaz y pruebas con Playwright), a partir
+de la receta `panel-ia` de Mike (`docs/plan-asistente.md`).
