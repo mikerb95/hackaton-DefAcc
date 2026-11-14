@@ -256,7 +256,7 @@ def test_api_prueba_ntfy_admin(monkeypatch, tmp_path):
 
     r = cliente.post("/api/ajustes/ntfy/prueba")
     assert r.status_code == 200 and r.json()["enviado"] is True
-    assert enviados[0]["title"] == "Radar: prueba de avisos"
+    assert enviados[0]["title"] == "Lighthouse: prueba de avisos"
     # Una segunda prueba enseguida se rechaza.
     assert cliente.post("/api/ajustes/ntfy/prueba").status_code == 429
     assert len(enviados) == 1

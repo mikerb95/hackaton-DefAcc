@@ -32,7 +32,7 @@ param(
 $ErrorActionPreference = 'Stop'
 $destino = Join-Path $env:ProgramFiles 'RadarAgente'
 $tarea = 'RadarAgente'
-$titulo = 'Radar de vulnerabilidades'
+$titulo = 'Lighthouse'
 
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName Microsoft.VisualBasic

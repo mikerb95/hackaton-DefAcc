@@ -346,7 +346,7 @@ inyección escritos aparte, para defender la tesis con cifras y no con promesas.
 - ✓ Las cifras salen de `evals/reporte.md`, nunca a mano (regla 10).
 - ✓ Lo que la defensa no garantiza está en [LIMITES.md](LIMITES.md).
 
-## Como quien opera el radar (2)
+## Como quien opera Lighthouse (2)
 
 ### HU-OP-01 · Historia · Aceptada
 

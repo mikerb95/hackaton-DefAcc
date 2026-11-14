@@ -42,7 +42,7 @@ flowchart LR
     ADM((Administrador))
     ATK((Quien edita<br/>el inventario))
 
-    subgraph Radar["Radar de vulnerabilidades"]
+    subgraph Radar["Lighthouse"]
         CU01([CU-01 Cargar inventario y normalizar])
         CU02([CU-02 Cruce y priorización])
         CU03([CU-03 Análisis con aprobación del comunicado])

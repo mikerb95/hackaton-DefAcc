@@ -1,4 +1,4 @@
-# Documentación del Radar de vulnerabilidades
+# Documentación de Lighthouse
 
 Aquí está todo lo que explica qué hace el radar, cómo está armado y cómo se comprobó. Empieza
 por el planteamiento si llegas sin contexto; ve directo a requerimientos o pruebas si buscas

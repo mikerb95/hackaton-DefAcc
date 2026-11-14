@@ -22,7 +22,7 @@ from radar.api.sesion import router_admin, router_sesion
 
 load_dotenv()
 
-app = FastAPI(title="Radar de vulnerabilidades", docs_url=None, redoc_url=None)
+app = FastAPI(title="Lighthouse", docs_url=None, redoc_url=None)
 app.include_router(router_sesion)
 app.include_router(router_admin)
 app.include_router(router)

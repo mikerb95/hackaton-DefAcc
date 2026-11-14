@@ -106,7 +106,7 @@ aunque el nombre traiga texto extra, y la tabla muestra el estado vigente.
 - **Los hooks de un plugin ejecutan código en la máquina de quien lo instala.** Es el mismo
   riesgo de cadena de suministro de cualquier plugin; el código es corto para que se lea antes.
 
-## Límites del radar
+## Límites de Lighthouse
 
 - No detecta vulnerabilidades que NVD aún no asocia a un producto.
 - No evalúa versiones en formatos no comparables. Las cuenta y las muestra en cobertura.

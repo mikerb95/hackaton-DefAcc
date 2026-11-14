@@ -156,7 +156,7 @@ def armar_mensaje(hallazgos: list[Hallazgo], url_panel: str | None = None) -> di
         lineas.append("Hay CVE usadas en campañas de ransomware (KEV).")
 
     n = len(cves)
-    titulo = f"Radar: {n} vulnerabilidad{'es' if n != 1 else ''} crítica{'s' if n != 1 else ''} nueva{'s' if n != 1 else ''}"
+    titulo = f"Lighthouse: {n} vulnerabilidad{'es' if n != 1 else ''} crítica{'s' if n != 1 else ''} nueva{'s' if n != 1 else ''}"
     cuerpo: dict[str, Any] = {
         "title": titulo,
         "message": (
@@ -274,7 +274,7 @@ def estado_publico(config: Configuracion | None = None) -> dict[str, Any]:
 def enviar_prueba(config: Configuracion, cliente: httpx.Client | None = None) -> None:
     """Mensaje de confirmación sin datos del inventario. Lanza si ntfy falla."""
     cuerpo: dict[str, Any] = {
-        "title": "Radar: prueba de avisos",
+        "title": "Lighthouse: prueba de avisos",
         "message": "Si ves esto, las vulnerabilidades críticas nuevas llegarán aquí.",
         "priority": 3,
         "tags": ["white_check_mark"],

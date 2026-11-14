@@ -3,7 +3,7 @@ name: exposicion
 description: Cómo leer y comunicar la exposición a vulnerabilidades del radar (prioridad, CISA KEV, EPSS, CVSS, versión de arreglo y cobertura) sin exagerar ni callar lo que quedó sin evaluar. Úsala siempre que respondas con datos de las herramientas del radar (consultar_hallazgos, equipos_expuestos, detalle_producto) o cuando pregunten qué equipos están expuestos, qué hay que parchar, qué tan grave es una CVE del inventario o cómo redactar un aviso para TI.
 ---
 
-# Leer la exposición del radar
+# Leer la exposición en Lighthouse
 
 El radar cruza el inventario de software con NVD, CISA KEV y EPSS. Tus respuestas salen
 de sus herramientas, nunca de memoria: si una CVE o una versión no viene en la salida,

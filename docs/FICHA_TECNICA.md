@@ -1,4 +1,4 @@
-# Ficha técnica: Radar de vulnerabilidades
+# Ficha técnica: Lighthouse
 
 Ficha de dos páginas para los jueces, en el orden que pide la guía. Las cifras se copian de
 `evals/reporte.md` (generado el 14 de noviembre de 2026 a las 11:33), sin redondear ni

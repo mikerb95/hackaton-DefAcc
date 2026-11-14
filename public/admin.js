@@ -74,7 +74,7 @@ function cambiarVista() {
     if (activa) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
   });
   $("#titulo-vista").textContent = VISTAS[nombre];
-  document.title = `${VISTAS[nombre]} · Radar`;
+  document.title = `${VISTAS[nombre]} · Lighthouse`;
   document.body.classList.remove("menu-abierto");
   $("#menu-movil").setAttribute("aria-expanded", "false");
   if (nombre === "usuarios") cargarUsuarios();

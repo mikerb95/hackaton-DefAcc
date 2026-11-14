@@ -322,7 +322,7 @@ $ErrorActionPreference = 'Stop'
 $t = [Security.SecurityElement]::Escape($env:RADAR_AVISO_TITULO)
 $c = [Security.SecurityElement]::Escape($env:RADAR_AVISO_CUERPO)
 $u = [Security.SecurityElement]::Escape($env:RADAR_AVISO_ENLACE)
-$xml = "<toast activationType='protocol' launch='$u' scenario='reminder'><visual><binding template='ToastGeneric'><text>$t</text><text>$c</text><text placement='attribution'>Radar de vulnerabilidades</text></binding></visual><actions><action content='Ver qué hacer' activationType='protocol' arguments='$u'/><action content='Más tarde' activationType='system' arguments='dismiss'/></actions></toast>"
+$xml = "<toast activationType='protocol' launch='$u' scenario='reminder'><visual><binding template='ToastGeneric'><text>$t</text><text>$c</text><text placement='attribution'>Lighthouse</text></binding></visual><actions><action content='Ver qué hacer' activationType='protocol' arguments='$u'/><action content='Más tarde' activationType='system' arguments='dismiss'/></actions></toast>"
 $doc = New-Object Windows.Data.Xml.Dom.XmlDocument
 $doc.LoadXml($xml)
 $app = '{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\WindowsPowerShell\v1.0\powershell.exe'
@@ -364,7 +364,7 @@ def _notificar_windows(titulo: str, cuerpo: str, enlace: str) -> bool:
 
 
 def _notificar_linux(titulo: str, cuerpo: str, enlace: str) -> bool:
-    base = ["notify-send", "--app-name=Radar", "--urgency=critical", "--icon=security-high"]
+    base = ["notify-send", "--app-name=Lighthouse", "--urgency=critical", "--icon=security-high"]
     try:
         # Con botón (libnotify 0.7.9 o superior): espera la respuesta y abre la página.
         r = subprocess.run(
