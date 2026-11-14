@@ -1007,6 +1007,25 @@ def importar_trazas(conexion: Any, ruta: Path | str) -> int:
     return len(nuevas)
 
 
+# Tablas que dependen del inventario cargado. CVE, KEV, EPSS, trazas, ejecuciones y las
+# decisiones del normalizador (programa_cpe) se conservan.
+TABLAS_DEL_INVENTARIO = ("inventario", "hallazgos", "cobertura", "analisis", "trabajos")
+
+
+def conteos(conexion: Any, tablas: Iterable[str]) -> dict[str, int]:
+    return {t: contar(conexion, t) for t in tablas}
+
+
+def vaciar_inventario(conexion: Any) -> dict[str, int]:
+    """Borra lo que depende del inventario (análisis incluye las aprobaciones). Devuelve cuántas
+    filas había en cada tabla. No toca CVE, KEV, EPSS ni trazas."""
+    antes = conteos(conexion, TABLAS_DEL_INVENTARIO)
+    for tabla in TABLAS_DEL_INVENTARIO:
+        conexion.execute(f"DELETE FROM {tabla}")
+    conexion.commit()
+    return antes
+
+
 def principal(argv: list[str] | None = None) -> int:
     import argparse
 
@@ -1015,7 +1034,29 @@ def principal(argv: list[str] | None = None) -> int:
     trazas = sub.add_parser("importar-trazas", help="Carga traza.jsonl de la guarda del plugin")
     trazas.add_argument("ruta", type=Path)
     trazas.add_argument("--sqlite", type=Path, help="Fuerza un sqlite local en esta ruta")
+    vaciar = sub.add_parser(
+        "vaciar-inventario",
+        help="Borra inventario, hallazgos, cobertura, análisis (con aprobaciones) y trabajos",
+    )
+    vaciar.add_argument("--si", action="store_true", help="Confirma el borrado")
+    vaciar.add_argument("--sqlite", type=Path, help="Fuerza un sqlite local en esta ruta")
     args = p.parse_args(argv)
+
+    if args.orden == "vaciar-inventario":
+        destino_texto = f"local {args.sqlite}" if args.sqlite else destino()
+        conexion = conectar(ruta_sqlite=args.sqlite)
+        try:
+            crear_esquema(conexion)
+            if not args.si:
+                print(f"[bd] Base: {destino_texto}", flush=True)
+                print(f"[bd] Se borrarían: {conteos(conexion, TABLAS_DEL_INVENTARIO)}", flush=True)
+                print("[bd] Se conservan CVE, KEV, EPSS y trazas. Repite con --si.", flush=True)
+                return 1
+            antes = vaciar_inventario(conexion)
+        finally:
+            conexion.close()
+        print(f"[bd] Base: {destino_texto}. Borrado: {antes}", flush=True)
+        return 0
 
     conexion = conectar(ruta_sqlite=args.sqlite)
     try:

@@ -276,3 +276,36 @@ def test_importar_trazas_del_plugin(conexion, tmp_path):
     assert decisiones[:5] == ["aprobacion_pedida", "negada", "limpiada", "permitida", "negada"]
     ultima = bd.leer_trazas(conexion, 1)[0]
     assert len(ultima["entrada"]) <= 300 and "\x1b" not in ultima["entrada"]
+
+
+def test_vaciar_inventario_conserva_fuentes_y_trazas(tmp_path, capsys):
+    ruta = tmp_path / "demo.db"
+    c = bd.conectar(ruta_sqlite=ruta)
+    bd.crear_esquema(c)
+    bd.guardar_cves(c, ejemplos.CVES)
+    bd.guardar_kev(c, ejemplos.SENALES.kev)
+    bd.guardar_epss(c, ejemplos.SENALES.epss)
+    bd.guardar_inventario(c, ejemplos.FILAS)
+    correr(c, ejemplos.ACTIVOS, umbrales=U, ahora=AHORA)
+    bd.guardar_analisis(c, ejemplos.ANALISIS[0])
+    bd.aprobar_comunicado(c, "WinRAR", "ana")
+    bd.crear_trabajo(c, "analizar", "WinRAR")
+    bd.guardar_traza(c, "x", "{}", "permitida")
+    c.close()
+
+    # Sin --si no borra nada y dice a qué base apunta.
+    assert bd.principal(["vaciar-inventario", "--sqlite", str(ruta)]) == 1
+    salida = capsys.readouterr().out
+    assert f"local {ruta}" in salida and "--si" in salida
+    c = bd.conectar(ruta_sqlite=ruta)
+    assert bd.contar(c, "hallazgos") == 3
+    c.close()
+
+    assert bd.principal(["vaciar-inventario", "--si", "--sqlite", str(ruta)]) == 0
+    c = bd.conectar(ruta_sqlite=ruta)
+    for tabla in bd.TABLAS_DEL_INVENTARIO:
+        assert bd.contar(c, tabla) == 0, tabla
+    assert bd.leer_aprobacion(c, "WinRAR") is None
+    for tabla, n in (("cves", 3), ("kev", 3), ("epss", 5), ("trazas", 1)):
+        assert bd.contar(c, tabla) == n, tabla
+    c.close()
