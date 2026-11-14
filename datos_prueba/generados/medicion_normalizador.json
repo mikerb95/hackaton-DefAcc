@@ -162,13 +162,13 @@
   },
   "nombre_exacto": {
    "filas_medidas": 316,
-   "cpe_correcto": 156,
-   "version_correcta": 166,
-   "activo_correcto": 156,
-   "sin_cpe_indebido": 150,
-   "cpe_equivocado": 10,
+   "cpe_correcto": 67,
+   "version_correcta": 67,
+   "activo_correcto": 67,
+   "sin_cpe_indebido": 249,
+   "cpe_equivocado": 0,
    "cve_fila_esperadas": 6500,
-   "cve_fila_alcanzables": 4598,
+   "cve_fila_alcanzables": 102,
    "cobertura_esperada": 12,
    "cobertura_motivo_correcto": 12,
    "cobertura_con_cpe": 0,
@@ -177,8 +177,8 @@
    "relleno_con_cpe": 0,
    "inyeccion": 0,
    "inyeccion_con_cpe": 0,
-   "exactitud_pct": 49.4,
-   "cve_alcanzables_pct": 70.7,
+   "exactitud_pct": 21.2,
+   "cve_alcanzables_pct": 1.6,
    "cobertura_correcta_pct": 100.0,
    "errores": {
     "Eclipse Temurin JDK with Hotspot 21.0.5+11 (x64) | 21.0.5+11": {
@@ -194,6 +194,48 @@
       null
      ],
      "filas": 5
+    },
+    "Google Chrome | 157.0.8103.78": {
+     "esperado": [
+      [
+       "google:chrome"
+      ],
+      "157.0.8103.78"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 20
+    },
+    "MongoDB Compass | 1.49.7": {
+     "esperado": [
+      [
+       "mongodb:compass"
+      ],
+      "1.49.7"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 3
+    },
+    "Node.js | 24.22.1": {
+     "esperado": [
+      [
+       "nodejs:node.js"
+      ],
+      "24.22.1"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 2
     },
     "Notepad++ (64-bit x64) | 8.9.6.4": {
      "esperado": [
@@ -265,6 +307,20 @@
      ],
      "filas": 8
     },
+    "Node.js | 18.18.0": {
+     "esperado": [
+      [
+       "nodejs:node.js"
+      ],
+      "18.18.0"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 1
+    },
     "Python 3.11.15 (64-bit) | 3.11.15": {
      "esperado": [
       [
@@ -288,11 +344,9 @@
       "4.72.0"
      ],
      "obtenido": [
-      "activo",
-      [
-       "docker:desktop"
-      ],
-      "4.72.0"
+      "cobertura:sin_cpe",
+      [],
+      null
      ],
      "filas": 3
     },
@@ -309,6 +363,20 @@
       null
      ],
      "filas": 3
+    },
+    "Node.js | 22.23.4": {
+     "esperado": [
+      [
+       "nodejs:node.js"
+      ],
+      "22.23.4"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 2
     },
     "Python 3.13.9 (64-bit) | 3.13.9": {
      "esperado": [
@@ -333,11 +401,9 @@
       "4.62.0"
      ],
      "obtenido": [
-      "activo",
-      [
-       "docker:desktop"
-      ],
-      "4.62.0"
+      "cobertura:sin_cpe",
+      [],
+      null
      ],
      "filas": 4
     },
@@ -354,6 +420,20 @@
       null
      ],
      "filas": 4
+    },
+    "Google Chrome | 157.0.8103.60": {
+     "esperado": [
+      [
+       "google:chrome"
+      ],
+      "157.0.8103.60"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 18
     },
     "WinRAR 6.22 (32-bit) | 6.22": {
      "esperado": [
@@ -383,6 +463,20 @@
      ],
      "filas": 15
     },
+    "Node.js | 20.18.0": {
+     "esperado": [
+      [
+       "nodejs:node.js"
+      ],
+      "20.18.0"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 3
+    },
     "PuTTY release 0.81 (64-bit) | 0.81": {
      "esperado": [
       [
@@ -397,6 +491,20 @@
      ],
      "filas": 3
     },
+    "VLC media player | 3.0.18": {
+     "esperado": [
+      [
+       "videolan:vlc_media_player"
+      ],
+      "3.0.18"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 5
+    },
     "Docker Desktop | 4.58.0": {
      "esperado": [
       [
@@ -406,13 +514,53 @@
       "4.58.0"
      ],
      "obtenido": [
-      "activo",
-      [
-       "docker:desktop"
-      ],
-      "4.58.0"
+      "cobertura:sin_cpe",
+      [],
+      null
      ],
      "filas": 3
+    },
+    "MongoDB Compass | 1.36.3": {
+     "esperado": [
+      [
+       "mongodb:compass"
+      ],
+      "1.36.3"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 2
+    },
+    "Node.js | 18.20.4": {
+     "esperado": [
+      [
+       "nodejs:node.js"
+      ],
+      "18.20.4"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 2
+    },
+    "VLC media player | 3.0.21": {
+     "esperado": [
+      [
+       "videolan:vlc_media_player"
+      ],
+      "3.0.21"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 9
     },
     "WinRAR 7.12 (64-bit) | 7.12": {
      "esperado": [
@@ -442,6 +590,20 @@
      ],
      "filas": 14
     },
+    "Node.js | 20.11.1": {
+     "esperado": [
+      [
+       "nodejs:node.js"
+      ],
+      "20.11.1"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 2
+    },
     "Notepad++ (64-bit x64) | 8.8.8": {
      "esperado": [
       [
@@ -469,6 +631,20 @@
       null
      ],
      "filas": 6
+    },
+    "Node.js | 26.12.1": {
+     "esperado": [
+      [
+       "nodejs:node.js"
+      ],
+      "26.12.1"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 1
     },
     "7-Zip 24.09 (x64 edition) | 24.09": {
      "esperado": [
@@ -498,6 +674,34 @@
      ],
      "filas": 4
     },
+    "Google Chrome | 156.0.8079.100": {
+     "esperado": [
+      [
+       "google:chrome"
+      ],
+      "156.0.8079.100"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 12
+    },
+    "Node.js | 22.11.0": {
+     "esperado": [
+      [
+       "nodejs:node.js"
+      ],
+      "22.11.0"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 2
+    },
     "Mozilla Firefox 156.0.1 (x64 es-ES) | 156.0.1": {
      "esperado": [
       [
@@ -511,6 +715,34 @@
       null
      ],
      "filas": 6
+    },
+    "Node.js | 22.12.0": {
+     "esperado": [
+      [
+       "nodejs:node.js"
+      ],
+      "22.12.0"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 1
+    },
+    "Node.js | 20.8.0": {
+     "esperado": [
+      [
+       "nodejs:node.js"
+      ],
+      "20.8.0"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 1
     },
     "PuTTY release 0.84 (64-bit) | 0.84": {
      "esperado": [
@@ -526,12 +758,40 @@
      ],
      "filas": 4
     },
+    "Node.js | 24.22.0": {
+     "esperado": [
+      [
+       "nodejs:node.js"
+      ],
+      "24.22.0"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 1
+    },
     "WinRAR 6.23 (64-bit) | 6.23": {
      "esperado": [
       [
        "rarlab:winrar"
       ],
       "6.23"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 2
+    },
+    "Node.js | 22.20.0": {
+     "esperado": [
+      [
+       "nodejs:node.js"
+      ],
+      "22.20.0"
      ],
      "obtenido": [
       "cobertura:sin_cpe",

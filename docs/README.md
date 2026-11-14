@@ -31,6 +31,7 @@ salida de pytest. Si un número no coincide entre páginas, es un error.
 | [verificacion-validacion.md](verificacion-validacion.md) | Decisiones que cambian cifras y por qué | decisiones con prueba |
 | [contrato-analista.md](contrato-analista.md) | Contrato autocontenido del analista con Agent SDK (frente externo): archivos, funciones disponibles, firma que espera la suite de inyección y reglas | 1 frente externo |
 | [escalamiento.md](escalamiento.md) | Escalera de escalamiento: qué pasa con una alerta según su prioridad, de panel a ticket y a teléfono | peldaños |
+| [plan-agente-local.md](plan-agente-local.md) | Siguiente paso: agente local de inventario para Windows y Linux (plan, no construido) | trabajo futuro |
 | [guion-demo.md](guion-demo.md) | Guion de la demo de 3 minutos: preparación, seis pasos con lo que se dice, lámina de números y qué hacer si algo falla | 3 minutos |
 | [AMENAZAS.md](AMENAZAS.md) | Modelo de amenazas del agente y del inventario | vectores |
 | [LIMITES.md](LIMITES.md) | Lo que el radar no detecta y el riesgo de uso dual | límites conocidos |

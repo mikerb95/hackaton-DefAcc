@@ -15,3 +15,6 @@ datos_prueba/salida/
 
 # Base sqlite local mientras no haya Turso
 datos_locales/
+.vercel
+.env*
+!.env.example
