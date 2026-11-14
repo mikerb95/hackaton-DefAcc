@@ -137,3 +137,10 @@ la validaci?n del runtime de Windows y la integraci?n con main, con pruebas de r
 Claude Code (Claude Opus 5.5, Anthropic) diseñó e implementó el parcheo aprobado: firma
 Ed25519 en Python puro, catálogo cerrado, ejecutores de Windows y Linux, rutas, panel e
 informe de remediación, con sus pruebas (`docs/plan-parcheo.md`).
+
+## Logo de Lighthouse
+
+Claude Code (Claude Opus 5.5, Anthropic) diseñó el logo: un faro cuyo haz evoca el barrido
+del radar, en SVG (`public/lighthouse.svg`, `public/marca.svg` como ícono de pestaña y en
+línea en cada página). El nombre está convertido a trazos desde Geist SemiBold (Vercel,
+SIL Open Font License 1.1).
