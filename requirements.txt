@@ -1,0 +1,14 @@
+# Dependencias de la API en Vercel: base de pyproject + extra api.
+# claude-agent-sdk nunca va aquí (trae el binario de Claude Code y solo corre en el worker).
+# Vercel solo lee este archivo si pyproject.toml y uv.lock quedan fuera del despliegue
+# (.vercelignore); ver .coordinacion/panel.md.
+pydantic>=2.9
+httpx>=0.27
+turso-serverless
+rapidfuzz>=3.9
+python-dotenv>=1.0
+fastapi
+python-multipart
+pandas
+openpyxl
+anthropic

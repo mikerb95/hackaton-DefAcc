@@ -1,0 +1,14 @@
+{
+  "name": "radar",
+  "description": "Radar de vulnerabilidades para equipos de TI: inventario contra NVD, CISA KEV y EPSS.",
+  "owner": {
+    "name": "Equipo Radar (hackatón def/acc)"
+  },
+  "plugins": [
+    {
+      "name": "radar",
+      "source": "./plugin",
+      "description": "Qué equipos están expuestos hoy, priorizado por explotación real, con guarda contra inyección indirecta."
+    }
+  ]
+}

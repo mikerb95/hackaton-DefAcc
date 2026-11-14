@@ -332,6 +332,7 @@ HALLAZGOS: list[Hallazgo] = [
             "Explotación confirmada en el mundo real (CISA KEV)",
             "Usada en campañas de ransomware (CISA KEV)",
             "Probabilidad de explotación del 96% en 30 días (EPSS)",
+            "Gravedad alta, CVSS 7.8",
         ],
         preciso=True,
         rango=RANGO_WINRAR_2018_20250,
@@ -351,7 +352,7 @@ HALLAZGOS: list[Hallazgo] = [
         prioridad="inmediato",
         por_que=[
             "Explotación confirmada en el mundo real (CISA KEV)",
-            "Agregada a KEV el 10 de noviembre de 2026, plazo 24 de noviembre de 2026",
+            "Gravedad alta, CVSS 8.8",
         ],
         preciso=True,
         rango=RANGO_CHROME_2026_125350,
@@ -413,6 +414,7 @@ GRUPOS: list[Grupo] = [
             "4 CVE con explotación confirmada en el mundo real (CISA KEV)",
             "Usada en campañas de ransomware (CISA KEV)",
             "Probabilidad de explotación del 96% en 30 días (EPSS)",
+            "Peor gravedad alta, CVSS 8.4",
         ],
     ),
     Grupo(
@@ -429,7 +431,7 @@ GRUPOS: list[Grupo] = [
         version_objetivo="4.71.0",
         tipo_objetivo="exacta",
         prioridad="semanal",
-        por_que=["Gravedad alta, CVSS 8.8"],
+        por_que=["Peor gravedad alta, CVSS 8.8"],
     ),
 ]
 

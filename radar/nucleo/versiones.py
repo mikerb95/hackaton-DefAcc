@@ -51,7 +51,7 @@ _PATRON = re.compile(
 class Version:
     """Versión ya leída. Se construye con `leer()`, que devuelve None si no se puede leer."""
 
-    __slots__ = ("texto", "numeros", "etiqueta", "n_etiqueta")
+    __slots__ = ("etiqueta", "n_etiqueta", "numeros", "texto")
 
     def __init__(self, texto: str, numeros: tuple[int, ...], etiqueta: int, n_etiqueta: int):
         self.texto = texto

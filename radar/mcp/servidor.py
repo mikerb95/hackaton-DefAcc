@@ -257,6 +257,38 @@ def _coincide(texto: str, buscado: str) -> bool:
     return buscado.casefold() in texto.casefold()
 
 
+def _acciones(filtrados: list, grupos: list) -> list[dict[str, Any]]:
+    """Una acción por producto de los hallazgos filtrados, en su orden (regla 5 del núcleo).
+
+    La versión de arreglo sale del grupo; si el producto aún no tiene grupo, no se promete.
+    """
+    por_nombre = {g.producto: g for g in grupos}
+    acciones: list[dict[str, Any]] = []
+    for nombre in dict.fromkeys(h.producto for h in filtrados):
+        propios = [h for h in filtrados if h.producto == nombre]
+        grupo = por_nombre.get(nombre)
+        tipo = grupo.tipo_objetivo if grupo else "ninguna"
+        acciones.append(
+            {
+                "producto": nombre,
+                "prioridad": propios[0].prioridad,
+                "versiones": sorted({h.version_instalada for h in propios}),
+                "n_equipos": len({e for h in propios for e in h.equipos}),
+                "cves": len({h.cve for h in propios}),
+                "en_kev": len({h.cve for h in propios if h.kev}),
+                "ransomware": any(h.ransomware for h in propios),
+                "version_objetivo": grupo.version_objetivo if grupo else None,
+                "tipo_objetivo": tipo,
+                "como_leer_objetivo": (
+                    COMO_LEER_OBJETIVO[tipo]
+                    if grupo
+                    else "Producto aún sin agrupar: no hay versión de arreglo calculada."
+                ),
+            }
+        )
+    return acciones
+
+
 @servidor.tool(annotations=SOLO_LECTURA)
 def consultar_hallazgos(
     prioridad: Annotated[
@@ -282,6 +314,7 @@ def consultar_hallazgos(
         hallazgos, o1 = datos.leer("leer_hallazgos")
         cobertura, o2 = datos.leer("leer_cobertura")
         fuentes, o3 = _estado_fuentes()
+        grupos, o4 = datos.leer("leer_grupos")
     except Exception as error:  # noqa: BLE001 (base caída: se dice, no se devuelve vacío)
         raise _error(f"No se pudo leer la base: {error}") from None
 
@@ -299,9 +332,10 @@ def consultar_hallazgos(
     ]
     filtrados.sort(key=_orden_hallazgo)
 
-    respuesta = _encabezado(datos.origen_combinado(o1, o2, o3))
+    respuesta = _encabezado(datos.origen_combinado(o1, o2, o3, o4))
     respuesta.update(
         {
+            "acciones": _acciones(filtrados, grupos),
             "resumen": {
                 "hallazgos": len(abiertos),
                 "por_prioridad": por_prioridad,

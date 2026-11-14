@@ -93,7 +93,7 @@ def cve_desde_nvd(item: dict[str, Any]) -> CVE:
             d["value"]
             for w in c.get("weaknesses", [])
             for d in w.get("description", [])
-            if d.get("value")
+            if str(d.get("value", "")).startswith("CWE-")
         }
     )
     vistas: set[str] = set()
@@ -103,9 +103,8 @@ def cve_desde_nvd(item: dict[str, Any]) -> CVE:
             continue
         vistas.add(r["url"])
         referencias.append(Referencia(url=r["url"], etiquetas=r.get("tags", [])))
-    descripcion = next(
-        (d["value"] for d in c.get("descriptions", []) if d.get("lang") == "en"), ""
-    )
+    textos = {d.get("lang"): d.get("value", "") for d in c.get("descriptions", [])}
+    descripcion = textos.get("es") or textos.get("en") or ""
     return CVE(
         id=c["id"],
         publicada=_fecha(c.get("published")),

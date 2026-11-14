@@ -36,16 +36,20 @@ class Umbrales:
     @classmethod
     def desde_entorno(cls) -> Umbrales:
         return cls(
-            epss=_real("RADAR_UMBRAL_EPSS", cls.epss),
-            cvss_inmediato=_real("RADAR_UMBRAL_CVSS_INMEDIATO", cls.cvss_inmediato),
-            cvss_semanal=_real("RADAR_UMBRAL_CVSS_SEMANAL", cls.cvss_semanal),
+            epss=_real("CVE_UMBRAL_EPSS", cls.epss),
+            cvss_inmediato=_real("CVE_UMBRAL_CVSS", cls.cvss_inmediato),
+            cvss_semanal=_real("CVE_UMBRAL_CVSS_SEMANAL", cls.cvss_semanal),
         )
 
 
-def turso() -> tuple[str, str] | None:
-    """(url, token) de Turso, o None si aún no están configurados."""
+def turso(solo_lectura: bool = False) -> tuple[str, str] | None:
+    """(url, token) de Turso, o None si aún no están configurados.
+
+    Con `solo_lectura` usa TURSO_AUTH_TOKEN_LECTURA (herramientas del agente). Si ese token no
+    existe devuelve None: nunca cae al token de escritura en silencio.
+    """
     url = os.environ.get("TURSO_DATABASE_URL")
-    token = os.environ.get("TURSO_AUTH_TOKEN")
+    token = os.environ.get("TURSO_AUTH_TOKEN_LECTURA" if solo_lectura else "TURSO_AUTH_TOKEN")
     if url and token:
         return url, token
     return None

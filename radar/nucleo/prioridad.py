@@ -24,8 +24,8 @@ from radar.contratos import (
     Activo,
     Hallazgo,
     Prioridad,
-    Senales,
     SenalEpss,
+    Senales,
     SenalKev,
 )
 from radar.nucleo.cruce import Coincidencia, ResultadoActivo

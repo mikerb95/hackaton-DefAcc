@@ -221,3 +221,14 @@ def test_cliente_mcp_recibe_error_y_estructura(con_ejemplos):
     assert error.is_error is True
     assert bien.is_error is False
     assert bien.structured_content["datos"] == "ejemplo"
+
+
+def test_acciones_una_por_producto_con_objetivo_del_grupo(con_ejemplos):
+    respuesta = srv.consultar_hallazgos()
+    acciones = {a["producto"]: a for a in respuesta["acciones"]}
+    assert len(acciones) == len({h.producto for h in ejemplos.HALLAZGOS})
+    grupo = next(g for g in ejemplos.GRUPOS if g.producto in acciones)
+    assert acciones[grupo.producto]["tipo_objetivo"] == grupo.tipo_objetivo
+    assert acciones[grupo.producto]["version_objetivo"] == grupo.version_objetivo
+    sin_grupo = [a for n, a in acciones.items() if n not in {g.producto for g in ejemplos.GRUPOS}]
+    assert all(a["version_objetivo"] is None for a in sin_grupo)

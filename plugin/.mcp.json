@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "radar": {
+      "command": "uv",
+      "args": [
+        "tool",
+        "run",
+        "--from",
+        "radar[mcp] @ git+https://github.com/mikerb95/hackaton-DefAcc",
+        "radar-mcp"
+      ],
+      "env": {
+        "TURSO_DATABASE_URL": "${user_config.turso_url}",
+        "TURSO_AUTH_TOKEN": "${user_config.turso_token}",
+        "RADAR_SQLITE": "${CLAUDE_PLUGIN_DATA}/radar.db"
+      }
+    }
+  }
+}

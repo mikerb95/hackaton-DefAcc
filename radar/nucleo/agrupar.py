@@ -42,12 +42,7 @@ def agrupar_producto(
 
     razones: list[str] = []
     if en_kev:
-        n = len(en_kev)
-        razones.append(
-            f"{n} CVE con explotación confirmada en el mundo real (CISA KEV)"
-            if n > 1
-            else "1 CVE con explotación confirmada en el mundo real (CISA KEV)"
-        )
+        razones.append(f"{len(en_kev)} CVE con explotación confirmada en el mundo real (CISA KEV)")
     if ransomware:
         razones.append(RAZON_RANSOMWARE)
     if peor_epss is not None and peor_epss >= umbrales.epss:

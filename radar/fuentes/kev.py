@@ -7,9 +7,7 @@ from typing import Any
 
 from radar.contratos import SenalKev
 
-URL_KEV = (
-    "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
-)
+URL_KEV = "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
 
 
 def _dia(texto: str | None) -> date | None:

@@ -23,6 +23,8 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { color-scheme: dark; }
 
 body {
   margin: 0;
@@ -97,10 +99,13 @@ main { max-width: 1280px; margin: 0 auto; padding: 24px; display: grid; gap: 20p
 }
 .tabla td { padding: 10px; border-bottom: 1px solid var(--ink-3); vertical-align: top; }
 .tabla tr:last-child td { border-bottom: 0; }
-.tabla th.num, .tabla td.num { text-align: right; }
+.tabla th.num, .tabla td.num { text-align: right; white-space: nowrap; }
+.tabla td.cve { white-space: nowrap; }
+#hallazgos { min-width: 900px; }
+#productos { min-width: 640px; }
 .tabla tbody tr.clic { cursor: pointer; }
 .tabla tbody tr.clic:hover, .tabla tbody tr.activa { background: var(--acento-tinte); }
-.tabla .por-que { color: var(--texto-2); font-size: 13px; max-width: 320px; }
+.tabla .por-que { color: var(--texto-2); font-size: 13px; min-width: 220px; max-width: 320px; }
 .sin-dato { color: var(--texto-3); font-style: italic; font-family: var(--sans); }
 
 /* Píldoras y puntos de estado */

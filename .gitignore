@@ -12,3 +12,6 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 datos_prueba/salida/
+
+# Base sqlite local mientras no haya Turso
+datos_locales/

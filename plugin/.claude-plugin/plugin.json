@@ -1,0 +1,26 @@
+{
+  "name": "radar",
+  "version": "0.1.0",
+  "description": "Radar de vulnerabilidades: cruza el inventario de software con NVD, CISA KEV y EPSS, dice qué equipos están expuestos y prioriza lo explotado. Trae una guarda contra inyección indirecta desde el inventario.",
+  "author": {
+    "name": "Equipo Radar (hackatón def/acc)"
+  },
+  "homepage": "https://github.com/mikerb95/hackaton-DefAcc",
+  "repository": "https://github.com/mikerb95/hackaton-DefAcc",
+  "license": "MIT",
+  "keywords": ["seguridad", "vulnerabilidades", "cve", "kev", "epss", "inventario"],
+  "userConfig": {
+    "turso_url": {
+      "type": "string",
+      "title": "URL de la base Turso",
+      "description": "TURSO_DATABASE_URL, la misma base que usa el panel (libsql://...). Vacío: base local en la carpeta de datos del plugin.",
+      "sensitive": false
+    },
+    "turso_token": {
+      "type": "string",
+      "title": "Token de Turso",
+      "description": "TURSO_AUTH_TOKEN. Se guarda en el almacén seguro del sistema.",
+      "sensitive": true
+    }
+  }
+}
