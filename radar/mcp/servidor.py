@@ -22,6 +22,7 @@ from pathlib import Path
 from typing import Annotated, Any
 
 from mcp.server.mcpserver import MCPServer
+from mcp.server.mcpserver.exceptions import ToolError
 from mcp.types import ToolAnnotations
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -29,10 +30,11 @@ from radar.contratos import ORDEN_PRIORIDAD, Prioridad
 from radar.ingesta import archivos
 from radar.ingesta.archivos import ErrorLectura
 from radar.mcp import datos
-from radar.seguridad.limpieza import limpiar_estructura
+from radar.seguridad.limpieza import limpiar_estructura, limpiar_texto
 
 EXTENSIONES_PERMITIDAS = archivos.EXTENSIONES_CSV | archivos.EXTENSIONES_EXCEL
 DESCARTADAS_MOSTRADAS = 20
+LIMITE_ERROR = 400
 
 INSTRUCCIONES = (
     "Radar de vulnerabilidades: cruza el inventario de software con NVD, KEV y EPSS. "
@@ -57,6 +59,11 @@ class FilaEntrada(BaseModel):
 
 class ErrorHerramienta(ValueError):
     """Error con mensaje apto para devolver al asistente."""
+
+
+def _error(mensaje: str) -> ToolError:
+    """Error MCP (is_error=true). El mensaje puede traer texto del archivo: va limpio."""
+    return ToolError(limpiar_texto(mensaje, LIMITE_ERROR))
 
 
 def _validar_ruta(ruta: str) -> Path:
@@ -157,7 +164,7 @@ def cargar_inventario(
     try:
         resultado = _cargar(ruta, filas, reemplazar, simular)
     except (ErrorLectura, ErrorHerramienta) as error:
-        resultado = {"error": str(error)}
+        raise _error(str(error)) from None
     return limpiar_estructura(resultado)
 
 
@@ -276,7 +283,7 @@ def consultar_hallazgos(
         cobertura, o2 = datos.leer("leer_cobertura")
         fuentes, o3 = _estado_fuentes()
     except Exception as error:  # noqa: BLE001 (base caída: se dice, no se devuelve vacío)
-        return limpiar_estructura({"error": f"No se pudo leer la base: {error}"})
+        raise _error(f"No se pudo leer la base: {error}") from None
 
     abiertos = [h for h in hallazgos if incluir_cerrados or h.estado not in CERRADOS]
     por_prioridad: dict[str, int] = {}
@@ -333,7 +340,7 @@ def equipos_expuestos(
         cobertura, o2 = datos.leer("leer_cobertura")
         fuentes, o3 = _estado_fuentes()
     except Exception as error:  # noqa: BLE001
-        return limpiar_estructura({"error": f"No se pudo leer la base: {error}"})
+        raise _error(f"No se pudo leer la base: {error}") from None
 
     tope = ORDEN_PRIORIDAD[prioridad_minima] if prioridad_minima else max(ORDEN_PRIORIDAD.values())
     por_equipo: dict[str, dict[str, Any]] = {}
@@ -417,52 +424,33 @@ def detalle_producto(
         cobertura, o5 = datos.leer("leer_cobertura")
         fuentes, o6 = _estado_fuentes()
     except Exception as error:  # noqa: BLE001
-        return limpiar_estructura({"error": f"No se pudo leer la base: {error}"})
+        raise _error(f"No se pudo leer la base: {error}") from None
 
-    buscado = producto.casefold()
-    exactos = [g for g in grupos if g.producto.casefold() == buscado]
-    grupo = (
-        exactos[0]
-        if exactos
-        else next((g for g in grupos if _coincide(g.producto, producto)), None)
-    )
+    nombre = _resolver_producto(producto, grupos, hallazgos)
     origen = datos.origen_combinado(o1, o2, o3, o4, o5, o6)
+    respuesta = _encabezado(origen)
 
-    if grupo is None:
-        nombres = sorted({g.producto for g in grupos})
-        parecidos = get_close_matches(producto, nombres, n=5, cutoff=0.4)
-        respuesta = _encabezado(origen)
+    if nombre is None:
+        nombres = sorted({g.producto for g in grupos} | {h.producto for h in hallazgos})
         respuesta.update(
             {
                 "encontrado": False,
                 "mensaje": "No hay hallazgos para ese producto. Puede estar sano o sin evaluar.",
-                "parecidos": parecidos,
-                "sin_evaluar": [
-                    {
-                        "equipo": c.equipo,
-                        "programa": c.programa,
-                        "version": c.version,
-                        "motivo": c.motivo,
-                    }
-                    for c in cobertura
-                    if _coincide(c.programa, producto)
-                ],
+                "parecidos": get_close_matches(producto, nombres, n=5, cutoff=0.4),
+                "sin_evaluar": _sin_evaluar(cobertura, producto),
                 "fuentes": fuentes,
             }
         )
         return limpiar_estructura(respuesta, LIMITE_DETALLE)
 
-    propios = sorted((h for h in hallazgos if h.producto == grupo.producto), key=_orden_hallazgo)
-    ids = set(grupo.cves)
-    respuesta = _encabezado(origen)
-    respuesta.update(
-        {
-            "encontrado": True,
-            "producto": grupo.producto,
+    propios = sorted((h for h in hallazgos if h.producto == nombre), key=_orden_hallazgo)
+    grupo = next((g for g in grupos if g.producto == nombre), None)
+    if grupo is not None:
+        resumen = {
             "prioridad": grupo.prioridad,
             "versiones": grupo.versiones,
-            "n_equipos": len(grupo.equipos),
-            "equipos": grupo.equipos[:EQUIPOS_MOSTRADOS],
+            "equipos": grupo.equipos,
+            "cves": grupo.cves,
             "en_kev": grupo.en_kev,
             "ransomware": grupo.ransomware,
             "peor_cvss": grupo.peor_cvss,
@@ -471,8 +459,36 @@ def detalle_producto(
             "tipo_objetivo": grupo.tipo_objetivo,
             "como_leer_objetivo": COMO_LEER_OBJETIVO[grupo.tipo_objetivo],
             "por_que": grupo.por_que,
+        }
+    else:  # hallazgos sin agrupar todavía: se resume desde ellos, sin prometer arreglo
+        cvss = [h.cvss for h in propios if h.cvss is not None]
+        epss = [h.epss for h in propios if h.epss is not None]
+        resumen = {
+            "prioridad": propios[0].prioridad,
+            "versiones": sorted({h.version_instalada for h in propios}),
+            "equipos": sorted({e for h in propios for e in h.equipos}),
+            "cves": sorted({h.cve for h in propios}),
+            "en_kev": sorted({h.cve for h in propios if h.kev}),
+            "ransomware": any(h.ransomware for h in propios),
+            "peor_cvss": max(cvss, default=None),
+            "peor_epss": max(epss, default=None),
+            "version_objetivo": None,
+            "tipo_objetivo": "ninguna",
+            "como_leer_objetivo": "Producto aún sin agrupar: no hay versión de arreglo calculada.",
+            "por_que": [],
+        }
+
+    ids = set(resumen["cves"])
+    equipos = resumen.pop("equipos")
+    respuesta.update(
+        {
+            "encontrado": True,
+            "producto": nombre,
+            "n_equipos": len(equipos),
+            "equipos": equipos[:EQUIPOS_MOSTRADOS],
+            **resumen,
             "hallazgos": [_hallazgo_corto(h) for h in propios],
-            "cves": [
+            "detalle_cves": [
                 {
                     "id": c.id,
                     "cvss": c.cvss,
@@ -487,22 +503,30 @@ def detalle_producto(
             "analisis": [
                 a.model_dump(mode="json")
                 for a in analisis
-                if (a.producto or "").casefold() == grupo.producto.casefold()
+                if (a.producto or "").casefold() == nombre.casefold()
             ],
-            "sin_evaluar": [
-                {
-                    "equipo": c.equipo,
-                    "programa": c.programa,
-                    "version": c.version,
-                    "motivo": c.motivo,
-                }
-                for c in cobertura
-                if _coincide(c.programa, grupo.producto)
-            ],
+            "sin_evaluar": _sin_evaluar(cobertura, nombre),
             "fuentes": fuentes,
         }
     )
     return limpiar_estructura(respuesta, LIMITE_DETALLE)
+
+
+def _resolver_producto(buscado: str, grupos: list, hallazgos: list) -> str | None:
+    """Nombre canónico del producto: igual sin mayúsculas primero, luego "contiene"."""
+    nombres = [g.producto for g in grupos] + [h.producto for h in hallazgos]
+    for nombre in nombres:
+        if nombre.casefold() == buscado.casefold():
+            return nombre
+    return next((n for n in nombres if _coincide(n, buscado)), None)
+
+
+def _sin_evaluar(cobertura: list, producto: str) -> list[dict[str, Any]]:
+    return [
+        {"equipo": c.equipo, "programa": c.programa, "version": c.version, "motivo": c.motivo}
+        for c in cobertura
+        if _coincide(c.programa, producto)
+    ]
 
 
 def principal() -> None:

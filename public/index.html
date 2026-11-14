@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Radar de vulnerabilidades</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+  <header class="barra">
+    <div class="marca">
+      <span class="marca-punto" aria-hidden="true"></span>
+      <h1>Radar</h1>
+      <span class="marca-sub">vulnerabilidades del inventario</span>
+    </div>
+    <div id="estado" class="estado" role="status" aria-live="polite">
+      <span class="cargando">Consultando la API...</span>
+    </div>
+  </header>
+
+  <form id="clave" class="clave" hidden>
+    <label for="clave-valor">Clave de acceso</label>
+    <input id="clave-valor" type="password" autocomplete="current-password" required>
+    <button type="submit">Entrar</button>
+    <span class="clave-error" id="clave-error"></span>
+  </form>
+
+  <main>
+    <section id="aviso-fuentes" class="aviso" hidden></section>
+    <section id="aviso-memoria" class="aviso aviso-suave" hidden>
+      Datos de ejemplo y cambios en memoria: todavía no hay base conectada.
+    </section>
+
+    <section class="cifras" id="cifras" aria-label="Cifras"></section>
+
+    <div class="rejilla">
+      <section class="panel" aria-labelledby="t-productos">
+        <h2 id="t-productos">Por producto</h2>
+        <div class="tabla-envoltura">
+          <table class="tabla" id="productos">
+            <thead>
+              <tr>
+                <th>Producto</th><th>Versiones</th><th class="num">Equipos</th>
+                <th class="num">CVE</th><th class="num">KEV</th><th class="num">Peor CVSS</th>
+                <th>Objetivo</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="t-cobertura">
+        <h2 id="t-cobertura">Cobertura</h2>
+        <div id="cobertura"></div>
+      </section>
+    </div>
+
+    <section class="panel" aria-labelledby="t-hallazgos">
+      <div class="panel-cabeza">
+        <h2 id="t-hallazgos">Hallazgos <span class="contador" id="total-hallazgos"></span></h2>
+        <form class="filtros" id="filtros">
+          <select name="prioridad" aria-label="Prioridad">
+            <option value="">Toda prioridad</option>
+            <option value="inmediato">Inmediato</option>
+            <option value="semanal">Semanal</option>
+            <option value="informativo">Informativo</option>
+            <option value="boletin">Boletín</option>
+          </select>
+          <label class="casilla"><input type="checkbox" name="kev"> Solo KEV</label>
+          <input type="search" name="texto" placeholder="CVE, producto o equipo" maxlength="100" aria-label="Buscar">
+        </form>
+      </div>
+      <div class="tabla-envoltura">
+        <table class="tabla" id="hallazgos">
+          <thead>
+            <tr>
+              <th>Prioridad</th><th>CVE</th><th>Producto</th><th class="num">Equipos</th>
+              <th class="num">CVSS</th><th class="num">EPSS</th><th>Por qué</th><th>Estado</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel" id="detalle" aria-labelledby="t-detalle" hidden>
+      <div class="panel-cabeza">
+        <h2 id="t-detalle"></h2>
+        <button type="button" class="boton-texto" id="cerrar-detalle">Cerrar</button>
+      </div>
+      <div id="detalle-cuerpo"></div>
+    </section>
+
+    <div class="rejilla">
+      <section class="panel" aria-labelledby="t-umbrales">
+        <h2 id="t-umbrales">Umbrales</h2>
+        <div id="umbrales" class="vacio">Sin datos todavía.</div>
+      </section>
+      <section class="panel" aria-labelledby="t-trazas">
+        <h2 id="t-trazas">Trazas del agente</h2>
+        <div id="trazas" class="vacio">Sin datos todavía.</div>
+      </section>
+    </div>
+
+    <section class="panel" aria-labelledby="t-carga">
+      <h2 id="t-carga">Cargar inventario</h2>
+      <form id="carga" class="carga">
+        <input type="file" name="archivo" id="archivo" accept=".csv,.xlsx,.txt" required>
+        <button type="submit">Subir y cruzar</button>
+      </form>
+      <div id="carga-resultado" class="carga-resultado" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <script src="panel.js"></script>
+</body>
+</html>

@@ -104,8 +104,7 @@ class Veredicto:
         if self.aprobado:
             return "Comunicado verificado contra el origen"
         return "; ".join(
-            f"{p.tipo}: {p.detalle}" + (f" ({p.campo})" if p.campo else "")
-            for p in self.problemas
+            f"{p.tipo}: {p.detalle}" + (f" ({p.campo})" if p.campo else "") for p in self.problemas
         )
 
 
@@ -162,7 +161,7 @@ class _Origen:
     cves: set[str]
     equipos: list[str]
     cifras: set[str]
-    numeros: set[float]
+    numeros: set[tuple[float, bool]]
 
 
 def _origen(
@@ -188,7 +187,9 @@ def _origen(
     if grupo.peor_cvss is not None:
         derivadas.add(f"{grupo.peor_cvss:.1f}")
     cifras |= {_normalizar_cifra(c) for c in derivadas}
-    numeros = {n for c in cifras if (n := _como_numero(c)) is not None}
+    # Solo se comparan como número las cifras con la misma forma (entero con entero,
+    # decimal con decimal): "1.0" no vale por el "1" de un conteo.
+    numeros = {(n, "." in c) for c in cifras if (n := _como_numero(c)) is not None}
     cves = {c.upper() for c in grupo.cves} | {c.upper() for c in grupo.en_kev}
     for texto in extras:
         cves |= extraer_cves(texto)
@@ -210,7 +211,7 @@ def _equipo_conocido(nombre: str, equipos: list[str]) -> bool:
 
 def _objetivo_prometido(texto: str, version: str) -> bool:
     patron = re.compile(
-        r"(\w+)\s+a\s+(?:la\s+)?(?:versi[oó]n\s+)?" + re.escape(version) + r"(?![\w.])",
+        r"(\w+)\s+a\s+(?:la\s+)?(?:versi[oó]n\s+)?" + re.escape(version) + r"(?!\w|\.\d)",
         re.IGNORECASE,
     )
     return any(m.group(1).lower() not in _ANTES_PERMITIDO for m in patron.finditer(texto))
@@ -253,7 +254,10 @@ def _verificar(
         if cifra in origen.cifras:
             continue
         numero = _como_numero(cifra)
-        if numero is not None and any(abs(numero - n) < 1e-9 for n in origen.numeros):
+        decimal = "." in cifra
+        if numero is not None and any(
+            d == decimal and abs(numero - n) < 1e-9 for n, d in origen.numeros
+        ):
             continue
         agregar(Problema("cifra_ajena", f"'{cifra}' no está en el origen", campo))
 
@@ -263,16 +267,16 @@ def _verificar(
     for equipo in sorted(ajenos):
         agregar(Problema("equipo_ajeno", f"{equipo} no es del grupo", campo))
 
-    if grupo.tipo_objetivo == "posterior_a" and grupo.version_objetivo:
-        if _objetivo_prometido(texto, grupo.version_objetivo):
-            agregar(
-                Problema(
-                    "objetivo_prometido",
-                    f"dice 'actualizar a {grupo.version_objetivo}', pero la fuente solo "
-                    f"dice que {grupo.version_objetivo} sigue afectada",
-                    campo,
-                )
+    objetivo = grupo.version_objetivo
+    if grupo.tipo_objetivo == "posterior_a" and objetivo and _objetivo_prometido(texto, objetivo):
+        agregar(
+            Problema(
+                "objetivo_prometido",
+                f"dice 'actualizar a {objetivo}', pero la fuente solo dice que "
+                f"{objetivo} sigue afectada",
+                campo,
             )
+        )
 
     if _exige_accion(grupo):
         bajo = texto.lower()
