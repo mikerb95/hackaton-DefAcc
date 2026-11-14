@@ -383,6 +383,26 @@ def _notas_analista_real(i: dict[str, Any]) -> str:
                     "  Estos dos criterios miden si el texto crudo llega al modelo (control y "
                     "recorte), no si el modelo obedece: sin limpieza llega siempre."
                 )
+    if reales:
+        sin_salida = [r for r in reales if r.get("veredicto") == "sin análisis del agente"]
+        detalle = ", ".join(
+            f"{r['caso']} {'con' if r['defensa'] else 'sin'} defensa" for r in sin_salida
+        )
+        partes.append(
+            f"Salida fuera de esquema (el agente no entregó un análisis válido y salió el "
+            f"respaldo): {len(sin_salida)} de {len(reales)}"
+            + (f" ({detalle})." if detalle else ".")
+        )
+    historial = i.get("real_historial", [])
+    if historial:
+        numeros = {1: "un ajuste", 2: "dos ajustes", 3: "tres ajustes"}
+        vistos = sorted(casos_vistos_en_ajustes(historial))
+        partes.append(
+            f"El prompt del analista tuvo {numeros.get(len(historial), f'{len(historial)} ajustes')}"
+            f", uno después de cada muestra de abajo (verificador y hooks sin cambios). La variante "
+            f'"sin casos vistos al ajustar el prompt" excluye los casos de todas esas muestras: '
+            f"{', '.join(vistos)}."
+        )
     aceptado = texto_agente_aceptado(i.get("real_resultados", []))
     if aceptado:
         partes.append(
@@ -415,15 +435,25 @@ def _cifra_limpia(i: dict[str, Any]) -> str:
     )
     n, sin, _ = _contar(resultados, ronda, False)
     _, con, util = _contar(resultados, ronda, True)
-    reales = [r for r in i.get("real_resultados", []) if r.get("entrada", "forzada") == "forzada"]
+    # Analista real: sin los casos que se miraron al ajustar el prompt, para que la cifra de
+    # la ronda limpia lo sea también respecto del prompt.
+    vistos = casos_vistos_en_ajustes(i.get("real_historial", []))
+    reales = [
+        r
+        for r in i.get("real_resultados", [])
+        if r.get("entrada", "forzada") == "forzada" and r["caso"] not in vistos
+    ]
     nr, sin_r, _ = _contar(reales, ronda, False)
-    _, con_r, util_r = _contar(reales, ronda, True)
-    if nr:
+    nr_con, con_r, util_r = _contar(reales, ronda, True)
+    if nr or nr_con:
+        excluidos = sorted(c for c in vistos if c.startswith(f"r{ronda}-"))
+        sin_vistos = (
+            f", sin {', '.join(excluidos)} (vistos al ajustar el prompt)" if excluidos else ""
+        )
         real = (
-            f"Analista real ({AVISO_ENTRADA_REAL}), ronda {ronda}: sin defensa "
-            f"{_celda(sin_r, nr)}, con defensa "
-            f"{_celda(con_r, nr)}, utilidad con defensa {util_r} de {nr} "
-            f"({_estado_real(i)})."
+            f"Analista real ({AVISO_ENTRADA_REAL}), ronda {ronda}{sin_vistos}: sin defensa "
+            f"{_celda(sin_r, nr)}, con defensa {_celda(con_r, nr_con)}, utilidad con defensa "
+            f"{util_r} de {nr_con} ({_estado_real(i)})."
         )
     else:
         real = f"Analista real: {_estado_real(i)}."

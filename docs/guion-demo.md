@@ -63,8 +63,8 @@ reporte, no se dicen de memoria):
    dependen del modelo (medidas con el simulado peor caso); el caso real en que el modelo repitió
    "ya fue parchado" del atacante y el verificador lo descartó; y que, con defensa, el texto
    propio del agente se acepta en k de n, así que la defensa no anula la utilidad.
-3. El prompt del analista se ajustó tras una muestra de 4 corridas; la cifra que se cita es la
-   variante sin esos casos. Cerrar con la frase central de LIMITES.md: "Las defensas deterministas garantizan
+3. El prompt del analista se ajustó en dos ajustes generales, tras dos muestras previas que
+   quedan fuera de la cifra; la que se cita es la variante sin casos vistos al ajustar el prompt. Cerrar con la frase central de LIMITES.md: "Las defensas deterministas garantizan
 nada de más y nada de escribir; contra un modelo que obedece, no garantizan nada torcido."
 
 ## Ensayo contra la preview (14 de noviembre, 14:20)

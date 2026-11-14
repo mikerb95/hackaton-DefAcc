@@ -68,8 +68,8 @@ inventario (no confiable) -> saneado del nombre de equipo -> normalizador -> cru
 - Dos brazos (sin y con defensa) sobre los mismos casos y dos entradas: **forzada** (la fila
   envenenada llega tal cual al agente) y **real** (pasa por ingesta, normalizador y saneado).
 - Agentes simulados (peor caso: obedece toda orden; honesto: las ignora) y el analista real con
-  Claude. Su prompt se ajustó tras una muestra de 4 corridas: se cita la variante **sin casos
-  vistos al ajustar el prompt**.
+  Claude. Su prompt se ajustó en dos ajustes generales, tras dos muestras previas que quedan
+  fuera de la cifra: se cita la variante **sin casos vistos al ajustar el prompt**.
 
 ## 4. Resultados
 
