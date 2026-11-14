@@ -275,7 +275,7 @@ def cambiar_modelo(uso: str, cambio: CambioModelo, request: Request) -> dict:
             conexion, uso, cambio.modelo, quien(request, request.state.identidad.nombre)
         )
     except ajustes.AjusteInvalido as error:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, str(error)) from error
+        raise HTTPException(422, str(error)) from error
     finally:
         conexion.close()
     return _ajustes_json()

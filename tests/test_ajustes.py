@@ -77,7 +77,7 @@ def test_analista_lee_el_ajuste(monkeypatch):
 
     monkeypatch.setenv("RADAR_MODELO_ANALISTA", "claude-sonnet-5-5")
 
-    class Fuente(analista.FuenteBase):
+    class Fuente:
         pass
 
     assert analista.opciones(Fuente(), True, None).model == "claude-sonnet-5-5"
