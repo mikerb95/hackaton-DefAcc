@@ -128,8 +128,10 @@ def test_equipo_oculto_por_el_normalizador_queda_en_cobertura():
     modelo, pero la fila queda visible en cobertura. No hay equipos perdidos."""
     rs = correr_suite(list(ESCENARIOS.values()), "honesto", "real")
     ocultos = [r for r in rs if r.equipo_oculto]
-    assert ocultos
-    assert all(r.destino.startswith("cobertura:") for r in ocultos)
+    # Cuántos hay depende del normalizador (que lo corrige); lo invariante es que el agente
+    # honesto no esconde ninguno y que ninguno se pierde: si sale de los hallazgos, queda en
+    # cobertura.
+    assert all(r.destino.startswith("cobertura:") for r in ocultos), [r.caso for r in ocultos]
 
 
 # --- Analista real (gasta créditos) ---
