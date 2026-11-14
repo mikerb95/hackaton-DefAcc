@@ -398,3 +398,70 @@ button:disabled { opacity: 0.5; cursor: default; }
 }
 .aprobacion-equipo p { margin: 0 0 10px; color: var(--texto-2); }
 .aprobacion-equipo strong { color: #fcd877; }
+
+/* Termómetro de exposición por equipo (lectura de radar/api/termometro.py) */
+.t-bajo { --t-color: var(--lima); }
+.t-medio { --t-color: var(--ambar); }
+.t-alto { --t-color: var(--rojo); }
+.t-critico { --t-color: #ff3d6e; }
+.t-sin { --t-color: var(--gris); }
+.termometro {
+  display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 24px; align-items: center;
+  background: var(--ink-2); border: 1px solid var(--linea); border-radius: var(--radio);
+  padding: 18px 22px; margin-bottom: 16px;
+}
+.termometro-dibujo { display: flex; justify-content: center; }
+.termometro-svg { width: 130px; height: auto; overflow: visible; }
+.termometro-svg .t-vidrio { fill: var(--ink-1); stroke: var(--linea); stroke-width: 1.5; }
+.termometro-svg .t-fondo { fill: var(--ink-3); }
+.termometro-svg .t-liquido, .termometro-svg .t-bulbo { fill: var(--t-color); }
+.termometro-svg .t-liquido {
+  transform-box: fill-box; transform-origin: 50% 100%;
+  animation: subir-termometro 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.termometro-svg .t-bulbo { filter: drop-shadow(0 0 10px var(--t-color)); }
+.termometro-svg.t-sin .t-bulbo { filter: none; opacity: 0.45; }
+.termometro-svg .t-brillo { fill: rgba(255, 255, 255, 0.35); }
+.termometro-svg .t-marca { stroke: var(--texto-3); stroke-width: 1; }
+.termometro-svg .t-marca.mayor { stroke: var(--texto-2); }
+.termometro-svg .t-numero { fill: var(--texto-2); font: 11px var(--mono); }
+.termometro-svg .t-franja { stroke: var(--t-color); stroke-width: 3; stroke-linecap: round; opacity: 0.75; }
+@keyframes subir-termometro { from { transform: scaleY(0.04); } to { transform: scaleY(1); } }
+
+.termometro-titulo { font: 12px var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--texto-3); }
+.termometro-valor { font: 500 64px/1 var(--mono); letter-spacing: -0.04em; margin: 8px 0 12px; }
+.termometro-valor span { font-size: 22px; color: var(--texto-3); margin-left: 4px; letter-spacing: 0; }
+.termometro-valor.sin { font-size: 28px; color: var(--texto-3); font-family: var(--sans); font-style: italic; letter-spacing: 0; }
+.termometro-banda { font-size: 13px; padding: 4px 12px; }
+.termometro-banda .punto { background: var(--t-color, var(--gris)); }
+.termometro-banda[class*="t-"] {
+  color: var(--t-color);
+  background: color-mix(in srgb, var(--t-color) 13%, transparent);
+}
+.termometro-texto { color: var(--texto-2); margin: 12px 0; max-width: 60ch; }
+.termometro-leyenda { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.termometro-leyenda .punto { background: var(--t-color); }
+.termometro-leyenda .pildora.activa { color: var(--texto); box-shadow: inset 0 0 0 1px var(--linea); }
+.termometro-cifras { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.termometro-cifras > div {
+  background: var(--ink-1); border: 1px solid var(--linea); border-radius: 8px;
+  padding: 10px 12px; display: grid; gap: 2px;
+}
+.termometro-cifras strong { font: 500 20px var(--mono); }
+.termometro-cifras span { color: var(--texto-3); font-size: 12px; }
+.termometro-nota { color: var(--texto-3); font-size: 12px; margin: 10px 0 0; }
+
+.mini-termometro { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.mini-tubo { width: 64px; height: 6px; border-radius: 999px; background: var(--ink-3); overflow: hidden; }
+.mini-tubo span { display: block; height: 100%; border-radius: inherit; background: var(--t-color); }
+.mini-termometro .mono { color: var(--t-color); }
+
+@media (max-width: 640px) {
+  .termometro { grid-template-columns: minmax(0, 1fr); padding: 16px; }
+  .termometro-svg { width: 104px; }
+  .termometro-valor { font-size: 48px; }
+  .termometro-cifras { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .termometro-svg .t-liquido { animation: none; }
+}
