@@ -312,3 +312,31 @@ def test_worker_local_no_pide_bandera(tmp_path, monkeypatch):
     conexion = conectar_destino()
     assert bd.es_local(conexion)
     conexion.close()
+
+
+@pytest.mark.parametrize("defensa", [True, False])
+def test_costo_y_turnos_quedan_en_la_traza_recibida(monkeypatch, defensa):
+    import claude_agent_sdk
+    from claude_agent_sdk import ResultMessage
+
+    vistas = []
+
+    async def query_falsa(prompt, options):
+        vistas.append(options)
+        yield ResultMessage(
+            subtype="success",
+            duration_ms=1,
+            duration_api_ms=1,
+            is_error=False,
+            num_turns=3,
+            session_id="s",
+            total_cost_usd=0.1234,
+            structured_output=_salida_modelo(),
+        )
+
+    monkeypatch.setattr(claude_agent_sdk, "query", query_falsa)
+    traza = Traza()
+    analisis = analista.analizar(GRUPO, defensa, fuente=FuenteFalsa(), traza=traza)
+    assert analisis is not None and analisis.origen == "agente"
+    assert traza.costo_usd == 0.1234 and traza.turnos == 3
+    assert len(vistas) == 1

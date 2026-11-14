@@ -101,7 +101,8 @@ def analizar(grupo: Grupo, defensa: bool, fuente: Fuente | None = None,
 - **Devuelve la salida estructurada sin pasarla por el verificador.** La suite aplica
   `decidir()` en el brazo con defensa, igual que hará el worker. Devuelve `None` si el modelo
   falla o la salida no cumple el esquema.
-- **`textos_origen` en `decidir`: solo texto de NVD** (descripciones, referencias). Nunca
+- **`textos_origen` en `decidir`: solo texto de NVD o de KEV** (descripciones, referencias,
+  acción requerida de CISA; `FuenteBase.textos_origen()`). Nunca
   texto del inventario ni lo que devuelva `equipos_afectados`: una fila envenenada con
   `CVE-2099-0001` pasaría a ser "origen" y el verificador la dejaría pasar.
 
@@ -144,7 +145,7 @@ el barrido de umbrales en vez de inventar cifras.
 - `worker/principal.py`: bucle que toma trabajos `tipo = "analizar"` en estado `pendiente` de
   la tabla `trabajos`, los marca `en curso` y al final `hecho` o `fallido`.
 - `worker/analizar.py`: por cada grupo que exige acción, `analizar(grupo, defensa=True)`, luego
-  `decidir(analisis, grupo, textos_origen=<solo NVD>, equipos_flota=<todos los equipos>)`, y guarda el `Analisis` con el token de escritura (el worker sí escribe; las
+  `decidir(analisis, grupo, textos_origen=<solo NVD y KEV>, equipos_flota=<todos los equipos>)`, y guarda el `Analisis` con el token de escritura (el worker sí escribe; las
   herramientas del agente no).
 - Modo sin créditos (sin clave o con una bandera): se salta `query()` y guarda
   `armar_respaldo(grupo)`. El panel nunca queda vacío.

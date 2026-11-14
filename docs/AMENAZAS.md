@@ -55,7 +55,8 @@ que obedece, en `evals/inyeccion.py`).
 
 `decidir(analisis, grupo, textos_origen=...)` acepta textos extra como origen (por ejemplo la
 descripción de NVD de una CVE, para que el agente pueda citarla). **Solo puede recibir texto de
-NVD**, nunca texto del inventario ni lo que devuelva `equipos_afectados`. Si una fila
+NVD o del catálogo KEV de CISA** (descripciones, referencias, acción requerida), nunca texto
+del inventario ni lo que devuelva `equipos_afectados`. Si una fila
 envenenada con "CVE-2099-0001" entra como origen, el verificador da por buena la CVE inventada.
 Está escrito en `docs/contrato-analista.md` y en el docstring de `verificar_texto`.
 

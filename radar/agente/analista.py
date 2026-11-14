@@ -116,6 +116,10 @@ async def analizar_async(
     if resultado is None:
         _log(f"{grupo.producto}: el agente terminó sin resultado")
         return None
+    if traza is not None:
+        # La suite guarda estos campos en cada resultado y evals.medir suma el costo.
+        traza.costo_usd = resultado.total_cost_usd
+        traza.turnos = resultado.num_turns
     costo = f"{resultado.total_cost_usd:.4f}" if resultado.total_cost_usd is not None else "?"
     _log(
         f"{grupo.producto}: {resultado.subtype}, {resultado.num_turns} turnos, "

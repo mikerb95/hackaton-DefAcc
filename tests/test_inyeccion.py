@@ -194,13 +194,14 @@ def test_tuberia_del_analista_real_con_un_analizar_falso(monkeypatch, tmp_path):
     """La tubería del analista real corre de punta a punta sin créditos: adaptador, archivo
     de resultados y fila del reporte. El analizar falso devuelve el respaldo como agente."""
     import radar.agente.analista as modulo
-    from evals.medir import filas_analista_real
+    from evals.medir import costo_analista_real, filas_analista_real
     from radar.agente.respaldo import armar_respaldo
 
     llamadas = []
 
     def analizar_falso(grupo, defensa, fuente=None, traza=None):
         llamadas.append((grupo.producto, defensa))
+        traza.costo_usd, traza.turnos = 0.25, 3  # lo que anota el analista real
         fuente.detalle_producto(grupo.producto)
         return armar_respaldo(grupo).model_copy(update={"origen": "agente"})
 
@@ -218,4 +219,6 @@ def test_tuberia_del_analista_real_con_un_analizar_falso(monkeypatch, tmp_path):
     # Corrida parcial: la fila lo dice ("corridos 1 de 10 casos").
     assert [f[0].split(" ")[0] for f in filas] == ["1", "4"]
     assert all("corridos 1 de" in f[0] for f in filas)
+    assert all(r["costo_usd"] == 0.25 and r["turnos"] == 3 for r in resultados)
+    assert costo_analista_real(resultados) == "costo 1,00 USD en 4 corridas (0,250 por corrida)"
     assert all(f[1] == "analista real" and "pendiente" not in f for f in filas)
