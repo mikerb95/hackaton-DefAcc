@@ -153,6 +153,35 @@ function comandoInstalacion() {
   return "sudo sh agente_local/instalacion/instalar.sh";
 }
 
+// Parcheo aprobado (docs/plan-parcheo.md): con la casilla marcada, el zip lleva la clave
+// pública del aprobador y el comando rápido la pasa por RADAR_CLAVE_APROBACION.
+let claveParcheo = null; // { huella, publica } de la clave vigente más reciente
+
+async function cargarClaveParcheo() {
+  claveParcheo = null;
+  try {
+    const { claves } = await api("/api/parcheo/claves");
+    const vigentes = (claves || []).filter((c) => !c.revocada);
+    claveParcheo = vigentes.length ? vigentes[vigentes.length - 1] : null;
+  } catch { claveParcheo = null; }
+  $("#opcion-parcheo").hidden = !claveParcheo;
+  if (claveParcheo) $("#clave-parcheo").textContent = claveParcheo.huella;
+}
+
+function parcheoMarcado() {
+  return Boolean(claveParcheo && $("#permitir-parcheo").checked);
+}
+
+// Una sola orden con el zip genérico de este mismo radar: no lleva token (el equipo se
+// activa con el código que muestra el instalador).
+function comandoRapido() {
+  const origen = location.origin;
+  const clave = parcheoMarcado() ? `RADAR_CLAVE_APROBACION=${claveParcheo.publica} ` : "";
+  return `curl -fsSL ${origen}/descargas/radar-agente-linux.zip -o /tmp/ra.zip && ` +
+    `unzip -oq /tmp/ra.zip -d /tmp/radar-agente && ` +
+    `sudo ${clave}sh /tmp/radar-agente/agente_local/instalacion/instalar.sh ${origen}`;
+}
+
 function pintarInstalacion() {
   const win = asistente.sistema === "windows";
   const descarga = $("#descarga");
@@ -166,7 +195,15 @@ function pintarInstalacion() {
     : "En una terminal, dentro de la carpeta descomprimida:";
   $("#comando").textContent = comandoInstalacion();
   $("#copiar-comando").hidden = win;
+  $("#via-rapida").hidden = win;
+  $("#comando-rapido").textContent = comandoRapido();
+  cargarClaveParcheo().then(() => { $("#comando-rapido").textContent = comandoRapido(); });
 }
+
+$("#permitir-parcheo").addEventListener("change", () => {
+  $("#comando-rapido").textContent = comandoRapido();
+});
+$("#copiar-rapido").addEventListener("click", (e) => copiar(comandoRapido(), e.target));
 
 // La descarga va por POST: el token no queda en la URL ni en registros de acceso.
 $("#descarga").addEventListener("click", async (e) => {
@@ -175,7 +212,11 @@ $("#descarga").addEventListener("click", async (e) => {
   try {
     const r = await fetch("/api/agente-instalador", {
       method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sistema: asistente.sistema, token: asistente.token }),
+      body: JSON.stringify({
+        sistema: asistente.sistema,
+        token: asistente.token,
+        ...(parcheoMarcado() ? { clave_aprobacion: claveParcheo.huella } : {}),
+      }),
     });
     if (!r.ok) throw new Error(`Error ${r.status}`);
     const enlace = document.createElement("a");

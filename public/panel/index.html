@@ -335,6 +335,10 @@
       <div class="instalar">
         <div>
           <h3>1. Descarga el agente</h3>
+          <label class="parcheo-opcion" id="opcion-parcheo" hidden>
+            <input type="checkbox" id="permitir-parcheo">
+            <span>Permitir parcheo aprobado con la clave <span class="mono" id="clave-parcheo"></span></span>
+          </label>
           <a class="boton" id="descarga" href="#" download>Descargar</a>
           <p class="nota" id="descarga-nota"></p>
         </div>
@@ -344,6 +348,13 @@
           <div class="comando comando-copiar">
             <code id="comando"></code>
             <button type="button" class="boton-texto" id="copiar-comando">Copiar</button>
+          </div>
+          <div id="via-rapida" hidden>
+            <p class="nota">O sin descargar nada, en una sola orden desde el equipo Linux (necesita curl y unzip):</p>
+            <div class="comando comando-copiar">
+              <code id="comando-rapido"></code>
+              <button type="button" class="boton-texto" id="copiar-rapido">Copiar</button>
+            </div>
           </div>
           <p class="nota">Al terminar, el instalador muestra un código de activación: escríbelo en la
             ficha del equipo para que su inventario entre al cruce. El token va dentro del zip; si

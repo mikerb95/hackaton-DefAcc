@@ -41,3 +41,8 @@
   .parcheo-historial tr { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; padding: 8px 0; border-bottom: 1px solid var(--linea); }
   .parcheo-historial td { border: 0; padding: 2px 0; }
 }
+
+/* Asistente "Agregar equipo": casilla para habilitar el parcheo en el paquete. */
+.parcheo-opcion { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; color: var(--texto-2); margin: 0 0 12px; cursor: pointer; }
+.parcheo-opcion input { margin-top: 3px; accent-color: var(--acento); }
+#via-rapida { margin-top: 14px; }

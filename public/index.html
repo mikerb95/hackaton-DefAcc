@@ -154,9 +154,10 @@
         </div>
         <div class="terminal" aria-label="Ejemplo de instalación en Linux">
           <div class="terminal-cabeza"><span></span><span></span><span></span></div>
-          <pre><code><span class="t-prompt">$</span> unzip radar-agente-linux.zip
-<span class="t-prompt">$</span> sudo RADAR_AGENTE_TOKEN=rdr_•••• \
-    sh agente_local/instalacion/instalar.sh https://tu-radar
+          <pre><code><span class="t-prompt">$</span> curl -fsSL https://defacc.vercel.app/descargas/radar-agente-linux.zip -o ra.zip
+<span class="t-prompt">$</span> unzip -oq ra.zip -d radar-agente
+<span class="t-prompt">$</span> sudo RADAR_CLAVE_APROBACION=•••• \
+    sh radar-agente/agente_local/instalacion/instalar.sh https://defacc.vercel.app
 <span class="t-ok">Agente instalado en /opt/radar-agente.</span>
 <span class="t-ok">Temporizador radar-agente.timer activo.</span></code></pre>
           <div class="terminal-panel" aria-label="El equipo en el panel">

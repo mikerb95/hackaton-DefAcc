@@ -84,8 +84,13 @@ Requisitos: python3 y systemd. Se instala como root.
    (lee la dirección del radar de configuracion.txt; si no está, pásala como argumento).
 3. Escribe en el panel del radar el código de activación que muestra al terminar.
 
+Parcheo aprobado (opcional): si el zip viene del panel con "Permitir parcheo", ya lo trae.
+Si no, pasa la clave pública del aprobador al instalar:
+   sudo RADAR_CLAVE_APROBACION=<clave-base64> sh agente_local/instalacion/instalar.sh
+El agente solo aplica planes firmados con esa clave, revierte si algo falla y nunca reinicia.
+
 Qué hace: copia el agente a /opt/radar-agente, inscribe el equipo y activa un temporizador
-de systemd. No abre puertos ni recibe órdenes del servidor.
+de systemd. No abre puertos ni acepta comandos del servidor.
 """,
 }
 
