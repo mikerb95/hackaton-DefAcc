@@ -19,7 +19,7 @@ Reemplaza al CSV y al RMM como fuente de inventario para quien no tiene ninguno 
 que es justo el comprador objetivo del radar (TI de 50 a 200 equipos, sin equipo de
 seguridad).
 
-**Cambio de alcance frente a `PLAN.md`:** la sección 26 deja fuera el sistema operativo. Este
+**Cambio de alcance frente al plan principal:** el plan principal deja fuera el sistema operativo. Este
 plan lo incluye, con las precauciones de la sección 7.
 
 ## 2. Principios de diseño
@@ -83,7 +83,7 @@ PC Windows / Linux                       Radar (lo que ya existe)
 | Postura | `ufw status` o `firewall-cmd --state`, SELinux (`getenforce`) o AppArmor (`aa-status`), `unattended-upgrades` o `dnf-automatic`, cifrado (`lsblk -o TYPE` con `crypt`), Secure Boot (`mokutil --sb-state`) | Cada comprobación devuelve `si`, `no` o `desconocido`; nunca se adivina |
 
 **Fuera de alcance:** dependencias de código (pip, npm), contenedores, máquinas virtuales
-internas. Igual que en `PLAN.md`.
+internas. Igual que en el resto del radar.
 
 ## 5. Contrato nuevo: `ReporteEquipo` (Propuesto)
 
@@ -188,7 +188,7 @@ Windows o de OSV (OSV trae el alias CVE cuando existe).
 | Disco sin cifrar en portátil | Semanal |
 | Actualizaciones automáticas apagadas | Semanal |
 | Secure Boot apagado | Informativo |
-| Dato `desconocido` | Cobertura, nunca hallazgo (regla 1 de `PLAN.md`) |
+| Dato `desconocido` | Cobertura, nunca hallazgo (regla 1 del radar: sin comparación no hay hallazgo) |
 
 ## 9. Remediación y el papel del analista
 
@@ -242,7 +242,7 @@ Desinstalar borra la credencial y la tarea; el servidor marca el equipo como ret
 | Robo de la credencial del equipo | Permisos de solo SYSTEM o root; credencial por equipo y revocable; solo sirve para enviar reportes de ese equipo |
 | Agente o actualización suplantados | Binarios y repositorios firmados; actualización solo desde el canal firmado; SBOM del propio agente publicado |
 | El servidor como objetivo | No hay canal de órdenes: tomar el servidor no da ejecución en los PC |
-| Mapa de exposición | Mismo control de `PLAN.md`: solo lo ve la organización dueña |
+| Mapa de exposición | Mismo control que el resto del radar: solo lo ve la organización dueña |
 
 ## 12. Fases
 
