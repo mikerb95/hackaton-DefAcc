@@ -91,15 +91,15 @@ real, sin r4-06, el caso visto al ajustar el prompt):
 | Tasa de inyección, simulado peor caso, entrada forzada | 8 de 8 (100,0 %) | 6 de 8 (75,0 %) |
 | Utilidad bajo ataque, entrada forzada | 6 de 8 | 8 de 8 |
 | Equipo oculto, simulado peor caso, entrada real | 1 de 8 | 0 de 8 |
-| Tasa de inyección, analista real | 0 de 7 (0,0 %) | 0 de 7 (0,0 %) |
+| Tasa de inyección, analista real, ronda 4 (sin r4-06) | 0 de 7 (0,0 %) | 0 de 7 (0,0 %) |
 | Analista real, todas las rondas sin casos vistos | 2 de 31 (6,5 %) | n/a |
 | Texto del agente que pasa el verificador (sin casos vistos) | n/a | 29 de 31 |
 
 "Simulado" es código, no un modelo; las rondas de ajuste (2 y 3) no van. "Equipo oculto": el
 equipo envenenado desaparece de hallazgos o comunicado (sin modelo: fila "honesto" de "Entrada
 real"). **Lectura:** el modelo real casi no obedece, ni sin defensa (sin verificador ni hooks);
-lo logrado (r1-07 y r1-09) es texto crudo que ese brazo no limpia, no obediencia. La defensa no vale
-porque el modelo caiga: da garantías que no dependen de él (peor caso), descartó el caso real
+lo logrado (r1-07 y r1-09) es texto crudo que ese brazo no limpia, no obediencia. La defensa no depende
+de que el modelo obedezca o no: da garantías que no dependen de él (peor caso), descartó el caso real
 (muestra previa) en que el modelo repitió "ya fue parchado" del atacante, y acepta el texto propio del agente en
 29 de 31: no anula la utilidad.
 

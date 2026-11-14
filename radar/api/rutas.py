@@ -1,6 +1,7 @@
 """Rutas de la API del panel (PLAN, sección 11).
 
-Todas piden la clave compartida (`radar/api/acceso.py`). Los datos vienen de
+Todas piden sesión o la clave compartida (`radar/api/acceso.py`); las que cambian algo piden
+además el rol `analista`. Los datos vienen de
 `radar/api/datos.py`, que hoy lee `radar/ejemplos.py`.
 """
 
@@ -8,15 +9,25 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    File,
+    HTTPException,
+    Query,
+    Request,
+    UploadFile,
+    status,
+)
 from pydantic import BaseModel, Field
 
-from radar.api.acceso import exigir_clave
+from radar.api.acceso import exigir_clave, exigir_rol, quien
 from radar.api.datos import obtener_datos
 from radar.contratos import EstadoHallazgo, Grupo, Prioridad
 from radar.ingesta.archivos import ErrorLectura, a_contrato, leer_inventario
 
 router = APIRouter(prefix="/api", dependencies=[Depends(exigir_clave)])
+ANALISTA = [Depends(exigir_rol("analista"))]
 
 
 def texto_objetivo(grupo: Grupo) -> str:
@@ -105,24 +116,31 @@ class CambioEstado(BaseModel):
     por: str | None = Field(default=None, max_length=100)
 
 
-@router.post("/hallazgos/{id_hallazgo:path}/estado")
-def cambiar_estado(id_hallazgo: str, cambio: CambioEstado) -> dict:
+@router.post("/hallazgos/{id_hallazgo:path}/estado", dependencies=ANALISTA)
+def cambiar_estado(id_hallazgo: str, cambio: CambioEstado, request: Request) -> dict:
     datos = obtener_datos()
-    nuevo = datos.cambiar_estado(id_hallazgo, cambio.estado, cambio.comentario, cambio.por)
+    por = quien(request, cambio.por)
+    nuevo = datos.cambiar_estado(id_hallazgo, cambio.estado, cambio.comentario, por)
     if nuevo is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Hallazgo no encontrado.")
     return {"hallazgo": nuevo.model_dump(), "persistente": datos.persistente}
 
 
 class Aprobacion(BaseModel):
-    # La aprobación la hace una persona con nombre: sin "por" no se aprueba.
-    por: str = Field(min_length=1, max_length=100, pattern=r"\S")
+    # La aprobación la hace una persona con nombre. Con sesión el nombre sale de la sesión;
+    # con la clave compartida o en local hay que decir quién aprueba.
+    por: str | None = Field(default=None, min_length=1, max_length=100, pattern=r"\S")
 
 
-@router.post("/comunicado/{producto}/aprobar")
-def aprobar(producto: str, cuerpo: Aprobacion) -> dict:
+@router.post("/comunicado/{producto}/aprobar", dependencies=ANALISTA)
+def aprobar(producto: str, cuerpo: Aprobacion, request: Request) -> dict:
+    por = quien(request, cuerpo.por.strip() if cuerpo.por else None)
+    if not por:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_ENTITY, "Falta quién aprueba el comunicado."
+        )
     datos = obtener_datos()
-    registro = datos.aprobar(producto, cuerpo.por.strip())
+    registro = datos.aprobar(producto, por)
     if registro is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "No hay comunicado para ese producto.")
     return {"aprobacion": registro, "persistente": datos.persistente}
@@ -178,7 +196,7 @@ def _cruzar_inventario(filas: list) -> dict:
     }
 
 
-@router.post("/inventario")
+@router.post("/inventario", dependencies=ANALISTA)
 async def cargar_inventario(archivo: Annotated[UploadFile, File()]) -> dict:
     contenido = await archivo.read()
     try:
@@ -196,7 +214,7 @@ async def cargar_inventario(archivo: Annotated[UploadFile, File()]) -> dict:
     return respuesta | _cruzar_inventario(filas)
 
 
-@router.post("/revisar", status_code=status.HTTP_202_ACCEPTED)
+@router.post("/revisar", status_code=status.HTTP_202_ACCEPTED, dependencies=ANALISTA)
 def revisar() -> dict:
     trabajo = obtener_datos().encolar("descargar", "pedido desde el panel")
     if trabajo is None:

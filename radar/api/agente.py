@@ -3,7 +3,8 @@
 Dos grupos, con credenciales distintas:
 
 - `/api/agente/*` lo llaman los equipos. No usa la clave compartida del panel: la
-  inscripción pide el token de la organización (`AGENTE_TOKEN_INSCRIPCION`) y cada reporte
+  inscripción pide un token de inscripción creado en el panel (con vencimiento y tope de
+  usos, `radar/api/cuentas.py`) o el de la organización (`AGENTE_TOKEN_INSCRIPCION`), y cada reporte
   pide la credencial propia del equipo en `X-Credencial-Equipo`. Robar la credencial de un
   equipo solo sirve para enviar reportes de ese equipo, y se revoca sin tocar a los demás.
 - `/api/equipos*` lo llama el panel, con la clave compartida, como el resto de la API.
@@ -20,7 +21,7 @@ import os
 from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
 from pydantic import BaseModel, Field
 
-from radar.api.acceso import exigir_clave
+from radar.api.acceso import exigir_clave, exigir_rol
 from radar.api.datos import obtener_datos
 from radar.equipos.contratos import TAMANO_MAXIMO_REPORTE
 
@@ -68,19 +69,37 @@ class Inscripcion(BaseModel):
 
 @router_agente.post("/inscribir")
 def inscribir(cuerpo: Inscripcion) -> dict:
-    """Canjea el token de inscripción de la organización por la credencial del equipo."""
+    """Canjea un token de inscripción por la credencial del equipo.
+
+    Vale un token creado en el panel (vigente, sin revocar y con usos) o el de la
+    organización en `AGENTE_TOKEN_INSCRIPCION`. Si la inscripción falla después de gastar un
+    uso del token, el uso se devuelve."""
+    from radar.api import cuentas
     from radar.equipos import almacen
     from radar.seguridad.equipos import sanear_nombre_equipo
     from radar.seguridad.limpieza import limpiar_texto
 
     _exigir_base()
     esperado = os.environ.get("AGENTE_TOKEN_INSCRIPCION", "")
-    if not esperado:
+    token_id = None
+    if cuerpo.token.startswith(cuentas.PREFIJO_TOKEN):
+        conexion_tokens = cuentas.conectar()
+        try:
+            token_id = cuentas.consumir_token(conexion_tokens, cuerpo.token)
+        finally:
+            conexion_tokens.close()
+        if token_id is None:
+            raise HTTPException(
+                status.HTTP_401_UNAUTHORIZED,
+                "Token de inscripción no válido, vencido, revocado o sin usos.",
+            )
+    elif not esperado and not _inscripcion_abierta():
         raise HTTPException(
             status.HTTP_503_SERVICE_UNAVAILABLE,
-            "La inscripción está cerrada: falta AGENTE_TOKEN_INSCRIPCION.",
+            "La inscripción está cerrada: crea un token en el panel o define "
+            "AGENTE_TOKEN_INSCRIPCION.",
         )
-    if not hmac.compare_digest(cuerpo.token.encode(), esperado.encode()):
+    elif not esperado or not hmac.compare_digest(cuerpo.token.encode(), esperado.encode()):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Token de inscripción no válido.")
     conexion = _conexion()
     try:
@@ -91,6 +110,8 @@ def inscribir(cuerpo: Inscripcion) -> dict:
             limpiar_texto(cuerpo.agente_version, 40) or None,
         )
     except almacen.EquipoYaInscrito as error:
+        if token_id is not None:
+            cuentas.devolver_uso(conexion, token_id)
         raise HTTPException(
             status.HTTP_409_CONFLICT,
             "Ese equipo ya está inscrito. Hay que retirarlo en el radar antes de repetir.",
@@ -146,6 +167,18 @@ async def reporte(
 # ---------------------------------------------------------------------------
 
 
+def _inscripcion_abierta() -> bool:
+    from radar.api import cuentas
+
+    if os.environ.get("AGENTE_TOKEN_INSCRIPCION"):
+        return True
+    conexion = cuentas.conectar()
+    try:
+        return cuentas.hay_tokens_vigentes(conexion)
+    finally:
+        conexion.close()
+
+
 @router_equipos.get("/equipos")
 def equipos() -> dict:
     from radar.equipos import vista
@@ -164,7 +197,7 @@ def equipos() -> dict:
     return {
         "disponible": True,
         "total": len(lista),
-        "inscripcion_abierta": bool(os.environ.get("AGENTE_TOKEN_INSCRIPCION")),
+        "inscripcion_abierta": _inscripcion_abierta(),
         "equipos": lista,
     }
 
@@ -184,7 +217,10 @@ def equipo(equipo_id: str) -> dict:
     return datos
 
 
-@router_equipos.post("/equipos/{equipo_id}/revocar")
+ADMIN = [Depends(exigir_rol("admin"))]
+
+
+@router_equipos.post("/equipos/{equipo_id}/revocar", dependencies=ADMIN)
 def revocar(equipo_id: str) -> dict:
     """Deja de aceptar reportes de un equipo (credencial robada o equipo perdido)."""
     from radar.equipos import almacen
@@ -200,7 +236,7 @@ def revocar(equipo_id: str) -> dict:
     return {"revocado": True}
 
 
-@router_equipos.delete("/equipos/{equipo_id}")
+@router_equipos.delete("/equipos/{equipo_id}", dependencies=ADMIN)
 def retirar(equipo_id: str) -> dict:
     """Borra el equipo y lo que reportó (desinstalación), y vuelve a cruzar."""
     from radar.equipos import almacen
