@@ -20,7 +20,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Callable
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Literal
 
 from radar.asistente.costo import USO_CERO, Uso, costo_usd, sumar, uso_de_api
@@ -80,8 +80,6 @@ class Ejecucion:
     iteraciones: int = 0
     uso: Uso = USO_CERO
     costo_usd: float = 0.0
-    # Datos que devolvieron las herramientas en esta ejecución (para la guardia).
-    vistos: list[str] = field(default_factory=list)
 
 
 def nueva_ejecucion(id_: str, pregunta: str) -> Ejecucion:
@@ -211,8 +209,6 @@ def avanzar(e: Ejecucion, deps: Dependencias) -> Ejecucion:
                 continue
             deps.emitir({"tipo": "paso", "id": uid, "herramienta": nombre})
             r = deps.ejecutar(nombre, entrada, uid)
-            if r.ok:
-                e.vistos.append(json.dumps(r.datos, ensure_ascii=False, default=str))
             resultados.append(_a_resultado(uid, r))
 
         if propuesta is not None:
@@ -247,8 +243,6 @@ def decidir(e: Ejecucion, aprobado: bool, deps: Dependencias, comentario: str | 
         raise ValueError("La conversación no tiene ninguna propuesta pendiente.")
     if aprobado:
         r = deps.ejecutar(p.herramienta, p.entrada, p.tool_use_id)
-        if r.ok:
-            e.vistos.append(json.dumps(r.datos, ensure_ascii=False, default=str))
         resultado = _a_resultado(p.tool_use_id, r)
     else:
         resultado = _a_resultado(p.tool_use_id, fallo(deps.rechazo(comentario)))
