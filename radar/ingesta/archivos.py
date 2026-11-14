@@ -127,6 +127,9 @@ class EquipoNoValido:
     fila: int  # primera fila del archivo donde aparece ese nombre
     equipo: str  # nombre saneado con el que se guarda y se cruza
     motivo: str
+    # Nombre original, solo para auditoría (panel, revisión humana). Es texto no confiable:
+    # el servidor MCP no lo devuelve y nunca debe llegar al modelo.
+    original: str = ""
 
 
 def sanear_equipo(nombre: str, fila: int) -> str:
@@ -393,7 +396,9 @@ def _armar_lectura(
             if original not in renombrados:
                 renombrados[original] = sanear_equipo(original, numero_fila)
                 lectura.equipos_no_validos.append(
-                    EquipoNoValido(numero_fila, renombrados[original], MOTIVO_NOMBRE_NO_VALIDO)
+                    EquipoNoValido(
+                        numero_fila, renombrados[original], MOTIVO_NOMBRE_NO_VALIDO, original
+                    )
                 )
             fila["equipo"] = renombrados[original]
         clave = (fila["equipo"].lower(), fila["programa"].lower(), fila["version"].lower())
