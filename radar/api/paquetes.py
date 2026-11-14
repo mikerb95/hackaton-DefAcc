@@ -23,7 +23,7 @@ AGENTE = RAIZ / "agente_local"
 DESTINO = RAIZ / "public" / "descargas"
 FECHA_FIJA = (2026, 11, 14, 0, 0, 0)
 
-COMUNES = ("__init__.py", "__main__.py", "comun.py", "envio.py", "reporte.py")
+COMUNES = ("__init__.py", "__main__.py", "aviso.py", "comun.py", "envio.py", "reporte.py")
 POR_SISTEMA = {
     "windows": {
         "modulos": ("windows.py",),
@@ -43,6 +43,8 @@ POR_SISTEMA = {
             "ejecutar.py",
             "radar-agente.service",
             "radar-agente.timer",
+            "radar-agente-aviso.service",
+            "radar-agente-aviso.timer",
         ),
     },
 }

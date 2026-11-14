@@ -152,6 +152,23 @@ try {
     Register-ScheduledTask -TaskName $tarea -Action $accion -Trigger @($cadaTanto, $alArrancar) `
         -Principal $quien -Settings $ajustes -Force | Out-Null
 
+    # Aviso a quien usa el equipo: corre con la cuenta de cada persona (grupo Usuarios, sin
+    # privilegios) al entrar y cada dos horas. Solo lee el aviso que deja la tarea de SYSTEM
+    # y muestra una notificación; no ve la credencial ni manda nada al radar.
+    $pythonw = Join-Path (Split-Path -Parent $python) 'pythonw.exe'
+    if (-not (Test-Path -LiteralPath $pythonw)) { $pythonw = $python }
+    $usuarios = (New-Object Security.Principal.SecurityIdentifier 'S-1-5-32-545').Translate(
+        [Security.Principal.NTAccount]).Value
+    $accionAviso = New-ScheduledTaskAction -Execute $pythonw -Argument "-I `"$agente`" aviso" `
+        -WorkingDirectory $destino
+    $alEntrar = New-ScheduledTaskTrigger -AtLogOn
+    $cadaDosHoras = New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(10) `
+        -RepetitionInterval (New-TimeSpan -Hours 2)
+    $persona = New-ScheduledTaskPrincipal -GroupId $usuarios -RunLevel Limited
+    $ajustesAviso = New-ScheduledTaskSettingsSet -StartWhenAvailable -ExecutionTimeLimit (New-TimeSpan -Minutes 15)
+    Register-ScheduledTask -TaskName "$tarea-Aviso" -Action $accionAviso -Trigger @($alEntrar, $cadaDosHoras) `
+        -Principal $persona -Settings $ajustesAviso -Force | Out-Null
+
     try { Set-Clipboard -Value $codigo } catch { }
     Avisar ("El agente quedó instalado en este equipo.`n`n" +
         "Código de activación:   $codigo`n`n" +

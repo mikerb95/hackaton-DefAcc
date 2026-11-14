@@ -528,10 +528,101 @@ function conectarAprobacion(e) {
   });
 }
 
+// ---- tabla de equipos --------------------------------------------------------
+// Buscador, sistema y chips filtran en el navegador sobre la última lista de la API. Cada
+// fila se despliega con cuadros (exposición, sistema, postura, qué hacer); la ficha completa
+// con comandos y activación sigue en el panel de abajo.
+
+// Un equipo que no reporta en dos intervalos del agente (12 h por defecto) se da por fuera de línea.
+const HORAS_FUERA_DE_LINEA = 24;
+const COLUMNAS_POSTURA = [
+  ["firewall", "Firewall"], ["antivirus", "Antimalware"],
+  ["cifrado_disco", "Cifrado"], ["actualizaciones_automaticas", "Actualiz."],
+];
+const COLUMNAS_EQUIPOS = [
+  ["nombre", "Equipo"], ["exposicion", "Exposición"], ["sistema", "Sistema"], ["estado", "Estado"],
+  ["inmediato", "Inmed.", "num"], ["semanal", "Seman.", "num"],
+  ...COLUMNAS_POSTURA.map(([clave, etiqueta]) => [`p_${clave}`, etiqueta, "centro"]),
+];
+const ORDEN_ESTADO = { fuera: 0, pendiente: 1, sin_reporte: 2, revocado: 3, linea: 4 };
+const ORDEN_TRI = { no: 0, desconocido: 1, si: 2 };
+
+const vistaEquipos = { lista: [], texto: "", sistema: "", chip: "todos", orden: null, desc: false, abierto: null };
+const detallesEquipo = new Map();
+
+function horasDesde(iso) {
+  return iso ? (Date.now() - new Date(iso).getTime()) / 36e5 : null;
+}
+
+function fmtHace(iso) {
+  const h = horasDesde(iso);
+  if (h == null) return "nunca";
+  if (h < 1) return `hace ${Math.max(1, Math.round(h * 60))} min`;
+  if (h < 48) return `hace ${Math.round(h)} h`;
+  return `hace ${Math.round(h / 24)} días`;
+}
+
+function estadoConexion(e) {
+  if (e.revocado) return { clave: "revocado", texto: "Revocado", clase: "p-caida" };
+  if (e.pendiente) return { clave: "pendiente", texto: "Por activar", clase: "p-semanal" };
+  if (!e.ultimo_reporte) return { clave: "sin_reporte", texto: "Sin reporte", clase: "" };
+  if (horasDesde(e.ultimo_reporte) > HORAS_FUERA_DE_LINEA) return { clave: "fuera", texto: "Fuera de línea", clase: "p-caida" };
+  return { clave: "linea", texto: "En línea", clase: "p-ok" };
+}
+
+function compararVersiones(a, b) {
+  const pa = String(a).split(/[^0-9]+/).filter(Boolean).map(Number);
+  const pb = String(b).split(/[^0-9]+/).filter(Boolean).map(Number);
+  for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+    const d = (pa[i] || 0) - (pb[i] || 0);
+    if (d) return d;
+  }
+  return 0;
+}
+
+function familiaSistema(e) {
+  return e.so ? (e.so.familia || e.so.nombre || "otro") : "sin_reporte";
+}
+const FAMILIAS = { windows: "Windows", linux: "Linux", macos: "macOS", sin_reporte: "Sin reporte" };
+
+function chipsEquipos(lista) {
+  const versiones = lista.map((e) => e.agente_version).filter(Boolean);
+  const ultima = versiones.length ? versiones.reduce((m, v) => (compararVersiones(v, m) > 0 ? v : m)) : null;
+  const tri = (e, campo, valor) => e.postura && e.postura[campo] === valor;
+  return [
+    ["todos", "Todos", () => true],
+    ["pendiente", "Por activar", (e) => e.pendiente && !e.revocado],
+    ["inmediatas", "Con inmediatas", (e) => e.acciones.inmediato > 0],
+    ["postura", "Falla de postura", (e) => e.postura && Object.values(e.postura).includes("no")],
+    ["sin_cifrar", "Sin cifrar", (e) => tri(e, "cifrado_disco", "no")],
+    ["antimalware", "Antimalware o firmas", (e) => tri(e, "antivirus", "no") || tri(e, "firmas_al_dia", "no")],
+    ["fuera", "Fuera de línea", (e) => estadoConexion(e).clave === "fuera"],
+    ["sin_reporte", "Sin reporte", (e) => !e.ultimo_reporte],
+    ["agente_viejo", "Agente desactualizado", (e) => ultima && e.agente_version && compararVersiones(e.agente_version, ultima) < 0],
+  ];
+}
+
+function claveOrden(e, clave) {
+  if (clave === "nombre") return e.nombre.toLowerCase();
+  if (clave === "exposicion") return e.termometro && e.termometro.medido ? e.termometro.nivel : -1;
+  if (clave === "sistema") return e.so ? `${e.so.nombre} ${e.so.version || ""}`.toLowerCase() : "~";
+  if (clave === "estado") return ORDEN_ESTADO[estadoConexion(e).clave];
+  if (clave === "inmediato" || clave === "semanal") return e.acciones[clave];
+  if (clave.startsWith("p_")) return ORDEN_TRI[(e.postura || {})[clave.slice(2)] || "desconocido"];
+  return 0;
+}
+
+function triPostura(valor) {
+  if (valor === "si") return '<span class="sn sn-si" title="Bien">Sí</span>';
+  if (valor === "no") return '<span class="sn sn-no" title="Falla">No</span>';
+  return '<span class="sn sn-sd" title="No se pudo revisar">Sin dato</span>';
+}
+
 function pintarEquipos(datos) {
   const hay = datos.disponible && datos.equipos.length > 0;
   const vacio = $("#equipos-vacio");
   $("#equipos").closest(".tabla-envoltura").hidden = !hay;
+  $("#equipos-controles").hidden = !hay;
   $("#total-equipos").textContent = hay
     ? (datos.pendientes ? `${datos.total}, ${datos.pendientes} por activar` : datos.total) : "";
   $("#nav-equipos").textContent = hay ? datos.total : "";
@@ -544,17 +635,187 @@ function pintarEquipos(datos) {
         : '<p>Todavía no hay equipos con agente.</p><p class="nota">Un administrador los agrega desde esta sección.</p>');
     return;
   }
-  $("#equipos tbody").innerHTML = datos.equipos.map((e) => `
-    <tr class="clic${e.id === equipoAbierto ? " activa" : ""}${marcarCambios(firmasEquipos, e.id, [e.pendiente, e.revocado, e.ultimo_reporte, e.acciones.inmediato, e.acciones.semanal].join("|"), true)}" data-equipo="${esc(e.id)}" tabindex="0">
-      <td><div class="mono">${esc(e.nombre)}</div><div class="etiquetas">${pildoraPrioridad(e.peor_prioridad)}${pildoraEstadoEquipo(e)}</div></td>
-      <td>${miniTermometro(e.termometro)}</td>
-      <td>${nombreSistema(e.so)}</td>
-      <td class="mono">${esc(e.ultimo_reporte ? fmtHora(e.ultimo_reporte) : "sin reporte")}</td>
-      <td class="num">${esc(e.acciones.inmediato)}</td>
-      <td class="num">${esc(e.acciones.semanal)}</td>
-      <td><div class="etiquetas" style="margin-top:0">${pildorasPostura(e.postura)}</div></td>
-    </tr>`).join("");
+  vistaEquipos.lista = datos.equipos;
+  // El selector de sistema se arma con las familias que hay en la flota.
+  const select = $("#equipos-sistema");
+  const familias = [...new Set(datos.equipos.map(familiaSistema))].sort();
+  const firmaFamilias = familias.join("|");
+  if (select.dataset.firma !== firmaFamilias) {
+    select.dataset.firma = firmaFamilias;
+    select.innerHTML = '<option value="">Todos los sistemas</option>' + familias.map((f) =>
+      `<option value="${esc(f)}"${f === vistaEquipos.sistema ? " selected" : ""}>${esc(FAMILIAS[f] || f)}</option>`).join("");
+  }
+  repintarEquipos();
+  if (vistaEquipos.abierto) cargarDetalleAbierto();
+}
+
+function repintarEquipos() {
+  const v = vistaEquipos;
+  const texto = v.texto.trim().toLowerCase();
+  const base = v.lista.filter((e) => {
+    if (v.sistema && familiaSistema(e) !== v.sistema) return false;
+    if (!texto) return true;
+    const so = e.so || {};
+    return [e.nombre, so.nombre, so.version, so.build, so.kernel, so.distro, e.agente_version]
+      .filter(Boolean).join(" ").toLowerCase().includes(texto);
+  });
+  const chips = chipsEquipos(v.lista);
+  if (!chips.some(([clave]) => clave === v.chip)) v.chip = "todos";
+  $("#equipos-chips").innerHTML = chips.map(([clave, etiqueta, prueba]) => {
+    const n = base.filter(prueba).length;
+    return `<button type="button" class="chip${clave === v.chip ? " activo" : ""}${n ? "" : " vacio-chip"}" data-chip="${clave}" aria-pressed="${clave === v.chip}">${esc(etiqueta)} <span class="chip-n">${n}</span></button>`;
+  }).join("");
+  const prueba = chips.find(([clave]) => clave === v.chip)[2];
+  let lista = base.filter(prueba);
+  if (v.orden) {
+    lista = [...lista].sort((a, b) => {
+      const x = claveOrden(a, v.orden), y = claveOrden(b, v.orden);
+      const r = x < y ? -1 : x > y ? 1 : 0;
+      return v.desc ? -r : r;
+    });
+  }
+
+  $("#equipos-cabeza").innerHTML = COLUMNAS_EQUIPOS.map(([clave, etiqueta, clase]) => {
+    const activa = v.orden === clave;
+    const orden = activa ? (v.desc ? "descending" : "ascending") : "none";
+    return `<th class="${clase || ""}" aria-sort="${orden}"><button type="button" class="orden${activa ? " activa" : ""}" data-orden="${clave}">${esc(etiqueta)}<span class="flechita" aria-hidden="true">${activa && v.desc ? "▼" : "▲"}</span></button></th>`;
+  }).join("");
+
+  $("#equipos tbody").innerHTML = lista.map((e) => {
+    const est = estadoConexion(e);
+    const so = e.so;
+    const abierto = e.id === v.abierto;
+    const sub = so ? [so.version, so.build || so.kernel].filter(Boolean).join(" · ") : "";
+    const postura = e.postura || {};
+    return `
+    <tr class="clic fila-equipo${abierto ? " abierta" : ""}${marcarCambios(firmasEquipos, e.id, [e.pendiente, e.revocado, e.ultimo_reporte, e.acciones.inmediato, e.acciones.semanal].join("|"), true)}" data-equipo="${esc(e.id)}" tabindex="0" aria-expanded="${abierto}">
+      <td class="equipo-celda"><div class="equipo-nombre"><span class="chevron" aria-hidden="true">›</span><span class="mono">${esc(e.nombre)}</span></div>
+        <div class="sub">inscrito ${esc(fmtFecha(e.inscrito, true))}</div></td>
+      <td>${miniTermometro(e.termometro)}${e.peor_prioridad ? `<div class="sub">${esc(PRIORIDADES[e.peor_prioridad] || e.peor_prioridad)}</div>` : ""}</td>
+      <td>${so ? `<div>${esc(so.nombre)}</div><div class="sub mono">${esc(sub)}</div>` : '<span class="sin-dato">sin reporte</span>'}</td>
+      <td><div class="estado-conexion ${est.clase}"><span class="punto"></span>${esc(est.texto)}</div>
+        <div class="sub">${e.agente_version ? `agente ${esc(e.agente_version)} · ` : ""}${esc(fmtHace(e.ultimo_reporte))}</div></td>
+      <td class="num">${e.acciones.inmediato ? `<span class="kev-n">${esc(e.acciones.inmediato)}</span>` : '<span class="cero">0</span>'}</td>
+      <td class="num">${e.acciones.semanal ? esc(e.acciones.semanal) : '<span class="cero">0</span>'}</td>
+      ${COLUMNAS_POSTURA.map(([clave]) => `<td class="centro">${e.postura ? triPostura(postura[clave]) : '<span class="sn sn-sd">Sin dato</span>'}</td>`).join("")}
+    </tr>${abierto ? `<tr class="fila-desplegada"><td colspan="${COLUMNAS_EQUIPOS.length}">${cuerpoDesplegado(e)}</td></tr>` : ""}`;
+  }).join("") || `<tr><td colspan="${COLUMNAS_EQUIPOS.length}" class="vacio">Ningún equipo cumple el filtro.</td></tr>`;
   firmasEquipos.primera = false;
+
+  const totales = COLUMNAS_POSTURA.map(([clave]) => {
+    const c = { si: 0, no: 0, sd: 0 };
+    lista.forEach((e) => {
+      const valor = (e.postura || {})[clave];
+      c[valor === "si" ? "si" : valor === "no" ? "no" : "sd"] += 1;
+    });
+    return `<td class="centro"><span class="total-si">${c.si} sí</span> · <span class="total-no">${c.no} no</span><br><span class="total-sd">${c.sd} s/d</span></td>`;
+  }).join("");
+  $("#equipos tfoot").innerHTML = `<tr><td colspan="${COLUMNAS_EQUIPOS.length - COLUMNAS_POSTURA.length}">${lista.length} ${lista.length === 1 ? "equipo" : "equipos"}${lista.length !== v.lista.length ? ` de ${v.lista.length}` : ""}</td>${totales}</tr>`;
+}
+
+function fmtFecha(iso, corta = false) {
+  if (!iso) return "sin fecha";
+  return new Date(iso).toLocaleDateString("es", corta ? { day: "numeric", month: "short" } : { day: "numeric", month: "short", year: "numeric" });
+}
+
+function filasDato(pares) {
+  const filas = pares.filter(([, valor]) => valor != null && valor !== "").map(([nombre, valor]) =>
+    `<li><span>${esc(nombre)}</span><span class="mono">${esc(valor)}</span></li>`).join("");
+  return filas ? `<ul class="datos-lista">${filas}</ul>` : '<p class="vacio">El equipo todavía no ha reportado.</p>';
+}
+
+// Cuadros de la fila desplegada. Lo de la lista se pinta al tiro; hardware y acciones
+// llegan con el detalle (GET /api/equipos/{id}), que se pide al abrir y se guarda.
+function cuerpoDesplegado(e) {
+  const d = detallesEquipo.get(e.id);
+  const t = e.termometro || {};
+  const a = e.acciones;
+  const postura = e.postura || {};
+  const fallas = Object.values(postura).filter((x) => x === "no").length;
+  const so = e.so || {};
+  const hw = d && d.equipo.hardware ? d.equipo.hardware : {};
+  const cargando = '<p class="vacio">Cargando...</p>';
+
+  const exposicion = `
+    <div class="cuadro">
+      <div class="cuadro-cabeza"><h3>Exposición</h3>${t.medido ? `<span class="pildora termometro-banda t-${esc(t.banda)}"><span class="punto"></span>${esc(t.etiqueta)}</span>` : ""}</div>
+      ${t.medido
+        ? `<div class="cuadro-cifra t-${esc(t.banda)}">${esc(t.nivel)}<span>/100</span></div>`
+        : `<p class="nota">${esc(t.motivo || t.etiqueta || "Sin lectura.")} Un equipo sin revisar no se cuenta como sano.</p>`}
+      ${filasDato([["Inmediatas", a.inmediato], ["Semanales", a.semanal], ["Informativas", a.informativo],
+        ["CVE en KEV", d ? d.productos.reduce((n, p) => n + p.en_kev.length, 0) : null]])}
+      ${e.pendiente && !e.revocado ? '<p class="aviso-cuadro">Por activar: su inventario no entra al cruce hasta que un administrador escriba el código en la ficha.</p>' : ""}
+    </div>`;
+
+  const sistema = `
+    <div class="cuadro">
+      <div class="cuadro-cabeza"><h3>Sistema y hardware</h3></div>
+      ${filasDato([
+        ["Sistema", so.nombre], ["Versión", so.version], ["Build", so.build], ["Kernel", so.kernel],
+        ["Arquitectura", so.arquitectura], ["Edición", so.edicion],
+        ["Equipo", [hw.fabricante, hw.modelo].filter(Boolean).join(" ") || null],
+        ["Procesador", hw.cpu], ["RAM", hw.ram_gb != null ? `${hw.ram_gb} GB` : null],
+        ["TPM", hw.tpm], ["BIOS", hw.bios],
+        ["Agente", e.agente_version], ["Último reporte", e.ultimo_reporte ? fmtHora(e.ultimo_reporte) : null],
+        ["Aprobado por", e.aprobado_por],
+      ])}
+      ${d ? "" : cargando}
+    </div>`;
+
+  const posturaCuadro = `
+    <div class="cuadro">
+      <div class="cuadro-cabeza"><h3>Postura</h3>${e.postura ? (fallas ? `<span class="sn sn-no">${fallas} ${fallas === 1 ? "falla" : "fallas"}</span>` : '<span class="sn sn-si">Sin fallas</span>') : ""}</div>
+      ${e.postura
+        ? `<ul class="datos-lista">${Object.entries(POSTURA).map(([clave, etiqueta]) =>
+            `<li><span>${esc(etiqueta)}</span>${triPostura(postura[clave])}</li>`).join("")}</ul>`
+        : '<p class="vacio">El equipo todavía no ha reportado su postura.</p>'}
+    </div>`;
+
+  let quehacer = cargando;
+  if (d) {
+    const items = [
+      ...d.productos.map((p) => ({ prioridad: p.prioridad, titulo: p.producto, extra: `${p.n_cves} CVE` })),
+      ...d.hallazgos_equipo.map((h) => ({ prioridad: h.prioridad, titulo: h.titulo, extra: TIPOS_EQUIPO[h.tipo] || h.tipo })),
+    ];
+    quehacer = items.length
+      ? `<ul class="quehacer">${items.slice(0, 6).map((i) =>
+          `<li>${pildoraPrioridad(i.prioridad)}<span class="quehacer-titulo">${esc(i.titulo)}</span><span class="sub">${esc(i.extra)}</span></li>`).join("")}</ul>
+         ${items.length > 6 ? `<p class="nota">y ${items.length - 6} más en la ficha.</p>` : ""}`
+      : `<p class="vacio">${e.pendiente ? "Se cruza cuando el equipo esté activado." : "Nada que hacer con lo que se pudo revisar."}</p>`;
+  }
+  const accionesCuadro = `
+    <div class="cuadro">
+      <div class="cuadro-cabeza"><h3>Qué hacer</h3>${d ? `<span class="pildora mono">${d.productos.length + d.hallazgos_equipo.length}</span>` : ""}</div>
+      ${quehacer}
+    </div>`;
+
+  return `
+    <div class="desplegado${vistaEquipos.animar ? " entrando" : ""}">
+      <div class="cuadros">${exposicion}${sistema}${posturaCuadro}${accionesCuadro}</div>
+      <div class="desplegado-pie"><button type="button" class="boton-secundario" data-ficha="${esc(e.id)}">Ver ficha completa</button></div>
+    </div>`;
+}
+
+async function alternarEquipo(id) {
+  vistaEquipos.abierto = vistaEquipos.abierto === id ? null : id;
+  vistaEquipos.animar = true;
+  repintarEquipos();
+  vistaEquipos.animar = false;
+  if (vistaEquipos.abierto) await cargarDetalleAbierto();
+}
+
+// Pide el detalle del equipo desplegado si no está o si el equipo volvió a reportar.
+async function cargarDetalleAbierto() {
+  const id = vistaEquipos.abierto;
+  const e = vistaEquipos.lista.find((x) => x.id === id);
+  const previo = detallesEquipo.get(id);
+  if (previo && previo.equipo.ultimo_reporte === (e && e.ultimo_reporte)) return;
+  try {
+    detallesEquipo.set(id, await api(`/api/equipos/${encodeURIComponent(id)}`));
+  } catch {
+    detallesEquipo.delete(id);
+  }
+  if (vistaEquipos.abierto === id) repintarEquipos();
 }
 
 async function abrirEquipo(id) {
@@ -905,16 +1166,45 @@ function abrirDesdeFila(e) {
 $("#productos").addEventListener("click", abrirDesdeFila);
 $("#productos").addEventListener("keydown", abrirDesdeFila);
 
-function abrirEquipoDesdeFila(e) {
+function clicEnEquipos(e) {
+  const ficha = e.target.closest("[data-ficha]");
+  if (ficha) {
+    if (e.type === "keydown") return;
+    abrirEquipo(ficha.dataset.ficha);
+    $("#detalle-equipo").scrollIntoView({ behavior: "smooth", block: "start" });
+    return;
+  }
+  const orden = e.target.closest("[data-orden]");
+  if (orden) {
+    if (e.type === "keydown") return;
+    const clave = orden.dataset.orden;
+    if (vistaEquipos.orden === clave) {
+      // Tercer clic vuelve al orden de la API (más expuesto primero).
+      if (vistaEquipos.desc) vistaEquipos.orden = null;
+      vistaEquipos.desc = !vistaEquipos.desc;
+    } else {
+      vistaEquipos.orden = clave;
+      vistaEquipos.desc = false;
+    }
+    repintarEquipos();
+    return;
+  }
   const fila = e.target.closest("tr[data-equipo]");
   if (!fila) return;
   if (e.type === "keydown" && e.key !== "Enter" && e.key !== " ") return;
   e.preventDefault();
-  abrirEquipo(fila.dataset.equipo);
-  $("#detalle-equipo").scrollIntoView({ behavior: "smooth", block: "start" });
+  alternarEquipo(fila.dataset.equipo);
 }
-$("#equipos").addEventListener("click", abrirEquipoDesdeFila);
-$("#equipos").addEventListener("keydown", abrirEquipoDesdeFila);
+$("#equipos").addEventListener("click", clicEnEquipos);
+$("#equipos").addEventListener("keydown", clicEnEquipos);
+$("#equipos-buscar").addEventListener("input", (e) => { vistaEquipos.texto = e.target.value; repintarEquipos(); });
+$("#equipos-sistema").addEventListener("change", (e) => { vistaEquipos.sistema = e.target.value; repintarEquipos(); });
+$("#equipos-chips").addEventListener("click", (e) => {
+  const chip = e.target.closest("[data-chip]");
+  if (!chip) return;
+  vistaEquipos.chip = chip.dataset.chip;
+  repintarEquipos();
+});
 
 $("#cerrar-equipo").addEventListener("click", () => {
   equipoAbierto = null;

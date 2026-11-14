@@ -47,10 +47,12 @@ from radar.agente.hooks import (
     Traza,
     opciones_encierro,
 )
+from radar.ajustes import MODELO_POR_DEFECTO, modelo
 from radar.agente.instrucciones import ESQUEMA_ANALISIS, INSTRUCCIONES, armar_pedido
 from radar.contratos import Analisis, Grupo
 
-MODELO = "claude-opus-5-5"
+# El modelo sale de radar/ajustes.py (consola > RADAR_MODELO_ANALISTA > RADAR_MODELO > defecto).
+MODELO = MODELO_POR_DEFECTO
 MAX_TURNOS = 8
 MAX_PRESUPUESTO_USD = 0.50
 
@@ -70,7 +72,7 @@ def opciones(fuente: Fuente, defensa: bool, traza: Traza | None, cwd: str | None
     from claude_agent_sdk import ClaudeAgentOptions
 
     comunes: dict[str, Any] = {
-        "model": MODELO,
+        "model": modelo("analista"),
         "system_prompt": INSTRUCCIONES,
         "output_format": {"type": "json_schema", "schema": ESQUEMA_ANALISIS},
         "max_turns": MAX_TURNOS,

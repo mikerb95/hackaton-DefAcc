@@ -224,17 +224,24 @@ def validar_url(url: str) -> str:
     return urllib.parse.urlunsplit((partes.scheme, partes.netloc, partes.path.rstrip("/"), "", ""))
 
 
-def _pedir(url: str, cuerpo: bytes, cabeceras: dict[str, str], abrir: Any = None) -> dict[str, Any]:
+def _pedir(
+    url: str,
+    cuerpo: bytes | None,
+    cabeceras: dict[str, str],
+    abrir: Any = None,
+    metodo: str = "POST",
+    maximo: int = TAMANO_MAXIMO_RESPUESTA,
+) -> dict[str, Any]:
     peticion = urllib.request.Request(
         url,
         data=cuerpo,
-        method="POST",
+        method=metodo,
         headers={"User-Agent": f"radar-agente/{VERSION}", **cabeceras},
     )
     abrir = abrir or urllib.request.build_opener(_SinRedireccion).open
     try:
         with abrir(peticion, timeout=TIEMPO) as respuesta:
-            contenido = respuesta.read(TAMANO_MAXIMO_RESPUESTA)
+            contenido = respuesta.read(maximo)
     except urllib.error.HTTPError as error:
         detalle = ""
         try:
@@ -334,6 +341,43 @@ def enviar(estado: Estado, reporte: dict[str, Any], abrir: Any = None) -> int | 
         estado.datos["intervalo_horas"] = intervalo
         estado.guardar()
     return intervalo
+
+
+# ---------------------------------------------------------------------------
+# Parcheo (docs/plan-parcheo.md)
+# ---------------------------------------------------------------------------
+
+RUTA_PLAN = "/api/agente/plan"
+RUTA_RESULTADO = "/api/agente/parcheo/resultado"
+TAMANO_MAXIMO_PLAN = 512 * 1024
+
+
+def pedir_plan(estado: Estado, abrir: Any = None) -> dict[str, Any] | None:
+    """El plan firmado pendiente, o None si no hay. Lo que venga se verifica después con la
+    clave fijada en este equipo: aquí solo se lee `plan` y `firma`."""
+    if not estado.inscrito:
+        raise ErrorEnvio("El equipo no está inscrito: corre primero `inscribir`.")
+    respuesta = _pedir(
+        validar_url(estado.url) + RUTA_PLAN,
+        None,
+        {CABECERA_CREDENCIAL: estado.credencial},
+        abrir,
+        metodo="GET",
+        maximo=TAMANO_MAXIMO_PLAN,
+    )
+    if not respuesta.get("plan"):
+        return None
+    return {"plan": respuesta.get("plan"), "firma": respuesta.get("firma")}
+
+
+def enviar_resultado(estado: Estado, resultado: dict[str, Any], abrir: Any = None) -> None:
+    """Envía el resultado de un plan. Lanza ErrorEnvio si no se pudo (queda pendiente)."""
+    _json(
+        validar_url(estado.url) + RUTA_RESULTADO,
+        resultado,
+        {CABECERA_CREDENCIAL: estado.credencial},
+        abrir,
+    )
 
 
 # ---------------------------------------------------------------------------

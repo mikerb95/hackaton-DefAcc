@@ -33,7 +33,7 @@ from typing import Any
 
 from fastapi import APIRouter, Header, HTTPException, status
 
-from radar.api.agente import CABECERA_CREDENCIAL, _conexion, _exigir_base
+from radar.api.agente import _conexion, _exigir_base
 from radar.api.termometro import termometro
 
 CABECERA_ENLACE = "X-Enlace-Equipo"

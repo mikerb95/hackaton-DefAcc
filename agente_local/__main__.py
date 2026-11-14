@@ -5,6 +5,7 @@
     python -m agente_local subir-csv --url https://radar     # fase 0: sube el CSV al panel
     python -m agente_local inscribir --url https://radar     # muestra el código de activación
     python -m agente_local enviar                            # lo que corre la tarea programada
+    python -m agente_local aviso                             # notificación para el usuario
     python -m agente_local estado
     python -m agente_local desinscribir                      # borra la credencial
 
@@ -21,7 +22,7 @@ import sys
 import time
 from pathlib import Path
 
-from agente_local import VERSION, envio, reporte
+from agente_local import VERSION, envio, orden_parcheo, reporte
 
 SALIDA_OK, SALIDA_ERROR, SALIDA_PENDIENTE = 0, 1, 2
 
@@ -125,6 +126,36 @@ def orden_enviar(args: argparse.Namespace) -> int:
         f"Reporte enviado: {len(datos['software'])} programas."
         + (f" Próximo en {intervalo} horas." if intervalo else "")
     )
+    _actualizar_aviso(estado)
+    return SALIDA_OK
+
+
+def _actualizar_aviso(estado: envio.Estado) -> None:
+    """Deja el aviso para quien usa el equipo. Si falla, el envío igual cuenta como hecho."""
+    from agente_local import aviso
+
+    try:
+        datos = aviso.actualizar(estado)
+    except (envio.ErrorEnvio, OSError) as error:
+        _decir(f"Aviso para el usuario sin actualizar: {error}")
+        return
+    a = datos["acciones"]
+    _decir(f"Aviso para el usuario: {a['inmediato']} para hoy, {a['semanal']} para esta semana.")
+
+
+def orden_aviso(args: argparse.Namespace) -> int:
+    """Lo que corre la tarea de cada usuario: notificación si hay algo urgente."""
+    from agente_local import aviso
+
+    carpeta = Path(args.datos) if args.datos else None
+    if args.abrir:
+        datos = aviso.leer(carpeta)
+        if datos is None:
+            _decir("Todavía no hay aviso del radar para este equipo.")
+            return SALIDA_ERROR
+        aviso.abrir_pagina(datos["enlace"])
+        return SALIDA_OK
+    _decir(aviso.avisar(carpeta, forzar=args.forzar))
     return SALIDA_OK
 
 
@@ -177,6 +208,13 @@ def analizador() -> argparse.ArgumentParser:
     enviar.add_argument("--programado", action="store_true", help="Respeta el intervalo guardado")
     enviar.add_argument("--intervalo-horas", type=int, choices=range(1, 169), default=12)
     enviar.set_defaults(funcion=orden_enviar)
+
+    aviso = sub.add_parser("aviso", help="Notifica a quien usa el equipo si hay pendientes")
+    aviso.add_argument("--forzar", action="store_true", help="Muestra el aviso aunque sea repetido")
+    aviso.add_argument("--abrir", action="store_true", help="Abre la página del equipo y no avisa")
+    aviso.set_defaults(funcion=orden_aviso)
+
+    orden_parcheo.registrar(sub)
 
     sub.add_parser("estado", help="Muestra si el equipo está inscrito").set_defaults(
         funcion=orden_estado

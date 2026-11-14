@@ -1,0 +1,10 @@
+# Al entrar a la sesión y cada dos horas. El agente no repite el mismo aviso antes de 8 horas.
+[Unit]
+Description=Aviso periodico del radar para quien usa el equipo
+
+[Timer]
+OnStartupSec=2min
+OnUnitActiveSec=2h
+
+[Install]
+WantedBy=timers.target

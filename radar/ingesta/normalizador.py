@@ -32,6 +32,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import get_args
 
+from radar.ajustes import MODELO_POR_DEFECTO, modelo
 from radar.contratos import Activo, Cobertura, FilaInventario, MetodoCpe, MotivoCobertura
 
 log = logging.getLogger(__name__)
@@ -48,7 +49,8 @@ LARGO_MAXIMO_NOMBRE = 120  # un nombre más largo no se compara (relleno de inye
 # Fabricantes cuyos productos son plugins con el nombre de lo que integran (jenkins:git,
 # jenkins:docker, jenkins:slack). Solo compiten si el nombre del programa los menciona.
 FABRICANTES_DE_PLUGINS = frozenset({"jenkins"})
-MODELO = "claude-opus-5-5"
+# El modelo sale de radar/ajustes.py (consola > RADAR_MODELO_DESEMPATE > RADAR_MODELO > defecto).
+MODELO = MODELO_POR_DEFECTO
 
 
 # ---------------------------------------------------------------------------
@@ -399,7 +401,7 @@ def desempatar_con_modelo(nombre: str, candidatos: list[Candidato]) -> int | Non
     )
     try:
         respuesta = anthropic.Anthropic().beta.messages.create(
-            model=MODELO,
+            model=modelo("desempate"),
             max_tokens=256,
             betas=["server-side-fallback-2026-07-01"],
             fallbacks="default",

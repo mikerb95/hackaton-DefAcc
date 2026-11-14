@@ -1,0 +1,142 @@
+/* Vista de un equipo para quien lo usa. Mismos tokens que el panel (public/estilo.css),
+   copiados para no depender de su maquetación. Estados con punto o píldora, nunca con
+   franja de color en un borde. */
+
+:root {
+  --ink-0: #0a0a0d;
+  --ink-1: #111117;
+  --ink-2: #16161e;
+  --ink-3: #1c1c26;
+  --linea: #262633;
+  --texto: #e6e6ee;
+  --texto-2: #9a9aae;
+  --texto-3: #6b6b80;
+  --acento: #00f2ff;
+  --acento-tinte: rgba(0, 242, 255, 0.08);
+  --rojo: #ff6b3d;
+  --rojo-tinte: rgba(255, 107, 61, 0.1);
+  --ambar: #fbbf24;
+  --ambar-tinte: rgba(251, 191, 36, 0.1);
+  --lima: #c9ff5b;
+  --gris: #8a8aa0;
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --sans: "Inter", system-ui, -apple-system, sans-serif;
+  --radio: 14px;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { color-scheme: dark; }
+body {
+  margin: 0;
+  background: var(--ink-0);
+  color: var(--texto);
+  font: 16px/1.55 var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4 { margin: 0; }
+p { margin: 0; }
+.suave { color: var(--texto-2); font-size: 14px; }
+
+.cabecera {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  max-width: 760px; margin: 0 auto; padding: 20px 16px 8px;
+}
+.marca { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 18px; }
+.marca-punto {
+  width: 9px; height: 9px; border-radius: 50%; background: var(--acento);
+  box-shadow: 0 0 12px var(--acento);
+}
+.cabecera-nota { color: var(--texto-3); font-size: 13px; text-align: right; }
+
+.hoja { max-width: 760px; margin: 0 auto; padding: 8px 16px 24px; display: grid; gap: 16px; }
+.cargando { color: var(--texto-2); padding: 48px 0; text-align: center; }
+
+.tarjeta {
+  background: var(--ink-1); border: 1px solid var(--linea); border-radius: var(--radio);
+  padding: 22px;
+}
+.tarjeta h2 { font-size: 18px; margin-bottom: 6px; }
+
+/* Resumen */
+.resumen { display: grid; gap: 14px; }
+.resumen-arriba { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+.resumen-equipo h1 { font-size: 24px; letter-spacing: -0.01em; overflow-wrap: anywhere; }
+.resumen-frase { font-size: 20px; font-weight: 600; }
+.pildora {
+  display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+  padding: 4px 12px; border-radius: 999px; font-size: 13px; font-weight: 600;
+  background: var(--ink-3); color: var(--texto-2);
+}
+.banda-critico .pildora, .banda-alto .pildora { background: var(--rojo-tinte); color: var(--rojo); }
+.banda-medio .pildora { background: var(--ambar-tinte); color: var(--ambar); }
+.banda-bajo .pildora { background: rgba(201, 255, 91, 0.1); color: var(--lima); }
+
+.medidor { height: 10px; border-radius: 999px; background: var(--ink-3); overflow: hidden; }
+.medidor-relleno {
+  display: block; height: 100%; border-radius: inherit;
+  background: linear-gradient(90deg, var(--lima), var(--ambar) 45%, var(--rojo));
+  background-size: 760px 100%;
+}
+.medidor-escala { display: flex; justify-content: space-between; color: var(--texto-3); font: 12px var(--mono); }
+
+/* Avisos destacados: tinte de fondo, sin franja lateral */
+.destacado.reinicio { background: var(--ambar-tinte); border-color: rgba(251, 191, 36, 0.35); }
+.destacado.reinicio h2 { color: var(--ambar); }
+.destacado.curso { background: var(--acento-tinte); border-color: rgba(0, 242, 255, 0.25); }
+.destacado.curso h2 { color: var(--acento); }
+.destacado p + p { margin-top: 6px; }
+
+/* Tareas */
+.grupo { display: grid; gap: 10px; margin-top: 8px; }
+.grupo-cabeza { display: flex; align-items: center; gap: 10px; }
+.grupo-cabeza h2 { font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--texto-2); }
+.contador { font: 12px var(--mono); color: var(--texto-3); }
+.grupo-nota { margin-top: -6px; }
+
+.tarea {
+  background: var(--ink-1); border: 1px solid var(--linea); border-radius: var(--radio);
+  padding: 18px 20px; display: grid; gap: 8px;
+}
+.tarea-cabeza { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
+.tarea h3 { font-size: 17px; display: flex; align-items: center; gap: 10px; overflow-wrap: anywhere; }
+.punto { width: 9px; height: 9px; border-radius: 50%; flex: none; background: var(--gris); }
+.p-inmediato .punto { background: var(--rojo); box-shadow: 0 0 10px var(--rojo); }
+.p-semanal .punto { background: var(--ambar); }
+.p-informativo .punto { background: var(--gris); }
+.pildora.alerta { background: var(--rojo-tinte); color: var(--rojo); }
+.tarea-pasos { white-space: pre-line; }
+
+.tarea-mas summary { cursor: pointer; color: var(--texto-2); font-size: 14px; }
+.tarea-mas summary:hover { color: var(--acento); }
+.tarea-mas[open] { display: grid; gap: 8px; }
+.tarea-mas h4 { font-size: 13px; color: var(--texto-2); font-weight: 600; margin-top: 6px; }
+.por-que { margin: 0; padding-left: 18px; color: var(--texto-2); font-size: 14px; }
+.comando {
+  display: flex; align-items: center; gap: 8px; background: var(--ink-0);
+  border: 1px solid var(--linea); border-radius: 10px; padding: 8px 10px;
+}
+.comando code { font: 13px var(--mono); flex: 1; overflow-x: auto; white-space: nowrap; }
+.boton-texto {
+  background: none; border: 0; color: var(--acento); font: 600 13px var(--sans);
+  cursor: pointer; padding: 4px 6px; border-radius: 6px;
+}
+.boton-texto:hover { background: var(--acento-tinte); }
+
+.sin-revisar ul { margin: 6px 0 8px; padding-left: 18px; color: var(--texto-2); }
+
+.error { text-align: center; padding: 40px 22px; }
+.error-titulo { font-size: 22px; margin-bottom: 8px; }
+.error-texto { color: var(--texto-2); }
+
+.pie {
+  max-width: 760px; margin: 0 auto; padding: 8px 16px 40px;
+  color: var(--texto-3); font-size: 13px; display: grid; gap: 4px;
+}
+
+@media (max-width: 520px) {
+  .tarjeta { padding: 18px; }
+  .resumen-equipo h1 { font-size: 21px; }
+  .resumen-frase { font-size: 18px; }
+  .cabecera-nota { display: none; }
+}

@@ -1,0 +1,10 @@
+# Aviso a quien usa el equipo (servicio de usuario de systemd). Solo lee el aviso que deja
+# radar-agente.service en /var/lib/radar-agente/aviso/ y muestra una notificación.
+[Unit]
+Description=Aviso del radar de vulnerabilidades para quien usa el equipo
+After=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 -I /opt/radar-agente/ejecutar.py aviso
+NoNewPrivileges=true

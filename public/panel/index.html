@@ -122,15 +122,18 @@
               <h2 id="t-equipos">Equipos con agente <span class="contador" id="total-equipos"></span></h2>
               <button type="button" id="agregar-equipo" data-rol="admin">Agregar equipo</button>
             </div>
+            <div class="equipos-controles" id="equipos-controles">
+              <div class="equipos-barra">
+                <input type="search" id="equipos-buscar" placeholder="Buscar por equipo, sistema, versión o agente" maxlength="100" aria-label="Buscar equipos">
+                <select id="equipos-sistema" aria-label="Sistema"><option value="">Todos los sistemas</option></select>
+              </div>
+              <div class="chips" id="equipos-chips" role="group" aria-label="Filtros rápidos"></div>
+            </div>
             <div class="tabla-envoltura">
-              <table class="tabla" id="equipos">
-                <thead>
-                  <tr>
-                    <th>Equipo</th><th>Exposición</th><th>Sistema</th><th>Último reporte</th>
-                    <th class="num">Inmediatas</th><th class="num">Semanales</th><th>Postura</th>
-                  </tr>
-                </thead>
+              <table class="tabla tabla-equipos" id="equipos">
+                <thead><tr id="equipos-cabeza"></tr></thead>
                 <tbody></tbody>
+                <tfoot></tfoot>
               </table>
             </div>
             <div class="vacio-grande" id="equipos-vacio" hidden></div>

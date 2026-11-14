@@ -36,7 +36,9 @@ DESTINO=/opt/radar-agente
 install -d -m 0755 "$DESTINO/agente_local"
 install -m 0644 "$CODIGO"/*.py "$DESTINO/agente_local/"
 install -m 0644 "$AQUI/ejecutar.py" "$DESTINO/ejecutar.py"
-install -d -m 0700 /var/lib/radar-agente
+# 0711: los usuarios no listan la carpeta, pero pueden llegar a aviso/ (la credencial y el
+# reporte pendiente son 0600).
+install -d -m 0711 /var/lib/radar-agente
 
 if [ -n "$TOKEN" ]; then export RADAR_AGENTE_TOKEN="$TOKEN"; fi
 /usr/bin/python3 -I "$DESTINO/ejecutar.py" inscribir --url "$URL"
@@ -49,5 +51,11 @@ install -m 0644 "$AQUI/radar-agente.service" /etc/systemd/system/radar-agente.se
 install -m 0644 "$AQUI/radar-agente.timer" /etc/systemd/system/radar-agente.timer
 systemctl daemon-reload
 systemctl enable --now radar-agente.timer
+
+# Aviso a quien usa el equipo: servicio de usuario, activo para todas las sesiones.
+install -d -m 0755 /etc/systemd/user
+install -m 0644 "$AQUI/radar-agente-aviso.service" /etc/systemd/user/radar-agente-aviso.service
+install -m 0644 "$AQUI/radar-agente-aviso.timer" /etc/systemd/user/radar-agente-aviso.timer
+systemctl --global enable radar-agente-aviso.timer || true
 
 echo "Agente instalado en $DESTINO. Escribe el código de arriba en el panel para activarlo."
