@@ -37,6 +37,7 @@ Prioridad alta. Pruebas: `tests/test_ingesta.py`, `tests/test_mcp.py`.
 - **RF-308** Exactitud no ajustada del normalizador sobre 30 nombres de productos reales fuera de la semilla y de la tabla de alias, con lo esperado escrito antes de medir. `datos_prueba/fuera_de_semilla.py`.
 - **RF-309** Integración de punta a punta sin piezas simuladas (CSV, `leer_inventario`, `normalizar`, `correr` en solo lectura) contra la respuesta conocida: pares CVE y versión, detección, precisión, falsos positivos, KEV, no precisos y cobertura por motivo. `datos_prueba/integracion.py`.
 - **RF-310** Cifras del normalizador y del pipeline expuestas para `evals/reporte.md` (`metricas_normalizador()` y `tabla_markdown()`), sin escribirlas a mano. `datos_prueba/metricas.py`.
+- **RF-311** Texto inyectado en programa, proveedor o versión no saca al equipo de los hallazgos: se detecta (frase tras un separador fuerte, o señal fuerte de `radar/seguridad/limpieza.py`), se normaliza con el prefijo y la fila se cruza con confianza 0,6 y una sospecha registrada; si el prefijo no se reconoce, va a cobertura con motivo visible (`posible_inyeccion` cuando esté en el contrato). El texto inyectado no llega a `Activo.nombre`. `radar/ingesta/normalizador.py`.
 
 ## API y panel
 

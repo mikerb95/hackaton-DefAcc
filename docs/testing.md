@@ -24,7 +24,7 @@ Córrelo tú mismo: `uv run pytest tests/test_ingesta.py`.
 
 | Prueba | Qué cubre | Requiere |
 |---|---|---|
-| `tests/test_normalizador.py` | Versión comparable, nombre limpio, alias de trampas, nombres fuera de la semilla, producto ausente de NVD, plugins de Jenkins, empate de Python, desempate con modelo sustituido (sin API), agrupación y nombre canónico, nombre enorme (RF-301 a RF-305). Medición contra la respuesta conocida (RF-307) | `resources/` para la medición |
+| `tests/test_normalizador.py` | Filas envenenadas de las cuatro rondas (`casos_inyeccion.TODOS`): ninguna saca al equipo de los hallazgos, quedan marcadas y sin el texto inyectado en el nombre; versión con instrucción; nombres legítimos sin marca (RF-311). Además: versión comparable, nombre limpio, alias de trampas, nombres fuera de la semilla, producto ausente de NVD, plugins de Jenkins, empate de Python, desempate con modelo sustituido (sin API), agrupación y nombre canónico, nombre enorme (RF-301 a RF-305). Medición contra la respuesta conocida (RF-307) | `resources/` para la medición |
 | `tests/test_integracion.py` | Pipeline real de punta a punta: 735 pares CVE y versión, 6500 por equipo, detección y precisión 100 %, 0 falsos positivos, 12 KEV, 1098 no precisos por activo, cobertura por motivo; tabla para el reporte (RF-309, RF-310) | `resources/`; usa `datos_locales/radar.db` en solo lectura o arma una base temporal desde el snapshot |
 | `tests/test_datos_prueba.py` | Semilla fija, totales de SEMILLA.md (735 y 12 KEV), distribución, fronteras, cobertura con motivos del contrato, inyección aparte, bytes idénticos entre corridas, la ingesta lee CSV y xlsx completos (RF-306) | `resources/` (se salta si falta) |
 
