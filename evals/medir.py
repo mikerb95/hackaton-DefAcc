@@ -197,12 +197,24 @@ def medir_inyeccion() -> dict[str, Any]:
     for agente in ("obediente", "honesto"):
         salida[agente] = [r.como_dict() for r in correr_suite(lista, agente, "forzada")]
         salida[f"{agente}_real"] = [r.como_dict() for r in correr_suite(lista, agente, "real")]
-    try:
-        from radar.agente.analista import analizar  # noqa: F401
+    from evals.inyeccion import cargar_resultados_real
 
-        salida["real"] = {"pendiente": "existe analizar(); correr `pytest -m agente` con la clave"}
-    except ImportError:
-        salida["real"] = {"pendiente": "radar.agente.analista.analizar no existe todavía"}
+    salida["real_resultados"] = cargar_resultados_real()
+    if salida["real_resultados"]:
+        momentos = sorted(r.get("momento", "") for r in salida["real_resultados"])
+        salida["real"] = {
+            "estado": f"{len(salida['real_resultados'])} corridas, la última el {momentos[-1]}"
+        }
+    else:
+        try:
+            from radar.agente.analista import analizar  # noqa: F401
+
+            motivo = (
+                "existe analizar(); falta correr `uv run pytest -m agente tests/test_inyeccion.py`"
+            )
+        except ImportError:
+            motivo = "radar.agente.analista.analizar no existe todavía"
+        salida["real"] = {"pendiente": motivo}
     for nombre in ("ronda2_antes_de_ajustes", "ajuste1"):
         ruta = HISTORIAL / f"{nombre}.json"
         if ruta.exists():
@@ -260,6 +272,30 @@ def _filas_obediente(i: dict[str, Any]) -> list[list[Any]]:
     return filas
 
 
+def filas_analista_real(resultados: list[dict[str, Any]]) -> list[list[Any]]:
+    """Filas del analista real por ronda, desde ``evals/resultados_analista_real.json``.
+
+    Solo cuenta la entrada forzada (la misma que las filas simuladas) y avisa si una ronda
+    no se corrió completa.
+    """
+    from datos_prueba.casos_inyeccion import TODOS
+
+    forzada = [r for r in resultados if r.get("entrada", "forzada") == "forzada"]
+    filas = []
+    for ronda in sorted({r["ronda"] for r in forzada}):
+        total = sum(c.ronda == ronda for c in TODOS)
+        fila = _fila(str(ronda), ETIQUETAS["real"], ronda, forzada)
+        corridos = len({r["caso"] for r in forzada if r["ronda"] == ronda})
+        if corridos < total:
+            fila[0] = f"{ronda} (corridos {corridos} de {total} casos)"
+        filas.append(fila)
+    return filas
+
+
+def _estado_real(i: dict[str, Any]) -> str:
+    return i["real"].get("estado") or f"pendiente ({i['real']['pendiente']})"
+
+
 def _cifra_limpia(i: dict[str, Any]) -> str:
     ronda = max(RONDAS_LIMPIAS)
     fuente = RONDAS_LIMPIAS[ronda]
@@ -273,7 +309,7 @@ def _cifra_limpia(i: dict[str, Any]) -> str:
     return (
         f"**Última ronda {MARCA_LIMPIA}: ronda {ronda}.** {ETIQUETAS['obediente'].capitalize()}, "
         f"entrada forzada: sin defensa {_celda(sin, n)}, con defensa {_celda(con, n)}, "
-        f"utilidad con defensa {util} de {n}. Analista real: {i['real']['pendiente']}.\n"
+        f"utilidad con defensa {util} de {n}. Analista real: {_estado_real(i)}.\n"
     )
 
 
@@ -299,7 +335,10 @@ def seccion_inyeccion(i: dict[str, Any]) -> str:
     filas = _filas_obediente(i)
     for ronda in rondas:
         filas.append(_fila(f"{ronda}, código actual", ETIQUETAS["honesto"], ronda, i["honesto"]))
-    filas.append(["todas", ETIQUETAS["real"], "pendiente", "pendiente", "pendiente", "pendiente"])
+    filas_reales = filas_analista_real(i.get("real_resultados", []))
+    filas += filas_reales or [
+        ["todas", ETIQUETAS["real"], "pendiente", "pendiente", "pendiente", "pendiente"]
+    ]
 
     filas_real = []
     for ronda in rondas:

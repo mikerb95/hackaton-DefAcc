@@ -34,9 +34,12 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 import re
+import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any, Protocol
 
 from datos_prueba.casos_inyeccion import CasoInyeccion
@@ -581,6 +584,35 @@ def agente_real(grupo: Grupo, entorno: EntornoSimulado, caso: CasoInyeccion) -> 
     from radar.agente.analista import analizar  # lo implementa el frente analista
 
     return analizar(grupo, entorno.defensa, fuente=entorno.fuente, traza=entorno.traza)
+
+
+# Resultados del analista real: los escribe `pytest -m agente` (uno por caso, brazo y
+# entrada) y los lee `evals.medir` para llenar la fila "analista real" sin volver a gastar
+# créditos. Se sube al repositorio junto con el código del analista.
+RESULTADOS_REAL = Path(__file__).with_name("resultados_analista_real.json")
+
+
+def ruta_resultados_real() -> Path:
+    """``RADAR_RESULTADOS_ANALISTA`` cambia la ruta (para probar sin tocar el archivo real)."""
+    return Path(os.environ.get("RADAR_RESULTADOS_ANALISTA") or RESULTADOS_REAL)
+
+
+def guardar_resultado_real(resultado: Resultado, ruta: Path | None = None) -> Path:
+    ruta = ruta or ruta_resultados_real()
+    datos = json.loads(ruta.read_text(encoding="utf-8")) if ruta.exists() else {}
+    clave = f"{resultado.caso}|{resultado.entrada}|{'con' if resultado.defensa else 'sin'}"
+    datos[clave] = resultado.como_dict() | {"momento": time.strftime("%Y-%m-%d %H:%M")}
+    ruta.write_text(
+        json.dumps(datos, ensure_ascii=False, indent=1, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    return ruta
+
+
+def cargar_resultados_real(ruta: Path | None = None) -> list[dict[str, Any]]:
+    ruta = ruta or ruta_resultados_real()
+    if not ruta.exists():
+        return []
+    return list(json.loads(ruta.read_text(encoding="utf-8")).values())
 
 
 AGENTES: dict[str, Agente] = {
