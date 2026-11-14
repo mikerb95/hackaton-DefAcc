@@ -54,7 +54,7 @@ def _linea_base(filas: list[FilaInventario], dic: nz.Diccionario) -> dict:
         if not claves:
             out[llave] = ("cobertura:sin_cpe", (), None)
             continue
-        par = sorted(set(claves), key=lambda k: (dic.pares[k].get("dep", 0), -dic.pares[k]["n"]))[0]
+        par = min(set(claves), key=lambda k: (dic.pares[k].get("dep", 0), -dic.pares[k]["n"]))
         out[llave] = ("activo", (par,), version)
     return out
 
@@ -74,13 +74,22 @@ def _desde_normalizacion(r: nz.Normalizacion) -> dict:
 def evaluar(resultado: dict, respuesta: dict) -> dict:
     """Cifras de una variante contra la respuesta conocida."""
     m = {
-        "filas_medidas": 0, "cpe_correcto": 0, "version_correcta": 0, "activo_correcto": 0,
-        "sin_cpe_indebido": 0, "cpe_equivocado": 0,
-        "cve_fila_esperadas": 0, "cve_fila_alcanzables": 0,
-        "cobertura_esperada": 0, "cobertura_motivo_correcto": 0, "cobertura_con_cpe": 0,
+        "filas_medidas": 0,
+        "cpe_correcto": 0,
+        "version_correcta": 0,
+        "activo_correcto": 0,
+        "sin_cpe_indebido": 0,
+        "cpe_equivocado": 0,
+        "cve_fila_esperadas": 0,
+        "cve_fila_alcanzables": 0,
+        "cobertura_esperada": 0,
+        "cobertura_motivo_correcto": 0,
+        "cobertura_con_cpe": 0,
         "par_prohibido_asignado": 0,
-        "relleno": 0, "relleno_con_cpe": 0,
-        "inyeccion": 0, "inyeccion_con_cpe": 0,
+        "relleno": 0,
+        "relleno_con_cpe": 0,
+        "inyeccion": 0,
+        "inyeccion_con_cpe": 0,
     }
     errores: dict[str, dict] = {}
     for f in respuesta["filas"]:
@@ -103,9 +112,14 @@ def evaluar(resultado: dict, respuesta: dict) -> dict:
             else:
                 m["sin_cpe_indebido"] += 1
             if not (ok_cpe and ok_ver):
-                e = errores.setdefault(f"{f['programa']} | {f['version']}", {
-                    "esperado": [list(esperados), f["version_comparable"]],
-                    "obtenido": [tipo_r, list(pares_r), version_r], "filas": 0})
+                e = errores.setdefault(
+                    f"{f['programa']} | {f['version']}",
+                    {
+                        "esperado": [list(esperados), f["version_comparable"]],
+                        "obtenido": [tipo_r, list(pares_r), version_r],
+                        "filas": 0,
+                    },
+                )
                 e["filas"] += 1
         elif f["tipo"] == "cobertura":
             m["cobertura_esperada"] += 1
@@ -114,9 +128,14 @@ def evaluar(resultado: dict, respuesta: dict) -> dict:
             if f.get("par_prohibido") and f["par_prohibido"] in pares_r:
                 m["par_prohibido_asignado"] += 1
             if tipo_r != f"cobertura:{f['motivo']}":
-                e = errores.setdefault(f"{f['programa']} | {f['version']}", {
-                    "esperado": [f"cobertura:{f['motivo']}"],
-                    "obtenido": [tipo_r, list(pares_r), version_r], "filas": 0})
+                e = errores.setdefault(
+                    f"{f['programa']} | {f['version']}",
+                    {
+                        "esperado": [f"cobertura:{f['motivo']}"],
+                        "obtenido": [tipo_r, list(pares_r), version_r],
+                        "filas": 0,
+                    },
+                )
                 e["filas"] += 1
         elif f["tipo"] == "relleno":
             m["relleno"] += 1
@@ -166,12 +185,16 @@ def main(argv: list[str] | None = None) -> None:
     r = medir(base)
     salida = CARPETA_SALIDA / f"medicion_normalizador{'_inyeccion' if a.inyeccion else ''}.json"
     Path(salida).write_text(json.dumps(r, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
-    print(f"{'variante':14} {'exactitud':>9} {'CVE alcanz.':>11} {'cobertura':>9} "
-          f"{'relleno c/CPE':>13} {'prohibido':>9}")
+    print(
+        f"{'variante':14} {'exactitud':>9} {'CVE alcanz.':>11} {'cobertura':>9} "
+        f"{'relleno c/CPE':>13} {'prohibido':>9}"
+    )
     for nombre, v in r["variantes"].items():
-        print(f"{nombre:14} {v['exactitud_pct']!s:>8}% {v['cve_alcanzables_pct']!s:>10}% "
-              f"{v['cobertura_correcta_pct']!s:>8}% {v['relleno_con_cpe']:>13} "
-              f"{v['par_prohibido_asignado']:>9}")
+        print(
+            f"{nombre:14} {v['exactitud_pct']!s:>8}% {v['cve_alcanzables_pct']!s:>10}% "
+            f"{v['cobertura_correcta_pct']!s:>8}% {v['relleno_con_cpe']:>13} "
+            f"{v['par_prohibido_asignado']:>9}"
+        )
     print(f"empates resueltos por código: {r['empates_resueltos_por_codigo']}")
     print(f"-> {salida}")
 

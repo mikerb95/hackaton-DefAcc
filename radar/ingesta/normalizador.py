@@ -38,8 +38,9 @@ log = logging.getLogger(__name__)
 RUTA_DICCIONARIO = Path(__file__).resolve().parent.parent / "datos" / "cpe_pares.json.gz"
 
 # Umbrales de rapidfuzz (token_sort_ratio, de 0 a 100). Medidos con el inventario de prueba:
-# los productos reales dan 100 y el relleno inventado no pasa de 80.
-PUNTAJE_MINIMO = 88.0
+# los productos reales dan 100 y el relleno inventado no pasa de 86. Con 88 pasaba
+# "slac" por "Slack" (88,9).
+PUNTAJE_MINIMO = 92.0
 MARGEN_CLARO = 4.0  # si el segundo queda a menos de esto, es empate
 POPULARIDAD_CLARA = 2.0  # el primero tiene al menos el doble de nombres CPE
 LARGO_MAXIMO_NOMBRE = 120  # un nombre más largo no se compara (relleno de inyección)
@@ -69,20 +70,44 @@ def _a(patron: str, producto: str, pares: tuple[str, ...], motivo: str) -> Alias
 # Solo trampas documentadas (PLAN 679-693 y el diccionario de NVD), no los productos de la
 # semilla en general: lo demás lo resuelve rapidfuzz y se mide aparte.
 ALIAS: tuple[Alias, ...] = (
-    _a(r"\bnosqlbooster\b", "NoSQLBooster", (),
-       "Cliente de MongoDB sin CPE propio; nunca mongodb:mongodb (el cliente no es el servidor)"),
-    _a(r"\b(eclipse )?temurin\b|\badoptium\b", "Eclipse Temurin JDK", ("oracle:openjdk",),
-       "eclipse:temurin existe en el diccionario, pero sus CVE se publican en oracle:openjdk"),
-    _a(r"^docker desktop$", "Docker Desktop", ("docker:desktop", "docker:docker_desktop"),
-       "Dos pares con el mismo título; quedarse con uno pierde CVE en silencio"),
-    _a(r"^(oracle )?java( se)?( development kit| runtime environment)?\b|^java\(tm\)|"
-       r"^java \d+ update\b", "Java", ("oracle:jdk", "oracle:jre", "oracle:openjdk"),
-       "Java de Oracle se publica en tres pares"),
+    _a(
+        r"\bnosqlbooster\b",
+        "NoSQLBooster",
+        (),
+        "Cliente de MongoDB sin CPE propio; nunca mongodb:mongodb (el cliente no es el servidor)",
+    ),
+    _a(
+        r"\b(eclipse )?temurin\b|\badoptium\b",
+        "Eclipse Temurin JDK",
+        ("oracle:openjdk",),
+        "eclipse:temurin existe en el diccionario, pero sus CVE se publican en oracle:openjdk",
+    ),
+    _a(
+        r"^docker desktop$",
+        "Docker Desktop",
+        ("docker:desktop", "docker:docker_desktop"),
+        "Dos pares con el mismo título; quedarse con uno pierde CVE en silencio",
+    ),
+    _a(
+        r"^(oracle )?java( se)?( development kit| runtime environment)?\b|^java\(tm\)|"
+        r"^java \d+ update\b",
+        "Java",
+        ("oracle:jdk", "oracle:jre", "oracle:openjdk"),
+        "Java de Oracle se publica en tres pares",
+    ),
     _a(r"^nginx$", "nginx", ("f5:nginx",), "nginx:nginx está deprecado; las CVE van en f5:nginx"),
-    _a(r"^notepad\+\+$", "Notepad++", ("notepad-plus-plus:notepad\\+\\+",),
-       "Tres pares para Notepad++; las CVE están en notepad-plus-plus"),
-    _a(r"^adobe acrobat reader( dc)?$", "Adobe Acrobat Reader", ("adobe:acrobat_reader_dc",),
-       "acrobat_reader es la línea antigua; el lector actual es acrobat_reader_dc"),
+    _a(
+        r"^notepad\+\+$",
+        "Notepad++",
+        ("notepad-plus-plus:notepad\\+\\+",),
+        "Tres pares para Notepad++; las CVE están en notepad-plus-plus",
+    ),
+    _a(
+        r"^adobe acrobat reader( dc)?$",
+        "Adobe Acrobat Reader",
+        ("adobe:acrobat_reader_dc",),
+        "acrobat_reader es la línea antigua; el lector actual es acrobat_reader_dc",
+    ),
 )
 
 
@@ -121,7 +146,9 @@ def _limpiar_version(valor: str) -> str:
     return v
 
 
-def version_comparable(programa: str, version: str | None) -> tuple[str | None, MotivoCobertura | None]:
+def version_comparable(
+    programa: str, version: str | None
+) -> tuple[str | None, MotivoCobertura | None]:
     """Versión con la que se compara, o el motivo de cobertura si no la hay."""
     en_nombre = _VERSION.search(programa)
     v_nombre = _limpiar_version(en_nombre.group()) if en_nombre else None
@@ -191,17 +218,27 @@ class Diccionario:
         coincide = {k: _proveedor_coincide(k.split(":", 1)[0], prov) for k in mejor}
         orden = sorted(
             mejor,
-            key=lambda k: (
-                -round(mejor[k]),
-                self.pares[k].get("dep", 0),
-                not coincide[k],
-                -self.pares[k]["n"],
-                k,
-            ),
+            key=lambda k: (-round(mejor[k]), self.pares[k].get("dep", 0), -self.pares[k]["n"], k),
         )
+        # El proveedor solo desempata cuando puntaje, deprecación y popularidad no deciden.
+        if len(orden) >= 2:
+            a, b = orden[0], orden[1]
+            parejos = (
+                mejor[a] - mejor[b] < MARGEN_CLARO
+                and self.pares[a].get("dep", 0) == self.pares[b].get("dep", 0)
+                and self.pares[a]["n"] < POPULARIDAD_CLARA * self.pares[b]["n"]
+            )
+            if parejos and coincide[b] and not coincide[a]:
+                orden[0], orden[1] = b, a
         return [
-            Candidato(k, round(mejor[k], 1), self.pares[k]["t"], self.pares[k]["n"],
-                      bool(self.pares[k].get("dep")), coincide[k])
+            Candidato(
+                k,
+                round(mejor[k], 1),
+                self.pares[k]["t"],
+                self.pares[k]["n"],
+                bool(self.pares[k].get("dep")),
+                coincide[k],
+            )
             for k in orden[:limite]
         ]
 
@@ -277,14 +314,27 @@ def decidir(
         for al in ALIAS:
             if al.patron.search(bajo):
                 metodo: MetodoCpe = "exacto" if al.pares else "ninguno"
-                return Decision(nombre_limpio, al.producto, al.pares, metodo,
-                                1.0 if al.pares else None, nota=al.motivo)
+                return Decision(
+                    nombre_limpio,
+                    al.producto,
+                    al.pares,
+                    metodo,
+                    1.0 if al.pares else None,
+                    nota=al.motivo,
+                )
     if not nombre_limpio or len(nombre_limpio) > LARGO_MAXIMO_NOMBRE:
         return Decision(nombre_limpio, None, (), "ninguno", None, nota="nombre vacío o largo")
     cands = dic.candidatos(nombre_limpio, proveedor)
     if not cands or cands[0].puntaje < PUNTAJE_MINIMO:
-        return Decision(nombre_limpio, None, (), "ninguno", None, cands,
-                        nota="ningún candidato supera el mínimo")
+        return Decision(
+            nombre_limpio,
+            None,
+            (),
+            "ninguno",
+            None,
+            cands,
+            nota="ningún candidato supera el mínimo",
+        )
     viables = [c for c in cands if c.puntaje >= PUNTAJE_MINIMO]
     empate = _empate(viables)
     elegido = viables[0]
@@ -294,8 +344,9 @@ def decidir(
         desempatar = desempatar or desempatar_con_modelo
         indice = desempatar(nombre_limpio, cands)
         if indice is None:
-            return Decision(nombre_limpio, None, (), "ninguno", None, cands, True,
-                            "el modelo no eligió ninguno")
+            return Decision(
+                nombre_limpio, None, (), "ninguno", None, cands, True, "el modelo no eligió ninguno"
+            )
         elegido, metodo, confianza = cands[indice], "modelo", 0.8
     return Decision(nombre_limpio, nombre_limpio, (elegido.par,), metodo, confianza, cands, empate)
 
@@ -401,27 +452,39 @@ def normalizar(
         llave_fila = (f.equipo, f.programa, f.version or "")
         version, motivo = version_comparable(f.programa, f.version)
         if motivo:
-            cobertura.append(Cobertura(equipo=f.equipo, programa=f.programa,
-                                       version=f.version, motivo=motivo))
+            cobertura.append(
+                Cobertura(equipo=f.equipo, programa=f.programa, version=f.version, motivo=motivo)
+            )
             por_fila[llave_fila] = f"cobertura:{motivo}"
             continue
         limpio = limpiar_nombre(f.programa)
         llave_decision = (limpio, f.proveedor or "")
         if llave_decision not in decisiones:
             decisiones[llave_decision] = decidir(
-                limpio, dic, f.proveedor, usar_alias=usar_alias, usar_modelo=usar_modelo,
+                limpio,
+                dic,
+                f.proveedor,
+                usar_alias=usar_alias,
+                usar_modelo=usar_modelo,
                 desempatar=desempatar,
             )
         d = decisiones[llave_decision]
         if not d.pares:
-            cobertura.append(Cobertura(equipo=f.equipo, programa=f.programa,
-                                       version=f.version, motivo="sin_cpe"))
+            cobertura.append(
+                Cobertura(equipo=f.equipo, programa=f.programa, version=f.version, motivo="sin_cpe")
+            )
             por_fila[llave_fila] = "cobertura:sin_cpe"
             continue
-        g = grupos.setdefault((d.pares, version), {
-            "nombres": Counter(), "productos": Counter(), "equipos": set(),
-            "confianza": d.confianza, "filas": [],
-        })
+        g = grupos.setdefault(
+            (d.pares, version),
+            {
+                "nombres": Counter(),
+                "productos": Counter(),
+                "equipos": set(),
+                "confianza": d.confianza,
+                "filas": [],
+            },
+        )
         g["nombres"][f.programa] += 1
         g["productos"][d.producto or limpio] += 1
         g["equipos"].add(f.equipo)
@@ -436,16 +499,26 @@ def normalizar(
 
     def canonico(pares: tuple[str, ...]) -> str:
         cuenta = canonico_por_pares[pares]
-        return sorted(cuenta, key=lambda p: (-cuenta[p], len(p), p))[0]
+        return min(cuenta, key=lambda p: (-cuenta[p], len(p), p))
 
     activos: list[Activo] = []
-    for (pares, version), g in sorted(grupos.items(), key=lambda kv: (canonico(kv[0][0]), kv[0][1])):
+    for (pares, version), g in sorted(
+        grupos.items(), key=lambda kv: (canonico(kv[0][0]), kv[0][1])
+    ):
         producto = canonico(pares)
         clave = f"{producto}@{version}"
-        nombre = sorted(g["nombres"], key=lambda n: (-g["nombres"][n], n))[0]
-        activos.append(Activo(clave=clave, producto=producto, nombre=nombre, version=version,
-                              cpes=list(pares), equipos=sorted(g["equipos"]),
-                              confianza_cpe=g["confianza"]))
+        nombre = min(g["nombres"], key=lambda n: (-g["nombres"][n], n))
+        activos.append(
+            Activo(
+                clave=clave,
+                producto=producto,
+                nombre=nombre,
+                version=version,
+                cpes=list(pares),
+                equipos=sorted(g["equipos"]),
+                confianza_cpe=g["confianza"],
+            )
+        )
         for llave in g["filas"]:
             por_fila[llave] = clave
     return Normalizacion(activos, cobertura, decisiones, por_fila)

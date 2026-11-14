@@ -149,3 +149,27 @@ def test_fuente_caida_queda_registrada(tmp_path):
     assert ejecucion.fuentes == {"kev": False, "nvd": False}
     assert ejecucion.error
     c.close()
+
+
+def test_insercion_por_lotes_de_varias_filas(conexion):
+    """Turso hace una petición HTTP por `execute`: hay que meter muchas filas en cada una."""
+
+    class Contador:
+        def __init__(self, c):
+            self.c, self.llamadas = c, 0
+
+        def execute(self, sql, parametros=()):
+            self.llamadas += 1
+            return self.c.execute(sql, parametros)
+
+        def executemany(self, *_):
+            raise AssertionError("executemany hace una petición por fila en Turso")
+
+        def commit(self):
+            self.c.commit()
+
+    contador = Contador(conexion)
+    filas = [(f"CVE-2099-{i:05d}", 0.5, 0.5, "2026-11-14") for i in range(1000)]
+    bd._en_lotes(contador, "INSERT INTO epss (cve, epss, percentil, fecha) VALUES (?,?,?,?)", filas)
+    assert contador.llamadas == 5  # 225 filas por sentencia (900 parámetros / 4)
+    assert bd.contar(conexion, "epss") == 1000

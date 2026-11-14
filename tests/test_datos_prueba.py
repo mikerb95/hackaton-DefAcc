@@ -1,20 +1,19 @@
 """Pruebas del generador del inventario de prueba y de su respuesta conocida.
 
-Las que necesitan resources/semilla_respuesta.json (privado, fuera del repositorio) se
-saltan si no está; las que solo leen datos_prueba/generados/ corren siempre.
+Necesitan resources/semilla_respuesta.json (privado, fuera del repositorio): si no está,
+se saltan. datos_prueba/generados/ tampoco se sube; los archivos se generan en una carpeta
+temporal.
 """
 
 from __future__ import annotations
 
 import json
 from collections import Counter
-from pathlib import Path
 
 import pytest
 
 from datos_prueba import generar, respuesta, semilla
 
-GENERADOS = Path(generar.CARPETA_SALIDA)
 hay_snapshot = pytest.mark.skipif(
     not respuesta.RUTA_SNAPSHOT.exists(), reason="falta resources/semilla_respuesta.json"
 )
@@ -109,22 +108,28 @@ def test_inyeccion_va_en_filas_aparte(generado):
     )
 
 
-@hay_snapshot
-@pytest.mark.parametrize("base", ["inventario", "inventario_inyeccion"])
-def test_archivos_guardados_estan_al_dia(base):
-    _filas, resp = generar.generar(con_inyeccion=base.endswith("inyeccion"))
-    guardada = json.loads((GENERADOS / f"{base}_respuesta.json").read_text(encoding="utf-8"))
-    assert guardada == json.loads(json.dumps(resp, ensure_ascii=False)), (
-        "Regenera con: uv run python -m datos_prueba.generar [--inyeccion]"
-    )
+@pytest.fixture(scope="module")
+def archivos(tmp_path_factory):
+    """datos_prueba/generados/ no se sube: se generan los archivos en una carpeta temporal."""
+    if not respuesta.RUTA_SNAPSHOT.exists():
+        pytest.skip("falta resources/semilla_respuesta.json")
+    carpeta = tmp_path_factory.mktemp("generados")
+    generar.main(["--salida", str(carpeta)])
+    return carpeta
+
+
+def test_dos_corridas_dan_los_mismos_bytes(archivos, tmp_path):
+    generar.main(["--salida", str(tmp_path)])
+    for nombre in ("inventario.csv", "inventario.xlsx", "inventario_respuesta.json"):
+        assert (archivos / nombre).read_bytes() == (tmp_path / nombre).read_bytes(), nombre
 
 
 @pytest.mark.parametrize("extension", ["csv", "xlsx"])
-def test_la_ingesta_lee_el_inventario_completo(extension):
+def test_la_ingesta_lee_el_inventario_completo(archivos, extension):
     from radar.ingesta.archivos import leer_inventario
 
-    resp = json.loads((GENERADOS / "inventario_respuesta.json").read_text(encoding="utf-8"))
-    lectura = leer_inventario(GENERADOS / f"inventario.{extension}")
+    resp = json.loads((archivos / "inventario_respuesta.json").read_text(encoding="utf-8"))
+    lectura = leer_inventario(archivos / f"inventario.{extension}")
     assert len(lectura.filas) == resp["totales"]["filas"]
     assert lectura.duplicadas == 0 and not lectura.descartadas
     leidas = {(f["equipo"], f["programa"], f["version"]) for f in lectura.filas}
