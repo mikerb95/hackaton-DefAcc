@@ -28,6 +28,7 @@ from pydantic import BaseModel, Field
 
 from radar.api.acceso import exigir_clave, exigir_rol, quien
 from radar.api.datos import obtener_datos
+from radar.api.termometro import termometro
 from radar.equipos.contratos import TAMANO_MAXIMO_REPORTE
 
 CABECERA_CREDENCIAL = "X-Credencial-Equipo"
@@ -216,6 +217,8 @@ def equipos() -> dict:
         lista = vista.lista(conexion)
     finally:
         conexion.close()
+    for fila in lista:
+        fila["termometro"] = termometro(fila)
     return {
         "disponible": True,
         "total": len(lista),
@@ -238,6 +241,7 @@ def equipo(equipo_id: str) -> dict:
         conexion.close()
     if datos is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Equipo no encontrado.")
+    datos["equipo"]["termometro"] = termometro(datos["equipo"])
     return datos
 
 
