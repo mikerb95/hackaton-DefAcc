@@ -143,7 +143,10 @@ def test_inventario_cruza_contra_la_base(monkeypatch, tmp_path, base_temporal):
     assert isinstance(r["trabajo"], int)
     productos = c.get("/api/productos").json()["productos"]
     assert [g["producto"] for g in productos] == ["WinRAR"]
-    assert c.get("/api/resumen").json()["persistente"] is True
+    resumen = c.get("/api/resumen").json()
+    assert resumen["persistente"] is True
+    # El trabajo de análisis queda en cola y el resumen lo cuenta (sin analista que lo tome).
+    assert resumen["trabajos"] == {"analizar": 1}
     assert c.post("/api/revisar").json()["encolado"] is True
     # Aprobación persistente: sin análisis guardado se guarda y aprueba el respaldo.
     assert c.post("/api/comunicado/WinRAR/aprobar", json={"por": "ti"}).status_code == 200

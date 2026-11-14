@@ -66,6 +66,7 @@ def test_razones_legibles():
     _, razones = priorizar(cve(9.2), kev(ransomware=True), epss(0.83), U)
     assert razones == [
         RAZON_KEV,
+        "Agregada a KEV el 14 de noviembre de 2026",  # el SenalKev de prueba no trae plazo
         RAZON_RANSOMWARE,
         "Probabilidad de explotación del 83% en 30 días (EPSS)",
         "Gravedad crítica, CVSS 9.2",
@@ -168,3 +169,14 @@ def test_grupos_de_ejemplo_contra_snapshot(cves_por_par, snapshot_kev):
             "prioridad",
         ):
             assert getattr(g, campo) == getattr(esperado, campo), (esperado.producto, campo)
+
+
+def test_razon_de_alta_en_kev_con_plazo():
+    """CVE-2026-125350 (Chrome): agregada el 10 de noviembre de 2026, plazo el 24."""
+    chrome = ejemplos.SENALES.kev["CVE-2026-125350"]
+    _, razones = priorizar(cve(8.8, "CVE-2026-125350"), chrome, None, U)
+    assert razones[1] == (
+        "Agregada a KEV el 10 de noviembre de 2026 (plazo CISA 24 de noviembre de 2026)"
+    )
+    sin_fecha = SenalKev(cve="CVE-2099-0001")
+    assert priorizar(cve(5.0), sin_fecha, None, U)[1][:2] == [RAZON_KEV, RAZON_SIN_EPSS]

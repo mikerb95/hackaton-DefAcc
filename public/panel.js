@@ -70,7 +70,12 @@ function pintarResumen(r) {
   const fuentes = Object.entries(rev.fuentes || {}).map(([nombre, ok]) =>
     `<span class="pildora ${ok ? "p-ok" : "p-caida"}"><span class="punto"></span>${esc(nombre.toUpperCase())}</span>`
   ).join("");
-  $("#estado").innerHTML = `<span>Última revisión <span class="hora">${esc(fmtHora(rev.fin || rev.inicio))}</span></span>${fuentes}`;
+  // Trabajos en cola: píldora neutra. Un análisis pendiente es normal mientras el analista no corre.
+  const nombres = { analizar: "Análisis en cola", descargar: "Revisión en cola" };
+  const cola = Object.entries(r.trabajos || {}).map(([tipo, n]) =>
+    `<span class="pildora p-respaldo" title="Lo toma el worker cuando corre; mientras tanto el detalle muestra el texto armado por código"><span class="punto"></span>${esc(nombres[tipo] || tipo)}: <span class="mono">${esc(n)}</span></span>`
+  ).join("");
+  $("#estado").innerHTML = `<span>Última revisión <span class="hora">${esc(fmtHora(rev.fin || rev.inicio))}</span></span>${fuentes}${cola}`;
 
   const aviso = $("#aviso-fuentes");
   if (rev.caidas && rev.caidas.length) {

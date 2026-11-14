@@ -113,8 +113,9 @@ def correr(
     ahora = ahora or datetime.now(UTC)
     lista = list(activos)
     pares = {p for a in lista for p in a.cpes}
-    cves = bd.leer_cves(conexion, pares) if pares else []
-    senales = bd.leer_senales(conexion, [c.id for c in cves])
+    # Dos consultas para CVE y rangos, y dos para señales: en Turso cada una es una petición.
+    cves = bd.leer_cves(conexion, pares, completas=False) if pares else []
+    senales = bd.leer_senales(conexion, pares=pares) if pares else Senales()
     resultado = cruzar(lista, cves, senales, umbrales, ahora, cobertura_previa)
 
     anteriores = bd.leer_hallazgos(conexion)

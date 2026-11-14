@@ -50,6 +50,37 @@ def gravedad(cvss: float) -> str:
     return "nula"
 
 
+MESES = (
+    "enero",
+    "febrero",
+    "marzo",
+    "abril",
+    "mayo",
+    "junio",
+    "julio",
+    "agosto",
+    "septiembre",
+    "octubre",
+    "noviembre",
+    "diciembre",
+)
+
+
+def fecha_larga(d: date) -> str:
+    """10 de noviembre de 2026."""
+    return f"{d.day} de {MESES[d.month - 1]} de {d.year}"
+
+
+def razon_alta_kev(kev: SenalKev) -> str | None:
+    """'Agregada a KEV el <fecha> (plazo CISA <fecha>)', o None si KEV no trae la fecha."""
+    if kev.agregada is None:
+        return None
+    texto = f"Agregada a KEV el {fecha_larga(kev.agregada)}"
+    if kev.plazo is not None:
+        texto += f" (plazo CISA {fecha_larga(kev.plazo)})"
+    return texto
+
+
 def porcentaje(valor: float) -> str:
     pct = valor * 100
     return f"{pct:.0f}%" if pct >= 1 else f"{pct:.1f}%"
@@ -77,6 +108,9 @@ def priorizar(
     if kev is not None:
         explotada = True
         razones.append(RAZON_KEV)
+        alta = razon_alta_kev(kev)
+        if alta:
+            razones.append(alta)
         if kev.ransomware:
             razones.append(RAZON_RANSOMWARE)
 
