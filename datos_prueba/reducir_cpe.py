@@ -7,7 +7,7 @@ Fuente: https://nvd.nist.gov/feeds/json/cpe/2.0/nvdcpe-2.0.tar.gz (85 MB comprim
         https://nvd.nist.gov/feeds/json/cpe/2.0/nvdcpe-2.0.tar.gz
     uv run python -m datos_prueba.reducir_cpe /ruta/nvdcpe-2.0.tar.gz
 
-Salida (`datos_prueba/cpe_pares.json.gz`, unos 50 000 pares, 1 MB):
+Salida (`radar/datos/cpe_pares.json.gz`, unos 50 000 pares, 1 MB):
     {"vendor:producto": {"t": título en inglés sin versión, "n": nombres CPE, "dep": 1}}
 `dep` aparece solo si todos los nombres del par están deprecados en NVD. El par
 conserva el escape de NVD (`notepad-plus-plus:notepad\\+\\+`). Solo librería estándar.
@@ -23,7 +23,7 @@ import re
 import tarfile
 from pathlib import Path
 
-SALIDA = Path(__file__).resolve().parent / "cpe_pares.json.gz"
+SALIDA = Path(__file__).resolve().parent.parent / "radar" / "datos" / "cpe_pares.json.gz"
 
 
 def _titulo_sin_version(titulo: str, version: str) -> str:

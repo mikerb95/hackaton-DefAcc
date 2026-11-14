@@ -14,7 +14,8 @@ Filtro pedido (puede venir vacío): $ARGUMENTS
    vacío, llama a `consultar_hallazgos` con `prioridad: "inmediato"` y luego a
    `equipos_expuestos` con `prioridad_minima: "inmediato"`.
 2. Responde en este orden, breve:
-   - Si `datos` no es `turso`, una primera línea que diga que son datos de ejemplo.
+   - Si `datos` contiene `ejemplo`, una primera línea que diga que son datos de ejemplo.
+     (`local` es la base sqlite local con datos reales del cruce; `turso`, la compartida.)
    - **Exige acción hoy**: una línea por elemento de `acciones` (versiones, cuántos
      equipos, CVE en KEV y ransomware si aplica, y la acción según `tipo_objetivo` y
      `como_leer_objetivo`). No hace falta llamar a `detalle_producto` para esto.

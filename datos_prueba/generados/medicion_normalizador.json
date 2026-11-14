@@ -1,0 +1,699 @@
+{
+ "inventario": "inventario",
+ "snapshot": "2026-11-14",
+ "diccionario_pares": 50515,
+ "modelo": false,
+ "umbral": 88.0,
+ "empates_resueltos_por_codigo": [],
+ "variantes": {
+  "completo": {
+   "filas_medidas": 316,
+   "cpe_correcto": 299,
+   "version_correcta": 316,
+   "activo_correcto": 299,
+   "sin_cpe_indebido": 0,
+   "cpe_equivocado": 17,
+   "cve_fila_esperadas": 6500,
+   "cve_fila_alcanzables": 6496,
+   "cobertura_esperada": 12,
+   "cobertura_motivo_correcto": 12,
+   "cobertura_con_cpe": 0,
+   "par_prohibido_asignado": 0,
+   "relleno": 1005,
+   "relleno_con_cpe": 0,
+   "inyeccion": 0,
+   "inyeccion_con_cpe": 0,
+   "exactitud_pct": 94.6,
+   "cve_alcanzables_pct": 99.9,
+   "cobertura_correcta_pct": 100.0,
+   "errores": {
+    "Git | 2.51.0": {
+     "esperado": [
+      [
+       "git-scm:git"
+      ],
+      "2.51.0"
+     ],
+     "obtenido": [
+      "activo",
+      [
+       "git:git"
+      ],
+      "2.51.0"
+     ],
+     "filas": 10
+    },
+    "Git | 2.45.4": {
+     "esperado": [
+      [
+       "git-scm:git"
+      ],
+      "2.45.4"
+     ],
+     "obtenido": [
+      "activo",
+      [
+       "git:git"
+      ],
+      "2.45.4"
+     ],
+     "filas": 3
+    },
+    "Git | 2.45.1.windows.1": {
+     "esperado": [
+      [
+       "git-scm:git"
+      ],
+      "2.45.1"
+     ],
+     "obtenido": [
+      "activo",
+      [
+       "git:git"
+      ],
+      "2.45.1"
+     ],
+     "filas": 4
+    }
+   }
+  },
+  "solo_difuso": {
+   "filas_medidas": 316,
+   "cpe_correcto": 262,
+   "version_correcta": 304,
+   "activo_correcto": 262,
+   "sin_cpe_indebido": 12,
+   "cpe_equivocado": 42,
+   "cve_fila_esperadas": 6500,
+   "cve_fila_alcanzables": 5575,
+   "cobertura_esperada": 12,
+   "cobertura_motivo_correcto": 12,
+   "cobertura_con_cpe": 0,
+   "par_prohibido_asignado": 0,
+   "relleno": 1005,
+   "relleno_con_cpe": 0,
+   "inyeccion": 0,
+   "inyeccion_con_cpe": 0,
+   "exactitud_pct": 82.9,
+   "cve_alcanzables_pct": 85.8,
+   "cobertura_correcta_pct": 100.0,
+   "errores": {
+    "Eclipse Temurin JDK with Hotspot 21.0.5+11 (x64) | 21.0.5+11": {
+     "esperado": [
+      [
+       "oracle:openjdk"
+      ],
+      "21.0.5"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 5
+    },
+    "Git | 2.51.0": {
+     "esperado": [
+      [
+       "git-scm:git"
+      ],
+      "2.51.0"
+     ],
+     "obtenido": [
+      "activo",
+      [
+       "git:git"
+      ],
+      "2.51.0"
+     ],
+     "filas": 10
+    },
+    "Git | 2.45.4": {
+     "esperado": [
+      [
+       "git-scm:git"
+      ],
+      "2.45.4"
+     ],
+     "obtenido": [
+      "activo",
+      [
+       "git:git"
+      ],
+      "2.45.4"
+     ],
+     "filas": 3
+    },
+    "Docker Desktop | 4.72.0": {
+     "esperado": [
+      [
+       "docker:desktop",
+       "docker:docker_desktop"
+      ],
+      "4.72.0"
+     ],
+     "obtenido": [
+      "activo",
+      [
+       "docker:desktop"
+      ],
+      "4.72.0"
+     ],
+     "filas": 3
+    },
+    "Eclipse Temurin JDK with Hotspot 17.0.10+7 (x64) | 17.0.10+7": {
+     "esperado": [
+      [
+       "oracle:openjdk"
+      ],
+      "17.0.10"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 3
+    },
+    "Docker Desktop | 4.62.0": {
+     "esperado": [
+      [
+       "docker:desktop",
+       "docker:docker_desktop"
+      ],
+      "4.62.0"
+     ],
+     "obtenido": [
+      "activo",
+      [
+       "docker:desktop"
+      ],
+      "4.62.0"
+     ],
+     "filas": 4
+    },
+    "Git | 2.45.1.windows.1": {
+     "esperado": [
+      [
+       "git-scm:git"
+      ],
+      "2.45.1"
+     ],
+     "obtenido": [
+      "activo",
+      [
+       "git:git"
+      ],
+      "2.45.1"
+     ],
+     "filas": 4
+    },
+    "Adobe Acrobat Reader (64-bit) | 25.001.20531": {
+     "esperado": [
+      [
+       "adobe:acrobat_reader_dc"
+      ],
+      "25.001.20531"
+     ],
+     "obtenido": [
+      "activo",
+      [
+       "adobe:acrobat_reader"
+      ],
+      "25.001.20531"
+     ],
+     "filas": 15
+    },
+    "Docker Desktop | 4.58.0": {
+     "esperado": [
+      [
+       "docker:desktop",
+       "docker:docker_desktop"
+      ],
+      "4.58.0"
+     ],
+     "obtenido": [
+      "activo",
+      [
+       "docker:desktop"
+      ],
+      "4.58.0"
+     ],
+     "filas": 3
+    },
+    "Eclipse Temurin JDK with Hotspot 17.0.9+9 (x64) | 17.0.9+9": {
+     "esperado": [
+      [
+       "oracle:openjdk"
+      ],
+      "17.0.9"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 4
+    }
+   }
+  },
+  "nombre_exacto": {
+   "filas_medidas": 316,
+   "cpe_correcto": 156,
+   "version_correcta": 166,
+   "activo_correcto": 156,
+   "sin_cpe_indebido": 150,
+   "cpe_equivocado": 10,
+   "cve_fila_esperadas": 6500,
+   "cve_fila_alcanzables": 4598,
+   "cobertura_esperada": 12,
+   "cobertura_motivo_correcto": 12,
+   "cobertura_con_cpe": 0,
+   "par_prohibido_asignado": 0,
+   "relleno": 1005,
+   "relleno_con_cpe": 0,
+   "inyeccion": 0,
+   "inyeccion_con_cpe": 0,
+   "exactitud_pct": 49.4,
+   "cve_alcanzables_pct": 70.7,
+   "cobertura_correcta_pct": 100.0,
+   "errores": {
+    "Eclipse Temurin JDK with Hotspot 21.0.5+11 (x64) | 21.0.5+11": {
+     "esperado": [
+      [
+       "oracle:openjdk"
+      ],
+      "21.0.5"
+     ],
+     "obtenido": [
+      "cobertura:no_comparable",
+      [],
+      null
+     ],
+     "filas": 5
+    },
+    "Notepad++ (64-bit x64) | 8.9.6.4": {
+     "esperado": [
+      [
+       "notepad-plus-plus:notepad\\+\\+"
+      ],
+      "8.9.6.4"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 8
+    },
+    "Python 3.12.10 (64-bit) | 3.12.10150.0": {
+     "esperado": [
+      [
+       "python:python"
+      ],
+      "3.12.10"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 6
+    },
+    "7-Zip 24.08 (x64) | 24.08": {
+     "esperado": [
+      [
+       "7-zip:7-zip"
+      ],
+      "24.08"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 10
+    },
+    "Adobe Acrobat Reader DC - Español | 26.002.21901": {
+     "esperado": [
+      [
+       "adobe:acrobat_reader_dc"
+      ],
+      "26.002.21901"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 20
+    },
+    "Mozilla Firefox (x64 es-ES) | 157.0": {
+     "esperado": [
+      [
+       "mozilla:firefox"
+      ],
+      "157.0"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 8
+    },
+    "Python 3.11.15 (64-bit) | 3.11.15": {
+     "esperado": [
+      [
+       "python:python"
+      ],
+      "3.11.15"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 3
+    },
+    "Docker Desktop | 4.72.0": {
+     "esperado": [
+      [
+       "docker:desktop",
+       "docker:docker_desktop"
+      ],
+      "4.72.0"
+     ],
+     "obtenido": [
+      "activo",
+      [
+       "docker:desktop"
+      ],
+      "4.72.0"
+     ],
+     "filas": 3
+    },
+    "Eclipse Temurin JDK with Hotspot 17.0.10+7 (x64) | 17.0.10+7": {
+     "esperado": [
+      [
+       "oracle:openjdk"
+      ],
+      "17.0.10"
+     ],
+     "obtenido": [
+      "cobertura:no_comparable",
+      [],
+      null
+     ],
+     "filas": 3
+    },
+    "Python 3.13.9 (64-bit) | 3.13.9": {
+     "esperado": [
+      [
+       "python:python"
+      ],
+      "3.13.9"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 4
+    },
+    "Docker Desktop | 4.62.0": {
+     "esperado": [
+      [
+       "docker:desktop",
+       "docker:docker_desktop"
+      ],
+      "4.62.0"
+     ],
+     "obtenido": [
+      "activo",
+      [
+       "docker:desktop"
+      ],
+      "4.62.0"
+     ],
+     "filas": 4
+    },
+    "Git | 2.45.1.windows.1": {
+     "esperado": [
+      [
+       "git-scm:git"
+      ],
+      "2.45.1"
+     ],
+     "obtenido": [
+      "cobertura:no_comparable",
+      [],
+      null
+     ],
+     "filas": 4
+    },
+    "WinRAR 6.22 (32-bit) | 6.22": {
+     "esperado": [
+      [
+       "rarlab:winrar"
+      ],
+      "6.22"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 3
+    },
+    "Adobe Acrobat Reader (64-bit) | 25.001.20531": {
+     "esperado": [
+      [
+       "adobe:acrobat_reader_dc"
+      ],
+      "25.001.20531"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 15
+    },
+    "PuTTY release 0.81 (64-bit) | 0.81": {
+     "esperado": [
+      [
+       "putty:putty"
+      ],
+      "0.81"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 3
+    },
+    "Docker Desktop | 4.58.0": {
+     "esperado": [
+      [
+       "docker:desktop",
+       "docker:docker_desktop"
+      ],
+      "4.58.0"
+     ],
+     "obtenido": [
+      "activo",
+      [
+       "docker:desktop"
+      ],
+      "4.58.0"
+     ],
+     "filas": 3
+    },
+    "WinRAR 7.12 (64-bit) | 7.12": {
+     "esperado": [
+      [
+       "rarlab:winrar"
+      ],
+      "7.12"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 4
+    },
+    "7-Zip 26.03 (x64) | 26.03": {
+     "esperado": [
+      [
+       "7-zip:7-zip"
+      ],
+      "26.03"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 14
+    },
+    "Notepad++ (64-bit x64) | 8.8.8": {
+     "esperado": [
+      [
+       "notepad-plus-plus:notepad\\+\\+"
+      ],
+      "8.8.8"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 5
+    },
+    "WinRAR 7.13 (64-bit) | 7.13": {
+     "esperado": [
+      [
+       "rarlab:winrar"
+      ],
+      "7.13"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 6
+    },
+    "7-Zip 24.09 (x64 edition) | 24.09": {
+     "esperado": [
+      [
+       "7-zip:7-zip"
+      ],
+      "24.09"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 6
+    },
+    "Eclipse Temurin JDK with Hotspot 17.0.9+9 (x64) | 17.0.9+9": {
+     "esperado": [
+      [
+       "oracle:openjdk"
+      ],
+      "17.0.9"
+     ],
+     "obtenido": [
+      "cobertura:no_comparable",
+      [],
+      null
+     ],
+     "filas": 4
+    },
+    "Mozilla Firefox 156.0.1 (x64 es-ES) | 156.0.1": {
+     "esperado": [
+      [
+       "mozilla:firefox"
+      ],
+      "156.0.1"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 6
+    },
+    "PuTTY release 0.84 (64-bit) | 0.84": {
+     "esperado": [
+      [
+       "putty:putty"
+      ],
+      "0.84"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 4
+    },
+    "WinRAR 6.23 (64-bit) | 6.23": {
+     "esperado": [
+      [
+       "rarlab:winrar"
+      ],
+      "6.23"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 2
+    },
+    "TeamViewer 14 | 14.7.1966": {
+     "esperado": [
+      [
+       "teamviewer:teamviewer"
+      ],
+      "14.7.1966"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 1
+    },
+    "WinRAR 5.61 (64-bit) | 5.61": {
+     "esperado": [
+      [
+       "rarlab:winrar"
+      ],
+      "5.61"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 2
+    },
+    "Notepad++ (64-bit x64) | 8.8.9": {
+     "esperado": [
+      [
+       "notepad-plus-plus:notepad\\+\\+"
+      ],
+      "8.8.9"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 3
+    },
+    "TeamViewer 14 | 14.7.1965": {
+     "esperado": [
+      [
+       "teamviewer:teamviewer"
+      ],
+      "14.7.1965"
+     ],
+     "obtenido": [
+      "cobertura:sin_cpe",
+      [],
+      null
+     ],
+     "filas": 1
+    }
+   }
+  }
+ }
+}

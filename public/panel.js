@@ -214,6 +214,19 @@ function pintarAuxiliar(id, datos) {
   caja.textContent = datos.disponible ? "" : (datos.motivo || "Sin datos todavía.");
 }
 
+function pintarTrazas(datos) {
+  if (!datos.disponible || !datos.trazas.length) {
+    pintarAuxiliar("#trazas", datos.disponible ? { motivo: "El agente todavía no ha llamado herramientas." } : datos);
+    return;
+  }
+  const clase = { permitida: "p-ok", negada: "p-caida", limpiada: "p-semanal" };
+  $("#trazas").classList.remove("vacio");
+  $("#trazas").innerHTML = `<ul class="cobertura-lista">${datos.trazas.slice(0, 30).map((t) => `
+    <li><span><span class="mono">${esc(t.herramienta)}</span>
+      <span class="pildora ${clase[t.decision] || ""}"><span class="punto"></span>${esc(t.decision)}</span></span>
+      <span class="mono">${esc(fmtHora(t.momento))}</span></li>`).join("")}</ul>`;
+}
+
 // ---- ciclo -----------------------------------------------------------------
 
 function parametrosFiltro() {
@@ -256,7 +269,7 @@ async function refrescarAuxiliares() {
   try {
     const [umbrales, trazas] = await Promise.all([api("/api/umbrales"), api("/api/trazas")]);
     pintarAuxiliar("#umbrales", umbrales);
-    pintarAuxiliar("#trazas", trazas);
+    pintarTrazas(trazas);
   } catch { /* se reintenta en el próximo ciclo */ }
 }
 
@@ -331,7 +344,10 @@ $("#carga").addEventListener("submit", async (e) => {
       <p><span class="mono">${esc(l.filas)}</span> filas leídas (${esc(l.fuente)}${l.hoja ? ", hoja " + esc(l.hoja) : ""}),
       <span class="mono">${esc(l.sin_version)}</span> sin versión, <span class="mono">${esc(l.duplicadas)}</span> duplicadas,
       <span class="mono">${esc(l.descartadas)}</span> descartadas.
-      ${r.cruce === "pendiente" ? "El cruce todavía no está conectado." : ""}</p>
+      ${r.cruce === "pendiente" ? esc(r.motivo || "El cruce todavía no está conectado.") : ""}</p>
+      ${r.resultado ? `<p>Cruce: <span class="mono">${esc(r.resultado.hallazgos)}</span> hallazgos en
+      <span class="mono">${esc(r.resultado.productos)}</span> productos, <span class="mono">${esc(r.resultado.en_kev)}</span> CVE en KEV,
+      <span class="mono">${esc(r.resultado.cobertura)}</span> filas a cobertura. El análisis quedó en cola.</p>` : ""}
       ${descartes ? `<ul>${descartes}</ul>` : ""}`;
     refrescar();
   } catch (error) {

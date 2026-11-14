@@ -64,6 +64,34 @@ def remediacion(grupo: Grupo) -> str:
     )
 
 
+_RIESGO = {
+    "inmediato": "Riesgo alto",
+    "semanal": "Riesgo medio",
+    "informativo": "Riesgo bajo",
+    "boletin": "Riesgo bajo",
+}
+
+_DECISION = {
+    "inmediato": "aprobar la actualización hoy, fuera de la ventana habitual si hace falta",
+    "semanal": "aprobar la actualización dentro de esta semana",
+    "informativo": "incluirla en la próxima actualización programada",
+    "boletin": "incluirla en la próxima actualización programada",
+}
+
+
+def _gerencia(grupo: Grupo, producto: str, n_equipos: str, n_cves: str, n_kev: int) -> str:
+    """Riesgo, alcance y decisión que se pide. Sin nombres de equipos ni CVE."""
+    riesgo = _RIESGO.get(grupo.prioridad or "", "Riesgo sin calcular")
+    texto = f"{riesgo}: {producto} tiene {n_cves} conocidas"
+    if n_kev:
+        texto += f", {n_kev} con ataques confirmados en el mundo real"
+        if grupo.ransomware:
+            texto += " (también usadas para ransomware)"
+    texto += f". Alcance: {n_equipos} de la organización."
+    decision = _DECISION.get(grupo.prioridad or "", "revisar el caso con TI")
+    return texto + f" Decisión que se pide: {decision}."
+
+
 def armar_respaldo(grupo: Grupo) -> Analisis:
     producto = limpiar_texto(grupo.producto)
     versiones = _versiones(grupo)
@@ -118,6 +146,8 @@ def armar_respaldo(grupo: Grupo) -> Analisis:
         f" Si ves un aviso para actualizar {producto}, acéptalo. No hace falta que hagas nada más."
     )
 
+    gerencia = _gerencia(grupo, producto, n_equipos, n_cves, n_kev)
+
     return Analisis(
         producto=grupo.producto,
         resumen=resumen,
@@ -126,6 +156,7 @@ def armar_respaldo(grupo: Grupo) -> Analisis:
         mitigacion_temporal=None,
         comunicado_ti=comunicado_ti,
         comunicado_usuarios=usuarios,
+        comunicado_gerencia=gerencia,
         verificado=True,
         origen="respaldo",
     )

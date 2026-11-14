@@ -14,7 +14,7 @@ from pydantic import BaseModel, Field
 from radar.api.acceso import exigir_clave
 from radar.api.datos import obtener_datos
 from radar.contratos import EstadoHallazgo, Grupo, Prioridad
-from radar.ingesta.archivos import ErrorLectura, leer_inventario
+from radar.ingesta.archivos import ErrorLectura, a_contrato, leer_inventario
 
 router = APIRouter(prefix="/api", dependencies=[Depends(exigir_clave)])
 
@@ -100,6 +100,42 @@ def aprobar(producto: str, cuerpo: Aprobacion | None = None) -> dict:
     return {"aprobacion": registro, "persistente": datos.persistente}
 
 
+def _normalizador():
+    """`normalizar(filas) -> (activos, cobertura)` de radar/ingesta/normalizador.py, o None si
+    todavía no existe (se pidió esa firma en .coordinacion/normalizador.md)."""
+    try:
+        from radar.ingesta.normalizador import normalizar
+    except ImportError:
+        return None
+    return normalizar
+
+
+def _cruzar_inventario(filas: list) -> dict:
+    """Guarda el inventario, normaliza, cruza contra las CVE guardadas y deja un trabajo de
+    análisis. Sin normalizador solo guarda las filas y lo dice."""
+    from radar import bd
+    from radar.nucleo.corrida import correr
+
+    normalizar = _normalizador()
+    conexion = bd.conectar()
+    try:
+        bd.crear_esquema(conexion)
+        bd.guardar_inventario(conexion, filas)
+        if normalizar is None:
+            return {"cruce": "pendiente", "motivo": "Falta el normalizador."}
+        activos, cobertura = normalizar(filas)
+        resultado = correr(conexion, activos, cobertura)
+        trabajo = bd.crear_trabajo(conexion, "analizar", "inventario cargado desde el panel")
+    finally:
+        conexion.close()
+    return {
+        "cruce": "hecho",
+        "resultado": resultado.resumen,
+        "propuestos_resueltos": resultado.propuestos_resueltos[:50],
+        "trabajo": trabajo,
+    }
+
+
 @router.post("/inventario")
 async def cargar_inventario(archivo: Annotated[UploadFile, File()]) -> dict:
     contenido = await archivo.read()
@@ -107,18 +143,23 @@ async def cargar_inventario(archivo: Annotated[UploadFile, File()]) -> dict:
         lectura = leer_inventario(contenido, archivo.filename)
     except ErrorLectura as error:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, str(error)) from error
-    return {
+    respuesta = {
         "lectura": lectura.resumen(),
         "descartadas": [{"fila": d.fila, "motivo": d.motivo} for d in lectura.descartadas[:50]],
-        # El cruce y el trabajo de análisis llegan con radar/nucleo y radar/bd.py.
-        "cruce": "pendiente",
     }
+    if obtener_datos().origen != "base":
+        respuesta |= {"cruce": "pendiente", "motivo": "El panel está con datos de ejemplo."}
+        return respuesta
+    filas = [a_contrato(f) for f in lectura.filas]
+    return respuesta | _cruzar_inventario(filas)
 
 
 @router.post("/revisar", status_code=status.HTTP_202_ACCEPTED)
 def revisar() -> dict:
-    # Sin Turso no hay cola donde dejar el trabajo: se dice, no se finge.
-    return {"encolado": False, "motivo": "La cola de trabajos llega con Turso."}
+    trabajo = obtener_datos().encolar("descargar", "pedido desde el panel")
+    if trabajo is None:
+        return {"encolado": False, "motivo": "Sin base no hay cola de trabajos."}
+    return {"encolado": True, "trabajo": trabajo}
 
 
 @router.get("/umbrales")
@@ -128,4 +169,7 @@ def umbrales() -> dict:
 
 @router.get("/trazas")
 def trazas() -> dict:
-    return {"disponible": False, "trazas": [], "motivo": "Las trazas las escribe el worker."}
+    lista = obtener_datos().trazas()
+    if lista is None:
+        return {"disponible": False, "trazas": [], "motivo": "Las trazas las escribe el worker."}
+    return {"disponible": True, "trazas": lista}

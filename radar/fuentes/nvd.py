@@ -10,10 +10,15 @@ Reglas que aplica:
 from __future__ import annotations
 
 import json
-from collections.abc import Iterable, Iterator
-from datetime import UTC, datetime
+import os
+import time
+import urllib.parse
+from collections.abc import Callable, Iterable, Iterator
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from typing import Any
+from typing import Any, Self
+
+import httpx
 
 from radar.contratos import CVE, Rango, Referencia
 
@@ -136,3 +141,151 @@ def leer_snapshot(archivos: Iterable[Path]) -> dict[str, CVE]:
         for cve in cves_desde_respuesta(datos):
             cves.setdefault(cve.id, cve)
     return cves
+
+
+# ---------------------------------------------------------------------------
+# Cliente en línea (PLAN, sección 7)
+# ---------------------------------------------------------------------------
+
+URL_NVD = "https://services.nvd.nist.gov/rest/json/cves/2.0"
+POR_PAGINA = 2000
+VENTANA_MAXIMA = timedelta(days=120)
+PAUSA_SIN_CLAVE = 6.0
+PAUSA_CON_CLAVE = 0.7
+INTENTOS = 6
+
+
+class ErrorNvd(RuntimeError):
+    """NVD no respondió tras los reintentos, o rechazó la clave (403)."""
+
+
+def _fecha_nvd(f: datetime) -> str:
+    """Formato que pide NVD: 2026-11-03T00:00:00.000, en UTC."""
+    if f.tzinfo:
+        f = f.astimezone(UTC).replace(tzinfo=None)
+    return f.strftime("%Y-%m-%dT%H:%M:%S.000")
+
+
+def ventanas(desde: datetime, hasta: datetime) -> list[tuple[datetime, datetime]]:
+    """Parte un intervalo en ventanas de 120 días como máximo (límite de NVD)."""
+    salida = []
+    inicio = desde
+    while inicio < hasta:
+        fin = min(inicio + VENTANA_MAXIMA, hasta)
+        salida.append((inicio, fin))
+        inicio = fin
+    return salida
+
+
+class ClienteNvd:
+    """Cliente de la API 2.0 con pausa entre peticiones, reintentos y paginación.
+
+    - 429: espera lo que diga Retry-After (o 30 s) y reintenta.
+    - 403: la clave no sirve; no reintenta.
+    - 5xx y fallos de red: reintenta con espera creciente.
+    """
+
+    def __init__(
+        self,
+        clave: str | None = None,
+        cliente: httpx.Client | None = None,
+        pausa: float | None = None,
+        dormir: Callable[[float], None] = time.sleep,
+    ):
+        self.clave = clave if clave is not None else os.environ.get("NVD_API_KEY") or None
+        self.pausa = (
+            pausa if pausa is not None else (PAUSA_CON_CLAVE if self.clave else PAUSA_SIN_CLAVE)
+        )
+        self._dormir = dormir
+        self._propio = cliente is None
+        cabeceras = {"User-Agent": "radar-vulnerabilidades/0.1"}
+        if self.clave:
+            cabeceras["apiKey"] = self.clave
+        self._http = cliente or httpx.Client(timeout=httpx.Timeout(120.0))
+        self._cabeceras = cabeceras
+        self.peticiones = 0
+
+    def cerrar(self) -> None:
+        if self._propio:
+            self._http.close()
+
+    def __enter__(self) -> Self:
+        return self
+
+    def __exit__(self, *_: object) -> None:
+        self.cerrar()
+
+    def _pedir(self, parametros: dict[str, Any]) -> dict[str, Any]:
+        # noRejected va sin valor: NVD no acepta "noRejected=".
+        url = f"{URL_NVD}?{urllib.parse.urlencode(parametros)}&noRejected"
+        ultimo = ""
+        for intento in range(INTENTOS):
+            if self.peticiones:
+                self._dormir(self.pausa)
+            self.peticiones += 1
+            try:
+                r = self._http.get(url, headers=self._cabeceras)
+            except httpx.HTTPError as e:
+                ultimo = f"red: {e}"
+                self._dormir(10 * (intento + 1))
+                continue
+            if r.status_code == 200:
+                return r.json()
+            if r.status_code == 403:
+                raise ErrorNvd("NVD respondió 403: la clave no sirve (no se reintenta)")
+            ultimo = f"HTTP {r.status_code}"
+            if r.status_code == 429:
+                try:
+                    espera = float(r.headers.get("Retry-After", 30))
+                except ValueError:
+                    espera = 30.0
+            elif r.status_code >= 500:
+                espera = 10.0 * (intento + 1)
+            else:
+                raise ErrorNvd(f"NVD respondió {r.status_code}: {r.text[:200]}")
+            self._dormir(espera)
+        raise ErrorNvd(f"NVD no respondió tras {INTENTOS} intentos ({ultimo})")
+
+    def _paginar(self, parametros: dict[str, Any]) -> Iterator[dict[str, Any]]:
+        inicio = 0
+        while True:
+            datos = self._pedir({**parametros, "startIndex": inicio, "resultsPerPage": POR_PAGINA})
+            items = datos.get("vulnerabilities", [])
+            yield from items
+            total = datos.get("totalResults", 0)
+            inicio += datos.get("resultsPerPage", len(items)) or 0
+            if inicio >= total or not items:
+                return
+
+    def crudas_por_par(
+        self, par: str, desde: datetime | None = None, hasta: datetime | None = None
+    ) -> Iterator[dict[str, Any]]:
+        """Respuestas crudas de un par 'vendor:producto' (con el escape de CPE, como en NVD).
+
+        Con `desde`, solo las modificadas desde esa fecha (lastModStartDate/EndDate, partido
+        en ventanas de 120 días).
+        """
+        vendor, producto = par.split(":", 1)
+        base = {"virtualMatchString": f"cpe:2.3:a:{vendor}:{producto}"}
+        if desde is None:
+            yield from self._paginar(base)
+            return
+        for ini, fin in ventanas(desde, hasta or datetime.now(UTC)):
+            yield from self._paginar(
+                {**base, "lastModStartDate": _fecha_nvd(ini), "lastModEndDate": _fecha_nvd(fin)}
+            )
+
+    def por_par(
+        self, par: str, desde: datetime | None = None, hasta: datetime | None = None
+    ) -> dict[str, CVE]:
+        """CVE de un par, convertidas al contrato y sin repetir."""
+        salida: dict[str, CVE] = {}
+        for item in self.crudas_por_par(par, desde, hasta):
+            cve = cve_desde_nvd(item)
+            salida[cve.id] = cve
+        return salida
+
+    def una(self, cve_id: str) -> CVE | None:
+        datos = self._pedir({"cveId": cve_id})
+        items = datos.get("vulnerabilities", [])
+        return cve_desde_nvd(items[0]) if items else None

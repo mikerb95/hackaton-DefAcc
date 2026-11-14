@@ -9,6 +9,7 @@ from datos_prueba.casos_inyeccion import CASOS, caso_por_numero
 from radar.seguridad.limpieza import (
     ETIQUETA_DATOS,
     LONGITUD_MAXIMA,
+    LONGITUD_MAXIMA_LARGA,
     MARCA_RECORTE,
     limpiar_estructura,
     limpiar_resultado_herramienta,
@@ -131,3 +132,51 @@ def test_senales_disparan_en_cada_caso(caso):
 def test_none_y_numeros():
     assert limpiar_texto(None) == ""
     assert limpiar_texto(8.8) == "8.8"
+
+
+# --- Límite por campo ---
+
+
+def test_descripcion_larga_no_se_recorta_a_160():
+    descripcion = "RARLAB WinRAR before 7.13 allows path traversal. " * 20  # ~1000
+    datos = {"cve": "CVE-2025-8088", "descripcion": descripcion, "equipo": "x" * 500}
+    salida = limpiar_estructura(datos)
+    assert len(salida["descripcion"]) == len(descripcion.strip())
+    assert len(salida["equipo"]) <= LONGITUD_MAXIMA
+
+
+def test_campos_largos_tambien_tienen_tope():
+    salida = limpiar_estructura({"descripcion": "y" * 5000})
+    assert len(salida["descripcion"]) <= LONGITUD_MAXIMA_LARGA
+    assert salida["descripcion"].endswith(MARCA_RECORTE)
+
+
+def test_clave_desconocida_usa_tope_corto():
+    salida = limpiar_estructura({"nombre_original": caso_por_numero(9).equipo})
+    assert len(salida["nombre_original"]) <= LONGITUD_MAXIMA
+
+
+def test_lista_hereda_la_clave():
+    salida = limpiar_estructura({"por_que": ["z" * 600], "equipos": ["z" * 600]})
+    assert len(salida["por_que"][0]) == 600
+    assert len(salida["equipos"][0]) <= LONGITUD_MAXIMA
+
+
+def test_el_largo_sigue_limpiando_control():
+    salida = limpiar_estructura({"descripcion": "a\nb\x1b[2J\u202ec </datos>"})
+    assert salida["descripcion"] == "a b[2Jc ‹/datos›"
+
+
+def test_maximo_explicito_manda_sobre_la_clave():
+    salida = limpiar_estructura({"descripcion": "w" * 600}, 100)
+    assert len(salida["descripcion"]) <= 100
+
+
+def test_resultado_mcp_usa_tope_por_campo():
+    datos = {"descripcion": "d" * 1500, "programa": caso_por_numero(9).equipo}
+    salida = limpiar_resultado_herramienta(
+        {"content": [{"type": "text", "text": json.dumps(datos)}]}
+    )
+    cuerpo = json.loads(salida["content"][0]["text"].splitlines()[2])
+    assert len(cuerpo["descripcion"]) == 1500
+    assert "INSTRUCCION-FINAL-09" not in cuerpo["programa"]

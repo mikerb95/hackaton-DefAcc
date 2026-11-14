@@ -79,6 +79,7 @@ _CAMPOS_ANALISIS = (
     "mitigacion_temporal",
     "comunicado_ti",
     "comunicado_usuarios",
+    "comunicado_gerencia",
 )
 
 

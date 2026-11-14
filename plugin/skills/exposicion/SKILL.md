@@ -11,8 +11,9 @@ no la menciones como hallazgo.
 
 ## Antes de responder, mira tres campos
 
-1. **`datos`**: si dice `ejemplo` (o trae `aviso`), son datos de ejemplo y no del
-   inventario real. Dilo en la primera línea y no los presentes como hallazgos.
+1. **`datos`**: `turso` es la base compartida y `local` la base sqlite de esta máquina;
+   las dos tienen resultados reales del cruce. Si dice `ejemplo` (o trae `aviso`), son
+   datos de ejemplo: dilo en la primera línea y no los presentes como hallazgos.
 2. **`fuentes`**: si hay `caidas`, lo que dependa de esa fuente **no se sabe**. EPSS
    caído no es "EPSS 0"; KEV caído no es "nada explotado". Dilo.
 3. **`cobertura`**: `sin_evaluar` cuenta programas que no se pudieron comparar. No están

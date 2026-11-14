@@ -176,6 +176,7 @@ SOLO_LECTURA = ToolAnnotations(
     readOnlyHint=True, destructiveHint=False, idempotentHint=True, openWorldHint=False
 )
 CERRADOS = {"mitigado", "descartado"}
+FUENTES_ESPERADAS = {"nvd", "kev", "epss"}
 EQUIPOS_MOSTRADOS = 25
 LIMITE_DETALLE = 4000  # texto largo (descripciones de NVD, comunicados)
 
@@ -187,7 +188,7 @@ AVISO_EJEMPLO = (
 
 def _encabezado(origen: str) -> dict[str, Any]:
     respuesta: dict[str, Any] = {"datos": origen}
-    if origen != "turso":
+    if "ejemplo" in origen:
         respuesta["aviso"] = AVISO_EJEMPLO
     return respuesta
 
@@ -201,6 +202,7 @@ def _estado_fuentes() -> tuple[dict[str, Any], str]:
         }, origen
     ultima = max(ejecuciones, key=lambda e: e.inicio)
     caidas = sorted(nombre for nombre, ok in ultima.fuentes.items() if not ok)
+    sin_dato = sorted(FUENTES_ESPERADAS - set(ultima.fuentes))
     estado: dict[str, Any] = {
         "ultima_ejecucion": (ultima.fin or ultima.inicio).isoformat(),
         "fuentes": ultima.fuentes,
@@ -210,6 +212,12 @@ def _estado_fuentes() -> tuple[dict[str, Any], str]:
         estado["nota"] = (
             "Fuentes caídas en el último cruce: " + ", ".join(caidas) + ". Lo que dependa de "
             "ellas no se sabe (no es cero)."
+        )
+    if sin_dato:
+        estado["sin_dato"] = sin_dato
+        estado["nota_sin_dato"] = (
+            "El último cruce no informa sobre: " + ", ".join(sin_dato) + ". Sus señales "
+            "(por ejemplo EPSS) faltan: no se sabe, no es cero."
         )
     if ultima.error:
         estado["error"] = ultima.error
@@ -338,9 +346,12 @@ def consultar_hallazgos(
             "acciones": _acciones(filtrados, grupos),
             "resumen": {
                 "hallazgos": len(abiertos),
+                "nota": "Un hallazgo es una CVE en una versión instalada (CVE x activo).",
                 "por_prioridad": por_prioridad,
-                "en_kev": sum(h.kev for h in abiertos),
-                "ransomware": sum(h.ransomware for h in abiertos),
+                "cves_distintas": len({h.cve for h in abiertos}),
+                "cves_en_kev": len({h.cve for h in abiertos if h.kev}),
+                "cves_ransomware": len({h.cve for h in abiertos if h.ransomware}),
+                "hallazgos_en_kev": sum(h.kev for h in abiertos),
                 "equipos_afectados": len({e for h in abiertos for e in h.equipos}),
             },
             "total_filtrados": len(filtrados),
@@ -453,16 +464,30 @@ def detalle_producto(
     try:
         grupos, o1 = datos.leer("leer_grupos")
         hallazgos, o2 = datos.leer("leer_hallazgos")
-        cves, o3 = datos.leer("leer_cves")
-        analisis, o4 = datos.leer("leer_analisis")
-        cobertura, o5 = datos.leer("leer_cobertura")
-        fuentes, o6 = _estado_fuentes()
+        cobertura, o3 = datos.leer("leer_cobertura")
+        fuentes, o4 = _estado_fuentes()
+        nombre = _resolver_producto(producto, grupos, hallazgos)
+        cves: list = []
+        analisis: list = []
+        origenes = [o1, o2, o3, o4]
+        if nombre is not None:
+            # Solo las CVE de los pares de este producto: leerlas todas tarda segundos.
+            pares = sorted(
+                {
+                    f"{h.rango.vendor}:{h.rango.producto}"
+                    for h in hallazgos
+                    if h.producto == nombre and h.rango
+                }
+            )
+            if pares:
+                cves, o5 = datos.leer("leer_cves", pares)
+                origenes.append(o5)
+            analisis, o6 = datos.leer("leer_analisis", nombre)
+            origenes.append(o6)
     except Exception as error:  # noqa: BLE001
         raise _error(f"No se pudo leer la base: {error}") from None
 
-    nombre = _resolver_producto(producto, grupos, hallazgos)
-    origen = datos.origen_combinado(o1, o2, o3, o4, o5, o6)
-    respuesta = _encabezado(origen)
+    respuesta = _encabezado(datos.origen_combinado(*origenes))
 
     if nombre is None:
         nombres = sorted({g.producto for g in grupos} | {h.producto for h in hallazgos})

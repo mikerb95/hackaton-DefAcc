@@ -33,7 +33,7 @@ def con_bd(monkeypatch):
     monkeypatch.delenv("RADAR_DATOS_EJEMPLO", raising=False)
     for funcion, constante in srv.datos.LECTURAS.items():
         valor = getattr(ejemplos, constante)
-        monkeypatch.setattr(bd, funcion, lambda v=valor: list(v), raising=False)
+        monkeypatch.setattr(bd, funcion, lambda *_, v=valor, **__: list(v), raising=False)
 
 
 def test_herramientas_y_anotaciones():
@@ -58,16 +58,35 @@ def test_ejemplos_se_declaran_como_ejemplo(con_ejemplos):
     assert "EJEMPLO" in respuesta["aviso"]
 
 
-def test_datos_de_turso_sin_aviso(con_bd):
+def test_base_local_sin_aviso(con_bd, monkeypatch):
+    monkeypatch.delenv("TURSO_DATABASE_URL", raising=False)
     respuesta = srv.consultar_hallazgos()
-    assert respuesta["datos"] == "turso"
+    assert respuesta["datos"] == "local"
     assert "aviso" not in respuesta
+
+
+def test_base_turso_se_nombra(con_bd, monkeypatch):
+    monkeypatch.setenv("TURSO_DATABASE_URL", "libsql://prueba.turso.io")
+    monkeypatch.setenv("TURSO_AUTH_TOKEN", "x")
+    assert srv.consultar_hallazgos()["datos"] == "turso"
+
+
+def test_detalle_pide_solo_los_pares_del_producto(con_bd, monkeypatch):
+    pedidos = []
+
+    def leer_cves(conexion=None, pares=None):
+        pedidos.append(pares)
+        return list(ejemplos.CVES)
+
+    monkeypatch.setattr(bd, "leer_cves", leer_cves, raising=False)
+    srv.detalle_producto("winrar")
+    assert pedidos and pedidos[0] and all(p.endswith(":winrar") for p in pedidos[0])
 
 
 def test_base_caida_es_error_no_ejemplos(monkeypatch):
     monkeypatch.delenv("RADAR_DATOS_EJEMPLO", raising=False)
 
-    def caida():
+    def caida(*_, **__):
         raise ConnectionError("Turso no responde")
 
     monkeypatch.setattr(bd, "leer_hallazgos", caida, raising=False)
@@ -232,3 +251,17 @@ def test_acciones_una_por_producto_con_objetivo_del_grupo(con_ejemplos):
     assert acciones[grupo.producto]["version_objetivo"] == grupo.version_objetivo
     sin_grupo = [a for n, a in acciones.items() if n not in {g.producto for g in ejemplos.GRUPOS}]
     assert all(a["version_objetivo"] is None for a in sin_grupo)
+
+
+def test_fuente_sin_dato_se_informa(monkeypatch, con_ejemplos):
+    sin_epss = ejemplos.EJECUCIONES[0].model_copy(update={"fuentes": {"nvd": True, "kev": True}})
+    monkeypatch.setattr(ejemplos, "EJECUCIONES", [sin_epss])
+    fuentes = srv.consultar_hallazgos()["fuentes"]
+    assert fuentes["sin_dato"] == ["epss"]
+    assert "no es cero" in fuentes["nota_sin_dato"]
+
+
+def test_resumen_distingue_cves_de_hallazgos(con_ejemplos):
+    resumen = srv.consultar_hallazgos()["resumen"]
+    assert resumen["cves_en_kev"] == len({h.cve for h in ejemplos.HALLAZGOS if h.kev})
+    assert resumen["hallazgos_en_kev"] == sum(h.kev for h in ejemplos.HALLAZGOS)

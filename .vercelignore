@@ -1,0 +1,17 @@
+# Vercel instala con requirements.txt solo si pyproject.toml y uv.lock no llegan al despliegue
+# (con los dos presentes corre `uv sync --no-dev` sin el extra api). Ver .coordinacion/panel.md.
+pyproject.toml
+uv.lock
+
+# Nada de esto lo usa la API ni el panel
+resources/
+datos_prueba/
+evals/
+tests/
+worker/
+plugin/
+.coordinacion/
+datos_locales/
+.env
+.env.*
+.venv/

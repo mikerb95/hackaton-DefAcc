@@ -25,6 +25,30 @@ from typing import Any
 # ("Eclipse Temurin JDK with Hotspot 17.0.9+9 (x64)") ronda los 50 caracteres.
 LONGITUD_MAXIMA = 160
 
+# Largo máximo de un campo de texto largo que produce el radar o NVD (descripción de una
+# CVE, razones, comunicados). No viene del inventario, pero tampoco es de confianza
+# (una descripción de NVD la escribe un tercero): se limpia igual, solo con más margen.
+LONGITUD_MAXIMA_LARGA = 2_000
+
+# Claves cuyo valor es texto largo. Todo lo demás, incluida cualquier clave que no esté
+# aquí, usa LONGITUD_MAXIMA: ante una clave nueva, el tope corto (falla cerrado).
+CAMPOS_LARGOS = frozenset(
+    {
+        "descripcion",
+        "description",
+        "como_se_explota",
+        "resumen",
+        "remediacion",
+        "mitigacion_temporal",
+        "por_que",
+        "accion",
+        "url",
+        "comunicado_ti",
+        "comunicado_usuarios",
+        "comunicado_gerencia",
+    }
+)
+
 # Largo máximo del texto completo que devuelve una herramienta, ya limpio.
 LONGITUD_MAXIMA_RESULTADO = 20_000
 
@@ -88,20 +112,32 @@ def limpiar_texto(valor: Any, maximo: int = LONGITUD_MAXIMA) -> str:
     return texto
 
 
-def limpiar_estructura(valor: Any, maximo: int = LONGITUD_MAXIMA) -> Any:
+def limite_para(campo: str | None) -> int:
+    """Tope de un campo según su clave: largo solo para las de ``CAMPOS_LARGOS``."""
+    if isinstance(campo, str) and campo.strip().lower() in CAMPOS_LARGOS:
+        return LONGITUD_MAXIMA_LARGA
+    return LONGITUD_MAXIMA
+
+
+def limpiar_estructura(valor: Any, maximo: int | None = None, *, campo: str | None = None) -> Any:
     """Limpia de forma recursiva todas las cadenas de un dict, lista o valor suelto.
 
-    Números, booleanos y ``None`` pasan igual. Las claves de los dict también se limpian.
+    Sin ``maximo``, cada cadena usa el tope de la clave que la contiene (``limite_para``);
+    los elementos de una lista heredan la clave de la lista. Con ``maximo``, ese tope
+    vale para todo. Números, booleanos y ``None`` pasan igual. Las claves de los dict
+    también se limpian, siempre con el tope corto.
     """
     if isinstance(valor, str):
-        return limpiar_texto(valor, maximo)
+        return limpiar_texto(valor, maximo if maximo is not None else limite_para(campo))
     if isinstance(valor, dict):
         return {
-            limpiar_texto(k, maximo) if isinstance(k, str) else k: limpiar_estructura(v, maximo)
+            (limpiar_texto(k) if isinstance(k, str) else k): limpiar_estructura(
+                v, maximo, campo=k if isinstance(k, str) else None
+            )
             for k, v in valor.items()
         }
     if isinstance(valor, (list, tuple)):
-        return [limpiar_estructura(v, maximo) for v in valor]
+        return [limpiar_estructura(v, maximo, campo=campo) for v in valor]
     return valor
 
 
@@ -115,11 +151,12 @@ def marcar_como_dato(texto: str) -> str:
     return f"<{ETIQUETA_DATOS}>\n{AVISO_DATOS}\n{contenido}\n</{ETIQUETA_DATOS}>"
 
 
-def limpiar_texto_resultado(texto: str, maximo_campo: int = LONGITUD_MAXIMA) -> str:
+def limpiar_texto_resultado(texto: str, maximo_campo: int | None = None) -> str:
     """Limpia el texto de un resultado de herramienta y lo marca como dato.
 
-    Si el texto es JSON, limpia cada cadena por separado y conserva la estructura.
-    Si no lo es, lo trata como un solo campo largo.
+    Si el texto es JSON, limpia cada cadena por separado con el tope de su clave y
+    conserva la estructura. Si no lo es, lo trata como un solo campo largo (las
+    herramientas del radar devuelven JSON; el texto plano es el caso de excepción).
     """
     try:
         datos = json.loads(texto)
@@ -132,7 +169,7 @@ def limpiar_texto_resultado(texto: str, maximo_campo: int = LONGITUD_MAXIMA) -> 
     return marcar_como_dato(limpio)
 
 
-def limpiar_resultado_herramienta(resultado: Any, maximo_campo: int = LONGITUD_MAXIMA) -> Any:
+def limpiar_resultado_herramienta(resultado: Any, maximo_campo: int | None = None) -> Any:
     """Limpia un resultado con la forma MCP ``{"content": [{"type": "text", "text": ...}]}``.
 
     Devuelve un resultado con la misma forma (``updatedToolOutput`` sobre herramientas

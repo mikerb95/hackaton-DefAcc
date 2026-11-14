@@ -30,7 +30,7 @@ def _forzar_ejemplos() -> bool:
     return os.environ.get("RADAR_DATOS_EJEMPLO", "").strip() in {"1", "true", "si", "sí"}
 
 
-def _funcion_bd(nombre: str) -> Callable[[], list] | None:
+def _funcion_bd(nombre: str) -> Callable[..., list] | None:
     if _forzar_ejemplos():
         return None
     from radar import bd
@@ -38,23 +38,34 @@ def _funcion_bd(nombre: str) -> Callable[[], list] | None:
     return getattr(bd, nombre, None)
 
 
-def leer(nombre: str) -> tuple[list[Any], str]:
-    """Devuelve (registros, origen) con origen "turso" o "ejemplo"."""
+def _origen_bd() -> str:
+    """ "turso" si hay credenciales de Turso; si no, la base sqlite local."""
+    from radar import config
+
+    return "turso" if config.turso() else "local"
+
+
+def leer(nombre: str, *args: Any, **kwargs: Any) -> tuple[list[Any], str]:
+    """Devuelve (registros, origen) con origen "turso", "local" o "ejemplo".
+
+    Los argumentos extra (filtros como `pares` o `producto`) pasan a bd; los ejemplos
+    los ignoran y devuelven todo.
+    """
     if nombre not in LECTURAS:
         raise KeyError(nombre)
     funcion = _funcion_bd(nombre)
     if funcion is not None:
-        return list(funcion()), "turso"
+        return list(funcion(None, *args, **kwargs)), _origen_bd()
     from radar import ejemplos
 
     return list(getattr(ejemplos, LECTURAS[nombre])), "ejemplo"
 
 
 def origen_combinado(*origenes: str) -> str:
-    """Devuelve "turso" solo si todo vino de Turso; si algo es ejemplo, lo dice."""
+    """Un solo origen si todo vino del mismo lado; si algo es ejemplo, lo dice."""
     unicos = set(origenes)
-    if unicos == {"turso"}:
-        return "turso"
-    if unicos == {"ejemplo"}:
-        return "ejemplo"
-    return "mixto (parte de ejemplo)"
+    if len(unicos) == 1:
+        return unicos.pop()
+    if "ejemplo" in unicos:
+        return "mixto (parte de ejemplo)"
+    return "mixto"

@@ -252,6 +252,9 @@ class Analisis(Contrato):
     mitigacion_temporal: str | None = None
     comunicado_ti: str
     comunicado_usuarios: str
+    comunicado_gerencia: str | None = Field(
+        default=None, description="Resumen para gerencia: riesgo, alcance y decisión que se pide"
+    )
     verificado: bool = False
     origen: OrigenAnalisis
 

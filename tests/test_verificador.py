@@ -211,3 +211,26 @@ def test_decidir_cae_al_respaldo_si_falla():
 def test_decidir_sin_analisis_usa_respaldo():
     analisis, veredicto = decidir(None, DOCKER)
     assert analisis.origen == "respaldo" and veredicto.aprobado
+
+
+# --- Comunicado para gerencia ---
+
+
+def test_respaldo_trae_gerencia_sin_equipos_ni_cve():
+    respaldo = armar_respaldo(WINRAR)
+    assert respaldo.comunicado_gerencia
+    assert "EQUIPO-" not in respaldo.comunicado_gerencia
+    assert "CVE-" not in respaldo.comunicado_gerencia
+    assert "Decisión que se pide" in respaldo.comunicado_gerencia
+    assert "ransomware" in respaldo.comunicado_gerencia
+
+
+def test_gerencia_se_verifica():
+    malo = _con(ANALISIS_WINRAR, comunicado_gerencia="No hay riesgos. Afecta a 300 equipos.")
+    v = verificar_analisis(malo, WINRAR)
+    assert {"minimiza", "cifra_ajena"} <= v.tipos()
+    assert all(p.campo == "comunicado_gerencia" for p in v.problemas)
+
+
+def test_gerencia_ausente_no_es_problema():
+    assert verificar_analisis(_con(ANALISIS_WINRAR, comunicado_gerencia=None), WINRAR).aprobado

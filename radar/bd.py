@@ -42,6 +42,9 @@ from radar.contratos import (
 ESQUEMA = Path(__file__).with_name("esquema.sql")
 _LECTURA = re.compile(r"^\s*(select|with|explain)\b", re.IGNORECASE)
 LOTE = 500
+# Tope de parámetros por sentencia (el mínimo histórico de SQLite es 999).
+MAX_PARAMETROS = 900
+_VALORES = re.compile(r"VALUES\s*(\((?:\s*\?\s*,)*\s*\?\s*\))", re.IGNORECASE)
 
 
 class EscrituraNoPermitida(PermissionError):
@@ -136,8 +139,27 @@ def _de_json(texto: str | None, defecto: Any = None) -> Any:
 
 
 def _en_lotes(conexion: Any, sql: str, filas: list[Sequence[Any]]) -> None:
-    for i in range(0, len(filas), LOTE):
-        conexion.executemany(sql, filas[i : i + LOTE])
+    """Inserta muchas filas con INSERT de varias filas: `VALUES (?,?),(?,?),...`.
+
+    En turso_serverless, `executemany` hace una petición HTTP por fila (125 000 peticiones
+    para el snapshot). Con varias filas por sentencia son unas 100 filas por petición, y el
+    SQL es el mismo en sqlite y en Turso.
+    """
+    if not filas:
+        return
+    m = _VALORES.search(sql)
+    if m is None:
+        raise ValueError("_en_lotes espera una sentencia INSERT ... VALUES (?, ...)")
+    fila = m.group(1)
+    columnas = fila.count("?")
+    por_sentencia = max(1, MAX_PARAMETROS // columnas)
+    prefijo, sufijo = sql[: m.start(1)], sql[m.end(1) :]
+    for i in range(0, len(filas), por_sentencia):
+        lote = filas[i : i + por_sentencia]
+        conexion.execute(
+            prefijo + ",".join([fila] * len(lote)) + sufijo,
+            [valor for f in lote for valor in f],
+        )
 
 
 def _marcadores(n: int) -> str:
