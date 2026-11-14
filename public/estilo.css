@@ -465,3 +465,43 @@ button:disabled { opacity: 0.5; cursor: default; }
 @media (prefers-reduced-motion: reduce) {
   .termometro-svg .t-liquido { animation: none; }
 }
+
+/* Entrar: barrido lento detrás del formulario; al entrar bien acelera y funde */
+.entrar { position: relative; overflow: hidden; isolation: isolate; }
+.entrar-radar {
+  position: absolute; z-index: -1; left: 50%; top: 50%; width: min(820px, 140vw); aspect-ratio: 1;
+  transform: translate(-50%, -50%); border-radius: 50%;
+  background:
+    radial-gradient(circle, transparent 0 32.6%, rgba(0, 242, 255, 0.07) 33% 33.3%, transparent 33.7% 65.6%, rgba(0, 242, 255, 0.07) 66% 66.3%, transparent 66.7%);
+  border: 1px solid rgba(0, 242, 255, 0.08);
+}
+.entrar-radar span {
+  position: absolute; inset: 0; border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0deg 300deg, rgba(0, 242, 255, 0.10) 345deg, rgba(0, 242, 255, 0.35) 360deg);
+  animation: barrido 14s linear infinite;
+}
+.entrar-caja { transition: opacity 0.45s ease, transform 0.45s ease; }
+.entrando .entrar-radar span { animation-duration: 0.9s; }
+.entrando .entrar-caja { opacity: 0; transform: scale(0.98); }
+.temblor { animation: temblor 0.36s ease; }
+@keyframes temblor {
+  20% { transform: translateX(-6px); } 40% { transform: translateX(5px); }
+  60% { transform: translateX(-3px); } 80% { transform: translateX(2px); }
+}
+
+/* Panel: cifras que giran al cambiar, destello en filas que cambiaron, transición entre secciones */
+.cifra-valor.cambio { animation: cambio-cifra 1.2s ease-out; }
+@keyframes cambio-cifra { from { color: var(--acento); text-shadow: 0 0 18px rgba(0, 242, 255, 0.5); } }
+.tabla tbody tr.destello td { animation: destello-celda 1.6s ease-out; }
+@keyframes destello-celda { from { background: rgba(0, 242, 255, 0.14); } to { background: transparent; } }
+main { view-transition-name: contenido; }
+::view-transition-old(contenido) { animation: vt-sale 0.14s ease-in both; }
+::view-transition-new(contenido) { animation: vt-entra 0.22s ease-out both; }
+@keyframes vt-sale { to { opacity: 0; } }
+@keyframes vt-entra { from { opacity: 0; transform: translateY(8px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .entrar-radar span, .temblor, .cifra-valor.cambio, .tabla tbody tr.destello td { animation: none; }
+  .entrar-caja { transition: none; }
+  ::view-transition-old(contenido), ::view-transition-new(contenido) { animation: none; }
+}

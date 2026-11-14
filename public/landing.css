@@ -340,3 +340,4 @@ h3 { font-size: 19px; line-height: 1.25; font-weight: 650; }
   .blip.ping::after, .cursor-term, .banco .entra, .fila.destello { animation: none; }
   .tachable, .pildora-equipo, .terminal-panel { transition: none; }
 }
+.motion .fila-envenenada.leida .inyeccion { text-decoration: none; font-style: italic; color: var(--texto-3); }

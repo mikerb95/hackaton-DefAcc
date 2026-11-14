@@ -90,11 +90,16 @@ function pintarResumen(r) {
     ["semanal", "Al resumen semanal", false],
     ["equipos_afectados", "Equipos afectados", false],
   ];
-  $("#cifras").innerHTML = cifras.map(([clave, etiqueta, destacada]) => `
-    <div class="cifra${destacada ? " destacada" : ""}">
-      <div class="cifra-valor">${esc(c[clave] ?? "-")}</div>
-      <div class="cifra-etiqueta">${esc(etiqueta)}</div>
-    </div>`).join("");
+  // Las cifras se arman una vez; después solo cambia el número, y si cambió, gira hasta el
+  // valor nuevo (ej.: "Exigen acción" baja tras mitigar). Con movimiento reducido, salta.
+  if (!$("#cifras").children.length) {
+    $("#cifras").innerHTML = cifras.map(([clave, etiqueta, destacada]) => `
+      <div class="cifra${destacada ? " destacada" : ""}">
+        <div class="cifra-valor" data-clave="${clave}">-</div>
+        <div class="cifra-etiqueta">${esc(etiqueta)}</div>
+      </div>`).join("");
+  }
+  cifras.forEach(([clave]) => animarCifra($(`.cifra-valor[data-clave="${clave}"]`), c[clave]));
 
   const cob = r.cobertura || {};
   const total = (cob.cruzados || 0) + (cob.sin_evaluar || 0);
@@ -109,6 +114,43 @@ function pintarResumen(r) {
     <div class="barra-cobertura" role="img" aria-label="${pct} % cruzado"><span style="width:${pct}%"></span></div>
     <ul class="cobertura-lista">${motivos || '<li class="vacio">Todo se pudo comparar.</li>'}</ul>`;
 }
+
+const MOVIMIENTO_REDUCIDO = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+function animarCifra(el, valor) {
+  const nuevo = Number(valor);
+  const previo = Number(el.dataset.valor);
+  el.dataset.valor = valor ?? "";
+  if (valor == null || Number.isNaN(nuevo)) { el.textContent = valor ?? "-"; return; }
+  if (Number.isNaN(previo) || previo === nuevo || MOVIMIENTO_REDUCIDO.matches) {
+    el.textContent = nuevo;
+    return;
+  }
+  el.classList.remove("cambio");
+  void el.offsetWidth;
+  el.classList.add("cambio");
+  const inicio = performance.now();
+  const paso = (t) => {
+    const k = Math.min((t - inicio) / 700, 1);
+    const suave = 1 - Math.pow(1 - k, 3);
+    el.textContent = Math.round(previo + (nuevo - previo) * suave);
+    if (k < 1) requestAnimationFrame(paso);
+  };
+  requestAnimationFrame(paso);
+}
+
+// Destello en las filas que cambiaron desde el último pintado (nunca en el primero).
+// Con `nuevas`, también las filas que no estaban (un equipo recién inscrito); sin él, una
+// fila que aparece por cambiar el filtro no destella.
+function marcarCambios(memoria, clave, firma, nuevas = false) {
+  const previa = memoria.get(clave);
+  memoria.set(clave, firma);
+  if (memoria.primera || previa === firma) return "";
+  if (previa === undefined && !nuevas) return "";
+  return " destello";
+}
+const firmasHallazgos = Object.assign(new Map(), { primera: true });
+const firmasEquipos = Object.assign(new Map(), { primera: true });
 
 let productoAbierto = null;
 
@@ -144,8 +186,9 @@ function pintarHallazgos(datos) {
       h.ransomware ? '<span class="pildora p-kev">ransomware</span>' : "",
       h.preciso ? "" : '<span class="pildora">no preciso</span>',
     ].join("");
+    const destello = marcarCambios(firmasHallazgos, h.id, `${h.estado}|${h.comentario || ""}`);
     return `
-    <tr>
+    <tr class="${destello.trim()}">
       <td>${pildoraPrioridad(h.prioridad)}</td>
       <td class="cve">${esc(h.cve)}<div class="etiquetas">${etiquetas}</div></td>
       <td>${esc(h.producto)} <span class="mono" style="color:var(--texto-3)">${esc(h.version_instalada)}</span></td>
@@ -158,6 +201,7 @@ function pintarHallazgos(datos) {
     </tr>`;
   }).join("");
   $("#hallazgos tbody").innerHTML = filas || '<tr><td colspan="8" class="vacio">Ningún hallazgo con esos filtros.</td></tr>';
+  firmasHallazgos.primera = false;
   const resto = lista.length - visibles;
   $("#mas-hallazgos").hidden = resto <= 0;
   $("#mas-hallazgos").textContent = `Mostrar ${Math.min(resto, TANDA)} más (quedan ${resto})`;
@@ -455,7 +499,7 @@ function pintarEquipos(datos) {
     return;
   }
   $("#equipos tbody").innerHTML = datos.equipos.map((e) => `
-    <tr class="clic${e.id === equipoAbierto ? " activa" : ""}" data-equipo="${esc(e.id)}" tabindex="0">
+    <tr class="clic${e.id === equipoAbierto ? " activa" : ""}${marcarCambios(firmasEquipos, e.id, [e.pendiente, e.revocado, e.ultimo_reporte, e.acciones.inmediato, e.acciones.semanal].join("|"), true)}" data-equipo="${esc(e.id)}" tabindex="0">
       <td><div class="mono">${esc(e.nombre)}</div><div class="etiquetas">${pildoraPrioridad(e.peor_prioridad)}${pildoraEstadoEquipo(e)}</div></td>
       <td>${miniTermometro(e.termometro)}</td>
       <td>${nombreSistema(e.so)}</td>
@@ -464,6 +508,7 @@ function pintarEquipos(datos) {
       <td class="num">${esc(e.acciones.semanal)}</td>
       <td><div class="etiquetas" style="margin-top:0">${pildorasPostura(e.postura)}</div></td>
     </tr>`).join("");
+  firmasEquipos.primera = false;
 }
 
 async function abrirEquipo(id) {

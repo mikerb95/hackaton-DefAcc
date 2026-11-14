@@ -52,7 +52,18 @@ function vistaPermitida(nombre) {
   return true;
 }
 
+let primeraVista = true;
+
 function mostrarVista() {
+  // Entre secciones, una transición corta del contenido (la barra lateral queda quieta).
+  // Sin soporte del navegador o con movimiento reducido, cambia de golpe.
+  const suave = !primeraVista && document.startViewTransition
+    && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  primeraVista = false;
+  if (suave) document.startViewTransition(cambiarVista); else cambiarVista();
+}
+
+function cambiarVista() {
   let nombre = location.hash.replace("#", "") || "resumen";
   if (!VISTAS[nombre] || !vistaPermitida(nombre)) nombre = "resumen";
   document.querySelectorAll(".vista").forEach((v) => { v.hidden = v.dataset.vista !== nombre; });
