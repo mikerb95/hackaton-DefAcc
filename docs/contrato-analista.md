@@ -69,6 +69,14 @@ def analizar(grupo: Grupo, defensa: bool, fuente: Fuente | None = None,
   `detalle_cve`. La guarda valida por nombre: un `cve` que no sea `CVE-AAAA-NNNN` se niega, y
   cualquier argumento con saltos de línea, caracteres de control o más de 160 caracteres
   también.
+- **Qué devuelven las herramientas:** identificadores y datos normalizados (producto
+  canónico, versión, nombre de equipo ya saneado, CVE, cifras), nunca el nombre de programa
+  ni el proveedor crudos del inventario. El proveedor sobrevive al normalizador y es un canal
+  de inyección si llega al modelo (`docs/AMENAZAS.md`).
+- **El verificador también revisa** que la prioridad dicha sea la del grupo, que no se niegue
+  la explotación si hay CVE en KEV, que no se recomiende una versión instalada, que no haya
+  dominios fuera del origen y que los comunicados para usuarios y gerencia no nombren
+  equipos. El prompt debe pedir lo mismo para no caer seguido al respaldo.
 - **`traza`**: pásala a `opciones_encierro(LECTURA, traza)` en el brazo con defensa. La suite
   cuenta ahí los intentos negados. Las ejecuciones las registra la propia `fuente`, así que en
   el brazo sin defensa no hace falta registrar nada.
