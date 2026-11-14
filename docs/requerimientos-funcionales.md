@@ -86,7 +86,9 @@ Prioridad alta para RF-601 a RF-605, RF-607 y RF-609, media para RF-606 y RF-608
 - **RF-614** Los paquetes `.zip` del agente para Windows y Linux se arman desde `agente_local/` con una lista cerrada de archivos y fechas fijas (`uv run python -m radar.api.paquetes`), así el mismo código da el mismo zip; nunca llevan `.env`, tokens ni `resources/`. `radar/api/paquetes.py`, `public/descargas/`.
 - **RF-615** La raíz `/` es una página pública que explica el radar (sin cifras de evaluación) y lleva a `/entrar/`; el panel vive en `/panel/` con navegación por secciones (resumen, hallazgos, equipos, inventario, umbrales, actividad del agente y usuarios) y confirmaciones dentro de la página. `public/index.html`, `public/panel/index.html`.
 
-Prioridad alta para RF-610 a RF-613, media para RF-614 y RF-615. Prueba: `tests/test_cuentas.py`. Las tablas de cuentas las crea `radar/api/cuentas.py` (no están en `radar/esquema.sql`).
+- **RF-616** Cada equipo con agente muestra un termómetro de exposición de 0 a 100 en su detalle y una barra corta en la tabla. Sale solo de sus acciones abiertas por prioridad: la peor fija el tramo (inmediata 60 a 100, semanal 25 a 59, informativa 5 a 24, ninguna 0) y la cantidad lo sube dentro de él; bandas bajo, medio, alto y crítico (desde 85). Un equipo pendiente de aprobación o sin reporte queda sin lectura, nunca en 0. Lo calcula código, sin modelo. `radar/api/termometro.py`, `radar/api/agente.py`, `public/panel.js`.
+
+Prioridad alta para RF-610 a RF-613, media para RF-614 a RF-616. Prueba: `tests/test_cuentas.py`. Las tablas de cuentas las crea `radar/api/cuentas.py` (no están en `radar/esquema.sql`).
 
 
 ## Plugin de Claude Code

@@ -32,24 +32,30 @@ def _log(mensaje: str) -> None:
     print(f"[worker] {mensaje}", file=sys.stderr, flush=True)
 
 
-def atender_uno(conexion: Any, sin_agente: bool = False) -> bool:
-    """Atiende un trabajo si hay. Devuelve True si tomó alguno."""
+def atender_uno(conexion: Any, sin_agente: bool = False, abrir: Any = None) -> bool:
+    """Atiende un trabajo si hay. Devuelve True si tomó alguno.
+
+    Con ``abrir`` (Turso), los guardados y el cierre del trabajo usan conexiones nuevas:
+    la del inicio puede haber vencido mientras trabajaba el agente.
+    """
     trabajo = bd.tomar_trabajo(conexion, "analizar")
     if trabajo is None:
         return False
     _log(f"trabajo {trabajo.id}: {trabajo.detalle or 'analizar'}")
+    escritura = analizar.Escritura(conexion, abrir)
     try:
-        resumen = analizar.correr(conexion, sin_agente=sin_agente)
-    except Exception as error:  # noqa: BLE001 - el trabajo queda fallido, el bucle sigue
-        _log(f"trabajo {trabajo.id} fallido: {type(error).__name__}: {error}")
-        bd.terminar_trabajo(
-            conexion, trabajo.id, ok=False, detalle=f"error: {type(error).__name__}"
-        )
+        try:
+            resumen = analizar.correr(conexion, sin_agente=sin_agente, abrir=abrir)
+        except Exception as error:  # noqa: BLE001 - el trabajo queda fallido, el bucle sigue
+            _log(f"trabajo {trabajo.id} fallido: {type(error).__name__}: {error}")
+            escritura.usar(bd.terminar_trabajo, trabajo.id, False, f"error: {type(error).__name__}")
+            return True
+        ok = resumen["errores"] == 0
+        escritura.usar(bd.terminar_trabajo, trabajo.id, ok, json.dumps(resumen))
+        _log(f"trabajo {trabajo.id} {'hecho' if ok else 'fallido'}: {resumen}")
         return True
-    ok = resumen["errores"] == 0
-    bd.terminar_trabajo(conexion, trabajo.id, ok=ok, detalle=json.dumps(resumen))
-    _log(f"trabajo {trabajo.id} {'hecho' if ok else 'fallido'}: {resumen}")
-    return True
+    finally:
+        escritura.cerrar()
 
 
 def principal(argv: list[str] | None = None) -> int:
@@ -59,6 +65,10 @@ def principal(argv: list[str] | None = None) -> int:
     parser.add_argument("--sin-agente", action="store_true", help="Solo respaldo, sin créditos")
     parser.add_argument("--turso", action="store_true", help="Permite escribir en Turso compartido")
     args = parser.parse_args(argv)
+
+    def abrir() -> Any:
+        return analizar.conectar_destino(args.turso)
+
     try:
         conexion = analizar.conectar_destino(args.turso)
     except analizar.DestinoNoPermitido as error:
@@ -68,10 +78,10 @@ def principal(argv: list[str] | None = None) -> int:
     _log("modo sin créditos: " + motivo if motivo else "analista con Claude Agent SDK")
     try:
         if args.una_vez:
-            atender_uno(conexion, args.sin_agente)
+            atender_uno(conexion, args.sin_agente, abrir)
             return 0
         while True:
-            if not atender_uno(conexion, args.sin_agente):
+            if not atender_uno(conexion, args.sin_agente, abrir):
                 time.sleep(args.intervalo)
     except KeyboardInterrupt:
         _log("detenido")

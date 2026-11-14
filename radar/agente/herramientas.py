@@ -20,6 +20,7 @@ from typing import Any, Protocol
 from claude_agent_sdk import create_sdk_mcp_server, tool
 
 from radar import bd
+from radar.agente.verificador import porcentaje
 from radar.contratos import CVE, Grupo, Senales
 
 SERVIDOR = "radar"
@@ -125,6 +126,17 @@ class FuenteBase:
             if (kev := self.senales.kev.get(cve)) is not None and kev.accion
         ]
         return textos_nvd(self.cves.values()) + acciones
+
+    def cifras_origen(self) -> list[str]:
+        """CVSS y EPSS de cada CVE del grupo, con el formato del verificador, para
+        ``decidir(cifras_permitidas=...)``. El agente los ve en ``detalle_cve``; el grupo solo
+        trae los peores, así que sin esto un CVSS correcto de otra CVE se descarta como cifra
+        ajena. Vienen de NVD y EPSS, nunca del inventario."""
+        cifras = {f"{c.cvss:.1f}" for c in self.cves.values() if c.cvss is not None}
+        cifras |= {
+            porcentaje(e.epss) for cve in self.grupo.cves if (e := self.senales.epss.get(cve))
+        }
+        return sorted(cifras)
 
     def detalle_producto(self, producto: str) -> dict[str, Any]:
         if producto != self.grupo.producto:

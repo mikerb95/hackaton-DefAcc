@@ -304,6 +304,7 @@ const BANDAS_TERMOMETRO = [
   { clave: "alto", desde: 60, hasta: 84, etiqueta: "alto" },
   { clave: "critico", desde: 85, hasta: 100, etiqueta: "crítico" },
 ];
+const EXPOSICION = { bajo: "baja", medio: "media", alto: "alta", critico: "crítica" };
 
 function svgTermometro(t) {
   // Escala: 0 en y=232 y 100 en y=28 dentro del tubo.
@@ -346,7 +347,7 @@ function bloqueTermometro(d) {
     `<span class="pildora mono${t.banda === b.clave ? " activa" : ""}"><span class="punto t-${b.clave}"></span>${b.desde}-${b.hasta} ${b.etiqueta}</span>`).join("");
   const lectura = t.medido
     ? `<div class="termometro-valor">${esc(t.nivel)}<span>/100</span></div>
-       <span class="pildora termometro-banda t-${esc(t.banda)}"><span class="punto"></span>${esc(t.nivel === 0 ? "Sin acciones pendientes" : `Exposición ${t.etiqueta.toLowerCase()}`)}</span>
+       <span class="pildora termometro-banda t-${esc(t.banda)}"><span class="punto"></span>${esc(t.nivel === 0 ? "Sin acciones pendientes" : `Exposición ${EXPOSICION[t.banda] || t.etiqueta.toLowerCase()}`)}</span>
        <p class="termometro-texto">${total
          ? `Sale de ${esc(total)} ${total === 1 ? "acción abierta" : "acciones abiertas"} en este equipo. La peor prioridad fija el tramo y la cantidad lo sube dentro de él: con una sola acción inmediata ya marca alto.`
          : "Con lo que se pudo revisar no queda nada por hacer en este equipo."}</p>`
@@ -354,7 +355,7 @@ function bloqueTermometro(d) {
        <span class="pildora termometro-banda"><span class="punto"></span>${esc(t.etiqueta)}</span>
        <p class="termometro-texto">${esc(t.motivo)} Un equipo sin revisar no se cuenta como sano.</p>`;
   const sinEvaluar = d.cobertura.sin_evaluar
-    ? `<p class="termometro-nota">${esc(d.cobertura.sin_evaluar)} programas sin evaluar no suman: están en "Sin revisar".</p>` : "";
+    ? `<p class="termometro-nota">${esc(d.cobertura.sin_evaluar)} ${d.cobertura.sin_evaluar === 1 ? "programa sin evaluar no suma: está" : "programas sin evaluar no suman: están"} en "Sin revisar".</p>` : "";
   return `
     <div class="termometro">
       <div class="termometro-dibujo">${svgTermometro(t)}</div>
