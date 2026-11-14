@@ -100,25 +100,32 @@ def _diccionario():
     return nz.diccionario_por_defecto()
 
 
-@cache
-def destino_de_fila(caso: CasoInyeccion, validar_equipo: bool) -> str:
-    """A dónde llega la fila envenenada por la ingesta real del radar.
+def entrada_real(caso: CasoInyeccion, sanear_equipo: bool) -> tuple[str, str]:
+    """Ver ``_entrada_real``. Se cachea por ID: el caso no se puede usar como clave."""
+    return _entrada_real(caso.id, sanear_equipo)
 
-    ``"hallazgo"`` si el normalizador la lleva al mismo producto y versión del caso (y el
-    cruce la vuelve hallazgo); si no, ``"cobertura:<motivo>"`` u ``"otro_producto"``. Con
-    ``validar_equipo``, primero pasa por ``radar.seguridad.equipos.nombre_equipo_valido``
-    (capa de defensa agregada tras la ronda 3).
+
+@cache
+def _entrada_real(caso_id: str, sanear_equipo: bool) -> tuple[str, str]:
+    """A dónde llega la fila envenenada por la ingesta real, y con qué nombre de equipo.
+
+    Devuelve ``(destino, equipo)``. ``destino`` es ``"hallazgo"`` si el normalizador la
+    lleva al mismo producto y versión del caso (y el cruce la vuelve hallazgo);
+    ``"cobertura:<motivo>"`` si no se puede comparar; ``"otro_producto"`` si cae en otro.
+    Con ``sanear_equipo`` (capa agregada tras la ronda 3) el nombre de equipo pasa antes por
+    ``radar.seguridad.equipos.sanear_nombre_equipo``: la fila se cruza igual, con el nombre
+    saneado.
     """
     from datetime import UTC, datetime
 
     from radar.contratos import FilaInventario
     from radar.ingesta import normalizador as nz
-    from radar.seguridad.equipos import MOTIVO_EQUIPO_INVALIDO, nombre_equipo_valido
+    from radar.seguridad.equipos import sanear_nombre_equipo
 
-    if validar_equipo and not nombre_equipo_valido(caso.equipo):
-        return f"cobertura:{MOTIVO_EQUIPO_INVALIDO}"
+    caso = next(c for c in TODOS if c.id == caso_id)
+    equipo = sanear_nombre_equipo(caso.equipo) if sanear_equipo else caso.equipo
     fila = FilaInventario(
-        equipo=caso.equipo,
+        equipo=equipo,
         programa=caso.programa,
         version=caso.version,
         proveedor=caso.proveedor,
@@ -128,11 +135,11 @@ def destino_de_fila(caso: CasoInyeccion, validar_equipo: bool) -> str:
     r = nz.normalizar([fila], _diccionario(), usar_alias=True, usar_modelo=False)
     destino = next(iter(r.por_fila.values()))
     if destino.startswith("cobertura:"):
-        return destino
+        return destino, equipo
     activo = next(a for a in r.activos if a.clave == destino)
     if caso.producto_real in activo.cpes and activo.version == caso.version_real:
-        return "hallazgo"
-    return "otro_producto"
+        return "hallazgo", equipo
+    return "otro_producto", equipo
 
 
 # ---------------------------------------------------------------------------
@@ -162,8 +169,13 @@ class Escenario:
     origen: str  # "base" o "congelado"
     flota: list[str] = field(default_factory=list)
 
-    # A dónde llegó la fila envenenada en esta variante del escenario.
+    # A dónde llegó la fila envenenada en esta variante, y con qué nombre de equipo.
     destino: str = "hallazgo"
+    equipo_fila: str = ""
+
+    def __post_init__(self) -> None:
+        if not self.equipo_fila:
+            self.equipo_fila = self.caso.equipo
 
     @property
     def equipos_ajenos(self) -> list[str]:
@@ -172,24 +184,31 @@ class Escenario:
     def efectivo(self, defensa: bool, entrada: str) -> Escenario:
         """El escenario que ve el agente.
 
-        ``entrada="forzada"``: la fila envenenada llega siempre al grupo y a las
+        ``entrada="forzada"``: la fila envenenada llega tal cual al grupo y a las
         herramientas; mide las defensas del agente aisladas (peor caso de la entrada).
         ``entrada="real"``: la fila pasa por la ingesta real (normalizador y, con defensa,
-        la validación del nombre de equipo). Si no llega a hallazgo, el agente no la ve y
-        su equipo no está en el grupo.
+        el saneado del nombre de equipo). Si no llega a hallazgo, el agente no la ve y su
+        equipo no está en el grupo.
         """
         if entrada == "forzada":
             return self
-        destino = destino_de_fila(self.caso, validar_equipo=defensa)
-        if destino == "hallazgo":
-            return dataclasses.replace(self, destino=destino)
-        equipos = [e for e in self.grupo.equipos if e != self.caso.equipo]
+        destino, equipo = entrada_real(self.caso, sanear_equipo=defensa)
+        original = self.caso.equipo
+        if destino != "hallazgo":
+            equipos = [e for e in self.grupo.equipos if e != original]
+            filas = [f for f in self.filas if f["equipo"] != original]
+            flota = [e for e in self.flota if e != original]
+        else:
+            equipos = sorted(equipo if e == original else e for e in self.grupo.equipos)
+            filas = [{**f, "equipo": equipo} if f["equipo"] == original else f for f in self.filas]
+            flota = [equipo if e == original else e for e in self.flota]
         return dataclasses.replace(
             self,
             grupo=self.grupo.model_copy(update={"equipos": equipos}),
-            filas=[f for f in self.filas if f["equipo"] != self.caso.equipo],
-            flota=[e for e in self.flota if e != self.caso.equipo],
+            filas=filas,
+            flota=flota,
             destino=destino,
+            equipo_fila=equipo,
         )
 
 

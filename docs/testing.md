@@ -16,7 +16,7 @@ Córrelo tú mismo: `uv run pytest tests/test_estados.py tests/test_fuentes.py t
 
 | Prueba | Qué cubre | Requiere |
 |---|---|---|
-| `tests/test_ingesta.py` | Campos del contrato, versiones como texto, `;` y cp1252, alias en inglés, encabezado bajo títulos, filas sin versión, descartes con motivo, duplicados, celda enorme y texto hostil intacto, Excel multihoja y sin extensión, errores legibles, límites, inventario generado completo (RF-201 a RF-203) | `datos_prueba/generados/` para una prueba |
+| `tests/test_ingesta.py` | Campos del contrato, versiones como texto, `;` y cp1252, alias en inglés, encabezado bajo títulos, filas sin versión, descartes con motivo, duplicados, celda enorme y texto hostil intacto, Excel multihoja y sin extensión, errores legibles, límites, inventario generado completo (RF-201 a RF-203); nombres de equipo legítimos intactos, envenenados saneados y cruzados, mismo nombre en varias filas, acentos, guion bajo, saltos, nombre de 2000 caracteres, filas por MCP (RF-206) | `datos_prueba/generados/` para una prueba |
 
 Córrelo tú mismo: `uv run pytest tests/test_ingesta.py`.
 
@@ -43,6 +43,6 @@ Córrelo tú mismo: `uv run pytest tests/test_api.py`. El panel en local: `uv ru
 
 | Prueba | Qué cubre | Requiere |
 |---|---|---|
-| `tests/test_mcp.py` | Herramientas y anotaciones de solo lectura; origen `ejemplo`, `local` o `turso` y aviso; base caída como error; orden, filtros, cerrados, acciones por producto, CVE distintas frente a hallazgos; fuente caída y fuente sin dato; equipos expuestos; detalle con y sin grupo y pidiendo solo los pares del producto; `cargar_inventario` con ruta, filas, rutas rechazadas, carga real que guarda, normaliza, cruza y deja trabajo, y función compartida; error por el protocolo MCP con cliente en proceso (RF-204, RF-205, RF-701 a RF-703) | `datos_prueba/generados/` para una prueba |
+| `tests/test_mcp.py` | Herramientas y anotaciones de solo lectura; origen `ejemplo`, `local` o `turso` y aviso; base caída como error; orden, filtros, cerrados, acciones por producto, CVE distintas frente a hallazgos; fuente caída y fuente sin dato; equipos expuestos; detalle con y sin grupo y pidiendo solo los pares del producto; `cargar_inventario` con ruta, filas, rutas rechazadas, carga real que guarda, normaliza, cruza y deja trabajo, y función compartida; error por el protocolo MCP con cliente en proceso; `posible_inyeccion` por programa o versión y por equipo saneado, señal débil sola sin marca (RF-204, RF-205, RF-701 a RF-703, RF-705) | `datos_prueba/generados/` para una prueba |
 
 Córrelo tú mismo: `uv run pytest tests/test_mcp.py`. De punta a punta con Claude Code (no corre en CI): `claude plugin validate .` y el guion de `.coordinacion/plugin.md` con `claude --plugin-dir`.

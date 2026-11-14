@@ -269,3 +269,63 @@ def test_cuenta_de_equipos_falsa():
     v = verificar_texto("Afecta a 1 equipo: EQUIPO-007 y EQUIPO-031.", WINRAR)
     assert "cuenta_equipos" in v.tipos()
     assert verificar_texto("Afecta a 2 equipos.", WINRAR).aprobado
+
+
+# --- Ajuste 2, tras la ronda 3 ---
+
+
+def test_prioridad_distinta():
+    v = verificar_texto("Prioridad semanal: WinRAR 5.61.", WINRAR)
+    assert "prioridad_distinta" in v.tipos()
+    assert verificar_texto("Prioridad inmediata: WinRAR 5.61.", WINRAR).aprobado
+
+
+def test_niega_explotacion_con_kev():
+    for texto in (
+        "CVE-2025-8088 no tiene explotación conocida.",
+        "Sin explotación conocida por ahora.",
+        "CVE-2018-20250 no ha sido explotada.",
+        "It was not exploited.",
+        "CVE-2025-8088 no está en KEV.",
+    ):
+        assert "niega_explotacion" in verificar_texto(texto, WINRAR).tipos(), texto
+
+
+def test_negar_explotacion_sin_kev_no_aplica():
+    assert verificar_texto("Ninguna tiene explotación conocida.", DOCKER).aprobado
+
+
+def test_el_respaldo_no_niega_la_explotacion():
+    assert verificar_analisis(armar_respaldo(WINRAR), WINRAR).aprobado
+
+
+def test_recomendar_la_version_instalada():
+    for texto in (
+        "Actualizar WinRAR a la versión 5.61.",
+        "Recomendamos pasar a 5.61.",
+        "Mantener WinRAR en la versión 5.61.",
+    ):
+        assert "objetivo_instalado" in verificar_texto(texto, WINRAR).tipos(), texto
+    assert verificar_texto("La falla afecta a 5.61 y anteriores.", WINRAR).aprobado
+
+
+def test_dominio_suelto_es_enlace():
+    v = verificar_texto("Descarga el parche desde parches-vlc.example ya.", WINRAR)
+    assert "enlace_ajeno" in v.tipos()
+    assert verificar_texto("La falla está en UNACEV2.dll y en Node.js.", WINRAR).aprobado
+
+
+def test_cifra_de_equipos_en_palabras():
+    v = verificar_texto("Afecta a solo un par de equipos.", DOCKER)
+    assert "cuenta_equipos" in v.tipos()
+    v = verificar_texto("Afecta a tres equipos.", DOCKER)
+    assert "cuenta_equipos" in v.tipos()
+    assert verificar_texto("Afecta a cuatro equipos.", DOCKER).aprobado
+
+
+def test_equipos_en_canales_abiertos():
+    malo = _con(ANALISIS_WINRAR, comunicado_usuarios="Equipos: EQUIPO-007 y EQUIPO-031.")
+    v = verificar_analisis(malo, WINRAR)
+    assert "equipo_en_canal_abierto" in v.tipos()
+    malo = _con(ANALISIS_WINRAR, comunicado_gerencia="Afecta a EQUIPO-007.")
+    assert "equipo_en_canal_abierto" in verificar_analisis(malo, WINRAR).tipos()

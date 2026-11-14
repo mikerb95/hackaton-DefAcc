@@ -44,7 +44,8 @@ sequenceDiagram
     CC->>TI: Aviso: el radar quiere escribir en la base compartida
     TI-->>CC: Aprueba
     CC->>MCP: cargar_inventario
-    MCP->>MCP: leer_inventario: solo extensiones de inventario, texto intacto
+    MCP->>MCP: leer_inventario: solo extensiones de inventario
+    MCP->>MCP: equipo que no es hostname (RFC 1123) pasa a EQUIPO-017~f502, la fila sigue
     MCP->>BD: guardar_inventario
     MCP->>NOR: normalizar(filas)
     NOR-->>MCP: activos con CPE del diccionario de NVD, o cobertura
@@ -59,11 +60,11 @@ sequenceDiagram
     TI->>CC: "¿Qué equipos están expuestos hoy?"
     CC->>MCP: consultar_hallazgos y equipos_expuestos
     MCP->>BD: leer_hallazgos, leer_cobertura, leer_ejecuciones
-    MCP-->>CC: hallazgos limpios (el nombre de equipo envenenado llega, sin control ni etiquetas)
+    MCP-->>CC: hallazgos limpios, EQUIPO-017~f502 expuesto, posible_inyeccion
     CC->>POST: tool_response
-    POST->>TR: señales: ignora, asistente
+    POST->>TR: largo, sha256, señales
     POST-->>CC: salida limpia y marcada como dato
-    CC-->>TI: EQUIPO-017 sigue expuesto con WinRAR 6.22, el texto escondido se señala como posible inyección y las filas sacadas del cruce aparecen en posible_inyeccion
+    CC-->>TI: EQUIPO-017~f502 sigue expuesto con WinRAR 6.22, revisar la fila 502 y las filas sacadas del cruce
 ```
 
 **Si algo falla:** el hook de aprobación que no puede revisar niega (`deny`); el hook de

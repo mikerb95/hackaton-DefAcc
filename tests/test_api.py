@@ -5,19 +5,12 @@ Con datos de ejemplo y con una base sqlite temporal (el mismo esquema de Turso).
 
 from __future__ import annotations
 
-import shutil
-import sqlite3
-from pathlib import Path
-
 import pytest
 from fastapi.testclient import TestClient
 
 from radar.api import datos as modulo_datos
 from radar.api.rutas import texto_objetivo
 from radar.contratos import Grupo
-
-RAIZ = Path(__file__).resolve().parent.parent
-BASE_LOCAL = RAIZ / "datos_locales" / "radar.db"
 
 
 def _cliente(monkeypatch, **entorno) -> TestClient:
@@ -138,14 +131,10 @@ def test_inventario_con_ejemplos_no_cruza(cliente):
     assert r["cruce"] == "pendiente"
 
 
-@pytest.mark.skipif(not BASE_LOCAL.exists(), reason="falta datos_locales/radar.db (descargar)")
-def test_inventario_cruza_contra_la_base(monkeypatch, tmp_path):
-    copia = tmp_path / "radar.db"
-    shutil.copy(BASE_LOCAL, copia)
-    # La base local es compartida: otro frente pudo dejar hallazgos de otro inventario.
-    with sqlite3.connect(copia) as con:
-        for tabla in ("hallazgos", "cobertura", "inventario", "analisis", "trabajos"):
-            con.execute(f"DELETE FROM {tabla}")
+def test_inventario_cruza_contra_la_base(monkeypatch, tmp_path, base_temporal):
+    # Base propia en tmp_path (conftest): esquema y CVE de WinRAR, Chrome y Docker con KEV y
+    # EPSS. No depende de datos_locales/radar.db, que es compartida y no existe en CI.
+    copia = tmp_path / "base_temporal.db"
     c = _cliente(monkeypatch, RADAR_DATOS="base", RADAR_SQLITE=str(copia))
     csv = b"equipo,programa,version\nPC1,WinRAR 5.61 (64-bit),5.61\nPC2,Programa Inventado,1.0\n"
     r = c.post("/api/inventario", files={"archivo": ("i.csv", csv)}).json()

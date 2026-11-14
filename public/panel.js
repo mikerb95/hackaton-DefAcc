@@ -262,10 +262,11 @@ function pintarTrazas(datos) {
     pintarAuxiliar("#trazas", datos.disponible ? { motivo: "El agente todavía no ha llamado herramientas." } : datos);
     return;
   }
-  const clase = { permitida: "p-ok", negada: "p-caida", limpiada: "p-semanal" };
+  const clase = { permitida: "p-ok", negada: "p-caida", limpiada: "p-semanal", aprobacion_pedida: "p-respaldo" };
+  const etiqueta = { aprobacion_pedida: "aprobación pedida" };
   $("#trazas").classList.remove("vacio");
   $("#trazas").innerHTML = `<ul class="cobertura-lista">${datos.trazas.slice(0, 30).map((t) => `
-    <li class="traza"><div><span class="pildora ${clase[t.decision] || ""}"><span class="punto"></span>${esc(t.decision)}</span>
+    <li class="traza"><div><span class="pildora ${clase[t.decision] || ""}"><span class="punto"></span>${esc(etiqueta[t.decision] || t.decision)}</span>
       <span class="mono">${esc(t.herramienta)}</span>
       <span class="mono traza-hora">${esc(fmtHora(t.momento))}</span></div>
       ${t.entrada ? `<div class="traza-entrada mono">${esc(String(t.entrada).slice(0, 160))}</div>` : ""}</li>`).join("")}</ul>`;
