@@ -342,3 +342,4 @@ body { overflow-x: clip; }
   .tachable, .pildora-equipo, .terminal-panel { transition: none; }
 }
 .motion .fila-envenenada.leida .inyeccion { text-decoration: none; font-style: italic; color: var(--texto-3); }
+.fila[data-veredicto] { padding-right: 34px; }

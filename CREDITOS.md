@@ -93,6 +93,7 @@ productos y versiones de prueba se armó ese mismo día con esos datos públicos
 | [Claude Agent SDK](https://github.com/anthropics/claude-agent-sdk-python) | MIT | Analista |
 | [MCP SDK](https://github.com/modelcontextprotocol/python-sdk) | MIT | Servidor MCP del plugin |
 | [Chart.js](https://www.chartjs.org) 4.4.1 | MIT | Gráficos del dashboard |
+| [GSAP](https://gsap.com) 3.13.0 (core, SplitText, ScrambleText) | Licencia estándar de GSAP (gratuita, incluye plugins) | Movimiento de la landing |
 | [pytest](https://pytest.org) | MIT | Pruebas |
 | [Ruff](https://docs.astral.sh/ruff/) | MIT | Formato y lint |
 
