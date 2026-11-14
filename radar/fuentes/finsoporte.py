@@ -37,7 +37,12 @@ CABECERAS = {"User-Agent": "radar-vulnerabilidades/0.1"}
 
 
 def reducir(ciclos: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Deja de cada ciclo lo que usa el radar. `eol` en false pasa a None (sin fecha)."""
+    """Deja de cada ciclo lo que usa el radar.
+
+    `eol` en endoflife.date puede ser una fecha, `false` (aún con soporte, sin fecha de fin) o
+    `true` (ya sin soporte, fecha desconocida). `true` se guarda como `vencido_sin_fecha`:
+    nunca como "sin fecha", que se leería como un sistema con soporte.
+    """
     salida = []
     for c in ciclos:
         fin = c.get("eol")
@@ -45,6 +50,7 @@ def reducir(ciclos: list[dict[str, Any]]) -> list[dict[str, Any]]:
             {
                 "ciclo": str(c.get("cycle")),
                 "fin": fin if isinstance(fin, str) else None,
+                "vencido_sin_fecha": fin is True,
                 "build": c.get("latest") if isinstance(c.get("latest"), str) else None,
                 "lts": bool(c.get("lts")),
             }
@@ -86,6 +92,11 @@ def ciclos(producto: str, catalogo: dict[str, Any] | None = None) -> list[dict[s
 
 def fecha(ciclo: dict[str, Any]) -> date | None:
     return date.fromisoformat(ciclo["fin"]) if ciclo.get("fin") else None
+
+
+def vencido_sin_fecha(ciclo: dict[str, Any]) -> bool:
+    """El ciclo ya no tiene soporte aunque endoflife.date no publique la fecha (`eol: true`)."""
+    return bool(ciclo.get("vencido_sin_fecha"))
 
 
 def principal() -> int:

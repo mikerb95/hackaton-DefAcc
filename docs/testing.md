@@ -73,3 +73,11 @@ Córrelo tú mismo: `uv run pytest tests/test_agente_local.py tests/test_agente_
 
 Las cifras salen de `uv run python -m evals.medir` -> `evals/reporte.md`. Córrelo tú mismo:
 `uv run pytest tests/test_limpieza.py tests/test_equipos.py tests/test_hooks.py tests/test_verificador.py tests/test_plugin.py tests/test_inyeccion.py`.
+
+## Analista y worker
+
+| Prueba | Qué cubre | Requiere |
+|---|---|---|
+| `tests/test_analista.py` | Esquema sin campos del código y todo obligatorio; reglas en el prompt; pedido con el producto limpio; salida del modelo a `Analisis` (producto y origen desde el código, `None` si no cumple); salida honesta que pasa el verificador; opciones por brazo (dontAsk, integradas retiradas, hooks con `on_failure="block"`, escritura solo sin defensa); `analizar` que nunca lanza; herramientas contra fuente falsa y contra la base sin texto crudo; worker en modo respaldo que guarda y cierra el trabajo; worker que se niega a Turso sin `--turso` (RF-401 a RF-406). Con `-m agente`, un producto real con el encierro y el verificador | nada (`-m agente`: `ANTHROPIC_API_KEY`) |
+
+Córrelo tú mismo: `uv run pytest tests/test_analista.py`. Con Claude (gasta créditos): `uv run pytest -m agente tests/test_analista.py`.

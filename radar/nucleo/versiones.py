@@ -12,7 +12,7 @@ Reglas:
 from __future__ import annotations
 
 import re
-from functools import total_ordering
+from functools import lru_cache, total_ordering
 
 MAX_COMPONENTES = 4
 
@@ -85,8 +85,13 @@ class Version:
         return self.texto
 
 
+@lru_cache(maxsize=65_536)
 def leer(texto: str | None) -> Version | None:
-    """Lee una versión. Devuelve None si falta o no es comparable."""
+    """Lee una versión. Devuelve None si falta o no es comparable.
+
+    Memorizada: el cruce lee las mismas versiones de rango una vez por activo (más de 100 000
+    rangos por corrida). Las `Version` devueltas no se modifican.
+    """
     if texto is None:
         return None
     limpio = texto.strip()

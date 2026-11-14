@@ -300,61 +300,80 @@ def _fecha(texto: str | None) -> datetime | None:
     return datetime.fromisoformat(texto) if texto else None
 
 
-@conexion_opcional()
-def leer_cves(conexion: Any, pares: Iterable[str] | None = None) -> list[CVE]:
-    """CVE con sus rangos. Con `pares` ('vendor:producto'), solo las que tocan esos pares.
+# Par 'vendor:producto' de una fila de cve_rangos, sin escapes de CPE y en minúsculas.
+_EXPR_PAR = "lower(vendor) || ':' || replace(lower(producto), '\\', '')"
+# Columnas que el cruce necesita de una CVE (sin descripción, referencias, CWE ni vector, que
+# son el 95% de los bytes y por HTTP cuestan decenas de segundos).
+_COLUMNAS_LIGERAS = (
+    "id, publicada, modificada, estado, cvss, severidad, version_cvss, sin_productos"
+)
 
-    Los pares se comparan sin los escapes de CPE (notepad++ == notepad\\+\\+).
+
+def _pares_normalizados(pares: Iterable[str]) -> list[str]:
+    return sorted({p.replace("\\", "").lower() for p in pares})
+
+
+def _rango(r: dict[str, Any]) -> Rango:
+    return Rango(
+        cpe=r["cpe"],
+        vendor=r["vendor"],
+        producto=r["producto"],
+        version=r["version"],
+        desde=r["desde"],
+        desde_incluye=bool(r["desde_incluye"]),
+        hasta=r["hasta"],
+        hasta_incluye=bool(r["hasta_incluye"]),
+    )
+
+
+@conexion_opcional()
+def leer_cves(
+    conexion: Any, pares: Iterable[str] | None = None, completas: bool = True
+) -> list[CVE]:
+    """CVE con sus rangos. Con `pares` ('vendor:producto'), solo las que tocan esos pares y
+    solo los rangos de esos pares (los de otros productos no le sirven al cruce).
+
+    Los pares se comparan sin los escapes de CPE (notepad++ == notepad\\+\\+). Con
+    `completas=False` no trae descripción, referencias, CWE ni vector: es lo que usa el cruce.
+    Son dos consultas en total (CVE y rangos), pensadas para Turso, donde cada consulta es una
+    petición HTTP.
     """
+    columnas = "*" if completas else _COLUMNAS_LIGERAS
     if pares is None:
-        filas = _consultar(conexion, "SELECT * FROM cves")
+        filas = _consultar(conexion, f"SELECT {columnas} FROM cves")
+        filas_rangos = _consultar(conexion, "SELECT * FROM cve_rangos")
     else:
-        lista = sorted({p.replace("\\", "").lower() for p in pares})
+        lista = _pares_normalizados(pares)
         if not lista:
             return []
+        m = _marcadores(len(lista))
         filas = _consultar(
             conexion,
-            "SELECT * FROM cves WHERE id IN (SELECT DISTINCT cve FROM cve_rangos WHERE "
-            f"lower(vendor) || ':' || replace(lower(producto), '\\', '') IN "
-            f"({_marcadores(len(lista))}))",
+            f"SELECT {columnas} FROM cves WHERE id IN "
+            f"(SELECT cve FROM cve_rangos WHERE {_EXPR_PAR} IN ({m}))",
             lista,
+        )
+        filas_rangos = _consultar(
+            conexion, f"SELECT * FROM cve_rangos WHERE {_EXPR_PAR} IN ({m})", lista
         )
     if not filas:
         return []
     rangos: dict[str, list[Rango]] = {}
-    ids = [f["id"] for f in filas]
-    for i in range(0, len(ids), LOTE):
-        lote = ids[i : i + LOTE]
-        for r in _consultar(
-            conexion,
-            f"SELECT * FROM cve_rangos WHERE cve IN ({_marcadores(len(lote))})",
-            lote,
-        ):
-            rangos.setdefault(r["cve"], []).append(
-                Rango(
-                    cpe=r["cpe"],
-                    vendor=r["vendor"],
-                    producto=r["producto"],
-                    version=r["version"],
-                    desde=r["desde"],
-                    desde_incluye=bool(r["desde_incluye"]),
-                    hasta=r["hasta"],
-                    hasta_incluye=bool(r["hasta_incluye"]),
-                )
-            )
+    for r in filas_rangos:
+        rangos.setdefault(r["cve"], []).append(_rango(r))
     return [
         CVE(
             id=f["id"],
             publicada=_fecha(f["publicada"]),
             modificada=_fecha(f["modificada"]),
             estado=f["estado"],
-            descripcion=f["descripcion"] or "",
+            descripcion=f.get("descripcion") or "",
             cvss=f["cvss"],
             severidad=f["severidad"],
-            vector=f["vector"],
+            vector=f.get("vector"),
             version_cvss=f["version_cvss"],
-            cwes=_de_json(f["cwes"], []),
-            referencias=[Referencia(**r) for r in _de_json(f["referencias"], [])],
+            cwes=_de_json(f.get("cwes"), []),
+            referencias=[Referencia(**r) for r in _de_json(f.get("referencias"), [])],
             rangos=rangos.get(f["id"], []),
             sin_productos=bool(f["sin_productos"]),
         )
@@ -408,9 +427,19 @@ def guardar_epss(conexion: Any, epss: dict[str, SenalEpss]) -> int:
 
 
 @conexion_opcional()
-def leer_senales(conexion: Any, cves: Iterable[str] | None = None) -> Senales:
-    """KEV y EPSS indexados por CVE. Con `cves`, solo esas."""
-    if cves is None:
+def leer_senales(
+    conexion: Any, cves: Iterable[str] | None = None, pares: Iterable[str] | None = None
+) -> Senales:
+    """KEV y EPSS indexados por CVE. Con `cves`, solo esas. Con `pares`, las de las CVE que
+    tocan esos pares, en dos consultas (una por tabla) en vez de lotes por ID."""
+    if pares is not None:
+        lista = _pares_normalizados(pares)
+        if not lista:
+            return Senales()
+        sub = f"(SELECT cve FROM cve_rangos WHERE {_EXPR_PAR} IN ({_marcadores(len(lista))}))"
+        filas_kev = _consultar(conexion, f"SELECT * FROM kev WHERE cve IN {sub}", lista)
+        filas_epss = _consultar(conexion, f"SELECT * FROM epss WHERE cve IN {sub}", lista)
+    elif cves is None:
         filas_kev = _consultar(conexion, "SELECT * FROM kev")
         filas_epss = _consultar(conexion, "SELECT * FROM epss")
     else:
@@ -992,6 +1021,25 @@ def importar_trazas(conexion: Any, ruta: Path | str) -> int:
     return len(nuevas)
 
 
+# Tablas que dependen del inventario cargado. CVE, KEV, EPSS, trazas, ejecuciones y las
+# decisiones del normalizador (programa_cpe) se conservan.
+TABLAS_DEL_INVENTARIO = ("inventario", "hallazgos", "cobertura", "analisis", "trabajos")
+
+
+def conteos(conexion: Any, tablas: Iterable[str]) -> dict[str, int]:
+    return {t: contar(conexion, t) for t in tablas}
+
+
+def vaciar_inventario(conexion: Any) -> dict[str, int]:
+    """Borra lo que depende del inventario (análisis incluye las aprobaciones). Devuelve cuántas
+    filas había en cada tabla. No toca CVE, KEV, EPSS ni trazas."""
+    antes = conteos(conexion, TABLAS_DEL_INVENTARIO)
+    for tabla in TABLAS_DEL_INVENTARIO:
+        conexion.execute(f"DELETE FROM {tabla}")
+    conexion.commit()
+    return antes
+
+
 def principal(argv: list[str] | None = None) -> int:
     import argparse
 
@@ -1000,7 +1048,29 @@ def principal(argv: list[str] | None = None) -> int:
     trazas = sub.add_parser("importar-trazas", help="Carga traza.jsonl de la guarda del plugin")
     trazas.add_argument("ruta", type=Path)
     trazas.add_argument("--sqlite", type=Path, help="Fuerza un sqlite local en esta ruta")
+    vaciar = sub.add_parser(
+        "vaciar-inventario",
+        help="Borra inventario, hallazgos, cobertura, análisis (con aprobaciones) y trabajos",
+    )
+    vaciar.add_argument("--si", action="store_true", help="Confirma el borrado")
+    vaciar.add_argument("--sqlite", type=Path, help="Fuerza un sqlite local en esta ruta")
     args = p.parse_args(argv)
+
+    if args.orden == "vaciar-inventario":
+        destino_texto = f"local {args.sqlite}" if args.sqlite else destino()
+        conexion = conectar(ruta_sqlite=args.sqlite)
+        try:
+            crear_esquema(conexion)
+            if not args.si:
+                print(f"[bd] Base: {destino_texto}", flush=True)
+                print(f"[bd] Se borrarían: {conteos(conexion, TABLAS_DEL_INVENTARIO)}", flush=True)
+                print("[bd] Se conservan CVE, KEV, EPSS y trazas. Repite con --si.", flush=True)
+                return 1
+            antes = vaciar_inventario(conexion)
+        finally:
+            conexion.close()
+        print(f"[bd] Base: {destino_texto}. Borrado: {antes}", flush=True)
+        return 0
 
     conexion = conectar(ruta_sqlite=args.sqlite)
     try:

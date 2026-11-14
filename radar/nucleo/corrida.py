@@ -32,7 +32,7 @@ from radar import bd
 from radar.config import Umbrales
 from radar.contratos import CVE, Activo, Cobertura, Grupo, Hallazgo, Prioridad, Senales
 from radar.nucleo.agrupar import ESTADOS_CERRADOS, agrupar
-from radar.nucleo.cruce import cruzar_activo
+from radar.nucleo.cruce import candidatas, cruzar_activo, indexar
 from radar.nucleo.prioridad import hallazgos_de_activo, ordenar
 
 VENTANA_LINEA_BASE = timedelta(days=7)
@@ -73,11 +73,11 @@ def cruzar(
     fuera (sin CPE, por ejemplo) y se suman a la cobertura del resultado."""
     umbrales = umbrales or Umbrales.desde_entorno()
     detectado = detectado or datetime.now(UTC)
-    lista_cves = list(cves)
+    indice = indexar(cves)
     hallazgos: list[Hallazgo] = []
     cobertura = list(cobertura_previa)
     for activo in activos:
-        r = cruzar_activo(activo, lista_cves)
+        r = cruzar_activo(activo, candidatas(indice, activo.cpes))
         cobertura += r.cobertura
         hallazgos += hallazgos_de_activo(activo, r, senales, umbrales, detectado)
     return ResultadoCruce(
@@ -113,8 +113,9 @@ def correr(
     ahora = ahora or datetime.now(UTC)
     lista = list(activos)
     pares = {p for a in lista for p in a.cpes}
-    cves = bd.leer_cves(conexion, pares) if pares else []
-    senales = bd.leer_senales(conexion, [c.id for c in cves])
+    # Dos consultas para CVE y rangos, y dos para señales: en Turso cada una es una petición.
+    cves = bd.leer_cves(conexion, pares, completas=False) if pares else []
+    senales = bd.leer_senales(conexion, pares=pares) if pares else Senales()
     resultado = cruzar(lista, cves, senales, umbrales, ahora, cobertura_previa)
 
     anteriores = bd.leer_hallazgos(conexion)
@@ -192,7 +193,8 @@ def cargar_inventario(
     usar_modelo: bool = False,
     umbrales: Umbrales | None = None,
 ) -> tuple[Any, Any, ResultadoCruce]:
-    """Lee un archivo de inventario, lo normaliza, lo guarda y lo cruza.
+    """Lee un archivo de inventario, lo normaliza, lo guarda y lo cruza (todo el inventario
+    guardado si hay equipos con agente local; si no, solo el archivo).
 
     Devuelve (lectura, normalizacion, resultado). Por defecto sin el desempate con Claude, para
     que la base compartida sea reproducible; `usar_modelo=True` lo activa.
@@ -205,8 +207,19 @@ def cargar_inventario(
     filas = [a_contrato(f) for f in lectura.filas]
     normalizacion = normalizar(filas, usar_modelo=usar_modelo)
     bd.guardar_inventario(conexion, filas, reemplazar=True)
-    bd.guardar_decisiones_cpe(conexion, normalizacion.decisiones.values())
-    resultado = correr(conexion, normalizacion.activos, normalizacion.cobertura, umbrales)
+
+    # Con agentes locales inscritos el inventario tiene dos orígenes (archivo y reportes) más
+    # el sistema operativo de cada equipo: se cruza todo junto. Cruzar solo el archivo
+    # propondría como resueltos los hallazgos que vienen de los agentes.
+    from radar.equipos import almacen
+
+    if almacen.hay_equipos(conexion):
+        from radar.equipos.cruce import recruzar
+
+        resultado = recruzar(conexion, usar_modelo=usar_modelo, umbrales=umbrales).resultado
+    else:
+        bd.guardar_decisiones_cpe(conexion, normalizacion.decisiones.values())
+        resultado = correr(conexion, normalizacion.activos, normalizacion.cobertura, umbrales)
     return lectura, normalizacion, resultado
 
 

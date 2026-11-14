@@ -276,3 +276,91 @@ def test_importar_trazas_del_plugin(conexion, tmp_path):
     assert decisiones[:5] == ["aprobacion_pedida", "negada", "limpiada", "permitida", "negada"]
     ultima = bd.leer_trazas(conexion, 1)[0]
     assert len(ultima["entrada"]) <= 300 and "\x1b" not in ultima["entrada"]
+
+
+def test_vaciar_inventario_conserva_fuentes_y_trazas(tmp_path, capsys):
+    ruta = tmp_path / "demo.db"
+    c = bd.conectar(ruta_sqlite=ruta)
+    bd.crear_esquema(c)
+    bd.guardar_cves(c, ejemplos.CVES)
+    bd.guardar_kev(c, ejemplos.SENALES.kev)
+    bd.guardar_epss(c, ejemplos.SENALES.epss)
+    bd.guardar_inventario(c, ejemplos.FILAS)
+    correr(c, ejemplos.ACTIVOS, umbrales=U, ahora=AHORA)
+    bd.guardar_analisis(c, ejemplos.ANALISIS[0])
+    bd.aprobar_comunicado(c, "WinRAR", "ana")
+    bd.crear_trabajo(c, "analizar", "WinRAR")
+    bd.guardar_traza(c, "x", "{}", "permitida")
+    c.close()
+
+    # Sin --si no borra nada y dice a qué base apunta.
+    assert bd.principal(["vaciar-inventario", "--sqlite", str(ruta)]) == 1
+    salida = capsys.readouterr().out
+    assert f"local {ruta}" in salida and "--si" in salida
+    c = bd.conectar(ruta_sqlite=ruta)
+    assert bd.contar(c, "hallazgos") == 3
+    c.close()
+
+    assert bd.principal(["vaciar-inventario", "--si", "--sqlite", str(ruta)]) == 0
+    c = bd.conectar(ruta_sqlite=ruta)
+    for tabla in bd.TABLAS_DEL_INVENTARIO:
+        assert bd.contar(c, tabla) == 0, tabla
+    assert bd.leer_aprobacion(c, "WinRAR") is None
+    for tabla, n in (("cves", 3), ("kev", 3), ("epss", 5), ("trazas", 1)):
+        assert bd.contar(c, tabla) == n, tabla
+    c.close()
+
+
+def test_cargar_archivo_con_agentes_no_propone_cerrar_lo_de_los_agentes(conexion, tmp_path):
+    """Con agentes inscritos, una carga de archivo cruza todo el inventario guardado."""
+    from radar.contratos import FilaInventario
+    from radar.equipos import almacen
+    from radar.nucleo.corrida import cargar_inventario
+
+    # Un equipo con agente local reporta WinRAR 5.61 (afectado por CVE-2018-20250, KEV).
+    almacen.inscribir(conexion, "equipo-uuid-1", "PC-AGENTE", "0.1.0")
+    fila = FilaInventario(
+        equipo="PC-AGENTE",
+        programa="WinRAR 5.61 (64-bit)",
+        version="5.61",
+        proveedor="win.rar GmbH",
+        fuente="agente",
+        cargado=AHORA,
+    )
+    almacen.reemplazar_inventario(conexion, "PC-AGENTE", [fila])
+
+    from radar.equipos.cruce import recruzar
+
+    antes = {h.id for h in recruzar(conexion, umbrales=U).resultado.hallazgos}
+    assert any(h.startswith("CVE-2018-20250|") for h in antes)
+
+    # Se sube un archivo que no trae a PC-AGENTE.
+    csv = tmp_path / "otro.csv"
+    csv.write_text("equipo,programa,version\nPC-ARCHIVO,Google Chrome,156.0.8079.100\n")
+    _, _, r = cargar_inventario(conexion, csv, umbrales=U)
+
+    winrar = [h for h in r.hallazgos if h.cve == "CVE-2018-20250"]
+    assert winrar and "PC-AGENTE" in winrar[0].equipos  # sigue cruzado
+    assert not any(x.startswith("CVE-2018-20250|") for x in r.propuestos_resueltos)
+    assert bd.contar(conexion, "inventario") == 2  # el archivo no borró lo del agente
+
+
+def test_hay_equipos_sin_tabla_no_falla(tmp_path):
+    """Base creada antes del agente local, abierta en solo lectura: no hay tabla `equipos`."""
+    import sqlite3
+
+    from radar.equipos import almacen
+
+    ruta = tmp_path / "vieja.db"
+    with sqlite3.connect(ruta) as c:
+        c.execute("CREATE TABLE inventario (id INTEGER PRIMARY KEY)")
+    lectura = bd.conectar(solo_lectura=True, ruta_sqlite=ruta)
+    assert almacen.hay_equipos(lectura) is False
+    lectura.close()
+
+    c = bd.conectar(ruta_sqlite=ruta)
+    bd.crear_esquema(c)
+    assert almacen.hay_equipos(c) is False
+    almacen.inscribir(c, "uuid-1", "PC-1", "0.1.0")
+    assert almacen.hay_equipos(c) is True
+    c.close()

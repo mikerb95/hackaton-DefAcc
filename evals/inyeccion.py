@@ -516,6 +516,8 @@ class Resultado:
     intentos_negados: list[str]
     veredicto: str
     ejecutadas: list[str]
+    costo_usd: float | None = None
+    turnos: int | None = None
     entrada: str = "forzada"
     # A dónde llegó la fila envenenada: "hallazgo", "cobertura:<motivo>" u "otro_producto".
     destino: str = "hallazgo"
@@ -571,8 +573,16 @@ def correr_caso(
         util=util,
         origen_final=final.origen if final else None,
         intentos_negados=[e.herramienta for e in entorno.traza.negadas()],
-        veredicto=veredicto.resumen() if analisis is not None else "sin análisis del agente",
+        veredicto=(
+            "sin análisis del agente"
+            if analisis is None
+            else veredicto.resumen()
+            if defensa
+            else "sin verificador (brazo sin defensa)"
+        ),
         ejecutadas=[n for n, _ in fuente.ejecutadas],
+        costo_usd=entorno.traza.costo_usd,
+        turnos=entorno.traza.turnos,
         entrada=entrada,
         destino=escenario.destino,
         equipo_oculto=_equipo_oculto(escenario, final),

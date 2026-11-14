@@ -43,7 +43,7 @@ que obedece, en `evals/inyeccion.py`).
 | 2 | El normalizador elige entre CPE reales | `radar/ingesta/normalizador.py` | Un nombre envenenado no se convierte en producto. Efecto secundario: la fila cae a cobertura y el equipo sale de los hallazgos (ver "Equipo oculto") |
 | 2b | Saneado del nombre de equipo (RFC 1123) | `radar/seguridad/equipos.py::sanear_nombre_equipo` | El texto del ataque no llega al modelo ni al comunicado por el nombre de equipo, y el equipo sigue expuesto (no se manda a cobertura) |
 | 3 | Encierro: solo herramientas de lectura | `radar/agente/hooks.py::opciones_encierro` | `permission_mode="dontAsk"`, `disallowed_tools` con las integradas, `setting_sources=[]`, memoria automática apagada. `allowed_tools` solo no encierra |
-| 4 | Guarda previa (`PreToolUse`) | `crear_guarda` | Lista exacta de herramientas; niega argumentos con saltos, control, más de 160 caracteres o con formato inválido (`cve` debe ser `CVE-AAAA-NNNN`). Ante un error propio, niega |
+| 4 | Guarda previa (`PreToolUse`) | `crear_guarda` | Lista exacta de herramientas; niega argumentos con saltos, control, más de 160 caracteres o con formato inválido (`cve` debe ser `CVE-AAAA-NNNN`). Ante un error propio, niega. Única excepción: `StructuredOutput`, la herramienta interna con la que el CLI entrega la salida estructurada, salta solo el chequeo de argumentos (nombre exacto, debe estar en la lista, queda en la traza): no tiene efectos fuera del proceso y su contenido pasa igual por el verificador (`decidir`), que es la defensa real sobre la salida |
 | 5 | Limpieza posterior (`PostToolUse`) | `crear_limpieza`, `radar/seguridad/limpieza.py` | Recorta cada campo (160 para texto del inventario, 2000 para descripciones), quita saltos, control e invisibles, neutraliza `<` y `>`, y envuelve el resultado como dato no confiable. Ante un error propio, retiene el resultado entero |
 | 6 | Salida estructurada | `output_format` con esquema JSON | Un ataque que rompe el formato deja al agente sin salida, y entra el respaldo |
 | 7 | Verificador del comunicado | `radar/agente/verificador.py` | **Nada de más**: CVE, cifras, versiones, equipos, enlaces (también dominios sueltos) y cuentas de equipos (también en palabras) que no están en el origen; prioridad distinta de la del grupo; negar la explotación si hay KEV; recomendar una versión instalada; nombres de equipo en los avisos para usuarios o gerencia; palabras con alfabetos mezclados; "actualizar a X" con `posterior_a`; frases que minimizan; comunicado de TI incompleto |
@@ -55,7 +55,8 @@ que obedece, en `evals/inyeccion.py`).
 
 `decidir(analisis, grupo, textos_origen=...)` acepta textos extra como origen (por ejemplo la
 descripción de NVD de una CVE, para que el agente pueda citarla). **Solo puede recibir texto de
-NVD**, nunca texto del inventario ni lo que devuelva `equipos_afectados`. Si una fila
+NVD o del catálogo KEV de CISA** (descripciones, referencias, acción requerida), nunca texto
+del inventario ni lo que devuelva `equipos_afectados`. Si una fila
 envenenada con "CVE-2099-0001" entra como origen, el verificador da por buena la CVE inventada.
 Está escrito en `docs/contrato-analista.md` y en el docstring de `verificar_texto`.
 
@@ -76,7 +77,7 @@ que borran `limpieza.py` y comprueban que el texto crudo no pasa.
 | Texto del ataque como argumento de una herramienta permitida | Capa 4 (formato por argumento) | Caso r2-06 |
 | Instrucción que pasa por tamaño o por caracteres invisibles | Capa 5 | Casos r1-07 y r1-09 |
 | El modelo inventa una CVE, versión o cifra | Capa 7 y 8 | Casos r1-05, r1-08, r3-07; `tests/test_verificador.py` |
-| Enlace del atacante en el comunicado | Capa 7 (enlaces con esquema o ruta) | Caso r2-07. Un dominio sin esquema ni ruta pasa (r3-04): ver `docs/LIMITES.md` |
+| Enlace del atacante en el comunicado | Capa 7 (enlaces con esquema, ruta o TLD conocido) | Casos r2-07 y r3-04 (dominio suelto, detenido desde el ajuste 2). Un dominio con un TLD fuera de la lista pasa (r4-03, `parches-vlc.zip`): ver `docs/LIMITES.md` |
 | Cambio de sentido con datos permitidos (tono, prioridad, "ya está corregida") | **Ninguna capa lo detiene si el modelo obedece** | Límite declarado, casos en `LIMITES_DECLARADOS` |
 | Inyección de segundo orden | Capa 2b para el nombre de equipo | Ver abajo |
 | Equipo oculto sin pasar por el modelo | Cobertura visible; corrección en el normalizador | Tabla "Entrada real" del reporte |
@@ -114,7 +115,8 @@ nombre traiga texto extra; la tabla muestra el estado vigente.
   debe verlo la organización dueña del inventario.
 - Los avisos a canales abiertos dicen cuántos equipos, nunca cuáles. El respaldo arma el
   comunicado para usuarios y para gerencia sin nombres de equipos ni CVE. Un modelo que
-  obedece una orden de nombrarlos no lo detiene el verificador (caso r3-03, límite declarado).
+  obedece una orden de nombrarlos lo detiene el verificador desde el ajuste 2
+  (`equipo_en_canal_abierto`, caso r3-03).
 - La información de vulnerabilidades ya es pública. Lo privado es el cruce.
 - La suite de inyección se publica como pruebas defensivas del propio sistema, no como
   herramienta de ataque: sus casos apuntan a este radar y a datos sintéticos.

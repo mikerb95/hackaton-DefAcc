@@ -58,23 +58,24 @@ pedido en su archivo de coordinación, no lo edites tú.
 
 | Frente | Carpetas y archivos | Piezas |
 |---|---|---|
-| `nucleo` | `radar/contratos.py`, `config.py`, `bd.py`, `esquema.sql`, `ejemplos.py`, `radar/fuentes/`, `radar/nucleo/`, `worker/descargar.py`, `pyproject.toml`, tests de versiones, cruce y prioridad | 1, 13 |
+| `nucleo` | `radar/contratos.py`, `config.py`, `bd.py`, `esquema.sql`, `ejemplos.py`, `radar/fuentes/`, `radar/nucleo/`, `radar/equipos/` (código del agente local, arreglos), `worker/descargar.py`, `pyproject.toml`, tests de versiones, cruce y prioridad | 1, 13 |
 | `normalizador` | `radar/ingesta/normalizador.py`, `datos_prueba/` (salvo `casos_inyeccion.py`), `tests/test_normalizador.py` | 3, 4 |
-| `analista` (**externo**: otra persona en otro PC; contrato en `docs/contrato-analista.md`) | `radar/agente/analista.py`, `herramientas.py`, `instrucciones.py`, `worker/principal.py`, `worker/analizar.py` | 7, 15 |
+| `analista` (contrato en `docs/contrato-analista.md`) | `radar/agente/analista.py`, `herramientas.py`, `instrucciones.py`, `worker/principal.py`, `worker/analizar.py` | 7, 15 |
 | `guarda` | `radar/seguridad/`, `radar/agente/hooks.py`, `verificador.py`, `respaldo.py`, `datos_prueba/casos_inyeccion.py`, `evals/`, `plugin/hooks/`, `plugin/scripts/`, `docs/AMENAZAS.md`, `docs/LIMITES.md`, tests de verificador, inyección y plugin, `.github/workflows/pruebas.yml` | 5, 6, 8, 12 |
 | `panel` | `app.py`, `requirements.txt`, `radar/api/`, `public/`, `README.md`, `docs/` (consolida), `CREDITOS.md` | 2, 9, 11, 14, 16 |
 | `vercel` | Infraestructura: `.vercel/`, `vercel.json`, `.vercelignore`, variables en Vercel, base y tokens de Turso, despliegues. No toca código de la app | 2 |
 | `plugin` | `radar/ingesta/archivos.py`, `radar/mcp/`, `plugin/` (salvo hooks y scripts), `.claude-plugin/marketplace.json`, `tests/test_ingesta.py` | 10 |
 
-Las 6 sesiones comparten directorio y `.venv`. Solo `nucleo` toca `pyproject.toml` y
+Las sesiones comparten directorio y `.venv`. Solo `nucleo` toca `pyproject.toml` y
 `uv.lock`: si necesitas una dependencia, pídela en `.coordinacion/nucleo.md` en vez de
 correr `uv add` (dos `uv add` a la vez corrompen el lock). Un archivo que no es tuyo
 no se edita: se pide.
 
-Los archivos de `analista` no los toca ninguna sesión de este PC, aunque estén vacíos: llegan
-por git. Esa persona no ve `.coordinacion/` ni `resources/`, así que cualquier cambio en
-`hooks.py`, `verificador.py`, `respaldo.py`, `contratos.py`, `bd.py` o en la firma de
-`analizar` se refleja también en `docs/contrato-analista.md`.
+El analista lo construyó la sesión local `analista`. Un dev externo trabaja en otro PC y
+entrega por PR (por ejemplo el agente local de inventario); no ve `.coordinacion/` ni
+`resources/`. Cualquier cambio en `hooks.py`, `verificador.py`, `respaldo.py`,
+`contratos.py`, `bd.py` o en la firma de `analizar` se refleja también en
+`docs/contrato-analista.md`.
 
 `radar/contratos.py` y `radar/esquema.sql` son del núcleo. Un cambio ahí se anuncia en
 `.coordinacion/nucleo.md` antes de hacerlo, porque rompe a todos.
@@ -110,3 +111,8 @@ Al arrancar: lee `.coordinacion/<tu-frente>.md` y `.coordinacion/TABLERO.md`.
 Al cerrar una pieza o antes de que se acabe tu sesión: actualiza tu archivo con
 Hecho / En curso / Siguiente / Bloqueos / Pedidos a otros frentes, y una línea en
 TABLERO.md. Así otra sesión (o la misma con API) retoma sin releer todo.
+
+## Git
+
+Ninguna sesión crea ramas, worktrees ni refs, ni hace merges, commits o push. Para revisar
+código ajeno se usa solo lectura (`git diff`, `git show`, `git log`). Git es del usuario.

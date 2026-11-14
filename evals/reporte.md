@@ -1,6 +1,6 @@
 # Reporte de validación
 
-Generado por `uv run python -m evals.medir` el 2026-11-14 10:55. No se edita a mano: toda cifra de docs, ficha y pitch sale de aquí o de pytest.
+Generado por `uv run python -m evals.medir` el 2026-11-14 12:07. No se edita a mano: toda cifra de docs, ficha y pitch sale de aquí o de pytest.
 
 ## Detección
 
@@ -38,11 +38,11 @@ Fuera de la semilla: 4 quedan sin CPE (visibles en cobertura), 1 con CPE equivoc
 
 Detección 100,0 %, precisión 100,0 %. Cobertura por motivo, esperada y obtenida: no_comparable 2/2, sin_cpe 8/8, sin_version 2/2.
 
-Tiempos en sqlite local (1333 filas, 55 activos, 14582 CVE en la base): lectura 0,03 s, carga del diccionario 0,52 s, normalizar 1,05 s, cruce 8,41 s.
+Tiempos en sqlite local (1333 filas, 55 activos, 14582 CVE en la base): lectura 0,04 s, carga del diccionario 0,47 s, normalizar 1,05 s, cruce 3,75 s.
 
 ## Suite de inyección
 
-**Última ronda escrita sin reajustar: ronda 4.** Simulado (peor caso), entrada forzada: sin defensa 8 de 8 (100,0 %), con defensa 6 de 8 (75,0 %), utilidad con defensa 8 de 8. Analista real: pendiente (radar.agente.analista.analizar no existe todavía).
+**Última ronda escrita sin reajustar: ronda 4.** Simulado (peor caso), entrada forzada: sin defensa 8 de 8 (100,0 %), con defensa 6 de 8 (75,0 %), utilidad con defensa 8 de 8. Analista real: pendiente (existe analizar(); falta correr `uv run pytest -m agente tests/test_inyeccion.py`).
 
 Dos brazos (PLAN, sección 16). **Sin defensa:** lectura más `marcar_mitigado` aprobada, sin hooks, sin verificador y sin saneado del nombre de equipo. **Con defensa:** solo lectura, guarda previa, limpieza posterior (`radar/agente/hooks.py`), verificador con respaldo y saneado del nombre de equipo (`radar/seguridad/equipos.py`).
 
@@ -73,6 +73,8 @@ La fila envenenada llega siempre al agente, como si la ingesta no la hubiera fre
 | 3, código actual | simulado (honesto) | 0 de 9 (0,0 %) | 0 de 9 (0,0 %) | 9 de 9 | 9 de 9 |
 | 4, código actual | simulado (honesto) | 0 de 8 (0,0 %) | 0 de 8 (0,0 %) | 8 de 8 | 8 de 8 |
 | todas | analista real | pendiente | pendiente | pendiente | pendiente |
+
+Analista real: entrada forzada: el modelo ve programa y proveedor crudos, una exposición peor que en producción.
 
 ### Entrada real: ingesta, normalizador y saneado del nombre de equipo
 

@@ -158,3 +158,48 @@ def test_descarga_en_linea_con_par_caido(tmp_path, monkeypatch):
     assert [r.par for r in cve.rangos] == ["rarlab:winrar"]  # rangos ajenos fuera
     assert bd.leer_senales(c).kev["CVE-2026-0001"].ransomware
     c.close()
+
+
+def test_osv_respuesta_incompleta_es_fuente_caida():
+    """Menos resultados que consultas: error (fuente caída), nunca "sin avisos"."""
+    from radar.fuentes import osv
+
+    def manejar(peticion):
+        return httpx.Response(200, json={"results": [{"vulns": [{"id": "UBUNTU-1"}]}]})
+
+    http = httpx.Client(transport=httpx.MockTransport(manejar))
+    consultas = [
+        osv.Consulta("openssl", "3.0.2-0ubuntu1.15", "Ubuntu:22.04:LTS"),
+        osv.Consulta("curl", "7.81.0-1ubuntu1.16", "Ubuntu:22.04:LTS"),
+    ]
+    with pytest.raises(osv.RespuestaIncompleta, match="1 resultados para 2 consultas"):
+        osv.consultar_lote(consultas, http)
+    assert issubclass(osv.RespuestaIncompleta, ValueError)  # el worker la registra osv: False
+
+
+def test_fin_de_soporte_eol_true_es_vencido_sin_fecha():
+    from datetime import date
+
+    from radar.equipos.contratos import SistemaReportado
+    from radar.equipos.so import soporte
+    from radar.fuentes import finsoporte
+
+    ciclos = finsoporte.reducir(
+        [
+            {"cycle": "18.04", "eol": True},
+            {"cycle": "24.04", "eol": False},
+            {"cycle": "20.04", "eol": "2025-05-31"},
+        ]
+    )
+    assert ciclos[0]["vencido_sin_fecha"] and ciclos[0]["fin"] is None
+    assert not ciclos[1]["vencido_sin_fecha"] and ciclos[1]["fin"] is None
+    catalogo = {"productos": {"ubuntu": ciclos}}
+    hoy = date(2026, 11, 14)
+
+    def de(version):
+        so = SistemaReportado(familia="linux", nombre="Ubuntu", version=version, distro="ubuntu")
+        return soporte(so, catalogo)
+
+    assert de("18.04").vencido(hoy)  # eol: true -> vencido aunque no haya fecha
+    assert not de("24.04").vencido(hoy)  # eol: false -> con soporte
+    assert de("20.04").vencido(hoy) and de("20.04").fin == date(2025, 5, 31)

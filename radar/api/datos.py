@@ -27,6 +27,7 @@ from radar.contratos import (
     EstadoHallazgo,
     Grupo,
     Hallazgo,
+    Trabajo,
 )
 
 
@@ -36,6 +37,7 @@ def _armar_resumen(
     cruzados: int,
     ejecucion: Ejecucion | None,
     persistente: bool,
+    trabajos: Iterable[Trabajo] = (),
 ) -> dict:
     fuentes = dict(ejecucion.fuentes) if ejecucion else {}
     return {
@@ -58,6 +60,10 @@ def _armar_resumen(
             "por_motivo": dict(Counter(c.motivo for c in cobertura)),
             "detalle": [c.model_dump() for c in cobertura[:200]],
         },
+        # Trabajos en cola: con el analista fuera, un "analizar" pendiente es lo normal.
+        "trabajos": dict(
+            Counter(t.tipo for t in trabajos if t.estado in ("pendiente", "en_curso"))
+        ),
         "persistente": persistente,
     }
 
@@ -117,6 +123,7 @@ class DatosEjemplo:
             len(ejemplos.ACTIVOS),
             ejecucion,
             self.persistente,
+            ejemplos.TRABAJOS,
         )
 
     def hallazgos(self, prioridad=None, kev=None, texto=None) -> list[Hallazgo]:
@@ -183,10 +190,16 @@ class DatosBase:
             cobertura = bd.leer_cobertura(c)
             filas = bd.contar(c, "inventario")
             ejecucion = bd.ultima_ejecucion(c)
+            trabajos = bd.leer_trabajos(c, 200)
         finally:
             c.close()
         return _armar_resumen(
-            hallazgos, cobertura, max(filas - len(cobertura), 0), ejecucion, self.persistente
+            hallazgos,
+            cobertura,
+            max(filas - len(cobertura), 0),
+            ejecucion,
+            self.persistente,
+            trabajos,
         )
 
     def hallazgos(self, prioridad=None, kev=None, texto=None) -> list[Hallazgo]:

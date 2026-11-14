@@ -330,6 +330,7 @@ HALLAZGOS: list[Hallazgo] = [
         prioridad="inmediato",
         por_que=[
             "Explotación confirmada en el mundo real (CISA KEV)",
+            "Agregada a KEV el 15 de febrero de 2022 (plazo CISA 15 de agosto de 2022)",
             "Usada en campañas de ransomware (CISA KEV)",
             "Probabilidad de explotación del 96% en 30 días (EPSS)",
             "Gravedad alta, CVSS 7.8",
@@ -352,6 +353,7 @@ HALLAZGOS: list[Hallazgo] = [
         prioridad="inmediato",
         por_que=[
             "Explotación confirmada en el mundo real (CISA KEV)",
+            "Agregada a KEV el 10 de noviembre de 2026 (plazo CISA 24 de noviembre de 2026)",
             "Gravedad alta, CVSS 8.8",
         ],
         preciso=True,

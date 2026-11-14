@@ -34,6 +34,11 @@ _CVE = re.compile(r"^CVE-\d{4}-\d{4,}$")
 _UBUNTU_LTS = re.compile(r"^\d\d\.04$")
 
 
+class RespuestaIncompleta(ValueError):
+    """OSV devolvió menos (o más) resultados que consultas. No se puede saber qué paquete
+    quedó sin respuesta: la fuente se trata como caída, nunca como "sin avisos"."""
+
+
 @dataclass(frozen=True)
 class Consulta:
     paquete: str
@@ -90,7 +95,9 @@ def consultar_lote(
 ) -> dict[Consulta, dict[str, str]]:
     """Avisos que afectan a cada consulta: `{consulta: {id_aviso: modificado}}`.
 
-    Sigue la paginación (`next_page_token`) de las consultas con muchos avisos.
+    Sigue la paginación (`next_page_token`) de las consultas con muchos avisos. Si OSV
+    responde con otro número de resultados que de consultas, lanza `RespuestaIncompleta`
+    (un ValueError): el worker registra `osv: False` y no toca lo guardado (regla 2).
     """
     lista = list(dict.fromkeys(consultas))
     salida: dict[Consulta, dict[str, str]] = {c: {} for c in lista}
@@ -107,7 +114,11 @@ def consultar_lote(
             r = cliente.post(f"{URL}/querybatch", json=cuerpo)
             r.raise_for_status()
             resultados = r.json().get("results", [])
-            for (consulta, _), resultado in zip(lote, resultados, strict=False):
+            if len(resultados) != len(lote):
+                raise RespuestaIncompleta(
+                    f"OSV devolvió {len(resultados)} resultados para {len(lote)} consultas"
+                )
+            for (consulta, _), resultado in zip(lote, resultados, strict=True):
                 for aviso in resultado.get("vulns") or []:
                     salida[consulta][aviso["id"]] = aviso.get("modified", "")
                 if resultado.get("next_page_token"):

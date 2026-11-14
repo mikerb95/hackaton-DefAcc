@@ -18,6 +18,7 @@ secuestrar por un inventario envenenado (inyección indirecta). Proyecto de la h
 | Analista | `radar/agente/`, `worker/` | Agente encerrado de solo lectura, con verificador y texto de respaldo |
 | Seguridad | `radar/seguridad/`, `evals/` | Limpieza de texto no confiable y suite de inyección con y sin defensa |
 | Plugin | `plugin/`, `radar/mcp/` | Plugin de Claude Code con servidor MCP para cargar y consultar |
+| Agente local | `agente_local/`, `radar/equipos/` | Recolector para Windows y Linux que envía el inventario de cada PC; vista por equipo en el panel ([estado y cómo probarlo](docs/agente-local.md)) |
 
 ## Demo
 
@@ -53,9 +54,19 @@ Para que el panel lea la base local en vez de los datos de ejemplo: `RADAR_DATOS
 
 ## Analista
 
-El analista con el Claude Agent SDK lo construye otra persona y se integra aparte, por git. Su
-contrato autocontenido está en [`docs/contrato-analista.md`](docs/contrato-analista.md).
-Mientras no llega, el panel muestra el texto de respaldo armado por código, marcado como tal.
+El analista con el Claude Agent SDK vive en `radar/agente/` y `worker/` (contrato en
+[`docs/contrato-analista.md`](docs/contrato-analista.md)). Corre fuera de Vercel, encerrado en
+solo lectura, con tope de turnos y de gasto por producto, y su texto pasa por el verificador;
+si algo no coincide, queda el texto armado por código.
+
+```bash
+uv run python -m worker.principal --sin-agente  # solo texto de respaldo, sin créditos
+uv run python -m worker.principal --una-vez     # un trabajo con Claude (ANTHROPIC_API_KEY)
+uv run python -m worker.principal               # bucle: toma los trabajos "analizar" pendientes
+```
+
+Contra el Turso compartido pide `--turso` explícito. Mientras ningún worker toma un trabajo, el
+panel lo muestra como "Análisis en cola" y el detalle usa el texto armado por código.
 
 ## Plugin de Claude Code
 

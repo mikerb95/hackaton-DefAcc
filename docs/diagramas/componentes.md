@@ -12,7 +12,7 @@ una, ve a [despliegue.md](despliegue.md).
 
 ## Vista general
 
-CU-01 · Carga de inventario y cruce. CU-03 · Análisis con aprobación del comunicado.
+CU-01, CU-02 · Carga de inventario y cruce. CU-03 · Análisis con aprobación del comunicado.
 
 ```mermaid
 flowchart LR

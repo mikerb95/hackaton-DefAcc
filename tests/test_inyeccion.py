@@ -155,8 +155,28 @@ def _falta_para_el_analista() -> str | None:
     return None
 
 
+# Muestra para medir el costo real antes de correr todo: RADAR_MUESTRA_ANALISTA=1 corre estos
+# 5 casos por brazo (uno por tipo de ataque: escritura, dato falso, tono por el equipo,
+# negación de KEV, orden con forma de hostname). También acepta una lista de IDs separados por
+# coma. Sin la variable, corren los 35 casos.
+MUESTRA_ANALISTA = ["r1-04", "r1-05", "r3-09", "r4-02", "r4-06"]
+
+
+def _casos_analista_real() -> list[str]:
+    valor = os.environ.get("RADAR_MUESTRA_ANALISTA", "").strip()
+    if not valor or valor == "0":
+        return _ids(TODOS)
+    if valor == "1":
+        return MUESTRA_ANALISTA
+    pedidos = [v.strip() for v in valor.split(",") if v.strip()]
+    desconocidos = set(pedidos) - set(_ids(TODOS))
+    if desconocidos:
+        raise ValueError(f"RADAR_MUESTRA_ANALISTA trae casos que no existen: {desconocidos}")
+    return pedidos
+
+
 @pytest.mark.agente
-@pytest.mark.parametrize("caso_id", _ids(TODOS))
+@pytest.mark.parametrize("caso_id", _casos_analista_real())
 @pytest.mark.parametrize("defensa", [False, True])
 def test_analista_real(caso_id, defensa):
     """Se pide con `pytest -m agente`: si falta algo, falla con el motivo, no se salta."""
@@ -174,13 +194,14 @@ def test_tuberia_del_analista_real_con_un_analizar_falso(monkeypatch, tmp_path):
     """La tubería del analista real corre de punta a punta sin créditos: adaptador, archivo
     de resultados y fila del reporte. El analizar falso devuelve el respaldo como agente."""
     import radar.agente.analista as modulo
-    from evals.medir import filas_analista_real
+    from evals.medir import costo_analista_real, filas_analista_real
     from radar.agente.respaldo import armar_respaldo
 
     llamadas = []
 
     def analizar_falso(grupo, defensa, fuente=None, traza=None):
         llamadas.append((grupo.producto, defensa))
+        traza.costo_usd, traza.turnos = 0.25, 3  # lo que anota el analista real
         fuente.detalle_producto(grupo.producto)
         return armar_respaldo(grupo).model_copy(update={"origen": "agente"})
 
@@ -198,4 +219,25 @@ def test_tuberia_del_analista_real_con_un_analizar_falso(monkeypatch, tmp_path):
     # Corrida parcial: la fila lo dice ("corridos 1 de 10 casos").
     assert [f[0].split(" ")[0] for f in filas] == ["1", "4"]
     assert all("corridos 1 de" in f[0] for f in filas)
+    assert all(r["costo_usd"] == 0.25 and r["turnos"] == 3 for r in resultados)
+    assert costo_analista_real(resultados) == "costo 1,00 USD en 4 corridas (0,250 por corrida)"
     assert all(f[1] == "analista real" and "pendiente" not in f for f in filas)
+
+
+def test_reporte_aparta_los_casos_vistos_al_ajustar_el_prompt():
+    from evals.medir import filas_analista_real, texto_agente_aceptado
+
+    def r(caso, ronda, defensa, origen):
+        return {"caso": caso, "ronda": ronda, "defensa": defensa, "entrada": "forzada",
+                "exito_ataque": False, "util": True, "origen_final": origen}  # fmt: skip
+
+    resultados = [
+        r("r1-01", 1, True, "respaldo"),
+        r("r1-01", 1, False, "agente"),
+        r("r1-02", 1, True, "agente"),
+        r("r1-02", 1, False, "agente"),
+    ]
+    assert texto_agente_aceptado(resultados) == "1 de 2"
+    (fila,) = filas_analista_real(resultados, excluir={"r1-01"})
+    assert "sin casos vistos" in fila[1]
+    assert fila[0].startswith("1 (corridos 1 de 9")

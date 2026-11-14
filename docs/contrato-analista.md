@@ -28,8 +28,20 @@ En orden de preferencia:
 
 1. **Turso compartido**, cuando exista: `TURSO_DATABASE_URL` y un token de solo lectura en
    `.env`. Es la misma base que ve el panel.
+   La base ya existe y está cargada (14 582 CVE, KEV, EPSS del día, inventario generado y
+   831 hallazgos). Variables que necesitas en tu `.env` (los valores te los pasa el equipo
+   por un canal seguro, nunca por git ni por chat):
+
+   | Variable | Para qué |
+   |---|---|
+   | `TURSO_DATABASE_URL` | Dirección de la base compartida |
+   | `TURSO_AUTH_TOKEN_LECTURA` | Token de solo lectura: lo usa `conectar(solo_lectura=True)`, es decir, las herramientas del agente |
+   | `TURSO_AUTH_TOKEN` | Token de escritura: solo para el código del worker que guarda análisis y toma trabajos, nunca para las herramientas |
+   | `ANTHROPIC_API_KEY` | El analista con Claude Agent SDK |
+
+   No definas `RADAR_SQLITE`: si está definida, gana siempre sobre Turso.
 2. **`evals/grupos_reales.json`** (está en el repositorio): un `Grupo` por producto y versión
-   de cada caso de inyección (18 pares), sacado del cruce real del radar sobre NVD, KEV y EPSS
+   de cada caso de inyección (12 grupos), sacado del cruce real del radar sobre NVD, KEV y EPSS
    y congelado **sin la lista de equipos** (la suite les pone equipos sintéticos más el de la
    fila envenenada). Se carga con `evals.escenarios.escenarios(usar_base=False)`. Alcanza
    para construir y probar todo el analista sin base.
@@ -48,8 +60,8 @@ producto)`, `leer_cves(conexion, pares)`, `leer_senales(conexion, cves)`.
 | Encierro | `radar/agente/hooks.py`: `opciones_encierro(permitidas, traza)` | Devuelve `permission_mode="dontAsk"`, `disallowed_tools` con las integradas, `setting_sources=[]`, memoria automática apagada y los hooks `PreToolUse` y `PostToolUse` con `on_failure="block"`. No lo armes a mano |
 | Formato de argumentos | `FORMATOS_ARGUMENTO` en `hooks.py` | La guarda niega un argumento `cve` que no sea `CVE-AAAA-NNNN` |
 | Limpieza | `radar/seguridad/limpieza.py` | Ya la aplica el hook posterior; no la dupliques |
-| Verificador | `radar/agente/verificador.py`: `decidir(analisis, grupo, *, textos_origen=(), cifras_permitidas=(), equipos_flota=())` | Devuelve la tupla `(Analisis, Veredicto)`: el análisis del agente con `verificado=True` si pasa, o el respaldo si no (o si `analisis` es `None`). `equipos_flota`: todos los equipos del inventario, para detectar fuga de equipos ajenos al grupo |
-| Respaldo | `radar/agente/respaldo.py`: `armar_respaldo(grupo)` | Texto armado por código. Úsalo también cuando el modelo falla o no hay clave |
+| Verificador | `radar/agente/verificador.py`: `decidir(analisis, grupo, *, textos_origen=(), cifras_permitidas=(), equipos_flota=(), comandos_permitidos=())` | Devuelve la tupla `(Analisis, Veredicto)`: el análisis del agente con `verificado=True` si pasa, o el respaldo si no (o si `analisis` es `None`). `equipos_flota`: todos los equipos del inventario, para detectar fuga de equipos ajenos al grupo. `comandos_permitidos`: comandos de remediación armados por código (`radar/equipos/remediacion.py`); todo lo que parezca un comando y no esté ahí descarta el comunicado. `verificar_analisis` y `verificar_texto` aceptan el mismo `comandos_permitidos` |
+| Respaldo | `radar/agente/respaldo.py`: `armar_respaldo(grupo, comandos=())` | Texto armado por código. Úsalo también cuando el modelo falla o no hay clave. `comandos`: los mismos comandos de plantilla, van solo en el comunicado de TI, uno por línea. `decidir` se los pasa al respaldo cuando cae |
 
 ## 4. Firma que espera la suite de inyección
 
@@ -89,7 +101,8 @@ def analizar(grupo: Grupo, defensa: bool, fuente: Fuente | None = None,
 - **Devuelve la salida estructurada sin pasarla por el verificador.** La suite aplica
   `decidir()` en el brazo con defensa, igual que hará el worker. Devuelve `None` si el modelo
   falla o la salida no cumple el esquema.
-- **`textos_origen` en `decidir`: solo texto de NVD** (descripciones, referencias). Nunca
+- **`textos_origen` en `decidir`: solo texto de NVD o de KEV** (descripciones, referencias,
+  acción requerida de CISA; `FuenteBase.textos_origen()`). Nunca
   texto del inventario ni lo que devuelva `equipos_afectados`: una fila envenenada con
   `CVE-2099-0001` pasaría a ser "origen" y el verificador la dejaría pasar.
 
@@ -132,7 +145,7 @@ el barrido de umbrales en vez de inventar cifras.
 - `worker/principal.py`: bucle que toma trabajos `tipo = "analizar"` en estado `pendiente` de
   la tabla `trabajos`, los marca `en curso` y al final `hecho` o `fallido`.
 - `worker/analizar.py`: por cada grupo que exige acción, `analizar(grupo, defensa=True)`, luego
-  `decidir(analisis, grupo, textos_origen=<solo NVD>, equipos_flota=<todos los equipos>)`, y guarda el `Analisis` con el token de escritura (el worker sí escribe; las
+  `decidir(analisis, grupo, textos_origen=<solo NVD y KEV>, equipos_flota=<todos los equipos>)`, y guarda el `Analisis` con el token de escritura (el worker sí escribe; las
   herramientas del agente no).
 - Modo sin créditos (sin clave o con una bandera): se salta `query()` y guarda
   `armar_respaldo(grupo)`. El panel nunca queda vacío.
