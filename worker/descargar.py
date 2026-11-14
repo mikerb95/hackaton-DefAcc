@@ -190,12 +190,9 @@ def descargar_desde_snapshot(
 
 def pares_a_consultar(conexion: Any) -> list[str]:
     """Pares que asignó el normalizador; si no hay, los del snapshot."""
-    filas = conexion.execute(
-        "SELECT DISTINCT vendor, producto FROM programa_cpe "
-        "WHERE vendor IS NOT NULL AND producto IS NOT NULL"
-    ).fetchall()
-    if filas:
-        return sorted(f"{v}:{p}" for v, p in filas)
+    asignados = bd.pares_asignados(conexion)
+    if asignados:
+        return asignados
     return sorted(par_de_archivo(a) for a in archivos_nvd(SNAPSHOT)) if SNAPSHOT.exists() else []
 
 

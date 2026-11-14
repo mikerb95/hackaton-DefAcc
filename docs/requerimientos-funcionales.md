@@ -14,6 +14,16 @@
 - **RF-113** Barrido de umbrales: alertas inmediatas (hallazgos, productos, CVE, equipos) para una rejilla de EPSS y CVSS, con el piso de KEV y la celda vigente. `radar/nucleo/umbrales.py`.
 - **RF-109** Persistencia en sqlite local con el esquema de Turso; el cambio a Turso es solo de conexión. Conexión de solo lectura para el agente que rechaza escrituras. `radar/bd.py`.
 
+## Ingesta (CSV, Excel, MCP)
+
+- **RF-201** Leer inventario CSV (separador `,` `;` tabulador o `|`, UTF-8 o cp1252) y Excel `.xlsx` (la hoja con encabezado reconocible, aunque esté bajo filas de título), todo como texto para no perder `1.10`. `radar/ingesta/archivos.py::leer_inventario`.
+- **RF-202** Reconocer encabezados por alias en español e inglés (hostname, DisplayName, DisplayVersion, Publisher, OS...). `radar/ingesta/archivos.py`.
+- **RF-203** Filas sin versión se conservan (van a cobertura); filas sin equipo o programa se descartan con número de fila y motivo; duplicados exactos se cuentan una vez. Límites de 10 MB y 50 000 filas, celdas recortadas a 500 caracteres. El texto no se limpia aquí: lo limpia la guarda en el borde con el modelo. `radar/ingesta/archivos.py`.
+- **RF-204** Validar filas estructuradas que llegan por MCP con las mismas reglas (`fuente` mcp) y convertirlas a `FilaInventario`. `radar/ingesta/archivos.py::leer_registros`, `a_contrato`.
+- **RF-205** Cargar inventario por MCP (`cargar_inventario`) desde una ruta local o filas: solo acepta extensiones de inventario, permite simular sin escribir y, al guardar, normaliza (RF-301), cruza (RF-107) y deja un trabajo de análisis, con la misma secuencia que el panel (RF-605). `radar/mcp/servidor.py`. Tablas `inventario`, `hallazgos`, `cobertura`, `trabajos`.
+
+Prioridad alta. Pruebas: `tests/test_ingesta.py`, `tests/test_mcp.py`.
+
 ## Normalizador y datos de prueba
 
 - **RF-301** Normalizar cada fila del inventario a un activo `producto@versión` con uno o más pares de CPE, o a cobertura con motivo (`sin_version`, `no_comparable`, `sin_cpe`). `radar/ingesta/normalizador.py`.
@@ -34,3 +44,13 @@
 - **RF-606** La API lee la base (Turso o sqlite local con el mismo esquema) cuando está configurada, o datos de ejemplo marcados como no persistentes; el panel avisa cuál está usando. `radar/api/datos.py`.
 
 Prioridad alta para RF-601 a RF-605, media para RF-606. Prueba: `tests/test_api.py`.
+
+
+## Plugin de Claude Code
+
+- **RF-701** Servidor MCP por stdio (`radar-mcp`) con `cargar_inventario` (RF-205) y tres consultas de solo lectura: `consultar_hallazgos` (resumen por prioridad, CVE distintas en KEV, una acción por producto con versión de arreglo según RF-104), `equipos_expuestos` (peor prioridad por equipo y lo que quedó sin evaluar) y `detalle_producto` (CVE con descripción de NVD, análisis y cobertura del producto). `radar/mcp/servidor.py`.
+- **RF-702** Cada respuesta dice de dónde salen los datos (`turso`, `local` o `ejemplo`, con aviso si es ejemplo), qué fuente no respondió o no informó en el último cruce (no es cero) y cuánto quedó sin evaluar. Una base caída es un error, nunca ejemplos ni lista vacía. `radar/mcp/datos.py`, `radar/mcp/servidor.py`.
+- **RF-703** Salida limpia en el servidor (`limpiar_estructura`) además del hook de la guarda, porque un PostToolUse que falla deja pasar el texto original; resumen y cobertura van antes de las listas largas para caber en el tope de 20 000 caracteres de la guarda. `radar/mcp/servidor.py`.
+- **RF-704** Plugin instalable: manifiesto con `userConfig` (`turso_url`, `turso_token` sensible), servidor lanzado con `uv tool run` desde el repositorio, skill `exposicion` (leer prioridad, KEV, EPSS y cobertura sin exagerar), comando `/radar:radar` y catálogo en la raíz. `plugin/`, `.claude-plugin/marketplace.json`. Validado con `claude plugin validate`.
+
+Prioridad alta para RF-701 a RF-703, media para RF-704. Prueba: `tests/test_mcp.py`; de punta a punta, guion en `.coordinacion/plugin.md`.

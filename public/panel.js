@@ -169,7 +169,10 @@ function pintarDetalle(d) {
     return;
   }
   const a = d.analisis;
-  const origen = a.origen === "agente" ? "Redactado por el agente" : "Texto de respaldo armado por código";
+  // El respaldo es un camino normal, no un error: píldora neutra, sin rojo.
+  const origen = a.origen === "agente"
+    ? '<span class="pildora p-agente"><span class="punto"></span>Redactado por el agente</span>'
+    : `<span class="pildora p-respaldo" title="${d.guardado ? "El verificador no aceptó el texto del agente o el agente falló" : "El agente todavía no entregó análisis para este producto"}"><span class="punto"></span>Texto armado por código</span>`;
   const aprobado = d.aprobacion
     ? `<span class="aprobado">Aprobado ${esc(fmtHora(d.aprobacion.aprobado))}</span>`
     : '<button type="button" id="aprobar">Aprobar comunicado</button>';
@@ -185,9 +188,10 @@ function pintarDetalle(d) {
       <div class="bloque">
         <h3>Comunicado para TI</h3><div class="comunicado">${esc(a.comunicado_ti)}</div>
         <h3>Comunicado para usuarios</h3><div class="comunicado">${esc(a.comunicado_usuarios)}</div>
+        ${a.comunicado_gerencia ? `<h3>Comunicado para gerencia</h3><div class="comunicado">${esc(a.comunicado_gerencia)}</div>` : ""}
         <div class="etiquetas" style="align-items:center;gap:12px">
           <span class="pildora ${a.verificado ? "p-ok" : "p-caida"}"><span class="punto"></span>${a.verificado ? "Verificado" : "Sin verificar"}</span>
-          <span class="vacio">${esc(origen)}</span>
+          ${origen}
           ${aprobado}
         </div>
       </div>

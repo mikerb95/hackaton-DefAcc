@@ -145,7 +145,9 @@ class DatosEjemplo:
         return nuevo
 
     def aprobar(self, producto: str, por: str | None) -> dict | None:
-        if producto not in self._analisis:
+        # Basta con que el producto tenga hallazgos: sin análisis del agente se aprueba el
+        # texto de respaldo.
+        if producto not in self._grupos:
             return None
         self._aprobados[producto] = _registro_aprobacion(producto, por)
         return self._aprobados[producto]
@@ -227,7 +229,7 @@ class DatosBase:
             c.close()
 
     def aprobar(self, producto: str, por: str | None) -> dict | None:
-        if self.analisis(producto) is None:
+        if self.grupo(producto) is None:
             return None
         self._aprobados[producto] = _registro_aprobacion(producto, por)
         return self._aprobados[producto]

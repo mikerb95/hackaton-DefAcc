@@ -80,8 +80,12 @@ def medir_pipeline(ruta_bd: Path | None = None, con_inyeccion: bool = False) -> 
     # Por activo: 7 CVE no precisas (BEAST, CRIME, Logjam...) listan a Chrome y Firefox a la
     # vez; en un equipo con los dos cuentan una vez por equipo y dos por activo (1098).
     esp_np_act = {(c, f["equipo"], _pares(f["pares"])) for f in medidas for c in f["no_precisas"]}
-    esp_ver = {(c, par, f["version_comparable"])
-               for f in medidas for par, cves in f["cves_por_par"].items() for c in cves}
+    esp_ver = {
+        (c, par, f["version_comparable"])
+        for f in medidas
+        for par, cves in f["cves_por_par"].items()
+        for c in cves
+    }
     esp_kev = {c for f in medidas for c in f["kev"]}
 
     # Lo obtenido por el pipeline.
@@ -90,7 +94,9 @@ def medir_pipeline(ruta_bd: Path | None = None, con_inyeccion: bool = False) -> 
     obt_eq = {(h.cve, e) for h in precisos for e in h.equipos}
     no_precisos = [h for h in r.hallazgos if not h.preciso]
     obt_np = {(h.cve, e) for h in no_precisos for e in h.equipos}
-    obt_np_act = {(h.cve, e, _pares(por_clave[h.activo].cpes)) for h in no_precisos for e in h.equipos}
+    obt_np_act = {
+        (h.cve, e, _pares(por_clave[h.activo].cpes)) for h in no_precisos for e in h.equipos
+    }
     obt_kev = {h.cve for h in precisos if h.kev}
     # Por par: un hallazgo trae el rango que emparejó, y con él el par.
     obt_ver = set()
@@ -115,7 +121,8 @@ def medir_pipeline(ruta_bd: Path | None = None, con_inyeccion: bool = False) -> 
     relleno = {(f["equipo"], f["programa"]) for f in resp["filas"] if f["tipo"] == "relleno"}
     inyeccion = {(f["equipo"], f["programa"]) for f in resp["filas"] if f["tipo"] == "inyeccion"}
     cob_medible = Counter(
-        c.motivo for c in r.cobertura
+        c.motivo
+        for c in r.cobertura
         if (c.equipo, c.programa) not in relleno and (c.equipo, c.programa) not in inyeccion
     )
 

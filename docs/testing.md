@@ -12,6 +12,14 @@
 
 Córrelo tú mismo: `uv run pytest tests/test_estados.py tests/test_fuentes.py tests/test_versiones.py tests/test_cruce.py tests/test_prioridad.py tests/test_bd.py tests/test_corrida.py`.
 
+## Ingesta
+
+| Prueba | Qué cubre | Requiere |
+|---|---|---|
+| `tests/test_ingesta.py` | Campos del contrato, versiones como texto, `;` y cp1252, alias en inglés, encabezado bajo títulos, filas sin versión, descartes con motivo, duplicados, celda enorme y texto hostil intacto, Excel multihoja y sin extensión, errores legibles, límites, inventario generado completo (RF-201 a RF-203) | `datos_prueba/generados/` para una prueba |
+
+Córrelo tú mismo: `uv run pytest tests/test_ingesta.py`.
+
 ## Normalizador y datos de prueba
 
 | Prueba | Qué cubre | Requiere |
@@ -28,3 +36,12 @@ Córrelo tú mismo: `uv run pytest tests/test_normalizador.py tests/test_datos_p
 | `tests/test_api.py` | Clave obligatoria y 503 en Vercel sin clave (RF-601); resumen, orden y filtros de hallazgos, EPSS ausente como `null`, productos y análisis (RF-602); "posterior a" y nunca "actualizar a" con `versionEndIncluding` (RF-603); cambio de estado y aprobación (RF-604); inventario ilegible da 400 y cruce real contra una copia de la base local (RF-605, RF-606) | `datos_locales/radar.db` para la prueba de cruce (se salta si falta) |
 
 Córrelo tú mismo: `uv run pytest tests/test_api.py`. El panel en local: `uv run uvicorn app:app --port 8000`.
+
+
+## Plugin y servidor MCP
+
+| Prueba | Qué cubre | Requiere |
+|---|---|---|
+| `tests/test_mcp.py` | Herramientas y anotaciones de solo lectura; origen `ejemplo`, `local` o `turso` y aviso; base caída como error; orden, filtros, cerrados, acciones por producto, CVE distintas frente a hallazgos; fuente caída y fuente sin dato; equipos expuestos; detalle con y sin grupo y pidiendo solo los pares del producto; `cargar_inventario` con ruta, filas, rutas rechazadas, carga real que guarda, normaliza, cruza y deja trabajo, y función compartida; error por el protocolo MCP con cliente en proceso (RF-204, RF-205, RF-701 a RF-703) | `datos_prueba/generados/` para una prueba |
+
+Córrelo tú mismo: `uv run pytest tests/test_mcp.py`. De punta a punta con Claude Code (no corre en CI): `claude plugin validate .` y el guion de `.coordinacion/plugin.md` con `claude --plugin-dir`.

@@ -103,12 +103,12 @@ def test_nosqlbooster_nunca_recibe_mongodb(dic):
 # --- rapidfuzz y desempates --------------------------------------------------
 
 
-# Nombres que no están en la semilla: miden si el método generaliza o solo memorizó.
+# Nombres que no están en la semilla, para regresión. La exactitud no ajustada se mide en
+# datos_prueba/fuera_de_semilla.py (conjunto aparte, con sus fallas reportadas).
 FUERA_DE_SEMILLA = [
     ("Google Chrome (64-bit)", None, "google:chrome"),
     ("Mozilla Firefox ESR (x64 en-US)", "Mozilla", "mozilla:firefox_esr"),
     ("Mozilla Thunderbird (x64 es-ES)", "Mozilla", "mozilla:thunderbird"),
-    ("Microsoft Edge", "Microsoft Corporation", "microsoft:edge"),
     ("Wireshark 4.2.5 x64", None, "wireshark:wireshark"),
     ("FileZilla Client 3.67.0", None, "filezilla-project:filezilla_client"),
     ("KeePass Password Safe 2.57", None, "keepass:password_safe"),
@@ -261,3 +261,14 @@ def test_firma_de_la_api_activos_y_cobertura(dic):
     )
     assert [a.clave for a in activos] == ["WinRAR@5.61"]
     assert [c.motivo for c in cobertura] == ["no_comparable"]
+
+
+def test_conjunto_fuera_de_semilla_no_inventa_cpe(dic):
+    from datos_prueba import fuera_de_semilla
+
+    r = fuera_de_semilla.medir(dic)
+    assert r["casos"] >= 20
+    assert r["resueltos_por_alias"] == 0  # el conjunto queda fuera de la tabla de alias
+    assert r["cpe_inventado"] == 0
+    # Piso de regresión, no objetivo: la cifra que se reporta es la que salga.
+    assert r["exactitud_pct"] >= 80

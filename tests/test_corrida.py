@@ -135,3 +135,28 @@ def test_grupos_y_cierre(respuesta_generada, base_cargada, tmp_path):
     [leido] = [x for x in bd.leer_hallazgos(c) if x.id == h.id]
     assert leido.estado == "en_curso"
     c.close()
+
+
+def test_pipeline_real_lector_normalizador_cruce(respuesta_generada, base_cargada, tmp_path):
+    """Archivo CSV -> leer_inventario -> normalizar -> correr, sin simular nada."""
+    import shutil
+
+    from radar.nucleo.corrida import cargar_inventario
+
+    csv = INVENTARIO.with_name("inventario.csv")
+    if not csv.exists():
+        pytest.skip("Falta datos_prueba/generados/inventario.csv")
+    ruta = tmp_path / "radar.db"
+    shutil.copy(base_cargada, ruta)
+    c = bd.conectar(ruta_sqlite=ruta)
+    lectura, _, r = cargar_inventario(c, csv)
+    t = respuesta_generada["totales"]
+    precisos = [h for h in r.hallazgos if h.preciso]
+    assert len(lectura.filas) == t["filas"]
+    assert len({(h.cve, h.activo) for h in precisos}) == t["pares_cve_version_precisos"]
+    assert sum(len(h.equipos) for h in precisos) == t["pares_cve_activo_precisos"]
+    assert sorted({h.cve for h in precisos if h.kev}) == t["kev"]
+    assert r.linea_base
+    assert bd.contar(c, "inventario") == t["filas"]
+    assert "docker:docker_desktop" in bd.pares_asignados(c)
+    c.close()

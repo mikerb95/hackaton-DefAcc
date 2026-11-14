@@ -64,12 +64,27 @@ def analisis(producto: str) -> dict:
     if grupo is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Producto sin hallazgos.")
     analisis = datos.analisis(producto)
+    guardado = analisis is not None
+    if analisis is None:
+        # Sin análisis del agente (todavía no llega o el agente no corre), se muestra el texto
+        # armado por código: la demo funciona con o sin agente (regla 6).
+        analisis = _respaldo(grupo)
     return {
         "grupo": _grupo_json(grupo),
         "analisis": analisis.model_dump() if analisis else None,
+        "guardado": guardado,
         "pendiente": analisis is None,
         "aprobacion": datos.aprobacion(producto),
     }
+
+
+def _respaldo(grupo: Grupo):
+    try:
+        from radar.agente.respaldo import armar_respaldo
+
+        return armar_respaldo(grupo)
+    except Exception:  # noqa: BLE001 - el respaldo nunca debe tumbar el detalle
+        return None
 
 
 class CambioEstado(BaseModel):

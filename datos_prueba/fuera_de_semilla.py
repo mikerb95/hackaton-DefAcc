@@ -14,54 +14,113 @@ from __future__ import annotations
 
 CASOS: list[tuple[str, str, str | None, frozenset[str]]] = [
     # Navegadores y correo
-    ("Microsoft Edge", "131.0.2903.70", "Microsoft Corporation",
-     frozenset({"microsoft:edge_chromium"})),
+    (
+        "Microsoft Edge",
+        "131.0.2903.70",
+        "Microsoft Corporation",
+        frozenset({"microsoft:edge_chromium"}),
+    ),
     ("Mozilla Thunderbird (x64 es-ES)", "128.4.2", "Mozilla", frozenset({"mozilla:thunderbird"})),
-    ("Opera Stable 114.0.5282.102", "114.0.5282.102", "Opera Software",
-     frozenset({"opera:opera_browser"})),
+    (
+        "Opera Stable 114.0.5282.102",
+        "114.0.5282.102",
+        "Opera Software",
+        frozenset({"opera:opera_browser"}),
+    ),
     ("Brave", "131.1.73.89", "Brave Software Inc", frozenset({"brave:brave"})),
     # Utilidades
-    ("Wireshark 4.2.5 64-bit", "4.2.5", "The Wireshark developer community",
-     frozenset({"wireshark:wireshark"})),
-    ("FileZilla Client 3.67.0", "3.67.0", "Tim Kosse",
-     frozenset({"filezilla-project:filezilla_client"})),
-    ("KeePass Password Safe 2.57", "2.57", "Dominik Reichl",
-     frozenset({"keepass:keepass", "keepass:password_safe"})),
+    (
+        "Wireshark 4.2.5 64-bit",
+        "4.2.5",
+        "The Wireshark developer community",
+        frozenset({"wireshark:wireshark"}),
+    ),
+    (
+        "FileZilla Client 3.67.0",
+        "3.67.0",
+        "Tim Kosse",
+        frozenset({"filezilla-project:filezilla_client"}),
+    ),
+    (
+        "KeePass Password Safe 2.57",
+        "2.57",
+        "Dominik Reichl",
+        frozenset({"keepass:keepass", "keepass:password_safe"}),
+    ),
     ("WinSCP 6.3.5", "6.3.5", "Martin Prikryl", frozenset({"winscp:winscp"})),
     ("Greenshot 1.2.10.6", "1.2.10.6", "Greenshot", frozenset({"getgreenshot:greenshot"})),
     ("Audacity 3.6.4", "3.6.4", "Audacity Team", frozenset({"audacityteam:audacity"})),
     ("GIMP 2.10.38", "2.10.38", "The GIMP Team", frozenset({"gimp:gimp"})),
     # HeidiSQL no tiene CPE en NVD (verificado en el diccionario): lo correcto es sin CPE.
     ("HeidiSQL 12.8.0.6908", "12.8.0.6908", "Ansgar Becker", frozenset()),
-    ("Foxit PDF Reader", "2024.3.0.26795", "Foxit Software Inc.",
-     frozenset({"foxit:pdf_reader"})),
+    ("Foxit PDF Reader", "2024.3.0.26795", "Foxit Software Inc.", frozenset({"foxit:pdf_reader"})),
     # Ofimática y desarrollo
-    ("LibreOffice 24.8.3.2", "24.8.3.2", "The Document Foundation",
-     frozenset({"libreoffice:libreoffice"})),
-    ("Microsoft Visual Studio Code (User)", "1.95.3", "Microsoft Corporation",
-     frozenset({"microsoft:visual_studio_code"})),
+    (
+        "LibreOffice 24.8.3.2",
+        "24.8.3.2",
+        "The Document Foundation",
+        frozenset({"libreoffice:libreoffice"}),
+    ),
+    (
+        "Microsoft Visual Studio Code (User)",
+        "1.95.3",
+        "Microsoft Corporation",
+        frozenset({"microsoft:visual_studio_code"}),
+    ),
     ("Postman x64 11.2.0", "11.2.0", "Postman", frozenset({"postman:postman"})),
-    ("Oracle VM VirtualBox 7.0.18", "7.0.18", "Oracle Corporation",
-     frozenset({"oracle:vm_virtualbox"})),
+    (
+        "Oracle VM VirtualBox 7.0.18",
+        "7.0.18",
+        "Oracle Corporation",
+        frozenset({"oracle:vm_virtualbox"}),
+    ),
     # Servidores y bases de datos
-    ("Apache Tomcat 9.0 Tomcat9 (remove only)", "9.0.93", "The Apache Software Foundation",
-     frozenset({"apache:tomcat"})),
-    ("PostgreSQL 16", "16.4", "PostgreSQL Global Development Group",
-     frozenset({"postgresql:postgresql"})),
-    ("Microsoft SQL Server 2019 (64-bit)", "15.0.2000.5", "Microsoft Corporation",
-     frozenset({"microsoft:sql_server"})),
+    (
+        "Apache Tomcat 9.0 Tomcat9 (remove only)",
+        "9.0.93",
+        "The Apache Software Foundation",
+        frozenset({"apache:tomcat"}),
+    ),
+    (
+        "PostgreSQL 16",
+        "16.4",
+        "PostgreSQL Global Development Group",
+        frozenset({"postgresql:postgresql"}),
+    ),
+    (
+        "Microsoft SQL Server 2019 (64-bit)",
+        "15.0.2000.5",
+        "Microsoft Corporation",
+        frozenset({"microsoft:sql_server"}),
+    ),
     # Acceso remoto y VPN
     ("AnyDesk", "8.0.14", "AnyDesk Software GmbH", frozenset({"anydesk:anydesk"})),
     ("OpenVPN 2.6.10-I001 amd64", "2.6.10", "OpenVPN, Inc.", frozenset({"openvpn:openvpn"})),
-    ("FortiClient VPN", "7.2.4.0972", "Fortinet Technologies Inc",
-     frozenset({"fortinet:forticlient"})),
-    ("Cisco Secure Client - AnyConnect VPN", "5.1.4.74", "Cisco Systems, Inc.",
-     frozenset({"cisco:secure_client", "cisco:anyconnect_secure_mobility_client"})),
-    ("Citrix Workspace 2402", "24.2.0.187", "Citrix Systems, Inc.",
-     frozenset({"citrix:workspace"})),
+    (
+        "FortiClient VPN",
+        "7.2.4.0972",
+        "Fortinet Technologies Inc",
+        frozenset({"fortinet:forticlient"}),
+    ),
+    (
+        "Cisco Secure Client - AnyConnect VPN",
+        "5.1.4.74",
+        "Cisco Systems, Inc.",
+        frozenset({"cisco:secure_client", "cisco:anyconnect_secure_mobility_client"}),
+    ),
+    (
+        "Citrix Workspace 2402",
+        "24.2.0.187",
+        "Citrix Systems, Inc.",
+        frozenset({"citrix:workspace"}),
+    ),
     # Nube y mensajería
-    ("Microsoft OneDrive", "24.201.1006.0005", "Microsoft Corporation",
-     frozenset({"microsoft:onedrive"})),
+    (
+        "Microsoft OneDrive",
+        "24.201.1006.0005",
+        "Microsoft Corporation",
+        frozenset({"microsoft:onedrive"}),
+    ),
     ("Dropbox", "212.4.5767", "Dropbox, Inc.", frozenset({"dropbox:dropbox"})),
     # Sin CPE: internos o genéricos que no están en NVD
     ("Intranet Corporativa Kiosko", "3.1.0", "Área de Sistemas", frozenset()),
@@ -80,14 +139,18 @@ def medir(dic=None) -> dict:
         limpio = nz.limpiar_nombre(programa)
         d = nz.decidir(limpio, dic, proveedor, usar_modelo=False)
         obtenidos = frozenset(d.pares)
-        ok = (not aceptables and not obtenidos) or (
-            bool(obtenidos) and obtenidos <= aceptables
+        ok = (not aceptables and not obtenidos) or (bool(obtenidos) and obtenidos <= aceptables)
+        resultados.append(
+            {
+                "programa": programa,
+                "esperado": sorted(aceptables),
+                "obtenido": sorted(obtenidos),
+                "metodo": d.metodo,
+                "empate": d.empate,
+                "correcto": ok,
+                "por_alias": d.metodo == "exacto",
+            }
         )
-        resultados.append({
-            "programa": programa, "esperado": sorted(aceptables), "obtenido": sorted(obtenidos),
-            "metodo": d.metodo, "empate": d.empate, "correcto": ok,
-            "por_alias": d.metodo == "exacto",
-        })
     correctos = sum(r["correcto"] for r in resultados)
     con_cpe = [r for r in resultados if r["esperado"]]
     return {

@@ -814,3 +814,55 @@ def leer_trazas(conexion: Any, limite: int = 100) -> list[dict[str, Any]]:
 @conexion_opcional()
 def hay_hallazgos(conexion: Any) -> bool:
     return conexion.execute("SELECT 1 FROM hallazgos LIMIT 1").fetchone() is not None
+
+
+def guardar_decisiones_cpe(conexion: Any, decisiones: Iterable[Any]) -> int:
+    """Guarda las decisiones del normalizador en `programa_cpe` (una fila por nombre limpio).
+
+    `vendor` y `producto` llevan el primer par; la lista completa de pares (Docker Desktop
+    tiene dos) va en el JSON de `candidatos`, bajo "pares".
+    """
+    filas = []
+    for d in decisiones:
+        primero = d.pares[0].split(":", 1) if d.pares else (None, None)
+        filas.append(
+            (
+                d.nombre_limpio,
+                primero[0],
+                primero[1],
+                d.confianza,
+                d.metodo,
+                _json(
+                    {
+                        "pares": list(d.pares),
+                        "producto": d.producto,
+                        "candidatos": [
+                            {"par": c.par, "puntaje": c.puntaje, "titulo": c.titulo}
+                            for c in d.candidatos[:5]
+                        ],
+                    }
+                ),
+            )
+        )
+    conexion.execute("DELETE FROM programa_cpe")
+    _en_lotes(
+        conexion,
+        "INSERT OR REPLACE INTO programa_cpe (programa, vendor, producto, confianza, metodo, "
+        "candidatos) VALUES (?,?,?,?,?,?)",
+        filas,
+    )
+    conexion.commit()
+    return len(filas)
+
+
+@conexion_opcional()
+def pares_asignados(conexion: Any) -> list[str]:
+    """Todos los pares que el normalizador asignó (incluye los segundos pares)."""
+    pares: set[str] = set()
+    for vendor, producto, candidatos in conexion.execute(
+        "SELECT vendor, producto, candidatos FROM programa_cpe"
+    ).fetchall():
+        if vendor and producto:
+            pares.add(f"{vendor}:{producto}")
+        pares.update((_de_json(candidatos, {}) or {}).get("pares", []))
+    return sorted(pares)

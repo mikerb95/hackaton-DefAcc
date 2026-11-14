@@ -124,6 +124,9 @@ main { max-width: 1280px; margin: 0 auto; padding: 24px; display: grid; gap: 20p
 .p-ok .punto { background: var(--lima); }
 .p-caida { background: rgba(255, 107, 61, 0.14); color: #ffb39b; }
 .p-caida .punto { background: var(--rojo); }
+.p-agente { background: var(--acento-tinte); color: var(--acento); }
+.p-agente .punto { background: var(--acento); }
+.p-respaldo .punto { background: var(--texto-2); }
 .etiquetas { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
 
 /* Controles */

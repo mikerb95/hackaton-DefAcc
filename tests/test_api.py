@@ -151,3 +151,17 @@ def test_inventario_cruza_contra_la_base(monkeypatch, tmp_path):
     assert [g["producto"] for g in productos] == ["WinRAR"]
     assert c.get("/api/resumen").json()["persistente"] is True
     assert c.post("/api/revisar").json()["encolado"] is True
+
+
+# -- respaldo cuando no hay análisis del agente (RF-607) ------------------------
+
+
+def test_detalle_sin_analisis_muestra_respaldo(cliente):
+    datos = modulo_datos.obtener_datos()
+    datos._analisis.pop("Docker Desktop")
+    r = cliente.get("/api/analisis/Docker Desktop").json()
+    assert r["pendiente"] is False and r["guardado"] is False
+    assert r["analisis"]["origen"] == "respaldo"
+    assert "Docker Desktop" in r["analisis"]["resumen"]
+    assert cliente.post("/api/comunicado/Docker Desktop/aprobar", json={}).status_code == 200
+    assert cliente.post("/api/comunicado/NoExiste/aprobar", json={}).status_code == 404

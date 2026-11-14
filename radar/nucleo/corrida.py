@@ -178,3 +178,74 @@ def marcar_avisado(
     ids = [h.id for h in _pendientes(bd.leer_hallazgos(conexion, producto), prioridades)]
     bd.marcar_avisados(conexion, ids)
     return len(ids)
+
+
+# ---------------------------------------------------------------------------
+# Carga completa de un inventario: lector -> normalizador -> cruce
+# ---------------------------------------------------------------------------
+
+
+def cargar_inventario(
+    conexion: Any,
+    origen: Any,
+    nombre: str | None = None,
+    usar_modelo: bool = False,
+    umbrales: Umbrales | None = None,
+) -> tuple[Any, Any, ResultadoCruce]:
+    """Lee un archivo de inventario, lo normaliza, lo guarda y lo cruza.
+
+    Devuelve (lectura, normalizacion, resultado). Por defecto sin el desempate con Claude, para
+    que la base compartida sea reproducible; `usar_modelo=True` lo activa.
+    """
+    from radar.ingesta.archivos import a_contrato, leer_inventario
+    from radar.ingesta.normalizador import normalizar
+
+    bd.crear_esquema(conexion)
+    lectura = leer_inventario(origen, nombre)
+    filas = [a_contrato(f) for f in lectura.filas]
+    normalizacion = normalizar(filas, usar_modelo=usar_modelo)
+    bd.guardar_inventario(conexion, filas, reemplazar=True)
+    bd.guardar_decisiones_cpe(conexion, normalizacion.decisiones.values())
+    resultado = correr(conexion, normalizacion.activos, normalizacion.cobertura, umbrales)
+    return lectura, normalizacion, resultado
+
+
+def principal(argv: list[str] | None = None) -> int:
+    import argparse
+    from pathlib import Path
+
+    p = argparse.ArgumentParser(description="Carga un inventario y corre el cruce")
+    p.add_argument("archivo", type=Path, help="CSV o Excel de inventario")
+    p.add_argument(
+        "--con-modelo", action="store_true", help="Desempate del normalizador con Claude"
+    )
+    p.add_argument("--sqlite", type=Path, help="Fuerza un sqlite local en esta ruta")
+    args = p.parse_args(argv)
+
+    conexion = bd.conectar(ruta_sqlite=args.sqlite)
+    try:
+        if bd.contar(conexion, "cves") == 0:
+            print("[corrida] La base no tiene CVE: corre antes worker.descargar", flush=True)
+            return 1
+        lectura, normalizacion, r = cargar_inventario(
+            conexion, args.archivo, usar_modelo=args.con_modelo
+        )
+        epss = bd.contar(conexion, "epss")
+    finally:
+        conexion.close()
+    print(f"[corrida] lectura: {lectura.resumen()}", flush=True)
+    print(
+        f"[corrida] normalizador: {len(normalizacion.activos)} activos, "
+        f"{len(normalizacion.cobertura)} filas a cobertura",
+        flush=True,
+    )
+    print(f"[corrida] cruce: {r.resumen}", flush=True)
+    if epss == 0:
+        print("[corrida] AVISO: la base no tiene EPSS; las prioridades no lo usan", flush=True)
+    return 0
+
+
+if __name__ == "__main__":
+    import sys
+
+    sys.exit(principal())
