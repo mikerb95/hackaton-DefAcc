@@ -6,6 +6,7 @@ Con datos de ejemplo y con una base sqlite temporal (el mismo esquema de Turso).
 from __future__ import annotations
 
 import shutil
+import sqlite3
 from pathlib import Path
 
 import pytest
@@ -141,6 +142,10 @@ def test_inventario_con_ejemplos_no_cruza(cliente):
 def test_inventario_cruza_contra_la_base(monkeypatch, tmp_path):
     copia = tmp_path / "radar.db"
     shutil.copy(BASE_LOCAL, copia)
+    # La base local es compartida: otro frente pudo dejar hallazgos de otro inventario.
+    with sqlite3.connect(copia) as con:
+        for tabla in ("hallazgos", "cobertura", "inventario", "analisis", "trabajos"):
+            con.execute(f"DELETE FROM {tabla}")
     c = _cliente(monkeypatch, RADAR_DATOS="base", RADAR_SQLITE=str(copia))
     csv = b"equipo,programa,version\nPC1,WinRAR 5.61 (64-bit),5.61\nPC2,Programa Inventado,1.0\n"
     r = c.post("/api/inventario", files={"archivo": ("i.csv", csv)}).json()

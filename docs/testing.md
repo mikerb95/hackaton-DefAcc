@@ -25,15 +25,16 @@ Córrelo tú mismo: `uv run pytest tests/test_ingesta.py`.
 | Prueba | Qué cubre | Requiere |
 |---|---|---|
 | `tests/test_normalizador.py` | Versión comparable, nombre limpio, alias de trampas, nombres fuera de la semilla, producto ausente de NVD, plugins de Jenkins, empate de Python, desempate con modelo sustituido (sin API), agrupación y nombre canónico, nombre enorme (RF-301 a RF-305). Medición contra la respuesta conocida (RF-307) | `resources/` para la medición |
+| `tests/test_integracion.py` | Pipeline real de punta a punta: 735 pares CVE y versión, 6500 por equipo, detección y precisión 100 %, 0 falsos positivos, 12 KEV, 1098 no precisos por activo, cobertura por motivo; tabla para el reporte (RF-309, RF-310) | `resources/`; usa `datos_locales/radar.db` en solo lectura o arma una base temporal desde el snapshot |
 | `tests/test_datos_prueba.py` | Semilla fija, totales de SEMILLA.md (735 y 12 KEV), distribución, fronteras, cobertura con motivos del contrato, inyección aparte, bytes idénticos entre corridas, la ingesta lee CSV y xlsx completos (RF-306) | `resources/` (se salta si falta) |
 
-Córrelo tú mismo: `uv run pytest tests/test_normalizador.py tests/test_datos_prueba.py`. Para las cifras: `uv run python -m datos_prueba.generar && uv run python -m datos_prueba.medir_normalizador`.
+Córrelo tú mismo: `uv run pytest tests/test_normalizador.py tests/test_datos_prueba.py tests/test_integracion.py`. La exactitud no ajustada (RF-308) se prueba en `tests/test_normalizador.py::test_conjunto_fuera_de_semilla_no_inventa_cpe` (sin CPE inventados, piso de 80 %). Para las cifras: `uv run python -m datos_prueba.generar && uv run python -m datos_prueba.medir_normalizador`.
 
 ## API y panel
 
 | Prueba | Qué cubre | Requiere |
 |---|---|---|
-| `tests/test_api.py` | Clave obligatoria y 503 en Vercel sin clave (RF-601); resumen, orden y filtros de hallazgos, EPSS ausente como `null`, productos y análisis (RF-602); "posterior a" y nunca "actualizar a" con `versionEndIncluding` (RF-603); cambio de estado y aprobación (RF-604); inventario ilegible da 400 y cruce real contra una copia de la base local (RF-605, RF-606) | `datos_locales/radar.db` para la prueba de cruce (se salta si falta) |
+| `tests/test_api.py` | Clave obligatoria y 503 en Vercel sin clave (RF-601); resumen, orden y filtros de hallazgos, EPSS ausente como `null`, productos y análisis (RF-602); "posterior a" y nunca "actualizar a" con `versionEndIncluding` (RF-603); cambio de estado y aprobación (RF-604); inventario ilegible da 400 y cruce real contra una copia de la base local (RF-605, RF-606); detalle sin análisis del agente muestra y aprueba el respaldo (RF-607) | `datos_locales/radar.db` para la prueba de cruce (se salta si falta) |
 
 Córrelo tú mismo: `uv run pytest tests/test_api.py`. El panel en local: `uv run uvicorn app:app --port 8000`.
 

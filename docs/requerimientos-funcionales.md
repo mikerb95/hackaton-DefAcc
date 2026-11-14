@@ -33,6 +33,9 @@ Prioridad alta. Pruebas: `tests/test_ingesta.py`, `tests/test_mcp.py`.
 - **RF-305** Desempate con Claude solo entre los 5 candidatos (salida "1" a "5" o "ninguno"), detrás de la bandera `RADAR_DESEMPATE_MODELO=1`; ante cualquier falla decide el código. `radar/ingesta/normalizador.py`.
 - **RF-306** Inventario de prueba reproducible (CSV y Excel, 52 equipos, relleno de 15 a 25 programas por equipo, filas de inyección aparte) con su respuesta conocida, que sale del snapshot y nunca del cruce. `datos_prueba/generar.py`, `datos_prueba/respuesta.py`.
 - **RF-307** Medir el normalizador contra la respuesta conocida, con la línea base por nombre exacto y la variante sin alias. `datos_prueba/medir_normalizador.py`.
+- **RF-308** Exactitud no ajustada del normalizador sobre 30 nombres de productos reales fuera de la semilla y de la tabla de alias, con lo esperado escrito antes de medir. `datos_prueba/fuera_de_semilla.py`.
+- **RF-309** Integración de punta a punta sin piezas simuladas (CSV, `leer_inventario`, `normalizar`, `correr` en solo lectura) contra la respuesta conocida: pares CVE y versión, detección, precisión, falsos positivos, KEV, no precisos y cobertura por motivo. `datos_prueba/integracion.py`.
+- **RF-310** Cifras del normalizador y del pipeline expuestas para `evals/reporte.md` (`metricas_normalizador()` y `tabla_markdown()`), sin escribirlas a mano. `datos_prueba/metricas.py`.
 
 ## API y panel
 
@@ -43,7 +46,9 @@ Prioridad alta. Pruebas: `tests/test_ingesta.py`, `tests/test_mcp.py`.
 - **RF-605** El responsable de TI sube un inventario CSV o Excel; la API lo lee (RF de ingesta), lo guarda, lo normaliza (RF-301), lo cruza contra todas las CVE guardadas (RF-107) y deja un trabajo de análisis. Un archivo ilegible responde 400 con el motivo. `radar/api/rutas.py`. Tablas `inventario`, `hallazgos`, `cobertura`, `trabajos`.
 - **RF-606** La API lee la base (Turso o sqlite local con el mismo esquema) cuando está configurada, o datos de ejemplo marcados como no persistentes; el panel avisa cuál está usando. `radar/api/datos.py`.
 
-Prioridad alta para RF-601 a RF-605, media para RF-606. Prueba: `tests/test_api.py`.
+- **RF-607** Si el agente no entregó análisis para un producto, el detalle muestra el texto armado por código (`radar/agente/respaldo.py`) con una píldora neutra "Texto armado por código", y ese comunicado también se puede aprobar. La demo funciona con o sin agente. `radar/api/rutas.py`, `public/panel.js`.
+
+Prioridad alta para RF-601 a RF-605 y RF-607, media para RF-606. Prueba: `tests/test_api.py`.
 
 
 ## Plugin de Claude Code

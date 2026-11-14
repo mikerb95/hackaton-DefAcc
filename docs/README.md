@@ -29,6 +29,7 @@ salida de pytest. Si un número no coincide entre páginas, es un error.
 | [testing.md](testing.md) | Pirámide de pruebas, qué cubre cada archivo y cómo correrlo | total de pytest |
 | [reportes-pruebas.md](reportes-pruebas.md) | Resultados de los evals con defensa y sin defensa | tasa de inyección |
 | [verificacion-validacion.md](verificacion-validacion.md) | Decisiones que cambian cifras y por qué | decisiones con prueba |
+| [contrato-analista.md](contrato-analista.md) | Contrato autocontenido del analista con Agent SDK (frente externo): archivos, funciones disponibles, firma que espera la suite de inyección y reglas | 1 frente externo |
 | [AMENAZAS.md](AMENAZAS.md) | Modelo de amenazas del agente y del inventario | vectores |
 | [LIMITES.md](LIMITES.md) | Lo que el radar no detecta y el riesgo de uso dual | límites conocidos |
 | [roles.md](roles.md) | Roles del equipo y matriz RACI | si alcanza |
