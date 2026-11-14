@@ -9,7 +9,11 @@
 # Qué hace: busca un Python protegido (o lo instala con winget para todos los usuarios),
 # copia el agente a Program Files, inscribe el equipo, hace el primer envío, registra una
 # tarea programada como SYSTEM y muestra el código de activación para escribirlo en el panel.
-# Qué no hace: no abre puertos, no instala un servicio residente y no recibe órdenes.
+# Qué no hace: no abre puertos ni instala un servicio residente.
+#
+# Parcheo (docs/plan-parcheo.md): solo con -ClaveAprobacion (o clave_aprobacion en
+# configuracion.txt), la clave pública del aprobador en base64. Se fija en este equipo y se
+# registra la tarea RadarAgente-Parcheo, que aplica solo los planes firmados con esa clave.
 #
 # Instalador de desarrollo sin firmar, no el MSI firmado del plan (fase 3).
 
@@ -19,6 +23,8 @@ param(
     [string]$Token,
     [ValidateRange(1, 168)][int]$IntervaloHoras = 12,
     [int]$RetrasoMaximoSegundos = 900,
+    # Clave pública Ed25519 del aprobador (base64). Sin ella, el agente no parchea.
+    [string]$ClaveAprobacion,
     # Sin ventanas: para pruebas o despliegues por consola.
     [switch]$Silencioso
 )
@@ -92,6 +98,10 @@ try {
     $configuracion = Leer-Configuracion
     if (-not $Url) { $Url = $configuracion['url'] }
     if (-not $Token) { $Token = $configuracion['token'] }
+    if (-not $ClaveAprobacion) { $ClaveAprobacion = $configuracion['clave_aprobacion'] }
+    if ($ClaveAprobacion -and $ClaveAprobacion -notmatch '^[A-Za-z0-9+/]{42,43}=?$') {
+        throw 'La clave de aprobación no es una clave pública Ed25519 en base64.'
+    }
     if (-not $Url -and -not $Silencioso) {
         $Url = [Microsoft.VisualBasic.Interaction]::InputBox(
             'Dirección del radar (por ejemplo https://radar.ejemplo.com):', $titulo, 'https://')
@@ -168,6 +178,28 @@ try {
     $ajustesAviso = New-ScheduledTaskSettingsSet -StartWhenAvailable -ExecutionTimeLimit (New-TimeSpan -Minutes 15)
     Register-ScheduledTask -TaskName "$tarea-Aviso" -Action $accionAviso -Trigger @($alEntrar, $cadaDosHoras) `
         -Principal $persona -Settings $ajustesAviso -Force | Out-Null
+
+    # Parcheo: tarea aparte, con más tiempo (Windows Update puede tardar horas) y sin
+    # ejecuciones en paralelo. El agente nunca reinicia el equipo.
+    $tareaParcheo = "$tarea-Parcheo"
+    if ($ClaveAprobacion) {
+        $salidaClave = & $python -I $agente parcheo habilitar --clave $ClaveAprobacion 2>&1 | Out-String
+        if ($LASTEXITCODE -ne 0) { throw "No se pudo habilitar el parcheo.`n`n$($salidaClave.Trim())" }
+        $accionParcheo = New-ScheduledTaskAction -Execute $python `
+            -Argument "-I `"$agente`" parchear --programado" -WorkingDirectory $destino
+        $cadaQuince = New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(10) `
+            -RepetitionInterval (New-TimeSpan -Minutes 15)
+        $ajustesParcheo = New-ScheduledTaskSettingsSet -StartWhenAvailable -MultipleInstances IgnoreNew `
+            -ExecutionTimeLimit (New-TimeSpan -Hours 6)
+        Register-ScheduledTask -TaskName $tareaParcheo -Action $accionParcheo -Trigger $cadaQuince `
+            -Principal $quien -Settings $ajustesParcheo -Force | Out-Null
+        Write-Host 'Parcheo habilitado: el equipo aplica solo planes firmados con esa clave.'
+    }
+    else {
+        # Reinstalar sin clave apaga el parcheo que hubiera.
+        Unregister-ScheduledTask -TaskName $tareaParcheo -Confirm:$false -ErrorAction SilentlyContinue
+        & $python -I $agente parcheo deshabilitar | Out-Null
+    }
 
     try { Set-Clipboard -Value $codigo } catch { }
     Avisar ("El agente quedó instalado en este equipo.`n`n" +

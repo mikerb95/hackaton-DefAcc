@@ -23,10 +23,21 @@ AGENTE = RAIZ / "agente_local"
 DESTINO = RAIZ / "public" / "descargas"
 FECHA_FIJA = (2026, 11, 14, 0, 0, 0)
 
-COMUNES = ("__init__.py", "__main__.py", "aviso.py", "comun.py", "envio.py", "reporte.py")
+COMUNES = (
+    "__init__.py",
+    "__main__.py",
+    "aviso.py",
+    "comun.py",
+    "ed25519.py",
+    "envio.py",
+    "orden_parcheo.py",
+    "parcheo.py",
+    "plan_parcheo.py",
+    "reporte.py",
+)
 POR_SISTEMA = {
     "windows": {
-        "modulos": ("windows.py",),
+        "modulos": ("windows.py", "parcheo_windows.py"),
         "instalacion": (
             "instalar.cmd",
             "instalar.ps1",
@@ -37,7 +48,7 @@ POR_SISTEMA = {
         ),
     },
     "linux": {
-        "modulos": ("linux.py",),
+        "modulos": ("linux.py", "parcheo_linux.py"),
         "instalacion": (
             "instalar.sh",
             "ejecutar.py",
@@ -45,6 +56,8 @@ POR_SISTEMA = {
             "radar-agente.timer",
             "radar-agente-aviso.service",
             "radar-agente-aviso.timer",
+            "radar-agente-parcheo.service",
+            "radar-agente-parcheo.timer",
         ),
     },
 }

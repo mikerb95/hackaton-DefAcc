@@ -9,6 +9,7 @@ $datos = Join-Path $env:ProgramData 'RadarAgente'
 
 Unregister-ScheduledTask -TaskName 'RadarAgente' -Confirm:$false -ErrorAction SilentlyContinue
 Unregister-ScheduledTask -TaskName 'RadarAgente-Aviso' -Confirm:$false -ErrorAction SilentlyContinue
+Unregister-ScheduledTask -TaskName 'RadarAgente-Parcheo' -Confirm:$false -ErrorAction SilentlyContinue
 foreach ($carpeta in @($destino, $datos)) {
     if (Test-Path $carpeta) { Remove-Item -Recurse -Force $carpeta }
 }

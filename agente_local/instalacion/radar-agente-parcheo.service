@@ -1,0 +1,19 @@
+# Aplica el plan de parcheo firmado, si hay uno (docs/plan-parcheo.md). Lo dispara
+# radar-agente-parcheo.timer. Solo se instala si se habilitó el parcheo con la clave del
+# aprobador.
+#
+# A diferencia del recolector, este servicio necesita escribir en el sistema (apt, dnf,
+# systemctl, /etc/apt/apt.conf.d): por eso no lleva ProtectSystem. Igual nunca reinicia el
+# equipo y solo ejecuta el catálogo cerrado del agente.
+[Unit]
+Description=Parcheo aprobado del agente local del radar
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/radar-agente
+ExecStart=/usr/bin/python3 -I /opt/radar-agente/ejecutar.py parchear --programado
+TimeoutStartSec=6h
+PrivateTmp=true
+ProtectHome=true
