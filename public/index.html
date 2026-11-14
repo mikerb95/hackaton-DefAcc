@@ -168,15 +168,54 @@
     </section>
 
     <section class="seccion reglas" aria-labelledby="t-reglas">
-      <h2 id="t-reglas">Lo que el radar no hace aunque sería más cómodo</h2>
-      <dl class="reglas-lista">
-        <div><dt><span class="tachable">Contar una fuente caída como cero.</span></dt><dd>Si KEV o NVD no responden, el panel lo dice y la cifra queda incompleta, no limpia.</dd></div>
-        <div><dt><span class="tachable">Inventar un hallazgo sin comparar versiones.</span></dt><dd>Sin versión legible o sin CPE no hay hallazgo: la fila va a cobertura.</dd></div>
-        <div><dt><span class="tachable">Leer un EPSS ausente como 0.</span></dt><dd>Se muestra “sin dato”, y no cruza ningún umbral.</dd></div>
-        <div><dt><span class="tachable">Emparejar KEV por nombre de fabricante.</span></dt><dd>Solo por ID de CVE.</dd></div>
-        <div><dt><span class="tachable">Prometer una versión que no se conoce.</span></dt><dd>Si NVD dice “hasta X incluida”, el aviso dice “posterior a X”, no “actualizar a X”.</dd></div>
-        <div><dt><span class="tachable">Depender del modelo.</span></dt><dd>Si el agente falla o el verificador lo rechaza, el aviso sale igual, armado por código.</dd></div>
-      </dl>
+      <div class="reglas-titulo">
+        <h2 id="t-reglas">Seis atajos que Lighthouse no toma</h2>
+        <p>Serían más cómodos. También darían cifras falsas.</p>
+      </div>
+      <ul class="reglas-lista">
+        <li class="regla">
+          <div class="regla-cabeza"><h3>Fuente caída no es cero</h3><span class="regla-n mono" aria-hidden="true">01</span></div>
+          <div class="regla-demo mono">
+            <p class="regla-mal"><span class="regla-signo" aria-hidden="true">✕</span><span class="sr">Atajo descartado: </span><s class="tachable">kev: 0 explotados</s></p>
+            <p class="regla-bien"><span class="regla-signo" aria-hidden="true">✓</span><span class="sr">Lo que hace: </span>kev: sin respuesta, cifra incompleta</p>
+          </div>
+        </li>
+        <li class="regla">
+          <div class="regla-cabeza"><h3>Sin versión no hay hallazgo</h3><span class="regla-n mono" aria-hidden="true">02</span></div>
+          <div class="regla-demo mono">
+            <p class="regla-mal"><span class="regla-signo" aria-hidden="true">✕</span><span class="sr">Atajo descartado: </span><s class="tachable">7-Zip: vulnerable</s></p>
+            <p class="regla-bien"><span class="regla-signo" aria-hidden="true">✓</span><span class="sr">Lo que hace: </span>7-Zip: sin versión, va a cobertura</p>
+          </div>
+        </li>
+        <li class="regla">
+          <div class="regla-cabeza"><h3>EPSS ausente no es 0</h3><span class="regla-n mono" aria-hidden="true">03</span></div>
+          <div class="regla-demo mono">
+            <p class="regla-mal"><span class="regla-signo" aria-hidden="true">✕</span><span class="sr">Atajo descartado: </span><s class="tachable">epss: 0,00</s></p>
+            <p class="regla-bien"><span class="regla-signo" aria-hidden="true">✓</span><span class="sr">Lo que hace: </span>epss: sin dato</p>
+          </div>
+        </li>
+        <li class="regla">
+          <div class="regla-cabeza"><h3>KEV se cruza por CVE</h3><span class="regla-n mono" aria-hidden="true">04</span></div>
+          <div class="regla-demo mono">
+            <p class="regla-mal"><span class="regla-signo" aria-hidden="true">✕</span><span class="sr">Atajo descartado: </span><s class="tachable">fabricante = "RARLAB"</s></p>
+            <p class="regla-bien"><span class="regla-signo" aria-hidden="true">✓</span><span class="sr">Lo que hace: </span>cve = CVE-2023-38831</p>
+          </div>
+        </li>
+        <li class="regla">
+          <div class="regla-cabeza"><h3>No promete versiones</h3><span class="regla-n mono" aria-hidden="true">05</span></div>
+          <div class="regla-demo mono">
+            <p class="regla-mal"><span class="regla-signo" aria-hidden="true">✕</span><span class="sr">Atajo descartado: </span><s class="tachable">actualizar a 6.22</s></p>
+            <p class="regla-bien"><span class="regla-signo" aria-hidden="true">✓</span><span class="sr">Lo que hace: </span>posterior a 6.22</p>
+          </div>
+        </li>
+        <li class="regla">
+          <div class="regla-cabeza"><h3>El modelo no es punto de falla</h3><span class="regla-n mono" aria-hidden="true">06</span></div>
+          <div class="regla-demo mono">
+            <p class="regla-mal"><span class="regla-signo" aria-hidden="true">✕</span><span class="sr">Atajo descartado: </span><s class="tachable">agente caído: sin aviso</s></p>
+            <p class="regla-bien"><span class="regla-signo" aria-hidden="true">✓</span><span class="sr">Lo que hace: </span>aviso armado por código</p>
+          </div>
+        </li>
+      </ul>
     </section>
 
     <section class="cierre" aria-labelledby="t-cierre">
