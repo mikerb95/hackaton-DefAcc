@@ -3,6 +3,7 @@ del agente (RF-610 a RF-614). Sin red ni Claude; sqlite en tmp_path."""
 
 from __future__ import annotations
 
+import secrets
 import uuid
 import zipfile
 from io import BytesIO
@@ -213,11 +214,21 @@ def con_base(monkeypatch, tmp_path, base_temporal):
     return c
 
 
+def _cuerpo(token: str) -> dict:
+    """Lo que envía el agente: credencial y código de activación los genera él."""
+    from agente_local.envio import nuevo_codigo
+
+    return {
+        "token": token,
+        "equipo_id": str(uuid.uuid4()),
+        "nombre_equipo": "PC-01",
+        "credencial": secrets.token_urlsafe(32),
+        "codigo": nuevo_codigo(),
+    }
+
+
 def _inscribir(cliente, token: str):
-    return cliente.post(
-        "/api/agente/inscribir",
-        json={"token": token, "equipo_id": str(uuid.uuid4()), "nombre_equipo": "PC-01"},
-    )
+    return cliente.post("/api/agente/inscribir", json=_cuerpo(token))
 
 
 def test_token_del_panel_inscribe_y_se_agota(con_base):
@@ -244,7 +255,7 @@ def test_token_del_panel_inscribe_y_se_agota(con_base):
 
 def test_equipo_repetido_devuelve_el_uso(con_base):
     token = con_base.post("/api/tokens", json={"usos_max": 2}).json()["token"]
-    cuerpo = {"token": token, "equipo_id": str(uuid.uuid4()), "nombre_equipo": "PC-01"}
+    cuerpo = _cuerpo(token)
     assert con_base.post("/api/agente/inscribir", json=cuerpo).status_code == 200
     assert con_base.post("/api/agente/inscribir", json=cuerpo).status_code == 409
     assert con_base.get("/api/tokens").json()["tokens"][0]["usos"] == 1

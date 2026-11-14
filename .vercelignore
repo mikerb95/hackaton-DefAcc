@@ -9,7 +9,6 @@ datos_prueba/
 evals/
 tests/
 worker/
-agente_local/
 plugin/
 .coordinacion/
 datos_locales/

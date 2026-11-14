@@ -2,8 +2,9 @@
 
 - Solo conexiones salientes por HTTPS. HTTP se acepta únicamente contra la propia máquina
   (pruebas en local).
-- El token de inscripción se usa una vez: se canjea por una credencial propia del equipo
-  y no se guarda.
+- Al inscribirse, el agente genera su credencial y un código de activación. El código se
+  muestra en pantalla y TI lo escribe en el panel para activar el equipo. El token de la
+  organización es opcional y no se guarda.
 - De la respuesta del servidor solo se lee el intervalo deseado. No hay canal de órdenes:
   cualquier otro campo se ignora.
 - Sin red, el reporte queda guardado y se reintenta en la próxima corrida.
@@ -14,6 +15,7 @@ from __future__ import annotations
 import json
 import os
 import platform
+import secrets
 import subprocess
 import urllib.error
 import urllib.parse
@@ -265,26 +267,47 @@ def intervalo_de(respuesta: dict[str, Any]) -> int | None:
     return min(max(valor, INTERVALO_MINIMO), INTERVALO_MAXIMO)
 
 
-def inscribir(estado: Estado, url: str, token: str, nombre_equipo: str, abrir: Any = None) -> None:
-    """Canjea el token de inscripción por la credencial del equipo y olvida el token."""
+# Sin letras ni cifras que se confundan al leerlas en voz alta (0/O, 1/I/L).
+ALFABETO_CODIGO = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"
+
+
+def nuevo_codigo() -> str:
+    """Código de activación de 8 caracteres en dos grupos, por ejemplo `K7PQ-4MXR`."""
+    letras = "".join(secrets.choice(ALFABETO_CODIGO) for _ in range(8))
+    return f"{letras[:4]}-{letras[4:]}"
+
+
+def inscribir(
+    estado: Estado,
+    url: str,
+    nombre_equipo: str,
+    token: str | None = None,
+    abrir: Any = None,
+) -> str:
+    """Inscribe el equipo y devuelve su código de activación.
+
+    El agente genera aquí su propia credencial y el código. La credencial no sale nunca de
+    este equipo salvo hacia el radar (que guarda su huella); el código se muestra en
+    pantalla para que TI lo escriba en el panel. Así solo se activa un equipo cuyo código
+    alguien vio en su pantalla. El token de la organización es opcional: solo hace falta
+    si el radar lo exige.
+    """
     base = validar_url(url)
-    respuesta = _json(
-        base + RUTA_INSCRIBIR,
-        {
-            "token": token,
-            "equipo_id": estado.equipo_id,
-            "nombre_equipo": nombre_equipo,
-            "agente_version": VERSION,
-        },
-        {},
-        abrir,
-    )
-    credencial = respuesta.get("credencial")
-    if not isinstance(credencial, str) or len(credencial) < 32:
-        raise ErrorEnvio("El radar no devolvió una credencial.")
-    estado.datos["credencial"] = credencial
-    estado.datos["url"] = base
+    credencial = secrets.token_urlsafe(32)
+    codigo = nuevo_codigo()
+    cuerpo = {
+        "equipo_id": estado.equipo_id,
+        "nombre_equipo": nombre_equipo,
+        "agente_version": VERSION,
+        "credencial": credencial,
+        "codigo": codigo,
+    }
+    if token:
+        cuerpo["token"] = token
+    _json(base + RUTA_INSCRIBIR, cuerpo, {}, abrir)
+    estado.datos.update(credencial=credencial, url=base, codigo=codigo)
     estado.guardar()
+    return codigo
 
 
 def enviar(estado: Estado, reporte: dict[str, Any], abrir: Any = None) -> int | None:

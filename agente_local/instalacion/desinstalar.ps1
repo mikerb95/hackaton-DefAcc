@@ -1,4 +1,4 @@
-# Desinstala el agente local del radar en Windows: borra la tarea, la credencial y el código.
+﻿# Desinstala el agente local del radar en Windows: borra la tarea, la credencial y el código.
 # Después hay que retirar el equipo en el radar (DELETE /api/equipos/{id}).
 #
 #   powershell -ExecutionPolicy Bypass -File desinstalar.ps1

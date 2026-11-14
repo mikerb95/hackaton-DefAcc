@@ -144,27 +144,50 @@ function irAPaso(n) {
   if (n === 4) esperarEquipo(); else detenerEspera();
 }
 
+// El zip que se descarga ya trae la URL del radar y el token (configuracion.txt): en Windows
+// basta con doble clic en INSTALAR.cmd, y en Linux con una orden sin parámetros.
 function comandoInstalacion() {
-  const url = location.origin;
-  if (asistente.sistema === "windows") {
-    return `powershell -ExecutionPolicy Bypass -File .\\agente_local\\instalacion\\instalar.ps1 -Url ${url} -Token ${asistente.token}`;
-  }
-  return `sudo RADAR_AGENTE_TOKEN=${asistente.token} sh agente_local/instalacion/instalar.sh ${url}`;
+  if (asistente.sistema === "windows") return "Doble clic en INSTALAR.cmd";
+  return "sudo sh agente_local/instalacion/instalar.sh";
 }
 
 function pintarInstalacion() {
   const win = asistente.sistema === "windows";
   const descarga = $("#descarga");
-  descarga.href = `/descargas/radar-agente-${asistente.sistema}.zip`;
+  descarga.removeAttribute("href");
   descarga.textContent = win ? "Descargar para Windows (.zip)" : "Descargar para Linux (.zip)";
   $("#descarga-nota").textContent = win
-    ? "Descomprímelo en el equipo. Necesita Python 3.10 o superior."
-    : "Descomprímelo en el equipo. Necesita python3 y systemd.";
+    ? "Ya trae la dirección del radar y el token. Si al equipo le falta Python, el instalador lo instala."
+    : "Ya trae la dirección del radar y el token. Necesita python3 y systemd.";
   $("#comando-donde").textContent = win
-    ? "En PowerShell como administrador, dentro de la carpeta descomprimida:"
+    ? "Descomprímelo en el equipo y:"
     : "En una terminal, dentro de la carpeta descomprimida:";
   $("#comando").textContent = comandoInstalacion();
+  $("#copiar-comando").hidden = win;
 }
+
+// La descarga va por POST: el token no queda en la URL ni en registros de acceso.
+$("#descarga").addEventListener("click", async (e) => {
+  e.preventDefault();
+  const boton = e.currentTarget;
+  try {
+    const r = await fetch("/api/agente-instalador", {
+      method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sistema: asistente.sistema, token: asistente.token }),
+    });
+    if (!r.ok) throw new Error(`Error ${r.status}`);
+    const enlace = document.createElement("a");
+    enlace.href = URL.createObjectURL(await r.blob());
+    enlace.download = `radar-agente-${asistente.sistema}.zip`;
+    document.body.appendChild(enlace);
+    enlace.click();
+    enlace.remove();
+    setTimeout(() => URL.revokeObjectURL(enlace.href), 10000);
+  } catch (error) {
+    $("#descarga-nota").textContent = `No se pudo descargar: ${error.message}`;
+  }
+  boton.blur();
+});
 
 async function abrirAsistente() {
   asistente.token = null;
@@ -240,8 +263,8 @@ function esperarEquipo() {
       caja.innerHTML = `<div class="espera-ok" aria-hidden="true"></div>
         <p>${nuevos.map((eq) => `<strong class="mono">${esc(eq.nombre)}</strong>`).join(", ")} ${nuevos.length > 1 ? "se inscribieron" : "se inscribió"}.</p>
         <p class="nota">${nuevos[0].ultimo_reporte ? "Ya envió su primer reporte." : "Su primer reporte llega en unos minutos."}
-          ${nuevos.some((eq) => eq.pendiente) ? "Queda por aprobar: su inventario entra al cruce cuando lo apruebes en su ficha." : ""}</p>
-        <button type="button" class="boton-texto" id="ver-nuevo">${nuevos.some((eq) => eq.pendiente) ? "Revisar y aprobar" : "Ver el equipo"}</button>`;
+          ${nuevos.some((eq) => eq.pendiente) ? "Queda por activar: escribe en su ficha el código que mostró el instalador." : ""}</p>
+        <button type="button" class="boton-texto" id="ver-nuevo">${nuevos.some((eq) => eq.pendiente) ? "Activar con el código" : "Ver el equipo"}</button>`;
       $("#ver-nuevo").addEventListener("click", () => {
         $("#asistente").close();
         location.hash = "#equipos";

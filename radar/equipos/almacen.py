@@ -10,10 +10,10 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
-import secrets
+import re
 from collections.abc import Iterable
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from radar import bd
@@ -121,26 +121,44 @@ def nombre_libre(conexion: Any, nombre: str, equipo_id: str) -> str:
     return f"{nombre[:240]}-{equipo_id[:8]}"
 
 
+_CODIGO = re.compile(r"^[A-Z0-9]{8}$")
+DIAS_PENDIENTE = 7
+
+
+def normalizar_codigo(codigo: str | None) -> str | None:
+    """`k7pq 4mxr`, `K7PQ-4MXR` y `k7pq4mxr` son el mismo código. None si no tiene forma."""
+    if not codigo:
+        return None
+    limpio = re.sub(r"[\s-]", "", codigo).upper()
+    return f"{limpio[:4]}-{limpio[4:]}" if _CODIGO.match(limpio) else None
+
+
 def inscribir(
     conexion: Any,
     equipo_id: str,
     nombre: str,
     agente_version: str | None,
+    credencial: str,
+    codigo: str,
     aprobar: bool = False,
-) -> str:
-    """Crea el equipo y devuelve su credencial (única vez que existe en claro).
+) -> None:
+    """Crea el equipo con la credencial y el código que generó el propio agente.
 
-    Por defecto queda pendiente de aprobación; con `aprobar` (modo automático) entra
-    aprobado. Un equipo retirado puede volver a inscribirse; uno vigente o revocado, no.
+    Del lado del radar solo quedan sus huellas (SHA-256): quien lea la base no puede
+    hacerse pasar por el equipo ni activarlo. Por defecto queda pendiente hasta que TI
+    escribe el código en el panel; con `aprobar` (modo automático) entra aprobado. Un
+    equipo retirado puede volver a inscribirse; uno vigente o revocado, no.
     """
     existente = conexion.execute("SELECT 1 FROM equipos WHERE id = ?", [equipo_id]).fetchone()
     if existente is not None:
         raise EquipoYaInscrito(equipo_id)
-    credencial = secrets.token_urlsafe(BYTES_CREDENCIAL)
+    normal = normalizar_codigo(codigo)
+    if normal is None:
+        raise ValueError("Código de activación sin forma válida")
     momento = bd.ahora()
     conexion.execute(
         "INSERT INTO equipos (id, nombre, credencial, inscrito, agente_version, aprobado, "
-        "aprobado_por) VALUES (?,?,?,?,?,?,?)",
+        "aprobado_por, codigo) VALUES (?,?,?,?,?,?,?,?)",
         [
             equipo_id,
             nombre_libre(conexion, nombre, equipo_id),
@@ -149,10 +167,32 @@ def inscribir(
             agente_version,
             momento if aprobar else None,
             APROBACION_AUTOMATICA if aprobar else None,
+            huella(normal),
         ],
     )
     conexion.commit()
-    return credencial
+
+
+def equipo_de_codigo(conexion: Any, codigo: str) -> str | None:
+    """Id del equipo pendiente con ese código de activación, o None."""
+    normal = normalizar_codigo(codigo)
+    if normal is None:
+        return None
+    fila = conexion.execute(
+        "SELECT id FROM equipos WHERE codigo = ? AND aprobado IS NULL AND revocado = 0",
+        [huella(normal)],
+    ).fetchone()
+    return fila[0] if fila else None
+
+
+def borrar_pendientes_viejos(conexion: Any, dias: int = DIAS_PENDIENTE) -> int:
+    """Borra las inscripciones que nadie activó en `dias` días (nunca llegaron al cruce)."""
+    limite = (datetime.now(UTC) - timedelta(days=dias)).isoformat(timespec="seconds")
+    cursor = conexion.execute(
+        "DELETE FROM equipos WHERE aprobado IS NULL AND revocado = 0 AND inscrito < ?", [limite]
+    )
+    conexion.commit()
+    return cursor.rowcount
 
 
 def contar_pendientes(conexion: Any) -> int:

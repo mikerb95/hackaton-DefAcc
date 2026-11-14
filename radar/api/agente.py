@@ -2,28 +2,32 @@
 
 Dos grupos, con credenciales distintas:
 
-- `/api/agente/*` lo llaman los equipos. No usa la clave compartida del panel: la
-  inscripción pide un token de inscripción creado en el panel (con vencimiento y tope de
-  usos, `radar/api/cuentas.py`) o el de la organización (`AGENTE_TOKEN_INSCRIPCION`), y cada reporte
-  pide la credencial propia del equipo en `X-Credencial-Equipo`. Robar la credencial de un
+- `/api/agente/*` lo llaman los equipos. No usa la clave compartida del panel. Para
+  inscribirse, el agente genera su credencial y un código de activación; el token es
+  opcional (uno creado en el panel, con vencimiento y tope de usos, `radar/api/cuentas.py`,
+  o el de la organización en `AGENTE_TOKEN_INSCRIPCION`, que si está definido se exige). Cada
+  reporte pide la credencial propia del equipo en `X-Credencial-Equipo`. Robar la credencial de un
   equipo solo sirve para enviar reportes de ese equipo, y se revoca sin tocar a los demás.
 - `/api/equipos*` lo llama el panel, con la clave compartida, como el resto de la API.
 
 El servidor nunca devuelve órdenes: la respuesta a un reporte es `202` con el intervalo
 deseado y nada más. Tomar el servidor no da ejecución en los PC.
 
-Aprobación en la consola: un equipo recién inscrito queda pendiente. Reporta
-y se ve en el panel, pero su inventario no entra al cruce hasta que una persona lo aprueba
-(`POST /api/equipos/{id}/aprobar`). Rechazar es retirarlo. `AGENTE_APROBACION=automatica`
-quita ese paso.
+Activación en la consola (como Acronis): el instalador muestra en la pantalla del equipo un
+código de activación. El equipo queda pendiente: reporta y se ve en el panel, pero su
+inventario no entra al cruce hasta que una persona escribe ese código en el panel
+(`POST /api/equipos/activar`) o un administrador lo aprueba (`POST /api/equipos/{id}/aprobar`).
+Rechazar es retirarlo. `AGENTE_APROBACION=automatica` quita ese paso. El instalador de doble
+clic se descarga del asistente del panel (`POST /api/agente-instalador`).
 """
 
 from __future__ import annotations
 
 import hmac
 import os
+from typing import Literal
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
+from fastapi import APIRouter, Depends, Header, HTTPException, Request, Response, status
 from pydantic import BaseModel, Field
 
 from radar.api.acceso import exigir_clave, exigir_rol, quien
@@ -76,19 +80,24 @@ def _conexion(solo_lectura: bool = False):
 
 
 class Inscripcion(BaseModel):
-    token: str = Field(min_length=1, max_length=200)
     equipo_id: str = Field(pattern=r"^[0-9a-fA-F]{8}-(?:[0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$")
     nombre_equipo: str = Field(min_length=1, max_length=2000)
     agente_version: str | None = Field(default=None, max_length=40)
+    # La credencial y el código los genera el agente. El radar guarda solo sus huellas.
+    credencial: str = Field(min_length=32, max_length=200, pattern=r"^[A-Za-z0-9_-]+$")
+    codigo: str = Field(pattern=r"^[A-Za-z0-9]{4}-[A-Za-z0-9]{4}$")
+    token: str | None = Field(default=None, max_length=200)
 
 
 @router_agente.post("/inscribir")
 def inscribir(cuerpo: Inscripcion) -> dict:
-    """Canjea un token de inscripción por la credencial del equipo.
+    """Inscribe un equipo con la credencial y el código de activación que generó el agente.
 
-    Vale un token creado en el panel (vigente, sin revocar y con usos) o el de la
-    organización en `AGENTE_TOKEN_INSCRIPCION`. Si la inscripción falla después de gastar un
-    uso del token, el uso se devuelve."""
+    El equipo queda pendiente hasta que TI escribe el código en el panel. El token es
+    opcional: si llega, tiene que ser válido (uno creado en el panel, vigente, sin revocar y
+    con usos, o el de `AGENTE_TOKEN_INSCRIPCION`). Si el radar define
+    `AGENTE_TOKEN_INSCRIPCION`, se exige (capa extra para un radar expuesto en internet).
+    Si la inscripción falla después de gastar un uso del token, el uso se devuelve."""
     from radar.api import cuentas
     from radar.equipos import almacen
     from radar.seguridad.equipos import sanear_nombre_equipo
@@ -97,10 +106,11 @@ def inscribir(cuerpo: Inscripcion) -> dict:
     _exigir_base()
     esperado = os.environ.get("AGENTE_TOKEN_INSCRIPCION", "")
     token_id = None
-    if cuerpo.token.startswith(cuentas.PREFIJO_TOKEN):
+    token = cuerpo.token or ""
+    if token.startswith(cuentas.PREFIJO_TOKEN):
         conexion_tokens = cuentas.conectar()
         try:
-            token_id = cuentas.consumir_token(conexion_tokens, cuerpo.token)
+            token_id = cuentas.consumir_token(conexion_tokens, token)
         finally:
             conexion_tokens.close()
         if token_id is None:
@@ -108,28 +118,32 @@ def inscribir(cuerpo: Inscripcion) -> dict:
                 status.HTTP_401_UNAUTHORIZED,
                 "Token de inscripción no válido, vencido, revocado o sin usos.",
             )
-    elif not esperado and not _inscripcion_abierta():
-        raise HTTPException(
-            status.HTTP_503_SERVICE_UNAVAILABLE,
-            "La inscripción está cerrada: crea un token en el panel o define "
-            "AGENTE_TOKEN_INSCRIPCION.",
-        )
-    elif not esperado or not hmac.compare_digest(cuerpo.token.encode(), esperado.encode()):
+    elif (token or esperado) and (
+        not esperado or not hmac.compare_digest(token.encode(), esperado.encode())
+    ):
+        # Un token que no es del panel tiene que ser el de la organización; y si la
+        # organización definió uno, sin él no se entra.
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Token de inscripción no válido.")
+    # Sin token y sin AGENTE_TOKEN_INSCRIPCION la inscripción está abierta: el filtro es el
+    # código de activación, que solo se ve en la pantalla del equipo.
     automatica = aprobacion_automatica()
     conexion = _conexion()
     try:
-        # Con el token filtrado se podrían crear equipos pendientes sin fin: hay un tope.
+        # Una inscripción que nadie activa en una semana se borra, y hay un tope de
+        # pendientes: la inscripción abierta no puede llenar la base.
+        almacen.borrar_pendientes_viejos(conexion)
         if not automatica and almacen.contar_pendientes(conexion) >= MAX_PENDIENTES:
             raise HTTPException(
                 status.HTTP_429_TOO_MANY_REQUESTS,
                 "Hay demasiados equipos esperando aprobación en la consola.",
             )
-        credencial = almacen.inscribir(
+        almacen.inscribir(
             conexion,
             cuerpo.equipo_id.lower(),
             sanear_nombre_equipo(cuerpo.nombre_equipo, 0),
             limpiar_texto(cuerpo.agente_version, 40) or None,
+            cuerpo.credencial,
+            cuerpo.codigo,
             aprobar=automatica,
         )
     except almacen.EquipoYaInscrito as error:
@@ -141,7 +155,7 @@ def inscribir(cuerpo: Inscripcion) -> dict:
         ) from error
     finally:
         conexion.close()
-    return {"credencial": credencial, "intervalo_horas": intervalo_horas()}
+    return {"inscrito": True, "intervalo_horas": intervalo_horas()}
 
 
 @router_agente.post("/reporte", status_code=status.HTTP_202_ACCEPTED)
@@ -223,6 +237,7 @@ def equipos() -> dict:
         "disponible": True,
         "total": len(lista),
         "inscripcion_abierta": _inscripcion_abierta(),
+        "token_exigido": bool(os.environ.get("AGENTE_TOKEN_INSCRIPCION")),
         "aprobacion": "automatica" if aprobacion_automatica() else "manual",
         "pendientes": sum(1 for e in lista if e["pendiente"] and not e["revocado"]),
         "equipos": lista,
@@ -276,6 +291,75 @@ def aprobar(equipo_id: str, cuerpo: Aprobacion, request: Request) -> dict:
     finally:
         conexion.close()
     return {"aprobado": True, "cruzado": recibido is not None}
+
+
+def url_publica(peticion: Request) -> str:
+    """URL del radar que va en el paquete: `RADAR_URL_PUBLICA` o la de la petición."""
+    forzada = os.environ.get("RADAR_URL_PUBLICA", "").strip()
+    return (forzada or str(peticion.base_url)).rstrip("/")
+
+
+class PedidoInstalador(BaseModel):
+    sistema: Literal["windows", "linux"]
+    # El token recién creado en el asistente. Va por POST, no en la URL, para que no quede
+    # en registros de acceso.
+    token: str | None = Field(default=None, max_length=200)
+
+
+@router_equipos.post("/agente-instalador", dependencies=ADMIN)
+def instalador(cuerpo: PedidoInstalador, peticion: Request) -> Response:
+    """Paquete del agente con la URL de este radar y el token: se descomprime y se le da
+    doble clic. Solo para administradores, porque lleva el token dentro."""
+    from radar.api import paquetes
+
+    token = cuerpo.token or os.environ.get("AGENTE_TOKEN_INSCRIPCION") or None
+    datos = paquetes.armar(cuerpo.sistema, url_publica(peticion), token)
+    nombre = paquetes.nombre_zip(cuerpo.sistema)
+    return Response(
+        datos,
+        media_type="application/zip",
+        headers={"Content-Disposition": f'attachment; filename="{nombre}"'},
+    )
+
+
+class Activacion(BaseModel):
+    codigo: str = Field(min_length=8, max_length=20)
+    # Con sesión, quién activa sale de la sesión; con la clave compartida o en local hay que
+    # decirlo.
+    por: str | None = Field(default=None, min_length=1, max_length=100, pattern=r"\S")
+
+
+@router_equipos.post("/equipos/activar", dependencies=ADMIN)
+def activar(cuerpo: Activacion, request: Request) -> dict:
+    """TI activa un equipo con el código que el instalador mostró en su pantalla. Desde ese
+    momento su inventario entra al cruce. Activar exige haber visto ese código: nadie
+    activa un equipo impostor copiando un nombre. Rechazar es retirarlo (DELETE)."""
+    from radar.equipos import almacen, recepcion
+    from radar.seguridad.limpieza import limpiar_texto
+
+    por = quien(request, cuerpo.por.strip() if cuerpo.por else None)
+    if not por:
+        raise HTTPException(422, "Falta quién activa el equipo.")
+    _exigir_base()
+    conexion = _conexion()
+    try:
+        equipo_id = almacen.equipo_de_codigo(conexion, cuerpo.codigo)
+        if equipo_id is None:
+            raise HTTPException(
+                status.HTTP_404_NOT_FOUND,
+                "Ningún equipo pendiente tiene ese código. Revísalo en la pantalla del equipo.",
+            )
+        recibido = recepcion.aprobar(conexion, equipo_id, limpiar_texto(por, 100))
+        equipo = almacen.leer_equipo(conexion, equipo_id)
+    except recepcion.ErrorAprobacion as error:
+        raise HTTPException(status.HTTP_409_CONFLICT, "El equipo ya no está pendiente.") from error
+    finally:
+        conexion.close()
+    return {
+        "activado": True,
+        "equipo": {"id": equipo.id, "nombre": equipo.nombre},
+        "cruzado": recibido is not None,
+    }
 
 
 @router_equipos.post("/equipos/{equipo_id}/revocar", dependencies=ADMIN)

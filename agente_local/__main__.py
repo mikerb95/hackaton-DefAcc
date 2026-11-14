@@ -3,7 +3,7 @@
     python -m agente_local recoger --salida reporte.json     # recoge y no envía nada
     python -m agente_local recoger --csv inventario.csv      # CSV con las columnas del radar
     python -m agente_local subir-csv --url https://radar     # fase 0: sube el CSV al panel
-    python -m agente_local inscribir --url https://radar     # token en RADAR_AGENTE_TOKEN
+    python -m agente_local inscribir --url https://radar     # muestra el código de activación
     python -m agente_local enviar                            # lo que corre la tarea programada
     python -m agente_local estado
     python -m agente_local desinscribir                      # borra la credencial
@@ -65,19 +65,31 @@ def orden_subir_csv(args: argparse.Namespace) -> int:
     return SALIDA_OK
 
 
+def mostrar_codigo(codigo: str, url: str) -> None:
+    """Muestra el código de activación de forma que se lea de lejos."""
+    print(flush=True)
+    print("  ============================================", flush=True)
+    print(f"   Código de activación:  {codigo}", flush=True)
+    print("  ============================================", flush=True)
+    print(f"  Escríbelo en el panel del radar ({url}),", flush=True)
+    print('  sección "Equipos con agente", para activar este equipo.', flush=True)
+    print("  Puedes volver a verlo con: radar-agente estado", flush=True)
+    print(flush=True)
+
+
 def orden_inscribir(args: argparse.Namespace) -> int:
-    token = args.token or os.environ.get("RADAR_AGENTE_TOKEN")
-    if not token:
-        _decir("Falta el token de inscripción (RADAR_AGENTE_TOKEN o --token).")
-        return SALIDA_ERROR
     estado = _estado(args)
     if estado.inscrito and not args.forzar:
         _decir(f"El equipo ya está inscrito en {estado.url}. Usa --forzar para repetir.")
+        if estado.datos.get("codigo"):
+            mostrar_codigo(estado.datos["codigo"], estado.url)
         return SALIDA_OK
     import socket
 
-    envio.inscribir(estado, args.url, token, socket.gethostname())
+    token = args.token or os.environ.get("RADAR_AGENTE_TOKEN")
+    codigo = envio.inscribir(estado, args.url, socket.gethostname(), token)
     _decir(f"Equipo {estado.equipo_id} inscrito en {estado.url}.")
+    mostrar_codigo(codigo, estado.url)
     return SALIDA_OK
 
 
@@ -122,6 +134,8 @@ def orden_estado(args: argparse.Namespace) -> int:
     _decir(f"carpeta {estado.carpeta}")
     _decir(f"equipo {estado.datos.get('equipo_id', '(sin generar)')}")
     _decir(f"inscrito {'sí, en ' + estado.url if estado.inscrito else 'no'}")
+    if estado.datos.get("codigo"):
+        _decir(f"código de activación {estado.datos['codigo']}")
     _decir(f"reporte pendiente {'sí' if estado.ruta_pendiente.exists() else 'no'}")
     return SALIDA_OK
 
@@ -148,9 +162,13 @@ def analizador() -> argparse.ArgumentParser:
     subir.add_argument("--clave", help="Clave de acceso (mejor en RADAR_CLAVE_ACCESO)")
     subir.set_defaults(funcion=orden_subir_csv)
 
-    inscribir = sub.add_parser("inscribir", help="Canjea el token por la credencial del equipo")
+    inscribir = sub.add_parser(
+        "inscribir", help="Inscribe el equipo y muestra su código de activación"
+    )
     inscribir.add_argument("--url", required=True)
-    inscribir.add_argument("--token", help="Token de inscripción (mejor en RADAR_AGENTE_TOKEN)")
+    inscribir.add_argument(
+        "--token", help="Token de la organización, solo si el radar lo exige (RADAR_AGENTE_TOKEN)"
+    )
     inscribir.add_argument("--forzar", action="store_true")
     inscribir.set_defaults(funcion=orden_inscribir)
 

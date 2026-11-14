@@ -248,20 +248,29 @@ def test_solo_https_salvo_la_propia_maquina():
             envio.validar_url(mala)
 
 
-def test_inscribir_guarda_la_credencial_y_olvida_el_token(tmp_path):
+def test_inscribir_genera_credencial_y_codigo_y_olvida_el_token(tmp_path):
+    import re
+
     estado = envio.Estado(tmp_path)
     vistas: list = []
-    abrir = _abrir({"credencial": "c" * 43, "intervalo_horas": 12}, vistas)
-    envio.inscribir(estado, "https://radar.ejemplo", "token-secreto", "EQUIPO-017", abrir)
+    abrir = _abrir({"inscrito": True, "intervalo_horas": 12}, vistas)
+    codigo = envio.inscribir(estado, "https://radar.ejemplo", "EQUIPO-017", "token-secreto", abrir)
+    assert re.fullmatch(r"[A-Z2-9]{4}-[A-Z2-9]{4}", codigo)
+    # Sin letras que se confundan al leerlas.
+    assert not set(codigo) & set("01ILO")
     cuerpo = json.loads(vistas[0].data)
     assert cuerpo["token"] == "token-secreto" and cuerpo["equipo_id"] == estado.equipo_id
+    assert cuerpo["codigo"] == codigo and len(cuerpo["credencial"]) >= 32
     guardado = (tmp_path / "estado.json").read_text(encoding="utf-8")
-    assert "token-secreto" not in guardado and "c" * 43 in guardado
-    assert envio.Estado(tmp_path).inscrito
-    with pytest.raises(envio.ErrorEnvio):
-        envio.inscribir(
-            envio.Estado(tmp_path / "otro"), "https://r.ejemplo", "t", "x", _abrir({}, [])
-        )
+    assert "token-secreto" not in guardado and cuerpo["credencial"] in guardado
+    nuevo = envio.Estado(tmp_path)
+    assert nuevo.inscrito and nuevo.datos["codigo"] == codigo
+    # Sin token no se envía el campo.
+    vistas.clear()
+    envio.inscribir(envio.Estado(tmp_path / "otro"), "https://r.ejemplo", "x", None, abrir)
+    assert "token" not in json.loads(vistas[0].data)
+    # Cada inscripción genera otro código y otra credencial.
+    assert envio.nuevo_codigo() != envio.nuevo_codigo()
 
 
 def test_enviar_solo_lee_el_intervalo_de_la_respuesta(tmp_path):
@@ -308,10 +317,10 @@ def test_ordenes_sin_inscripcion(tmp_path, capsys):
     datos = ["--datos", str(tmp_path)]
     assert principal([*datos, "estado"]) == 0
     assert principal([*datos, "enviar"]) == 1
-    assert principal([*datos, "inscribir", "--url", "https://radar.ejemplo"]) == 1
+    assert principal([*datos, "inscribir", "--url", "http://radar.ejemplo"]) == 1
     assert principal([*datos, "desinscribir"]) == 0
     salida = capsys.readouterr().out
-    assert "inscrito no" in salida and "Falta el token" in salida
+    assert "inscrito no" in salida and "HTTPS" in salida
 
 
 def test_programado_respeta_intervalo_y_manual_lo_omite(tmp_path, monkeypatch):
