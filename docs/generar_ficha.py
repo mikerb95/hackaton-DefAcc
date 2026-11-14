@@ -205,14 +205,14 @@ def imprimir_pdf(html_ruta: Path, pdf_ruta: Path) -> None:
         f"--print-to-pdf={pdf_ruta}",
         html_ruta.as_uri(),
     ]
-    r = subprocess.run(comando, capture_output=True, text=True, timeout=120)
+    r = subprocess.run(comando, capture_output=True, text=True, timeout=120, check=False)
     if r.returncode != 0 or not pdf_ruta.exists():
         raise SystemExit(f"Chromium no generó el PDF:\n{r.stderr[-2000:]}")
 
 
 def contar_paginas(pdf_ruta: Path) -> int | None:
     if shutil.which("pdfinfo"):
-        r = subprocess.run(["pdfinfo", str(pdf_ruta)], capture_output=True, text=True)
+        r = subprocess.run(["pdfinfo", str(pdf_ruta)], capture_output=True, text=True, check=False)
         m = re.search(r"^Pages:\s+(\d+)", r.stdout, re.MULTILINE)
         if m:
             return int(m.group(1))

@@ -21,10 +21,10 @@ salida de pytest. Si un número no coincide entre páginas, es un error.
 | [planteamiento.md](planteamiento.md) | Qué es el radar, para quién, la tesis y las cuatro preguntas de la entrega | Track 1 |
 | [requerimientos-funcionales.md](requerimientos-funcionales.md) | Requerimientos `RF-NNN` por módulo, con estado, archivos y pruebas | implementados / total por módulo |
 | [requerimientos-no-funcionales.md](requerimientos-no-funcionales.md) | Costo, tiempos, topes de gasto, límites de fuentes, privacidad, reproducibilidad | `RNF-NN` |
-| [casos-de-uso.md](casos-de-uso.md) | Casos `CU-NN`: cargar inventario, cruce y priorización, análisis con aprobación, ataque por inventario envenenado | 4 casos del día |
+| [casos-de-uso.md](casos-de-uso.md) | Casos `CU-NN`: cargar inventario, cruce y priorización, análisis con aprobación, ataque por inventario envenenado, consulta desde el plugin | 5 casos (CU-01 a CU-05) |
 | [diagramas/componentes.md](diagramas/componentes.md) | Piezas del sistema y qué datos pasan entre ellas | 4 lugares de ejecución |
 | [diagramas/despliegue.md](diagramas/despliegue.md) | Dónde corre cada pieza: Vercel, Turso, worker, portátil del plugin | 1 base compartida |
-| [diagramas/secuencia.md](diagramas/secuencia.md) | Carga y cruce, análisis con verificador, ataque bloqueado | 3 flujos |
+| [diagramas/secuencia.md](diagramas/secuencia.md) | Carga y cruce, ataque bloqueado en el plugin y en el analista (análisis con verificador, pendiente) | 3 diagramas |
 | [diagramas/actividades.md](diagramas/actividades.md) | Actividades del responsable de TI | si alcanza |
 | [testing.md](testing.md) | Pirámide de pruebas, qué cubre cada archivo y cómo correrlo | total de pytest |
 | [reportes-pruebas.md](reportes-pruebas.md) | Resultados de los evals con defensa y sin defensa | tasa de inyección |

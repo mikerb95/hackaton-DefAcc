@@ -68,8 +68,8 @@ midió la sesión que desplegó.
 |---|---|---|---|
 | 1 | `GET /api/resumen` | 0,7 s | Responde, fuentes NVD, KEV y EPSS en verde, base persistente |
 | 1 | `GET /api/resumen` sin clave | inmediato | 401, como debe ser |
-| 2 | `POST /api/inventario` (inventario completo) | 14,5 s; 9,6 s en la preview vigente | Cabe en los 25 s del paso; hay que seguir hablando mientras carga |
-| 3 | `GET /api/hallazgos?kev=true&texto=chrome` | 0,8 s | 1 hallazgo: CVE-2026-125350. **Falla del guion:** la razón no trae la fecha de alta en KEV |
+| 2 | `POST /api/inventario` (inventario completo) | 9,6 s | Cabe en los 25 s del paso; hay que seguir hablando mientras carga |
+| 3 | `GET /api/hallazgos?kev=true&texto=chrome` | 0,8 s | 1 hallazgo: CVE-2026-125350. En el primer ensayo la razón no traía la fecha de alta en KEV; resuelto en Turso: dice "Agregada a KEV el 10 de noviembre de 2026 (plazo CISA 24 de noviembre de 2026)" |
 | 4 | `GET /api/productos` y `GET /api/analisis/Google Chrome` | 0,4 y 0,5 s | Chrome con "actualizar a 157.0.8103.78"; detalle con texto armado por código (el analista no corre) y sin aprobar, listo para aprobar en vivo |
 | 5 | `GET /api/trazas` | 0,4 s | Trazas reales de la guarda del plugin: limpiadas y aprobación pedida |
 | 6 | `GET /api/umbrales` | 0,4 s | Barrido con celda vigente y piso de KEV |

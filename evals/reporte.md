@@ -1,6 +1,6 @@
 # Reporte de validación
 
-Generado por `uv run python -m evals.medir` el 2026-11-14 10:55. No se edita a mano: toda cifra de docs, ficha y pitch sale de aquí o de pytest.
+Generado por `uv run python -m evals.medir` el 2026-11-14 11:33. No se edita a mano: toda cifra de docs, ficha y pitch sale de aquí o de pytest.
 
 ## Detección
 
@@ -38,7 +38,7 @@ Fuera de la semilla: 4 quedan sin CPE (visibles en cobertura), 1 con CPE equivoc
 
 Detección 100,0 %, precisión 100,0 %. Cobertura por motivo, esperada y obtenida: no_comparable 2/2, sin_cpe 8/8, sin_version 2/2.
 
-Tiempos en sqlite local (1333 filas, 55 activos, 14582 CVE en la base): lectura 0,03 s, carga del diccionario 0,52 s, normalizar 1,05 s, cruce 8,41 s.
+Tiempos en sqlite local (1333 filas, 55 activos, 14582 CVE en la base): lectura 0,03 s, carga del diccionario 0,40 s, normalizar 0,95 s, cruce 3,49 s.
 
 ## Suite de inyección
 

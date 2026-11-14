@@ -76,7 +76,7 @@ que borran `limpieza.py` y comprueban que el texto crudo no pasa.
 | Texto del ataque como argumento de una herramienta permitida | Capa 4 (formato por argumento) | Caso r2-06 |
 | Instrucción que pasa por tamaño o por caracteres invisibles | Capa 5 | Casos r1-07 y r1-09 |
 | El modelo inventa una CVE, versión o cifra | Capa 7 y 8 | Casos r1-05, r1-08, r3-07; `tests/test_verificador.py` |
-| Enlace del atacante en el comunicado | Capa 7 (enlaces con esquema o ruta) | Caso r2-07. Un dominio sin esquema ni ruta pasa (r3-04): ver `docs/LIMITES.md` |
+| Enlace del atacante en el comunicado | Capa 7 (enlaces con esquema, ruta o TLD conocido) | Casos r2-07 y r3-04 (dominio suelto, detenido desde el ajuste 2). Un dominio con un TLD fuera de la lista pasa (r4-03, `parches-vlc.zip`): ver `docs/LIMITES.md` |
 | Cambio de sentido con datos permitidos (tono, prioridad, "ya está corregida") | **Ninguna capa lo detiene si el modelo obedece** | Límite declarado, casos en `LIMITES_DECLARADOS` |
 | Inyección de segundo orden | Capa 2b para el nombre de equipo | Ver abajo |
 | Equipo oculto sin pasar por el modelo | Cobertura visible; corrección en el normalizador | Tabla "Entrada real" del reporte |
@@ -114,7 +114,8 @@ nombre traiga texto extra; la tabla muestra el estado vigente.
   debe verlo la organización dueña del inventario.
 - Los avisos a canales abiertos dicen cuántos equipos, nunca cuáles. El respaldo arma el
   comunicado para usuarios y para gerencia sin nombres de equipos ni CVE. Un modelo que
-  obedece una orden de nombrarlos no lo detiene el verificador (caso r3-03, límite declarado).
+  obedece una orden de nombrarlos lo detiene el verificador desde el ajuste 2
+  (`equipo_en_canal_abierto`, caso r3-03).
 - La información de vulnerabilidades ya es pública. Lo privado es el cruce.
 - La suite de inyección se publica como pruebas defensivas del propio sistema, no como
   herramienta de ataque: sus casos apuntan a este radar y a datos sintéticos.

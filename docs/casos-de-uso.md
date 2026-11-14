@@ -7,7 +7,7 @@ diagramas de secuencia de cada caso están en [diagramas/secuencia.md](diagramas
 | Caso | Actor | Estado |
 |---|---|---|
 | [CU-01 · Cargar inventario y normalizar](#cu-01--cargar-inventario-y-normalizar--responsable-de-ti) | Responsable de TI | escrito |
-| CU-02 · Cruce y priorización | Sistema | se escribe |
+| [CU-02 · Cruce y priorización](#cu-02--cruce-y-priorización--sistema-lo-dispara-el-responsable-de-ti-al-cargar-un-inventario-o-el-worker-tras-una-descarga) | Sistema | escrito |
 | CU-03 · Análisis con aprobación del comunicado | Responsable de TI | se escribe |
 | [CU-04 · Ataque por inventario envenenado](#cu-04--ataque-por-inventario-envenenado--responsable-de-ti) | Responsable de TI (frente a quien puede editar el inventario) | escrito |
 | [CU-05 · Consulta desde Claude Code con el plugin](#cu-05--consulta-desde-claude-code-con-el-plugin--responsable-de-ti) | Responsable de TI | escrito |

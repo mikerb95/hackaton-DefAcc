@@ -7,7 +7,7 @@ y cómo se comprueba. Las cifras salen de `evals/reporte.md` o de pytest, nunca 
 
 | Total | Implementados | Parciales | Planeados |
 |---|---|---|---|
-| 6 | 4 | 2 | 0 |
+| 6 | 5 | 1 | 0 |
 
 ---
 
@@ -29,22 +29,20 @@ pruebas que llaman a Claude llevan el marcador `agente` y no corren en CI).
 
 ### RNF-02 · Tiempo de respuesta de la carga y el cruce
 
-**Estado:** Parcial (medido en sqlite local; falta la medición sobre Turso)
+**Estado:** Implementado (medido en sqlite local y en Vercel contra Turso)
 
 Una carga de inventario de tamaño realista se lee, se normaliza y se cruza contra todas las
-CVE guardadas en segundos, dentro de una petición a la API. Referencia medida con el
-inventario de prueba (1333 filas, 55 activos, 14 582 CVE en la base, sqlite local): lectura
-0,03 s, carga del diccionario de CPE 0,45 s (una vez por proceso), normalización 1,03 s y
-cruce 9,00 s. La cifra vigente está en la sección "Punta a punta" de `evals/reporte.md`,
-que la vuelve a medir cada vez.
+CVE guardadas en segundos, dentro de una petición a la API. La cifra vigente, por etapa
+(lectura, carga del diccionario, normalización y cruce), está en la sección "Punta a punta"
+de `evals/reporte.md`, que la vuelve a medir cada vez; varía entre corridas.
 
-- La normalización bajó de 8,7 s a 1,9 s en la misma máquina al guardar el diccionario con
-  las palabras ya ordenadas (mismo resultado de `token_sort_ratio`, sin reordenar 150 000
-  textos en cada consulta).
+- El diccionario de CPE se guarda con las palabras ya ordenadas: `ratio` sobre eso da el
+  mismo resultado que `token_sort_ratio` sin reordenar 150 000 textos en cada consulta.
 - La carga del snapshot completo de NVD, KEV y EPSS en sqlite tarda unos 15 s
   (`worker/descargar.py --desde-snapshot`); es trabajo del worker, no de la petición.
 - Sobre Turso cada lectura es una petición HTTP; la base inserta en lotes (de unas 125 000
-  peticiones a unas 1400). Falta anotar el tiempo del cruce contra Turso desde Vercel.
+  peticiones a unas 1400). Medido en la preview de Vercel contra Turso: `POST /api/inventario`
+  con el inventario de prueba tarda 9,6 s (antes 14,5 s).
 
 Prioridad alta. `datos_prueba/integracion.py` (mide por etapa), `radar/ingesta/normalizador.py`,
 `radar/nucleo/corrida.py`, `radar/bd.py`. Prueba: `tests/test_integracion.py`.
@@ -78,7 +76,7 @@ con un cero:
 |---|---|
 | NVD API 2.0 | 2000 resultados por página; pausa de 6 s entre peticiones sin clave y 0,7 s con clave; ventanas de 120 días como máximo; ante 429 espera lo que diga `Retry-After` (o 30 s); ante 5xx o red, hasta 6 intentos con espera creciente |
 | CISA KEV | Un archivo por descarga; se empareja por ID de CVE, nunca por nombre de fabricante |
-| FIRST EPSS | Lotes de 100 CVE por petición; una CVE que no aparece queda sin dato, no en 0 |
+| FIRST EPSS | El worker baja el CSV diario completo en una sola petición (`descargar_completo`); la API de FIRST en lotes de 100 queda para consultas de pocas CVE (`consultar_api`). Una CVE que no aparece queda sin dato, no en 0 |
 | Diccionario de CPE | Se descarga una vez a mano y se reduce a 1 MB (`radar/datos/cpe_pares.json.gz`); el normalizador no consulta NVD |
 
 Cada corrida registra qué fuente respondió (`Ejecucion.fuentes`). Si la red falla, el
@@ -127,5 +125,4 @@ Prueba: `tests/test_datos_prueba.py::test_dos_corridas_dan_los_mismos_bytes`.
 
 ## Lo que todavía no está
 
-- La medición del cruce sobre Turso desde Vercel (RNF-02).
 - El analista con sus topes aplicados en código (RNF-03); hoy los topes están en el contrato.

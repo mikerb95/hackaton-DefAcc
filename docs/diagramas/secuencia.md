@@ -5,7 +5,7 @@ Un diagrama por flujo, en Mermaid. Cada sección abre con su caso de uso
 
 | Flujo | Caso de uso |
 |---|---|
-| Carga y cruce | CU-01, CU-02 |
+| [Carga y cruce](#cu-02--carga-de-inventario-y-cruce) | CU-01, CU-02 |
 | Análisis con verificador | CU-03 |
 | [Ataque bloqueado en el plugin](#cu-04--ataque-bloqueado-en-el-plugin) | CU-04 |
 | [Ataque bloqueado en el analista](#cu-04--ataque-bloqueado-en-el-analista) | CU-04, flujo alterno C |

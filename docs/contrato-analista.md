@@ -41,7 +41,7 @@ En orden de preferencia:
 
    No definas `RADAR_SQLITE`: si está definida, gana siempre sobre Turso.
 2. **`evals/grupos_reales.json`** (está en el repositorio): un `Grupo` por producto y versión
-   de cada caso de inyección (18 pares), sacado del cruce real del radar sobre NVD, KEV y EPSS
+   de cada caso de inyección (12 grupos), sacado del cruce real del radar sobre NVD, KEV y EPSS
    y congelado **sin la lista de equipos** (la suite les pone equipos sintéticos más el de la
    fila envenenada). Se carga con `evals.escenarios.escenarios(usar_base=False)`. Alcanza
    para construir y probar todo el analista sin base.
