@@ -199,3 +199,38 @@ CREATE TABLE IF NOT EXISTS osv_avisos (
   modificado TEXT,
   contenido TEXT                 -- JSON del aviso, reducido a lo que se usa
 );
+
+-- ---------------------------------------------------------------------------
+-- Parcheo desde el agente local (docs/plan-parcheo.md). Lo escribe
+-- radar/equipos/parcheo_almacen.py.
+-- ---------------------------------------------------------------------------
+
+-- Claves públicas Ed25519 de quienes aprueban planes. La privada nunca llega al servidor:
+-- se firma en el navegador del admin. El agente tiene su propia copia fijada al instalarlo.
+CREATE TABLE IF NOT EXISTS claves_aprobacion (
+  huella TEXT PRIMARY KEY,       -- 16 hex del SHA-256 de la clave pública
+  publica TEXT NOT NULL,         -- base64 de los 32 bytes
+  nombre TEXT,
+  registrada TEXT NOT NULL,
+  registrada_por TEXT,
+  revocada TEXT                  -- fecha; NULL: vigente
+);
+
+CREATE TABLE IF NOT EXISTS planes_parcheo (
+  id TEXT PRIMARY KEY,           -- plan_id (uuid4), el mismo que va firmado
+  equipo_id TEXT NOT NULL,
+  estado TEXT NOT NULL,          -- aprobado, entregado, ejecutado, rechazado, cancelado
+  canonico TEXT NOT NULL,        -- JSON canónico exacto que se firmó
+  firma TEXT NOT NULL,           -- base64 de los 64 bytes
+  clave TEXT NOT NULL,           -- huella de la clave que firmó
+  aprobado_por TEXT,
+  creado TEXT NOT NULL,
+  vence TEXT NOT NULL,
+  entregado TEXT,                -- primera entrega al agente
+  entregas INTEGER DEFAULT 0,
+  antes TEXT,                    -- JSON: exposición del equipo al aprobar
+  resultado TEXT,                -- JSON del resultado que envió el agente (limpio)
+  recibido TEXT,
+  cancelado_por TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_planes_equipo ON planes_parcheo (equipo_id);
