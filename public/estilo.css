@@ -479,7 +479,7 @@ button:disabled { opacity: 0.5; cursor: default; }
 }
 .termometro-svg .t-bulbo { filter: drop-shadow(0 0 10px var(--t-color)); }
 .termometro-svg.t-sin .t-bulbo { filter: none; opacity: 0.45; }
-.termometro-svg .t-brillo { fill: rgba(255, 255, 255, 0.55); }
+.termometro-svg .t-brillo { fill: rgba(255, 255, 255, 0.35); }
 .termometro-svg .t-marca { stroke: var(--texto-3); stroke-width: 1; }
 .termometro-svg .t-marca.mayor { stroke: var(--texto-2); }
 .termometro-svg .t-numero { fill: var(--texto-2); font: 11px var(--mono); }
@@ -756,3 +756,15 @@ tr.abierta .chevron { transform: rotate(90deg); color: var(--acento); }
   .cuadros { grid-template-columns: minmax(0, 1fr); }
 }
 @media (prefers-reduced-motion: reduce) { .desplegado.entrando { animation: none; } .chevron { transition: none; } }
+
+/* Botón de tema (sol en oscuro, luna en claro) */
+.boton-tema { display: inline-grid; place-items: center; width: 34px; height: 34px; padding: 0; border-radius: 8px; flex: none; }
+.boton-tema svg { width: 18px; height: 18px; }
+.icono-luna, :root[data-tema="claro"] .icono-sol { display: none; }
+:root[data-tema="claro"] .icono-luna { display: block; }
+.entrar-tema { position: absolute; top: 16px; right: 16px; }
+
+/* En claro las superficies blancas necesitan una sombra mínima para separarse del fondo */
+:root[data-tema="claro"] .panel, :root[data-tema="claro"] .cifra, :root[data-tema="claro"] .cuadro {
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 1px 1px rgba(15, 23, 42, 0.03);
+}

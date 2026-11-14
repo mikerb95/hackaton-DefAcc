@@ -972,6 +972,14 @@ const fmtUmbralEpss = (v) => (v > 1 ? "apagado" : `${Math.round(v * 100)} %`);
 const fmtUmbralCvss = (v) => (v > 10 ? "apagado" : v.toFixed(1));
 const color = (nombre) => getComputedStyle(document.documentElement).getPropertyValue(nombre).trim();
 
+// Ejes, rejilla y serie toman los colores del tema al crearse: al cambiar de tema se rehace.
+window.addEventListener("tema", () => {
+  if (!grafica || !barridoActual) return;
+  grafica.destroy();
+  grafica = null;
+  dibujarUmbrales();
+});
+
 function pintarUmbrales(datos) {
   const caja = $("#umbrales");
   if (!datos.disponible || !datos.celdas || !datos.celdas.length) {
