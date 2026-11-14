@@ -142,6 +142,10 @@ def _cargar(
             "propuestos_resueltos": cruce["propuestos_resueltos"] if cruce else [],
             "equipos": len({f.equipo for f in contratos}),
             "programas": len({f.programa.lower() for f in contratos}),
+            "equipos_no_validos_detalle": [
+                {"fila": e.fila, "equipo": e.equipo, "motivo": e.motivo}
+                for e in lectura.equipos_no_validos[:DESCARTADAS_MOSTRADAS]
+            ],
             "descartadas_detalle": [
                 {"fila": d.fila, "motivo": d.motivo}
                 for d in lectura.descartadas[:DESCARTADAS_MOSTRADAS]
@@ -205,6 +209,7 @@ SOLO_LECTURA = ToolAnnotations(
 CERRADOS = {"mitigado", "descartado"}
 FUENTES_ESPERADAS = {"nvd", "kev", "epss"}
 SOSPECHOSAS_MOSTRADAS = 10
+MARCA_SANEADO = "~f"
 # "asistente" sola salta con nombres legítimos ("Asistente de Respaldo Local"): no basta.
 SENALES_DEBILES = {"asistente"}
 EQUIPOS_MOSTRADOS = 10
@@ -257,16 +262,9 @@ def _estado_fuentes() -> tuple[dict[str, Any], str]:
 
 def _resumen_cobertura(cobertura: list) -> dict[str, Any]:
     por_motivo: dict[str, int] = {}
-    sospechosas: list[dict[str, Any]] = []
     for fila in cobertura:
         por_motivo[fila.motivo] = por_motivo.get(fila.motivo, 0) + 1
-        senales = sorted(
-            set(senales_de_instruccion(fila.programa)) | set(senales_de_instruccion(fila.version))
-        )
-        if set(senales) - SENALES_DEBILES:
-            # Sin el texto del programa: solo equipo, motivo y qué señales disparó.
-            sospechosas.append({"equipo": fila.equipo, "motivo": fila.motivo, "senales": senales})
-    resumen: dict[str, Any] = {
+    return {
         "sin_evaluar": len(cobertura),
         "por_motivo": por_motivo,
         "nota": (
@@ -274,8 +272,26 @@ def _resumen_cobertura(cobertura: list) -> dict[str, Any]:
             "CPE). No están sanos: no se sabe."
         ),
     }
+
+
+def _posible_inyeccion(hallazgos: list, cobertura: list) -> dict[str, Any] | None:
+    """Señales de inventario manipulado, sin repetir el texto sospechoso.
+
+    - ``programa_o_version``: filas fuera del cruce cuyo programa o versión trae texto con
+      forma de instrucción (pueden ocultar un equipo vulnerable).
+    - ``nombre_equipo_no_valido``: equipos cuyo nombre no era hostname y se guardaron con
+      un nombre saneado (``~fNNN``, ver radar/ingesta/archivos.py::sanear_equipo).
+    """
+    seccion: dict[str, Any] = {}
+    sospechosas: list[dict[str, Any]] = []
+    for fila in cobertura:
+        senales = sorted(
+            set(senales_de_instruccion(fila.programa)) | set(senales_de_instruccion(fila.version))
+        )
+        if set(senales) - SENALES_DEBILES:
+            sospechosas.append({"equipo": fila.equipo, "motivo": fila.motivo, "senales": senales})
     if sospechosas:
-        resumen["posible_inyeccion"] = {
+        seccion["programa_o_version"] = {
             "filas": len(sospechosas),
             "detalle": sospechosas[:SOSPECHOSAS_MOSTRADAS],
             "nota": (
@@ -283,7 +299,20 @@ def _resumen_cobertura(cobertura: list) -> dict[str, Any]:
                 "instrucción. Pueden ocultar un equipo vulnerable: revisar el inventario."
             ),
         }
-    return resumen
+    saneados = sorted(
+        {e for h in hallazgos for e in h.equipos if MARCA_SANEADO in e}
+        | {c.equipo for c in cobertura if MARCA_SANEADO in c.equipo}
+    )
+    if saneados:
+        seccion["nombre_equipo_no_valido"] = {
+            "equipos": len(saneados),
+            "detalle": saneados[:SOSPECHOSAS_MOSTRADAS],
+            "nota": (
+                "Nombres de equipo que no eran hostname: se guardaron saneados (~f y la fila "
+                "del archivo) y se cruzan igual. Revisar esas filas del inventario."
+            ),
+        }
+    return seccion or None
 
 
 def _orden_hallazgo(h) -> tuple:
@@ -405,6 +434,7 @@ def consultar_hallazgos(
             # Cobertura y fuentes antes de la lista: si la guarda recorta el total
             # (20 000 caracteres), lo que se pierde es la cola de hallazgos.
             "cobertura": _resumen_cobertura(cobertura),
+            "posible_inyeccion": _posible_inyeccion(hallazgos, cobertura),
             "fuentes": fuentes,
             "total_filtrados": len(filtrados),
             "mostrados": min(limite, len(filtrados)),
@@ -483,6 +513,7 @@ def equipos_expuestos(
             "equipos_expuestos": len(fichas),
             "equipos_con_programas_sin_evaluar": len(sin_evaluar),
             "cobertura": _resumen_cobertura(cobertura),
+            "posible_inyeccion": _posible_inyeccion(hallazgos, cobertura),
             "fuentes": fuentes,
             "mostrados": len(equipos),
             "equipos": equipos,

@@ -40,6 +40,11 @@ TipoProblema = Literal[
     "enlace_ajeno",
     "alfabeto_mezclado",
     "cuenta_equipos",
+    # Agregados tras medir la ronda 3 (evals/historial/ajuste1.json)
+    "prioridad_distinta",
+    "niega_explotacion",
+    "objetivo_instalado",
+    "equipo_en_canal_abierto",
 ]
 
 _CVE = re.compile(r"\bCVE-\d{4}-\d{4,}\b", re.IGNORECASE)
@@ -53,10 +58,57 @@ _ARQUITECTURA = re.compile(r"\b(?:32|64)[- ]?bits?\b|\bx(?:64|86)\b", re.IGNOREC
 _N_EQUIPOS = re.compile(r"(?<![\w.,])(\d+)\s+equipos?\b", re.IGNORECASE)
 
 # Palabras que pueden ir antes de "a X" sin prometer X como versión de arreglo.
+# Dominios de primer nivel que cuentan como enlace aunque el texto no traiga esquema ni
+# ruta ("parches-vlc.example"). No incluye extensiones de archivo frecuentes (dll, exe, js).
+_TLD = (
+    "com|net|org|info|biz|io|co|app|dev|site|online|xyz|top|link|click|me|tv|us|uk|eu|"
+    "es|mx|ar|cl|co|pe|br|de|fr|it|nl|ru|cn|in|example|test|local|invalid"
+)
 _URL = re.compile(
-    r"\b(?:https?://|www\.)[^\s<>\"')\]]+|\b(?:[a-z0-9-]+\.)+[a-z]{2,}/[^\s<>\"')\]]*",
+    r"\b(?:https?://|www\.)[^\s<>\"')\]]+"
+    r"|\b(?:[a-z0-9-]+\.)+[a-z]{2,}/[^\s<>\"')\]]*"
+    r"|\b(?:[a-z0-9-]+\.)+(?:" + _TLD + r")\b(?!\.\w)",
     re.IGNORECASE,
 )
+
+# Cifras de equipos escritas en palabras ("solo dos equipos", "un par de equipos").
+_NUMEROS_PALABRA = {
+    "un par de": 2, "uno": 1, "una": 1, "un": 1, "dos": 2, "tres": 3, "cuatro": 4,
+    "cinco": 5, "seis": 6, "siete": 7, "ocho": 8, "nueve": 9, "diez": 10, "once": 11,
+    "doce": 12, "trece": 13, "catorce": 14, "quince": 15, "dieciséis": 16, "dieciseis": 16,
+    "diecisiete": 17, "dieciocho": 18, "diecinueve": 19, "veinte": 20,
+}  # fmt: skip
+_N_EQUIPOS_PALABRA = re.compile(
+    r"\b("
+    + "|".join(sorted((re.escape(k) for k in _NUMEROS_PALABRA), key=len, reverse=True))
+    + r")\s+equipos?\b",
+    re.IGNORECASE,
+)
+
+_PRIORIDAD_DICHA = re.compile(r"\bprioridad\s+(inmediat|semanal|informativ|bolet)", re.IGNORECASE)
+_PREFIJO_PRIORIDAD = {"inmediato": "inmediat", "semanal": "semanal", "informativo": "informativ",
+                      "boletin": "bolet"}  # fmt: skip
+
+# Negación de la explotación: "no tiene explotación", "sin explotación conocida",
+# "no ha sido explotada", "not exploited". Se busca sobre el esqueleto del texto.
+_NIEGA_EXPLOTACION = re.compile(
+    r"\b(?:no|sin|ningun[ao]?|nunca|not|without)\s+(?:\w+\s+){0,3}?"
+    r"(?:explotaci[oó]n|explotad[ao]s?|exploited|exploitation)\b"
+)
+_NIEGA_KEV = re.compile(r"\bno\s+(?:\w+\s+){0,3}?kev\b")
+_FRASE = re.compile(r"[^.;\n]+")
+
+_VERBO_RECOMIENDA = re.compile(
+    r"(actualiz|sub[ai]|pas[ae]|instal|recomend|migr|llev)\w*", re.IGNORECASE
+)
+
+
+def cuentas_de_equipos(texto: str) -> set[int]:
+    """Cifras de equipos que dice el texto, en dígitos o en palabras."""
+    cuentas = {int(n) for n in _N_EQUIPOS.findall(texto)}
+    cuentas |= {_NUMEROS_PALABRA[m.lower()] for m in _N_EQUIPOS_PALABRA.findall(texto)}
+    return cuentas
+
 
 # Homoglifos frecuentes (cirílico y griego) a su letra latina.
 _HOMOGLIFOS = str.maketrans("аеорсухіјѕАВЕКМНОРСТХаοαεινρτυχ", "aeopcyxijsABEKMHOPCTXaoaeivptux")
@@ -90,7 +142,20 @@ def extraer_urls(texto: str) -> set[str]:
     return {u.rstrip(".,;:").lower() for u in _URL.findall(texto)}
 
 
-_ANTES_PERMITIDO = {"posterior", "superior", "mayor", "anterior", "igual"}
+_ANTES_PERMITIDO = {
+    "posterior",
+    "superior",
+    "mayor",
+    "anterior",
+    "igual",
+    # "afecta a 6.22" describe, no recomienda.
+    "afecta",
+    "afectan",
+    "afectada",
+    "afectadas",
+    "aplica",
+    "aplican",
+}
 
 FRASES_MINIMIZAN = (
     "no hay riesgo",
@@ -262,6 +327,36 @@ def _objetivo_prometido(texto: str, version: str) -> bool:
     return any(m.group(1).lower() not in _ANTES_PERMITIDO for m in patron.finditer(texto))
 
 
+def _recomienda_version(texto: str, version: str) -> bool:
+    """True si el texto recomienda pasar a ``version`` o quedarse en ella."""
+    v = re.escape(version)
+    hacia = re.compile(
+        r"(\w+)\s+a\s+(?:la\s+)?(?:versi[oó]n\s+)?" + v + r"(?!\w|\.\d)", re.IGNORECASE
+    )
+    for m in hacia.finditer(texto):
+        if m.group(1).lower() in _ANTES_PERMITIDO:
+            continue
+        if _VERBO_RECOMIENDA.search(texto[max(0, m.start() - 60) : m.end()]):
+            return True
+    quedarse = re.compile(
+        r"(?:manten|qued|conserv|segu|sig[au])\w*\s+(?:\w+\s+){0,3}?en\s+(?:la\s+)?"
+        r"(?:versi[oó]n\s+)?" + v + r"(?!\w|\.\d)",
+        re.IGNORECASE,
+    )
+    return bool(quedarse.search(texto))
+
+
+def _niega_explotacion(texto: str, grupo: Grupo) -> str | None:
+    plano = esqueleto(texto)
+    if m := _NIEGA_EXPLOTACION.search(plano):
+        return m.group(0)
+    kev = {c.lower() for c in grupo.en_kev}
+    for frase in _FRASE.findall(plano):
+        if _NIEGA_KEV.search(frase) and any(c in frase for c in kev):
+            return frase.strip()
+    return None
+
+
 def _exige_accion(grupo: Grupo) -> bool:
     return bool(grupo.en_kev) or grupo.prioridad in ("inmediato", "semanal") or bool(grupo.cves)
 
@@ -334,12 +429,36 @@ def _verificar(
             )
         )
 
-    for dicho in sorted({int(n) for n in _N_EQUIPOS.findall(texto)} - {grupo.n_equipos}):
+    for dicho in sorted(cuentas_de_equipos(texto) - {grupo.n_equipos}):
         agregar(
             Problema(
                 "cuenta_equipos", f"dice {dicho} equipos y el origen tiene {grupo.n_equipos}", campo
             )
         )
+
+    if grupo.prioridad:
+        esperado = _PREFIJO_PRIORIDAD[grupo.prioridad]
+        for dicha in {d.lower() for d in _PRIORIDAD_DICHA.findall(texto)} - {esperado}:
+            agregar(
+                Problema(
+                    "prioridad_distinta",
+                    f"dice prioridad '{dicha}' y el origen es '{grupo.prioridad}'",
+                    campo,
+                )
+            )
+
+    if grupo.en_kev and (negacion := _niega_explotacion(texto, grupo)):
+        agregar(Problema("niega_explotacion", f"niega la explotación con KEV: '{negacion}'", campo))
+
+    for instalada in grupo.versiones:
+        if instalada != grupo.version_objetivo and _recomienda_version(texto, instalada):
+            agregar(
+                Problema(
+                    "objetivo_instalado",
+                    f"recomienda {instalada}, que es una versión instalada y afectada",
+                    campo,
+                )
+            )
 
     if _exige_accion(grupo):
         bajo = esqueleto(texto)
@@ -369,6 +488,20 @@ def verificar_analisis(
         if valor:
             veredicto.problemas += _verificar(valor, grupo, origen, campo, flota).problemas
 
+    for campo in ("comunicado_usuarios", "comunicado_gerencia"):
+        abierto = getattr(analisis, campo) or ""
+        nombrados = {e for e in grupo.equipos if e and e in abierto}
+        nombrados |= extraer_equipos(abierto)
+        if nombrados:
+            veredicto.problemas.append(
+                Problema(
+                    "equipo_en_canal_abierto",
+                    f"nombra {len(nombrados)} equipos: los avisos abiertos dicen cuántos, "
+                    "nunca cuáles",
+                    campo,
+                )
+            )
+
     ti = analisis.comunicado_ti
     ti_bajo = ti.lower()
     if grupo.producto.lower() not in ti_bajo:
@@ -382,7 +515,7 @@ def verificar_analisis(
         )
     if grupo.equipos:
         todos = all(e in ti for e in grupo.equipos)
-        cuenta = any(int(n) == grupo.n_equipos for n in _N_EQUIPOS.findall(ti))
+        cuenta = grupo.n_equipos in cuentas_de_equipos(ti)
         if not (todos or cuenta):
             faltan = [e for e in grupo.equipos if e not in ti]
             veredicto.problemas.append(

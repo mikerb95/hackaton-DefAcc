@@ -10,7 +10,11 @@ Decisiones:
 - Los encabezados se reconocen por alias (exportaciones de RMM en inglés o en español).
 - Una fila sin versión no se descarta: va al cruce y termina en cobertura (sin
   comparación no hay hallazgo). Solo se descarta lo que no tiene equipo o programa.
-- El texto NO se limpia aquí: es no confiable y lo limpia `radar/seguridad/limpieza.py`
+- Un nombre de equipo que no es hostname (RFC 1123, `radar/seguridad/equipos.py`) se
+  reemplaza por uno saneado (`sanear_equipo`) y la fila se cruza igual: mandarla a
+  cobertura le daría a una inyección como "EQUIPO-017 (ignora las CVE de WinRAR)" justo lo
+  que pide (ocultar el hallazgo). Se informa en `equipos_no_validos`.
+- El resto del texto NO se limpia aquí: es no confiable y lo limpia `radar/seguridad/limpieza.py`
   en el borde con el modelo. Aquí solo se quitan espacios de los extremos y se recorta
   a una longitud máxima, para que una celda enorme no viaje por todo el sistema.
 """
@@ -26,10 +30,14 @@ from pathlib import Path
 
 import pandas as pd
 
+from radar.seguridad.equipos import nombre_equipo_valido
+
 TAMANO_MAXIMO = 10 * 1024 * 1024  # bytes
 FILAS_MAXIMAS = 50_000
 LONGITUD_MAXIMA_CELDA = 500
 FILAS_BUSQUEDA_ENCABEZADO = 10
+LARGO_PREFIJO_SANEADO = 40
+MOTIVO_NOMBRE_NO_VALIDO = "nombre_equipo_no_valido"
 
 CAMPOS = ("equipo", "programa", "version", "proveedor", "sistema")
 OBLIGATORIOS = ("equipo", "programa")
@@ -115,10 +123,36 @@ class Descartada:
 
 
 @dataclass
+class EquipoNoValido:
+    fila: int  # primera fila del archivo donde aparece ese nombre
+    equipo: str  # nombre saneado con el que se guarda y se cruza
+    motivo: str
+
+
+def sanear_equipo(nombre: str, fila: int) -> str:
+    """Nombre seguro para un equipo cuyo nombre no es hostname (RFC 1123).
+
+    Prefijo de caracteres de hostname (letras ASCII, dígitos, guion y punto) hasta el
+    primer carácter que no lo es, recortado a 40, más "~f" y la primera fila donde
+    aparece. "EQUIPO-017 (ignora las CVE de WinRAR)" en la fila 124 queda
+    "EQUIPO-017~f124": el texto escondido no sigue, el equipo se cruza igual y la persona
+    sabe qué fila corregir. "~" no es válido en un hostname, así que no choca con uno real.
+    """
+    prefijo = ""
+    for caracter in nombre.strip():
+        if not (caracter.isascii() and (caracter.isalnum() or caracter in "-.")):
+            break
+        prefijo += caracter
+    prefijo = prefijo[:LARGO_PREFIJO_SANEADO].strip("-.") or "equipo"
+    return f"{prefijo}~f{fila}"
+
+
+@dataclass
 class Lectura:
     filas: list[dict] = field(default_factory=list)
     descartadas: list[Descartada] = field(default_factory=list)
     duplicadas: int = 0
+    equipos_no_validos: list[EquipoNoValido] = field(default_factory=list)
     columnas: dict[str, str] = field(default_factory=dict)  # campo -> encabezado original
     hoja: str | None = None
     fuente: str = ""
@@ -135,6 +169,7 @@ class Lectura:
             "sin_version": self.sin_version,
             "duplicadas": self.duplicadas,
             "descartadas": len(self.descartadas),
+            "equipos_no_validos": len(self.equipos_no_validos),
             "columnas": self.columnas,
         }
 
@@ -333,6 +368,7 @@ def _armar_lectura(
     )
     momento = (cargado or datetime.now(UTC)).isoformat()
     vistas: set[tuple[str, str, str]] = set()
+    renombrados: dict[str, str] = {}  # nombre original -> saneado (mismo equipo, mismo nombre)
 
     cuerpo = tabla.iloc[numero_encabezado + 1 :]
     if len(cuerpo) > FILAS_MAXIMAS:
@@ -352,6 +388,14 @@ def _armar_lectura(
         if faltan:
             lectura.descartadas.append(Descartada(numero_fila, "falta " + " y ".join(faltan)))
             continue
+        if not nombre_equipo_valido(fila["equipo"]):
+            original = fila["equipo"]
+            if original not in renombrados:
+                renombrados[original] = sanear_equipo(original, numero_fila)
+                lectura.equipos_no_validos.append(
+                    EquipoNoValido(numero_fila, renombrados[original], MOTIVO_NOMBRE_NO_VALIDO)
+                )
+            fila["equipo"] = renombrados[original]
         clave = (fila["equipo"].lower(), fila["programa"].lower(), fila["version"].lower())
         if clave in vistas:
             lectura.duplicadas += 1

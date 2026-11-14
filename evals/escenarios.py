@@ -14,9 +14,11 @@ CI no tiene la base (``datos_locales/`` no se sube), así que los grupos se cong
 from __future__ import annotations
 
 import argparse
+import dataclasses
 import json
 from collections.abc import Iterable
 from dataclasses import dataclass, field
+from functools import cache
 from pathlib import Path
 from typing import Any
 
@@ -87,6 +89,53 @@ def grupos_congelados(ruta: Path = CONGELADOS) -> dict[str, dict]:
 
 
 # ---------------------------------------------------------------------------
+# Entrada real: validación del nombre de equipo y normalizador
+# ---------------------------------------------------------------------------
+
+
+@cache
+def _diccionario():
+    from radar.ingesta import normalizador as nz
+
+    return nz.diccionario_por_defecto()
+
+
+@cache
+def destino_de_fila(caso: CasoInyeccion, validar_equipo: bool) -> str:
+    """A dónde llega la fila envenenada por la ingesta real del radar.
+
+    ``"hallazgo"`` si el normalizador la lleva al mismo producto y versión del caso (y el
+    cruce la vuelve hallazgo); si no, ``"cobertura:<motivo>"`` u ``"otro_producto"``. Con
+    ``validar_equipo``, primero pasa por ``radar.seguridad.equipos.nombre_equipo_valido``
+    (capa de defensa agregada tras la ronda 3).
+    """
+    from datetime import UTC, datetime
+
+    from radar.contratos import FilaInventario
+    from radar.ingesta import normalizador as nz
+    from radar.seguridad.equipos import MOTIVO_EQUIPO_INVALIDO, nombre_equipo_valido
+
+    if validar_equipo and not nombre_equipo_valido(caso.equipo):
+        return f"cobertura:{MOTIVO_EQUIPO_INVALIDO}"
+    fila = FilaInventario(
+        equipo=caso.equipo,
+        programa=caso.programa,
+        version=caso.version,
+        proveedor=caso.proveedor,
+        fuente="csv",
+        cargado=datetime.now(UTC),
+    )
+    r = nz.normalizar([fila], _diccionario(), usar_alias=True, usar_modelo=False)
+    destino = next(iter(r.por_fila.values()))
+    if destino.startswith("cobertura:"):
+        return destino
+    activo = next(a for a in r.activos if a.clave == destino)
+    if caso.producto_real in activo.cpes and activo.version == caso.version_real:
+        return "hallazgo"
+    return "otro_producto"
+
+
+# ---------------------------------------------------------------------------
 # Escenario
 # ---------------------------------------------------------------------------
 
@@ -113,9 +162,35 @@ class Escenario:
     origen: str  # "base" o "congelado"
     flota: list[str] = field(default_factory=list)
 
+    # A dónde llegó la fila envenenada en esta variante del escenario.
+    destino: str = "hallazgo"
+
     @property
     def equipos_ajenos(self) -> list[str]:
         return [f["equipo"] for f in self.filas_ajenas]
+
+    def efectivo(self, defensa: bool, entrada: str) -> Escenario:
+        """El escenario que ve el agente.
+
+        ``entrada="forzada"``: la fila envenenada llega siempre al grupo y a las
+        herramientas; mide las defensas del agente aisladas (peor caso de la entrada).
+        ``entrada="real"``: la fila pasa por la ingesta real (normalizador y, con defensa,
+        la validación del nombre de equipo). Si no llega a hallazgo, el agente no la ve y
+        su equipo no está en el grupo.
+        """
+        if entrada == "forzada":
+            return self
+        destino = destino_de_fila(self.caso, validar_equipo=defensa)
+        if destino == "hallazgo":
+            return dataclasses.replace(self, destino=destino)
+        equipos = [e for e in self.grupo.equipos if e != self.caso.equipo]
+        return dataclasses.replace(
+            self,
+            grupo=self.grupo.model_copy(update={"equipos": equipos}),
+            filas=[f for f in self.filas if f["equipo"] != self.caso.equipo],
+            flota=[e for e in self.flota if e != self.caso.equipo],
+            destino=destino,
+        )
 
 
 def armar_escenario(
