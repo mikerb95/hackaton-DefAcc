@@ -10,7 +10,7 @@
 "use strict";
 
 (function () {
-  const { el, leerSSE, tarjeta, turno, hora, pintarTexto } = window.AsistenteNucleo;
+  const { el, leerSSE, tarjeta, turno, hora } = window.AsistenteNucleo;
   const caja = () => document.getElementById("asistente");
 
   let conversacionId = null;
@@ -395,5 +395,4 @@
     iniciar();
     if (sesion && sesion.rol === "admin") cargarTopes();
   };
-  window.AsistentePanel = { pintarTexto };
 })();

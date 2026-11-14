@@ -521,4 +521,5 @@ $("#ajustes-modelo").addEventListener("change", async (e) => {
   mostrarVista();
   document.body.classList.remove("cargando-sesion");
   iniciarCiclo();
+  if (window.iniciarAsistente) window.iniciarAsistente(SESION);
 })();

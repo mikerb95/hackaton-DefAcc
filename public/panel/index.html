@@ -57,6 +57,31 @@
 
         <!-- Resumen -->
         <div class="vista" data-vista="resumen">
+          <section class="panel asistente" id="asistente" aria-labelledby="asistente-saludo">
+            <div class="asis-cabeza">
+              <div>
+                <h2 id="asistente-saludo">Hola.</h2>
+                <p class="nota" id="asistente-sub"></p>
+              </div>
+              <button type="button" class="boton-texto" id="asistente-nueva" hidden>Nueva conversación</button>
+            </div>
+            <div class="asis-atajos" id="asistente-atajos" hidden></div>
+            <div class="asis-hilo" id="asistente-hilo" aria-live="polite"></div>
+            <form class="asis-form" id="asistente-form" role="search" autocomplete="off">
+              <label class="solo-lector" for="asistente-pregunta">Pregunta o busca algo</label>
+              <input id="asistente-pregunta" name="pregunta" type="text" maxlength="2000" placeholder="Pregunta o busca algo">
+              <button type="submit" id="asistente-enviar" hidden>Preguntar</button>
+              <ul class="asis-busqueda" id="asistente-busqueda" hidden></ul>
+            </form>
+            <p class="nota asis-nota" id="asistente-nota" hidden></p>
+            <div class="asis-recientes">
+              <div class="asis-recientes-cabeza">
+                <h3>Recientes</h3>
+                <label class="asis-todas" data-rol="admin"><input type="checkbox" id="asistente-todas"> Ver las de todos</label>
+              </div>
+              <ul id="asistente-recientes-lista"></ul>
+            </div>
+          </section>
           <section class="cifras" id="cifras" aria-label="Cifras"></section>
           <div class="rejilla">
             <section class="panel" aria-labelledby="t-productos">
@@ -227,6 +252,12 @@
               El worker toma el cambio en menos de un minuto, sin reiniciar.</p>
             <div id="ajustes-modelo"></div>
           </section>
+          <section class="panel" aria-labelledby="t-asistente-topes">
+            <h2 id="t-asistente-topes">Asistente: topes y consumo</h2>
+            <p class="nota">Cada pregunta al asistente es una llamada a Claude con la clave del radar. Los topes
+              cortan el gasto del día; el consumo es una estimación con la tarifa pública del modelo.</p>
+            <div id="asistente-topes"></div>
+          </section>
         </div>
       </main>
     </div>
@@ -347,6 +378,8 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <script src="/panel.js"></script>
+  <script src="/asistente-nucleo.js"></script>
+  <script src="/asistente.js"></script>
   <script src="/admin.js"></script>
   <script src="/parcheo.js"></script>
 </body>
