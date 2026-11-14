@@ -27,10 +27,12 @@ agente = [
 ]
 mcp = [
     "mcp",
+    "pandas",
+    "openpyxl",
 ]
 
 [project.scripts]
-radar-mcp = "radar.mcp.servidor:main"
+radar-mcp = "radar.mcp.servidor:principal"
 
 [dependency-groups]
 dev = [

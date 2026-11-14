@@ -6,9 +6,10 @@ Uso, desde la raíz del repo:
     python -m datos_prueba.generar --inyeccion   # agrega las filas de casos_inyeccion.py
 
 Semilla fija: dos corridas dan archivos idénticos. Las filas de inyección no las
-escribe este frente: las pone `guarda` en datos_prueba/casos_inyeccion.py, que debe
-exponer `filas_inyeccion() -> list[dict]` con las claves equipo, programa, version,
-proveedor y caso (número del caso de inyección).
+escribe este frente: las pone `guarda` en datos_prueba/casos_inyeccion.py (tupla
+`CASOS`, cada uno con `fila()` e `id`). Van en equipos propios (LAB-INY-NN).
+
+Cada fila se valida contra radar.contratos.FilaInventario antes de escribirse.
 """
 
 from __future__ import annotations
@@ -17,12 +18,14 @@ import argparse
 import csv
 import json
 import random
+from datetime import UTC, datetime
 from pathlib import Path
 
 from datos_prueba import respuesta, semilla
 
 CARPETA_SALIDA = Path(__file__).resolve().parent / "generados"
-COLUMNAS = ["equipo", "programa", "version", "proveedor"]
+COLUMNAS = ["equipo", "programa", "version", "proveedor", "sistema"]
+CARGADO = datetime(2026, 11, 14, tzinfo=UTC)  # fijo: archivos reproducibles
 
 
 def _repartir(rng: random.Random) -> list[tuple[dict, object]]:
@@ -35,8 +38,18 @@ def _repartir(rng: random.Random) -> list[tuple[dict, object]]:
     filas: list[tuple[dict, object]] = []
 
     def fila(equipo, nombre, version, proveedor, origen):
-        filas.append(({"equipo": equipo, "programa": nombre, "version": version,
-                       "proveedor": proveedor}, origen))
+        filas.append(
+            (
+                {
+                    "equipo": equipo,
+                    "programa": nombre,
+                    "version": version,
+                    "proveedor": proveedor,
+                    "sistema": semilla.sistema_de(equipo),
+                },
+                origen,
+            )
+        )
 
     # Casos medidos: cada producto ocupa equipos distintos, una versión por equipo.
     por_producto: dict[str, list[semilla.Caso]] = {}
@@ -52,7 +65,7 @@ def _repartir(rng: random.Random) -> list[tuple[dict, object]]:
             if c.equipos_fijos:
                 destino = list(c.equipos_fijos)
             else:
-                destino = elegidos[i:i + c.equipos]
+                destino = elegidos[i : i + c.equipos]
                 i += c.equipos
             for eq in destino:
                 fila(eq, c.nombre, c.version_campo, c.proveedor, c)
@@ -76,14 +89,26 @@ def _filas_inyeccion() -> list[tuple[dict, object]]:
     except ImportError as e:
         raise SystemExit(f"Falta datos_prueba/casos_inyeccion.py (frente guarda): {e}")
     out = []
-    for f in casos_inyeccion.filas_inyeccion():
-        out.append(({k: f[k] for k in COLUMNAS},
-                    {"tipo": "inyeccion", "caso": f.get("caso")}))
+    for caso in casos_inyeccion.CASOS:
+        f = caso.fila()
+        out.append(({k: f.get(k, "") for k in COLUMNAS}, {"tipo": "inyeccion", "caso": caso.id}))
     return out
 
 
-def generar(con_inyeccion: bool = False, semilla_aleatoria: int = semilla.SEMILLA_ALEATORIA,
-            ruta_snapshot: Path = respuesta.RUTA_SNAPSHOT) -> tuple[list[dict], dict]:
+def validar_contrato(filas: list[dict], fuente: str = "csv") -> None:
+    """Falla si alguna fila no cabe en FilaInventario (vacíos pasan a None)."""
+    from radar.contratos import FilaInventario
+
+    for f in filas:
+        datos = {k: (f[k] or None) for k in COLUMNAS}
+        FilaInventario(**datos, fuente=fuente, cargado=CARGADO)
+
+
+def generar(
+    con_inyeccion: bool = False,
+    semilla_aleatoria: int = semilla.SEMILLA_ALEATORIA,
+    ruta_snapshot: Path = respuesta.RUTA_SNAPSHOT,
+) -> tuple[list[dict], dict]:
     """Arma las filas del inventario y la respuesta conocida, sin escribir archivos."""
     rng = random.Random(semilla_aleatoria)
     filas = _repartir(rng)
@@ -96,6 +121,7 @@ def generar(con_inyeccion: bool = False, semilla_aleatoria: int = semilla.SEMILL
     resp = respuesta.construir(filas, ruta_snapshot)
     resp["semilla_aleatoria"] = semilla_aleatoria
     resp["con_inyeccion"] = con_inyeccion
+    validar_contrato([f for f, _ in filas])
     return [f for f, _ in filas], resp
 
 
@@ -106,6 +132,14 @@ def escribir_csv(filas: list[dict], ruta: Path) -> None:
         w.writerows(filas)
 
 
+def _celda_excel(valor: str) -> str:
+    """Excel no admite caracteres de control: se escriben como `_xHHHH_`, igual que hace
+    Excel al guardar. Solo afecta al caso de inyección 7; el CSV conserva los bytes."""
+    from openpyxl.cell.cell import ILLEGAL_CHARACTERS_RE
+
+    return ILLEGAL_CHARACTERS_RE.sub(lambda m: f"_x{ord(m.group()):04X}_", valor)
+
+
 def escribir_excel(filas: list[dict], ruta: Path) -> None:
     from openpyxl import Workbook  # import diferido: el CSV no lo necesita
 
@@ -114,14 +148,32 @@ def escribir_excel(filas: list[dict], ruta: Path) -> None:
     ws.title = "Inventario"
     ws.append(COLUMNAS)
     for f in filas:
-        ws.append([f[c] for c in COLUMNAS])
+        ws.append([_celda_excel(f[c]) for c in COLUMNAS])
     # Fecha fija en los metadatos para que el archivo sea reproducible.
-    from datetime import datetime
-
-    fija = datetime(2026, 11, 14)
+    fija = CARGADO.replace(tzinfo=None)
     wb.properties.created = fija
     wb.properties.modified = fija
     wb.save(ruta)
+    _fijar_fechas_zip(ruta)
+
+
+def _fijar_fechas_zip(ruta: Path) -> None:
+    """Reescribe el .xlsx (un zip) con fecha fija en cada entrada: mismo inventario,
+    mismos bytes."""
+    import io
+    import zipfile
+
+    with zipfile.ZipFile(ruta) as z:
+        entradas = [(i.filename, z.read(i)) for i in z.infolist()]
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
+        for nombre, datos in entradas:
+            z.writestr(
+                zipfile.ZipInfo(nombre, date_time=(2026, 11, 14, 0, 0, 0)),
+                datos,
+                compress_type=zipfile.ZIP_DEFLATED,
+            )
+    ruta.write_bytes(buf.getvalue())
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -138,11 +190,14 @@ def main(argv: list[str] | None = None) -> None:
     if not a.sin_excel:
         escribir_excel(filas, a.salida / f"{base}.xlsx")
     (a.salida / f"{base}_respuesta.json").write_text(
-        json.dumps(resp, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        json.dumps(resp, ensure_ascii=False, indent=1) + "\n", encoding="utf-8"
+    )
     t = resp["totales"]
     print(f"{t['filas']} filas en {t['equipos']} equipos -> {a.salida}/{base}.*")
-    print(f"pares CVE-activo precisos: {t['pares_cve_activo_precisos']}, "
-          f"KEV distintas: {t['kev_distintas']}, cobertura: {t['cobertura']}")
+    print(
+        f"pares CVE-activo precisos: {t['pares_cve_activo_precisos']}, "
+        f"KEV distintas: {t['kev_distintas']}, cobertura: {t['cobertura']}"
+    )
 
 
 if __name__ == "__main__":

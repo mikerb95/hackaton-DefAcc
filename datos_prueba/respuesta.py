@@ -62,11 +62,11 @@ def esperado_de_caso(caso: Caso, snapshot: dict[tuple[str, str], Esperado]) -> d
         cves |= e.cves
         kev |= e.kev
         no_precisas |= e.no_precisas
-        por_par[_clave_par(par)] = sorted(e.cves)
+        por_par[par] = sorted(e.cves)
         if e.peor_cvss is not None:
             peores.append(e.peor_cvss)
     return {
-        "pares": [_clave_par(p) for p in caso.pares],
+        "pares": list(caso.pares),  # con el escape de NVD, como en el contrato
         "version_comparable": caso.version_real,
         "cves": sorted(cves),
         "cves_por_par": por_par,
@@ -78,26 +78,46 @@ def esperado_de_caso(caso: Caso, snapshot: dict[tuple[str, str], Esperado]) -> d
 
 def respuesta_fila(fila: dict, origen, snapshot) -> dict:
     """Respuesta de una fila del inventario según el caso que la originó."""
-    base = {k: fila[k] for k in ("fila", "equipo", "programa", "version", "proveedor")}
+    base = {k: fila.get(k) for k in ("fila", "equipo", "programa", "version", "proveedor")}
     if isinstance(origen, Caso):
         esp = esperado_de_caso(origen, snapshot)
         tipo = "vulnerable" if esp["cves"] else "sano"
-        return {**base, "tipo": tipo, "producto": origen.producto, "prueba": origen.prueba,
-                **esp}
+        return {
+            **base,
+            "tipo": tipo,
+            "producto": origen.canonico,
+            "clave": origen.clave,
+            "prueba": origen.prueba,
+            **esp,
+        }
     if isinstance(origen, CasoCobertura):
-        return {**base, "tipo": "cobertura", "motivo": origen.motivo,
-                "explicacion": origen.explicacion, "par_prohibido": origen.par_prohibido,
-                "pares": [], "cves": [], "kev": []}
+        return {
+            **base,
+            "tipo": "cobertura",
+            "motivo": origen.motivo,
+            "explicacion": origen.explicacion,
+            "par_prohibido": origen.par_prohibido,
+            "pares": [],
+            "cves": [],
+            "kev": [],
+        }
     if origen == "relleno":
         return {**base, "tipo": "relleno", "medido": False, "cves": [], "kev": []}
     if isinstance(origen, dict) and origen.get("tipo") == "inyeccion":
-        return {**base, "tipo": "inyeccion", "medido": False,
-                "caso_inyeccion": origen.get("caso"), "cves": [], "kev": []}
+        return {
+            **base,
+            "tipo": "inyeccion",
+            "medido": False,
+            "caso_inyeccion": origen.get("caso"),
+            "cves": [],
+            "kev": [],
+        }
     raise ValueError(f"Origen desconocido para la fila {fila['fila']}: {origen!r}")
 
 
-def construir(filas_con_origen: list[tuple[dict, object]],
-              ruta_snapshot: Path = RUTA_SNAPSHOT) -> dict:
+def construir(
+    filas_con_origen: list[tuple[dict, object]], ruta_snapshot: Path = RUTA_SNAPSHOT
+) -> dict:
     """Arma la respuesta completa: una entrada por fila y los totales esperados."""
     snapshot = cargar_snapshot(ruta_snapshot)
     filas = [respuesta_fila(f, o, snapshot) for f, o in filas_con_origen]
@@ -105,8 +125,11 @@ def construir(filas_con_origen: list[tuple[dict, object]],
     kev_distintas = sorted({c for f in medidas for c in f["kev"]})
     # Cada (par, versión) se cuenta una vez: es la cifra de SEMILLA.md (735), que no
     # multiplica por equipos.
-    par_version = {(par, f["version_comparable"]): len(cves)
-                   for f in medidas for par, cves in f["cves_por_par"].items()}
+    par_version = {
+        (par, f["version_comparable"]): len(cves)
+        for f in medidas
+        for par, cves in f["cves_por_par"].items()
+    }
     totales = {
         "filas": len(filas),
         "equipos": len({f["equipo"] for f in filas}),

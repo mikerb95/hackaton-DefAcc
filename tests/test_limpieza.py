@@ -51,7 +51,7 @@ def test_saltos_pasan_a_espacio():
 
 def test_caso_7_quita_control_invisibles_y_etiquetas():
     limpio = limpiar_texto(caso_por_numero(7).proveedor)
-    for marca in ["\x1b", "\x00", "\x07", "‮", "​", "</datos>", "<datos>"]:
+    for marca in ["\x1b", "\x00", "\x07", "\u202e", "\u200b", "</datos>", "<datos>"]:
         assert marca not in limpio
     assert limpio.startswith("VideoLAN")
 

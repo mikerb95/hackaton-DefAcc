@@ -27,9 +27,9 @@
   "activos_sanos": 156,
   "cobertura": 12,
   "cobertura_por_motivo": {
+   "no_comparable": 2,
    "sin_cpe": 8,
-   "sin_version": 2,
-   "version_no_comparable": 2
+   "sin_version": 2
   },
   "relleno": 1005,
   "inyeccion": 0,
@@ -109,7 +109,8 @@
    "version": "21.0.5+11",
    "proveedor": "Eclipse Adoptium",
    "tipo": "sano",
-   "producto": "temurin",
+   "producto": "Eclipse Temurin JDK",
+   "clave": "Eclipse Temurin JDK@21.0.5",
    "prueba": "Sano",
    "pares": [
     "oracle:openjdk"
@@ -163,7 +164,8 @@
    "version": "2.51.0",
    "proveedor": "The Git Development Community",
    "tipo": "sano",
-   "producto": "git",
+   "producto": "Git",
+   "clave": "Git@2.51.0",
    "prueba": "Sano",
    "pares": [
     "git-scm:git"
@@ -184,7 +186,8 @@
    "version": "6.3.5",
    "proveedor": "Palo Alto Networks",
    "tipo": "sano",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.3.5",
    "prueba": "Sano en lo preciso",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -208,7 +211,8 @@
    "version": "157.0.8103.78",
    "proveedor": "Google LLC",
    "tipo": "sano",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.78",
    "prueba": "Sano en lo preciso, con 13 no precisas",
    "pares": [
     "google:chrome"
@@ -265,7 +269,8 @@
    "version": "1.49.7",
    "proveedor": "MongoDB Inc.",
    "tipo": "sano",
-   "producto": "compass",
+   "producto": "MongoDB Compass",
+   "clave": "MongoDB Compass@1.49.7",
    "prueba": "Sano",
    "pares": [
     "mongodb:compass"
@@ -286,7 +291,8 @@
    "version": "24.22.1",
    "proveedor": "Node.js Foundation",
    "tipo": "sano",
-   "producto": "nodejs",
+   "producto": "Node.js",
+   "clave": "Node.js@24.22.1",
    "prueba": "Doce versiones conviviendo; KEV de Brotli se empareja por ID",
    "pares": [
     "nodejs:node.js"
@@ -307,15 +313,16 @@
    "version": "8.9.6.4",
    "proveedor": "Notepad++ Team",
    "tipo": "sano",
-   "producto": "notepadpp",
+   "producto": "Notepad++",
+   "clave": "Notepad++@8.9.6.4",
    "prueba": "Sano, versión de cuatro componentes",
    "pares": [
-    "notepad-plus-plus:notepad++"
+    "notepad-plus-plus:notepad\\+\\+"
    ],
    "version_comparable": "8.9.6.4",
    "cves": [],
    "cves_por_par": {
-    "notepad-plus-plus:notepad++": []
+    "notepad-plus-plus:notepad\\+\\+": []
    },
    "kev": [],
    "no_precisas": [],
@@ -350,7 +357,8 @@
    "version": "3.12.10150.0",
    "proveedor": "Python Software Foundation",
    "tipo": "vulnerable",
-   "producto": "python",
+   "producto": "Python",
+   "clave": "Python@3.12.10",
    "prueba": "Versión del instalador distinta; la real viene en el nombre",
    "pares": [
     "python:python"
@@ -419,7 +427,8 @@
    "version": "15.70.0",
    "proveedor": "TeamViewer Germany GmbH",
    "tipo": "sano",
-   "producto": "teamviewer",
+   "producto": "TeamViewer",
+   "clave": "TeamViewer@15.70.0",
    "prueba": "Sano",
    "pares": [
     "teamviewer:teamviewer"
@@ -462,7 +471,8 @@
    "version": "24.08",
    "proveedor": "Igor Pavlov",
    "tipo": "vulnerable",
-   "producto": "7zip",
+   "producto": "7-Zip",
+   "clave": "7-Zip@24.08",
    "prueba": "Vulnerable con KEV",
    "pares": [
     "7-zip:7-zip"
@@ -515,7 +525,8 @@
    "version": "26.002.21901",
    "proveedor": "Adobe Systems Incorporated",
    "tipo": "sano",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@26.002.21901",
    "prueba": "Sano, con nombre distinto del mismo producto",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -646,7 +657,8 @@
    "version": "21.0.5+11",
    "proveedor": "Eclipse Adoptium",
    "tipo": "sano",
-   "producto": "temurin",
+   "producto": "Eclipse Temurin JDK",
+   "clave": "Eclipse Temurin JDK@21.0.5",
    "prueba": "Sano",
    "pares": [
     "oracle:openjdk"
@@ -711,7 +723,8 @@
    "version": "2.45.4",
    "proveedor": "The Git Development Community",
    "tipo": "sano",
-   "producto": "git",
+   "producto": "Git",
+   "clave": "Git@2.45.4",
    "prueba": "Frontera excluyente de la KEV",
    "pares": [
     "git-scm:git"
@@ -732,7 +745,8 @@
    "version": "6.3.5",
    "proveedor": "Palo Alto Networks",
    "tipo": "sano",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.3.5",
    "prueba": "Sano en lo preciso",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -756,7 +770,8 @@
    "version": "157.0.8103.78",
    "proveedor": "Google LLC",
    "tipo": "sano",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.78",
    "prueba": "Sano en lo preciso, con 13 no precisas",
    "pares": [
     "google:chrome"
@@ -813,7 +828,8 @@
    "version": "157.0",
    "proveedor": "Mozilla",
    "tipo": "vulnerable",
-   "producto": "firefox",
+   "producto": "Mozilla Firefox",
+   "clave": "Mozilla Firefox@157.0",
    "prueba": "Una CVE crítica reciente",
    "pares": [
     "mozilla:firefox"
@@ -877,7 +893,8 @@
    "version": "18.18.0",
    "proveedor": "Node.js Foundation",
    "tipo": "vulnerable",
-   "producto": "nodejs",
+   "producto": "Node.js",
+   "clave": "Node.js@18.18.0",
    "prueba": "Doce versiones conviviendo; KEV de Brotli se empareja por ID",
    "pares": [
     "nodejs:node.js"
@@ -977,7 +994,8 @@
    "version": "3.11.15",
    "proveedor": "Python Software Foundation",
    "tipo": "vulnerable",
-   "producto": "python",
+   "producto": "Python",
+   "clave": "Python@3.11.15",
    "prueba": "Vulnerable sin KEV",
    "pares": [
     "python:python"
@@ -1132,7 +1150,8 @@
    "version": "4.72.0",
    "proveedor": "Docker Inc.",
    "tipo": "sano",
-   "producto": "docker_desktop",
+   "producto": "Docker Desktop",
+   "clave": "Docker Desktop@4.72.0",
    "prueba": "Sano",
    "pares": [
     "docker:desktop",
@@ -1155,7 +1174,8 @@
    "version": "17.0.10+7",
    "proveedor": "Eclipse Adoptium",
    "tipo": "sano",
-   "producto": "temurin",
+   "producto": "Eclipse Temurin JDK",
+   "clave": "Eclipse Temurin JDK@17.0.10",
    "prueba": "Frontera excluyente",
    "pares": [
     "oracle:openjdk"
@@ -1231,7 +1251,8 @@
    "version": "2.51.0",
    "proveedor": "The Git Development Community",
    "tipo": "sano",
-   "producto": "git",
+   "producto": "Git",
+   "clave": "Git@2.51.0",
    "prueba": "Sano",
    "pares": [
     "git-scm:git"
@@ -1252,7 +1273,8 @@
    "version": "6.0.14",
    "proveedor": "Palo Alto Networks",
    "tipo": "vulnerable",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.0.14",
    "prueba": "El par bueno no es globalprotect_app",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -1297,7 +1319,8 @@
    "version": "157.0.8103.78",
    "proveedor": "Google LLC",
    "tipo": "sano",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.78",
    "prueba": "Sano en lo preciso, con 13 no precisas",
    "pares": [
     "google:chrome"
@@ -1332,7 +1355,8 @@
    "version": "22.23.4",
    "proveedor": "Node.js Foundation",
    "tipo": "sano",
-   "producto": "nodejs",
+   "producto": "Node.js",
+   "clave": "Node.js@22.23.4",
    "prueba": "Doce versiones conviviendo; KEV de Brotli se empareja por ID",
    "pares": [
     "nodejs:node.js"
@@ -1353,15 +1377,16 @@
    "version": "8.9.6.4",
    "proveedor": "Notepad++ Team",
    "tipo": "sano",
-   "producto": "notepadpp",
+   "producto": "Notepad++",
+   "clave": "Notepad++@8.9.6.4",
    "prueba": "Sano, versión de cuatro componentes",
    "pares": [
-    "notepad-plus-plus:notepad++"
+    "notepad-plus-plus:notepad\\+\\+"
    ],
    "version_comparable": "8.9.6.4",
    "cves": [],
    "cves_por_par": {
-    "notepad-plus-plus:notepad++": []
+    "notepad-plus-plus:notepad\\+\\+": []
    },
    "kev": [],
    "no_precisas": [],
@@ -1407,7 +1432,8 @@
    "version": "3.13.9",
    "proveedor": "Python Software Foundation",
    "tipo": "vulnerable",
-   "producto": "python",
+   "producto": "Python",
+   "clave": "Python@3.13.9",
    "prueba": "Vulnerable sin KEV",
    "pares": [
     "python:python"
@@ -1535,7 +1561,8 @@
    "version": "4.62.0",
    "proveedor": "Docker Inc.",
    "tipo": "vulnerable",
-   "producto": "docker_desktop",
+   "producto": "Docker Desktop",
+   "clave": "Docker Desktop@4.62.0",
    "prueba": "Solo el segundo par la encuentra",
    "pares": [
     "docker:desktop",
@@ -1564,7 +1591,8 @@
    "version": "21.0.5+11",
    "proveedor": "Eclipse Adoptium",
    "tipo": "sano",
-   "producto": "temurin",
+   "producto": "Eclipse Temurin JDK",
+   "clave": "Eclipse Temurin JDK@21.0.5",
    "prueba": "Sano",
    "pares": [
     "oracle:openjdk"
@@ -1629,7 +1657,8 @@
    "version": "2.45.1.windows.1",
    "proveedor": "The Git Development Community",
    "tipo": "vulnerable",
-   "producto": "git",
+   "producto": "Git",
+   "clave": "Git@2.45.1",
    "prueba": "Sufijo .windows.N que hay que limpiar",
    "pares": [
     "git-scm:git"
@@ -1656,7 +1685,8 @@
    "version": "6.3.5",
    "proveedor": "Palo Alto Networks",
    "tipo": "sano",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.3.5",
    "prueba": "Sano en lo preciso",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -1680,7 +1710,8 @@
    "version": "157.0.8103.60",
    "proveedor": "Google LLC",
    "tipo": "vulnerable",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.60",
    "prueba": "Inmediato por CVSS, sin KEV",
    "pares": [
     "google:chrome"
@@ -1836,7 +1867,8 @@
    "version": "1.49.7",
    "proveedor": "MongoDB Inc.",
    "tipo": "sano",
-   "producto": "compass",
+   "producto": "MongoDB Compass",
+   "clave": "MongoDB Compass@1.49.7",
    "prueba": "Sano",
    "pares": [
     "mongodb:compass"
@@ -1868,7 +1900,8 @@
    "version": "157.0",
    "proveedor": "Mozilla",
    "tipo": "vulnerable",
-   "producto": "firefox",
+   "producto": "Mozilla Firefox",
+   "clave": "Mozilla Firefox@157.0",
    "prueba": "Una CVE crítica reciente",
    "pares": [
     "mozilla:firefox"
@@ -1921,7 +1954,8 @@
    "version": "22.23.4",
    "proveedor": "Node.js Foundation",
    "tipo": "sano",
-   "producto": "nodejs",
+   "producto": "Node.js",
+   "clave": "Node.js@22.23.4",
    "prueba": "Doce versiones conviviendo; KEV de Brotli se empareja por ID",
    "pares": [
     "nodejs:node.js"
@@ -1975,7 +2009,8 @@
    "version": "3.12.10150.0",
    "proveedor": "Python Software Foundation",
    "tipo": "vulnerable",
-   "producto": "python",
+   "producto": "Python",
+   "clave": "Python@3.12.10",
    "prueba": "Versión del instalador distinta; la real viene en el nombre",
    "pares": [
     "python:python"
@@ -2055,7 +2090,8 @@
    "version": "6.22",
    "proveedor": "win.rar GmbH",
    "tipo": "vulnerable",
-   "producto": "winrar",
+   "producto": "WinRAR",
+   "clave": "WinRAR@6.22",
    "prueba": "Vulnerable con explotación y ransomware",
    "pares": [
     "rarlab:winrar"
@@ -2096,7 +2132,8 @@
    "version": "24.08",
    "proveedor": "Igor Pavlov",
    "tipo": "vulnerable",
-   "producto": "7zip",
+   "producto": "7-Zip",
+   "clave": "7-Zip@24.08",
    "prueba": "Vulnerable con KEV",
    "pares": [
     "7-zip:7-zip"
@@ -2160,7 +2197,8 @@
    "version": "25.001.20531",
    "proveedor": "Adobe Inc.",
    "tipo": "vulnerable",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@25.001.20531",
    "prueba": "KEV en un lector de PDF",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -2415,7 +2453,7 @@
    "version": "28.1.1, build 4eba377",
    "proveedor": "Docker Inc.",
    "tipo": "cobertura",
-   "motivo": "version_no_comparable",
+   "motivo": "no_comparable",
    "explicacion": "Número de compilación como versión",
    "par_prohibido": null,
    "pares": [],
@@ -2429,7 +2467,8 @@
    "version": "17.0.10+7",
    "proveedor": "Eclipse Adoptium",
    "tipo": "sano",
-   "producto": "temurin",
+   "producto": "Eclipse Temurin JDK",
+   "clave": "Eclipse Temurin JDK@17.0.10",
    "prueba": "Frontera excluyente",
    "pares": [
     "oracle:openjdk"
@@ -2483,7 +2522,8 @@
    "version": "2.45.1.windows.1",
    "proveedor": "The Git Development Community",
    "tipo": "vulnerable",
-   "producto": "git",
+   "producto": "Git",
+   "clave": "Git@2.45.1",
    "prueba": "Sufijo .windows.N que hay que limpiar",
    "pares": [
     "git-scm:git"
@@ -2510,7 +2550,8 @@
    "version": "6.3.5",
    "proveedor": "Palo Alto Networks",
    "tipo": "sano",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.3.5",
    "prueba": "Sano en lo preciso",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -2534,7 +2575,8 @@
    "version": "157.0.8103.78",
    "proveedor": "Google LLC",
    "tipo": "sano",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.78",
    "prueba": "Sano en lo preciso, con 13 no precisas",
    "pares": [
     "google:chrome"
@@ -2580,7 +2622,8 @@
    "version": "157.0",
    "proveedor": "Mozilla",
    "tipo": "vulnerable",
-   "producto": "firefox",
+   "producto": "Mozilla Firefox",
+   "clave": "Mozilla Firefox@157.0",
    "prueba": "Una CVE crítica reciente",
    "pares": [
     "mozilla:firefox"
@@ -2633,7 +2676,8 @@
    "version": "20.18.0",
    "proveedor": "Node.js Foundation",
    "tipo": "vulnerable",
-   "producto": "nodejs",
+   "producto": "Node.js",
+   "clave": "Node.js@20.18.0",
    "prueba": "Doce versiones conviviendo; KEV de Brotli se empareja por ID",
    "pares": [
     "nodejs:node.js"
@@ -2684,15 +2728,16 @@
    "version": "8.9.6.4",
    "proveedor": "Notepad++ Team",
    "tipo": "sano",
-   "producto": "notepadpp",
+   "producto": "Notepad++",
+   "clave": "Notepad++@8.9.6.4",
    "prueba": "Sano, versión de cuatro componentes",
    "pares": [
-    "notepad-plus-plus:notepad++"
+    "notepad-plus-plus:notepad\\+\\+"
    ],
    "version_comparable": "8.9.6.4",
    "cves": [],
    "cves_por_par": {
-    "notepad-plus-plus:notepad++": []
+    "notepad-plus-plus:notepad\\+\\+": []
    },
    "kev": [],
    "no_precisas": [],
@@ -2727,7 +2772,8 @@
    "version": "0.81",
    "proveedor": "Simon Tatham",
    "tipo": "vulnerable",
-   "producto": "putty",
+   "producto": "PuTTY",
+   "clave": "PuTTY@0.81",
    "prueba": "Vulnerable de baja gravedad: informativo",
    "pares": [
     "putty:putty"
@@ -2756,7 +2802,8 @@
    "version": "3.11.15",
    "proveedor": "Python Software Foundation",
    "tipo": "vulnerable",
-   "producto": "python",
+   "producto": "Python",
+   "clave": "Python@3.11.15",
    "prueba": "Vulnerable sin KEV",
    "pares": [
     "python:python"
@@ -2812,7 +2859,8 @@
    "version": "15.70.0",
    "proveedor": "TeamViewer Germany GmbH",
    "tipo": "sano",
-   "producto": "teamviewer",
+   "producto": "TeamViewer",
+   "clave": "TeamViewer@15.70.0",
    "prueba": "Sano",
    "pares": [
     "teamviewer:teamviewer"
@@ -2877,7 +2925,8 @@
    "version": "3.0.18",
    "proveedor": "VideoLAN",
    "tipo": "vulnerable",
-   "producto": "vlc",
+   "producto": "VLC media player",
+   "clave": "VLC media player@3.0.18",
    "prueba": "Inmediato por CVSS 9.8",
    "pares": [
     "videolan:vlc_media_player"
@@ -2906,7 +2955,8 @@
    "version": "26.002.21901",
    "proveedor": "Adobe Systems Incorporated",
    "tipo": "sano",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@26.002.21901",
    "prueba": "Sano, con nombre distinto del mismo producto",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -3004,7 +3054,8 @@
    "version": "4.58.0",
    "proveedor": "Docker Inc.",
    "tipo": "vulnerable",
-   "producto": "docker_desktop",
+   "producto": "Docker Desktop",
+   "clave": "Docker Desktop@4.58.0",
    "prueba": "Dos pares",
    "pares": [
     "docker:desktop",
@@ -3069,7 +3120,8 @@
    "version": "2.51.0",
    "proveedor": "The Git Development Community",
    "tipo": "sano",
-   "producto": "git",
+   "producto": "Git",
+   "clave": "Git@2.51.0",
    "prueba": "Sano",
    "pares": [
     "git-scm:git"
@@ -3090,7 +3142,8 @@
    "version": "6.0.14",
    "proveedor": "Palo Alto Networks",
    "tipo": "vulnerable",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.0.14",
    "prueba": "El par bueno no es globalprotect_app",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -3135,7 +3188,8 @@
    "version": "157.0.8103.78",
    "proveedor": "Google LLC",
    "tipo": "sano",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.78",
    "prueba": "Sano en lo preciso, con 13 no precisas",
    "pares": [
     "google:chrome"
@@ -3203,7 +3257,8 @@
    "version": "1.36.3",
    "proveedor": "MongoDB Inc.",
    "tipo": "vulnerable",
-   "producto": "compass",
+   "producto": "MongoDB Compass",
+   "clave": "MongoDB Compass@1.36.3",
    "prueba": "Una CVE con versión exacta, no con rango",
    "pares": [
     "mongodb:compass"
@@ -3245,7 +3300,8 @@
    "version": "18.20.4",
    "proveedor": "Node.js Foundation",
    "tipo": "vulnerable",
-   "producto": "nodejs",
+   "producto": "Node.js",
+   "clave": "Node.js@18.20.4",
    "prueba": "Doce versiones conviviendo; KEV de Brotli se empareja por ID",
    "pares": [
     "nodejs:node.js"
@@ -3378,7 +3434,8 @@
    "version": "3.0.21",
    "proveedor": "VideoLAN",
    "tipo": "sano",
-   "producto": "vlc",
+   "producto": "VLC media player",
+   "clave": "VLC media player@3.0.21",
    "prueba": "Sano",
    "pares": [
     "videolan:vlc_media_player"
@@ -3399,7 +3456,8 @@
    "version": "7.12",
    "proveedor": "win.rar GmbH",
    "tipo": "vulnerable",
-   "producto": "winrar",
+   "producto": "WinRAR",
+   "clave": "WinRAR@7.12",
    "prueba": "Una sola CVE, explotada con ransomware",
    "pares": [
     "rarlab:winrar"
@@ -3426,7 +3484,8 @@
    "version": "26.03",
    "proveedor": "Igor Pavlov",
    "tipo": "sano",
-   "producto": "7zip",
+   "producto": "7-Zip",
+   "clave": "7-Zip@26.03",
    "prueba": "Sano",
    "pares": [
     "7-zip:7-zip"
@@ -3557,7 +3616,8 @@
    "version": "2.51.0",
    "proveedor": "The Git Development Community",
    "tipo": "sano",
-   "producto": "git",
+   "producto": "Git",
+   "clave": "Git@2.51.0",
    "prueba": "Sano",
    "pares": [
     "git-scm:git"
@@ -3578,7 +3638,8 @@
    "version": "6.3.5",
    "proveedor": "Palo Alto Networks",
    "tipo": "sano",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.3.5",
    "prueba": "Sano en lo preciso",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -3602,7 +3663,8 @@
    "version": "157.0.8103.78",
    "proveedor": "Google LLC",
    "tipo": "sano",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.78",
    "prueba": "Sano en lo preciso, con 13 no precisas",
    "pares": [
     "google:chrome"
@@ -3670,7 +3732,8 @@
    "version": "20.11.1",
    "proveedor": "Node.js Foundation",
    "tipo": "vulnerable",
-   "producto": "nodejs",
+   "producto": "Node.js",
+   "clave": "Node.js@20.11.1",
    "prueba": "Doce versiones conviviendo; KEV de Brotli se empareja por ID",
    "pares": [
     "nodejs:node.js"
@@ -3723,10 +3786,11 @@
    "version": "8.8.8",
    "proveedor": "Notepad++ Team",
    "tipo": "vulnerable",
-   "producto": "notepadpp",
+   "producto": "Notepad++",
+   "clave": "Notepad++@8.8.8",
    "prueba": "KEV; CPE con \\+\\+ escapado",
    "pares": [
-    "notepad-plus-plus:notepad++"
+    "notepad-plus-plus:notepad\\+\\+"
    ],
    "version_comparable": "8.8.8",
    "cves": [
@@ -3738,7 +3802,7 @@
     "CVE-2026-52885"
    ],
    "cves_por_par": {
-    "notepad-plus-plus:notepad++": [
+    "notepad-plus-plus:notepad\\+\\+": [
      "CVE-2025-15556",
      "CVE-2026-25926",
      "CVE-2026-48770",
@@ -3782,7 +3846,8 @@
    "version": "15.70.0",
    "proveedor": "TeamViewer Germany GmbH",
    "tipo": "sano",
-   "producto": "teamviewer",
+   "producto": "TeamViewer",
+   "clave": "TeamViewer@15.70.0",
    "prueba": "Sano",
    "pares": [
     "teamviewer:teamviewer"
@@ -3814,7 +3879,8 @@
    "version": "7.13",
    "proveedor": "win.rar GmbH",
    "tipo": "sano",
-   "producto": "winrar",
+   "producto": "WinRAR",
+   "clave": "WinRAR@7.13",
    "prueba": "Sano, justo en el arreglo de CVE-2025-8088",
    "pares": [
     "rarlab:winrar"
@@ -3835,7 +3901,8 @@
    "version": "26.03",
    "proveedor": "Igor Pavlov",
    "tipo": "sano",
-   "producto": "7zip",
+   "producto": "7-Zip",
+   "clave": "7-Zip@26.03",
    "prueba": "Sano",
    "pares": [
     "7-zip:7-zip"
@@ -3856,7 +3923,8 @@
    "version": "25.001.20531",
    "proveedor": "Adobe Inc.",
    "tipo": "vulnerable",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@25.001.20531",
    "prueba": "KEV en un lector de PDF",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -4100,7 +4168,8 @@
    "version": "4.72.0",
    "proveedor": "Docker Inc.",
    "tipo": "sano",
-   "producto": "docker_desktop",
+   "producto": "Docker Desktop",
+   "clave": "Docker Desktop@4.72.0",
    "prueba": "Sano",
    "pares": [
     "docker:desktop",
@@ -4167,7 +4236,8 @@
    "version": "2.51.0",
    "proveedor": "The Git Development Community",
    "tipo": "sano",
-   "producto": "git",
+   "producto": "Git",
+   "clave": "Git@2.51.0",
    "prueba": "Sano",
    "pares": [
     "git-scm:git"
@@ -4188,7 +4258,8 @@
    "version": "6.3.5",
    "proveedor": "Palo Alto Networks",
    "tipo": "sano",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.3.5",
    "prueba": "Sano en lo preciso",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -4212,7 +4283,8 @@
    "version": "157.0.8103.60",
    "proveedor": "Google LLC",
    "tipo": "vulnerable",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.60",
    "prueba": "Inmediato por CVSS, sin KEV",
    "pares": [
     "google:chrome"
@@ -4379,7 +4451,8 @@
    "version": "26.12.1",
    "proveedor": "Node.js Foundation",
    "tipo": "sano",
-   "producto": "nodejs",
+   "producto": "Node.js",
+   "clave": "Node.js@26.12.1",
    "prueba": "Doce versiones conviviendo; KEV de Brotli se empareja por ID",
    "pares": [
     "nodejs:node.js"
@@ -4444,7 +4517,8 @@
    "version": "3.12.10150.0",
    "proveedor": "Python Software Foundation",
    "tipo": "vulnerable",
-   "producto": "python",
+   "producto": "Python",
+   "clave": "Python@3.12.10",
    "prueba": "Versión del instalador distinta; la real viene en el nombre",
    "pares": [
     "python:python"
@@ -4513,7 +4587,8 @@
    "version": "15.70.0",
    "proveedor": "TeamViewer Germany GmbH",
    "tipo": "sano",
-   "producto": "teamviewer",
+   "producto": "TeamViewer",
+   "clave": "TeamViewer@15.70.0",
    "prueba": "Sano",
    "pares": [
     "teamviewer:teamviewer"
@@ -4578,7 +4653,8 @@
    "version": "6.22",
    "proveedor": "win.rar GmbH",
    "tipo": "vulnerable",
-   "producto": "winrar",
+   "producto": "WinRAR",
+   "clave": "WinRAR@6.22",
    "prueba": "Vulnerable con explotación y ransomware",
    "pares": [
     "rarlab:winrar"
@@ -4619,7 +4695,8 @@
    "version": "24.08",
    "proveedor": "Igor Pavlov",
    "tipo": "vulnerable",
-   "producto": "7zip",
+   "producto": "7-Zip",
+   "clave": "7-Zip@24.08",
    "prueba": "Vulnerable con KEV",
    "pares": [
     "7-zip:7-zip"
@@ -4683,7 +4760,8 @@
    "version": "26.002.21901",
    "proveedor": "Adobe Systems Incorporated",
    "tipo": "sano",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@26.002.21901",
    "prueba": "Sano, con nombre distinto del mismo producto",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -4759,7 +4837,8 @@
    "version": "4.72.0",
    "proveedor": "Docker Inc.",
    "tipo": "sano",
-   "producto": "docker_desktop",
+   "producto": "Docker Desktop",
+   "clave": "Docker Desktop@4.72.0",
    "prueba": "Sano",
    "pares": [
     "docker:desktop",
@@ -4837,7 +4916,8 @@
    "version": "2.51.0",
    "proveedor": "The Git Development Community",
    "tipo": "sano",
-   "producto": "git",
+   "producto": "Git",
+   "clave": "Git@2.51.0",
    "prueba": "Sano",
    "pares": [
     "git-scm:git"
@@ -4858,7 +4938,8 @@
    "version": "6.3.5",
    "proveedor": "Palo Alto Networks",
    "tipo": "sano",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.3.5",
    "prueba": "Sano en lo preciso",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -4882,7 +4963,8 @@
    "version": "157.0.8103.78",
    "proveedor": "Google LLC",
    "tipo": "sano",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.78",
    "prueba": "Sano en lo preciso, con 13 no precisas",
    "pares": [
     "google:chrome"
@@ -4950,7 +5032,8 @@
    "version": "24.22.1",
    "proveedor": "Node.js Foundation",
    "tipo": "sano",
-   "producto": "nodejs",
+   "producto": "Node.js",
+   "clave": "Node.js@24.22.1",
    "prueba": "Doce versiones conviviendo; KEV de Brotli se empareja por ID",
    "pares": [
     "nodejs:node.js"
@@ -5037,7 +5120,8 @@
    "version": "3.11.15",
    "proveedor": "Python Software Foundation",
    "tipo": "vulnerable",
-   "producto": "python",
+   "producto": "Python",
+   "clave": "Python@3.11.15",
    "prueba": "Vulnerable sin KEV",
    "pares": [
     "python:python"
@@ -5104,7 +5188,8 @@
    "version": "24.09",
    "proveedor": "Igor Pavlov",
    "tipo": "vulnerable",
-   "producto": "7zip",
+   "producto": "7-Zip",
+   "clave": "7-Zip@24.09",
    "prueba": "Arregla la KEV pero tiene una CVE más que 24.08",
    "pares": [
     "7-zip:7-zip"
@@ -5157,7 +5242,8 @@
    "version": "25.001.20531",
    "proveedor": "Adobe Inc.",
    "tipo": "vulnerable",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@25.001.20531",
    "prueba": "KEV en un lector de PDF",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -5346,7 +5432,8 @@
    "version": "17.0.9+9",
    "proveedor": "Eclipse Adoptium",
    "tipo": "vulnerable",
-   "producto": "temurin",
+   "producto": "Eclipse Temurin JDK",
+   "clave": "Eclipse Temurin JDK@17.0.9",
    "prueba": "eclipse:temurin no existe; versión con +9",
    "pares": [
     "oracle:openjdk"
@@ -5426,7 +5513,8 @@
    "version": "6.3.5",
    "proveedor": "Palo Alto Networks",
    "tipo": "sano",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.3.5",
    "prueba": "Sano en lo preciso",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -5450,7 +5538,8 @@
    "version": "156.0.8079.100",
    "proveedor": "Google LLC",
    "tipo": "vulnerable",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@156.0.8079.100",
    "prueba": "KEV de esta semana; volumen alto obliga a agrupar",
    "pares": [
     "google:chrome"
@@ -6059,7 +6148,8 @@
    "version": "22.11.0",
    "proveedor": "Node.js Foundation",
    "tipo": "vulnerable",
-   "producto": "nodejs",
+   "producto": "Node.js",
+   "clave": "Node.js@22.11.0",
    "prueba": "Doce versiones conviviendo; KEV de Brotli se empareja por ID",
    "pares": [
     "nodejs:node.js"
@@ -6164,7 +6254,8 @@
    "version": "3.13.9",
    "proveedor": "Python Software Foundation",
    "tipo": "vulnerable",
-   "producto": "python",
+   "producto": "Python",
+   "clave": "Python@3.13.9",
    "prueba": "Vulnerable sin KEV",
    "pares": [
     "python:python"
@@ -6259,7 +6350,8 @@
    "version": "3.0.21",
    "proveedor": "VideoLAN",
    "tipo": "sano",
-   "producto": "vlc",
+   "producto": "VLC media player",
+   "clave": "VLC media player@3.0.21",
    "prueba": "Sano",
    "pares": [
     "videolan:vlc_media_player"
@@ -6357,7 +6449,8 @@
    "version": "21.0.5+11",
    "proveedor": "Eclipse Adoptium",
    "tipo": "sano",
-   "producto": "temurin",
+   "producto": "Eclipse Temurin JDK",
+   "clave": "Eclipse Temurin JDK@21.0.5",
    "prueba": "Sano",
    "pares": [
     "oracle:openjdk"
@@ -6422,7 +6515,8 @@
    "version": "2.45.1.windows.1",
    "proveedor": "The Git Development Community",
    "tipo": "vulnerable",
-   "producto": "git",
+   "producto": "Git",
+   "clave": "Git@2.45.1",
    "prueba": "Sufijo .windows.N que hay que limpiar",
    "pares": [
     "git-scm:git"
@@ -6449,7 +6543,8 @@
    "version": "6.3.5",
    "proveedor": "Palo Alto Networks",
    "tipo": "sano",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.3.5",
    "prueba": "Sano en lo preciso",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -6473,7 +6568,8 @@
    "version": "157.0.8103.78",
    "proveedor": "Google LLC",
    "tipo": "sano",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.78",
    "prueba": "Sano en lo preciso, con 13 no precisas",
    "pares": [
     "google:chrome"
@@ -6530,7 +6626,8 @@
    "version": "156.0.1",
    "proveedor": "Mozilla",
    "tipo": "vulnerable",
-   "producto": "firefox",
+   "producto": "Mozilla Firefox",
+   "clave": "Mozilla Firefox@156.0.1",
    "prueba": "Versión en el nombre y en el campo",
    "pares": [
     "mozilla:firefox"
@@ -6744,7 +6841,8 @@
    "version": "22.12.0",
    "proveedor": "Node.js Foundation",
    "tipo": "vulnerable",
-   "producto": "nodejs",
+   "producto": "Node.js",
+   "clave": "Node.js@22.12.0",
    "prueba": "Doce versiones conviviendo; KEV de Brotli se empareja por ID",
    "pares": [
     "nodejs:node.js"
@@ -6805,15 +6903,16 @@
    "version": "8.9.6.4",
    "proveedor": "Notepad++ Team",
    "tipo": "sano",
-   "producto": "notepadpp",
+   "producto": "Notepad++",
+   "clave": "Notepad++@8.9.6.4",
    "prueba": "Sano, versión de cuatro componentes",
    "pares": [
-    "notepad-plus-plus:notepad++"
+    "notepad-plus-plus:notepad\\+\\+"
    ],
    "version_comparable": "8.9.6.4",
    "cves": [],
    "cves_por_par": {
-    "notepad-plus-plus:notepad++": []
+    "notepad-plus-plus:notepad\\+\\+": []
    },
    "kev": [],
    "no_precisas": [],
@@ -6859,7 +6958,8 @@
    "version": "3.13.9",
    "proveedor": "Python Software Foundation",
    "tipo": "vulnerable",
-   "producto": "python",
+   "producto": "Python",
+   "clave": "Python@3.13.9",
    "prueba": "Vulnerable sin KEV",
    "pares": [
     "python:python"
@@ -6965,7 +7065,8 @@
    "version": "26.03",
    "proveedor": "Igor Pavlov",
    "tipo": "sano",
-   "producto": "7zip",
+   "producto": "7-Zip",
+   "clave": "7-Zip@26.03",
    "prueba": "Sano",
    "pares": [
     "7-zip:7-zip"
@@ -6997,7 +7098,8 @@
    "version": "25.001.20531",
    "proveedor": "Adobe Inc.",
    "tipo": "vulnerable",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@25.001.20531",
    "prueba": "KEV en un lector de PDF",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -7241,7 +7343,8 @@
    "version": "4.62.0",
    "proveedor": "Docker Inc.",
    "tipo": "vulnerable",
-   "producto": "docker_desktop",
+   "producto": "Docker Desktop",
+   "clave": "Docker Desktop@4.62.0",
    "prueba": "Solo el segundo par la encuentra",
    "pares": [
     "docker:desktop",
@@ -7314,7 +7417,8 @@
    "version": "6.3.5",
    "proveedor": "Palo Alto Networks",
    "tipo": "sano",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.3.5",
    "prueba": "Sano en lo preciso",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -7338,7 +7442,8 @@
    "version": "157.0.8103.78",
    "proveedor": "Google LLC",
    "tipo": "sano",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.78",
    "prueba": "Sano en lo preciso, con 13 no precisas",
    "pares": [
     "google:chrome"
@@ -7384,7 +7489,8 @@
    "version": "1.36.3",
    "proveedor": "MongoDB Inc.",
    "tipo": "vulnerable",
-   "producto": "compass",
+   "producto": "MongoDB Compass",
+   "clave": "MongoDB Compass@1.36.3",
    "prueba": "Una CVE con versión exacta, no con rango",
    "pares": [
     "mongodb:compass"
@@ -7426,7 +7532,8 @@
    "version": "20.8.0",
    "proveedor": "Node.js Foundation",
    "tipo": "vulnerable",
-   "producto": "nodejs",
+   "producto": "Node.js",
+   "clave": "Node.js@20.8.0",
    "prueba": "Doce versiones conviviendo; KEV de Brotli se empareja por ID",
    "pares": [
     "nodejs:node.js"
@@ -7496,10 +7603,11 @@
    "version": "8.8.8",
    "proveedor": "Notepad++ Team",
    "tipo": "vulnerable",
-   "producto": "notepadpp",
+   "producto": "Notepad++",
+   "clave": "Notepad++@8.8.8",
    "prueba": "KEV; CPE con \\+\\+ escapado",
    "pares": [
-    "notepad-plus-plus:notepad++"
+    "notepad-plus-plus:notepad\\+\\+"
    ],
    "version_comparable": "8.8.8",
    "cves": [
@@ -7511,7 +7619,7 @@
     "CVE-2026-52885"
    ],
    "cves_por_par": {
-    "notepad-plus-plus:notepad++": [
+    "notepad-plus-plus:notepad\\+\\+": [
      "CVE-2025-15556",
      "CVE-2026-25926",
      "CVE-2026-48770",
@@ -7588,7 +7696,8 @@
    "version": "26.03",
    "proveedor": "Igor Pavlov",
    "tipo": "sano",
-   "producto": "7zip",
+   "producto": "7-Zip",
+   "clave": "7-Zip@26.03",
    "prueba": "Sano",
    "pares": [
     "7-zip:7-zip"
@@ -7620,7 +7729,8 @@
    "version": "26.002.21901",
    "proveedor": "Adobe Systems Incorporated",
    "tipo": "sano",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@26.002.21901",
    "prueba": "Sano, con nombre distinto del mismo producto",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -7696,7 +7806,8 @@
    "version": "17.0.9+9",
    "proveedor": "Eclipse Adoptium",
    "tipo": "vulnerable",
-   "producto": "temurin",
+   "producto": "Eclipse Temurin JDK",
+   "clave": "Eclipse Temurin JDK@17.0.9",
    "prueba": "eclipse:temurin no existe; versión con +9",
    "pares": [
     "oracle:openjdk"
@@ -7765,7 +7876,8 @@
    "version": "2.51.0",
    "proveedor": "The Git Development Community",
    "tipo": "sano",
-   "producto": "git",
+   "producto": "Git",
+   "clave": "Git@2.51.0",
    "prueba": "Sano",
    "pares": [
     "git-scm:git"
@@ -7786,7 +7898,8 @@
    "version": "6.0.14",
    "proveedor": "Palo Alto Networks",
    "tipo": "vulnerable",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.0.14",
    "prueba": "El par bueno no es globalprotect_app",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -7831,7 +7944,8 @@
    "version": "157.0.8103.78",
    "proveedor": "Google LLC",
    "tipo": "sano",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.78",
    "prueba": "Sano en lo preciso, con 13 no precisas",
    "pares": [
     "google:chrome"
@@ -7888,7 +8002,8 @@
    "version": "1.49.7",
    "proveedor": "MongoDB Inc.",
    "tipo": "sano",
-   "producto": "compass",
+   "producto": "MongoDB Compass",
+   "clave": "MongoDB Compass@1.49.7",
    "prueba": "Sano",
    "pares": [
     "mongodb:compass"
@@ -7931,7 +8046,8 @@
    "version": "20.18.0",
    "proveedor": "Node.js Foundation",
    "tipo": "vulnerable",
-   "producto": "nodejs",
+   "producto": "Node.js",
+   "clave": "Node.js@20.18.0",
    "prueba": "Doce versiones conviviendo; KEV de Brotli se empareja por ID",
    "pares": [
     "nodejs:node.js"
@@ -8048,7 +8164,8 @@
    "version": "0.84",
    "proveedor": "Simon Tatham",
    "tipo": "sano",
-   "producto": "putty",
+   "producto": "PuTTY",
+   "clave": "PuTTY@0.84",
    "prueba": "Sano",
    "pares": [
     "putty:putty"
@@ -8069,7 +8186,8 @@
    "version": "3.13.9",
    "proveedor": "Python Software Foundation",
    "tipo": "vulnerable",
-   "producto": "python",
+   "producto": "Python",
+   "clave": "Python@3.13.9",
    "prueba": "Vulnerable sin KEV",
    "pares": [
     "python:python"
@@ -8142,7 +8260,8 @@
    "version": "3.0.21",
    "proveedor": "VideoLAN",
    "tipo": "sano",
-   "producto": "vlc",
+   "producto": "VLC media player",
+   "clave": "VLC media player@3.0.21",
    "prueba": "Sano",
    "pares": [
     "videolan:vlc_media_player"
@@ -8229,7 +8348,8 @@
    "version": "4.58.0",
    "proveedor": "Docker Inc.",
    "tipo": "vulnerable",
-   "producto": "docker_desktop",
+   "producto": "Docker Desktop",
+   "clave": "Docker Desktop@4.58.0",
    "prueba": "Dos pares",
    "pares": [
     "docker:desktop",
@@ -8294,7 +8414,8 @@
    "version": "2.45.4",
    "proveedor": "The Git Development Community",
    "tipo": "sano",
-   "producto": "git",
+   "producto": "Git",
+   "clave": "Git@2.45.4",
    "prueba": "Frontera excluyente de la KEV",
    "pares": [
     "git-scm:git"
@@ -8315,7 +8436,8 @@
    "version": "157.0.8103.60",
    "proveedor": "Google LLC",
    "tipo": "vulnerable",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.60",
    "prueba": "Inmediato por CVSS, sin KEV",
    "pares": [
     "google:chrome"
@@ -8493,7 +8615,8 @@
    "version": "156.0.1",
    "proveedor": "Mozilla",
    "tipo": "vulnerable",
-   "producto": "firefox",
+   "producto": "Mozilla Firefox",
+   "clave": "Mozilla Firefox@156.0.1",
    "prueba": "Versión en el nombre y en el campo",
    "pares": [
     "mozilla:firefox"
@@ -8696,7 +8819,8 @@
    "version": "20.18.0",
    "proveedor": "Node.js Foundation",
    "tipo": "vulnerable",
-   "producto": "nodejs",
+   "producto": "Node.js",
+   "clave": "Node.js@20.18.0",
    "prueba": "Doce versiones conviviendo; KEV de Brotli se empareja por ID",
    "pares": [
     "nodejs:node.js"
@@ -8747,10 +8871,11 @@
    "version": "8.8.8",
    "proveedor": "Notepad++ Team",
    "tipo": "vulnerable",
-   "producto": "notepadpp",
+   "producto": "Notepad++",
+   "clave": "Notepad++@8.8.8",
    "prueba": "KEV; CPE con \\+\\+ escapado",
    "pares": [
-    "notepad-plus-plus:notepad++"
+    "notepad-plus-plus:notepad\\+\\+"
    ],
    "version_comparable": "8.8.8",
    "cves": [
@@ -8762,7 +8887,7 @@
     "CVE-2026-52885"
    ],
    "cves_por_par": {
-    "notepad-plus-plus:notepad++": [
+    "notepad-plus-plus:notepad\\+\\+": [
      "CVE-2025-15556",
      "CVE-2026-25926",
      "CVE-2026-48770",
@@ -8839,7 +8964,8 @@
    "version": "26.03",
    "proveedor": "Igor Pavlov",
    "tipo": "sano",
-   "producto": "7zip",
+   "producto": "7-Zip",
+   "clave": "7-Zip@26.03",
    "prueba": "Sano",
    "pares": [
     "7-zip:7-zip"
@@ -8860,7 +8986,8 @@
    "version": "25.001.20531",
    "proveedor": "Adobe Inc.",
    "tipo": "vulnerable",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@25.001.20531",
    "prueba": "KEV en un lector de PDF",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -9093,7 +9220,8 @@
    "version": "4.58.0",
    "proveedor": "Docker Inc.",
    "tipo": "vulnerable",
-   "producto": "docker_desktop",
+   "producto": "Docker Desktop",
+   "clave": "Docker Desktop@4.58.0",
    "prueba": "Dos pares",
    "pares": [
     "docker:desktop",
@@ -9125,7 +9253,8 @@
    "version": "17.0.9+9",
    "proveedor": "Eclipse Adoptium",
    "tipo": "vulnerable",
-   "producto": "temurin",
+   "producto": "Eclipse Temurin JDK",
+   "clave": "Eclipse Temurin JDK@17.0.9",
    "prueba": "eclipse:temurin no existe; versión con +9",
    "pares": [
     "oracle:openjdk"
@@ -9183,7 +9312,8 @@
    "version": "2.45.1.windows.1",
    "proveedor": "The Git Development Community",
    "tipo": "vulnerable",
-   "producto": "git",
+   "producto": "Git",
+   "clave": "Git@2.45.1",
    "prueba": "Sufijo .windows.N que hay que limpiar",
    "pares": [
     "git-scm:git"
@@ -9210,7 +9340,8 @@
    "version": "6.3.5",
    "proveedor": "Palo Alto Networks",
    "tipo": "sano",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.3.5",
    "prueba": "Sano en lo preciso",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -9234,7 +9365,8 @@
    "version": "157.0.8103.60",
    "proveedor": "Google LLC",
    "tipo": "vulnerable",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.60",
    "prueba": "Inmediato por CVSS, sin KEV",
    "pares": [
     "google:chrome"
@@ -9423,7 +9555,8 @@
    "version": "22.11.0",
    "proveedor": "Node.js Foundation",
    "tipo": "vulnerable",
-   "producto": "nodejs",
+   "producto": "Node.js",
+   "clave": "Node.js@22.11.0",
    "prueba": "Doce versiones conviviendo; KEV de Brotli se empareja por ID",
    "pares": [
     "nodejs:node.js"
@@ -9517,7 +9650,8 @@
    "version": "0.81",
    "proveedor": "Simon Tatham",
    "tipo": "vulnerable",
-   "producto": "putty",
+   "producto": "PuTTY",
+   "clave": "PuTTY@0.81",
    "prueba": "Vulnerable de baja gravedad: informativo",
    "pares": [
     "putty:putty"
@@ -9568,7 +9702,8 @@
    "version": "24.08",
    "proveedor": "Igor Pavlov",
    "tipo": "vulnerable",
-   "producto": "7zip",
+   "producto": "7-Zip",
+   "clave": "7-Zip@24.08",
    "prueba": "Vulnerable con KEV",
    "pares": [
     "7-zip:7-zip"
@@ -9687,7 +9822,7 @@
    "version": "28.1.1, build 4eba377",
    "proveedor": "Docker Inc.",
    "tipo": "cobertura",
-   "motivo": "version_no_comparable",
+   "motivo": "no_comparable",
    "explicacion": "Número de compilación como versión",
    "par_prohibido": null,
    "pares": [],
@@ -9701,7 +9836,8 @@
    "version": "4.62.0",
    "proveedor": "Docker Inc.",
    "tipo": "vulnerable",
-   "producto": "docker_desktop",
+   "producto": "Docker Desktop",
+   "clave": "Docker Desktop@4.62.0",
    "prueba": "Solo el segundo par la encuentra",
    "pares": [
     "docker:desktop",
@@ -9730,7 +9866,8 @@
    "version": "17.0.9+9",
    "proveedor": "Eclipse Adoptium",
    "tipo": "vulnerable",
-   "producto": "temurin",
+   "producto": "Eclipse Temurin JDK",
+   "clave": "Eclipse Temurin JDK@17.0.9",
    "prueba": "eclipse:temurin no existe; versión con +9",
    "pares": [
     "oracle:openjdk"
@@ -9821,7 +9958,8 @@
    "version": "2.51.0",
    "proveedor": "The Git Development Community",
    "tipo": "sano",
-   "producto": "git",
+   "producto": "Git",
+   "clave": "Git@2.51.0",
    "prueba": "Sano",
    "pares": [
     "git-scm:git"
@@ -9842,7 +9980,8 @@
    "version": "157.0.8103.60",
    "proveedor": "Google LLC",
    "tipo": "vulnerable",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.60",
    "prueba": "Inmediato por CVSS, sin KEV",
    "pares": [
     "google:chrome"
@@ -10056,7 +10195,8 @@
    "version": "24.22.0",
    "proveedor": "Node.js Foundation",
    "tipo": "vulnerable",
-   "producto": "nodejs",
+   "producto": "Node.js",
+   "clave": "Node.js@24.22.0",
    "prueba": "Doce versiones conviviendo; KEV de Brotli se empareja por ID",
    "pares": [
     "nodejs:node.js"
@@ -10116,7 +10256,8 @@
    "version": "3.12.10150.0",
    "proveedor": "Python Software Foundation",
    "tipo": "vulnerable",
-   "producto": "python",
+   "producto": "Python",
+   "clave": "Python@3.12.10",
    "prueba": "Versión del instalador distinta; la real viene en el nombre",
    "pares": [
     "python:python"
@@ -10196,7 +10337,8 @@
    "version": "6.23",
    "proveedor": "win.rar GmbH",
    "tipo": "vulnerable",
-   "producto": "winrar",
+   "producto": "WinRAR",
+   "clave": "WinRAR@6.23",
    "prueba": "Frontera excluyente: ya no tiene CVE-2023-38831",
    "pares": [
     "rarlab:winrar"
@@ -10232,7 +10374,8 @@
    "version": "26.03",
    "proveedor": "Igor Pavlov",
    "tipo": "sano",
-   "producto": "7zip",
+   "producto": "7-Zip",
+   "clave": "7-Zip@26.03",
    "prueba": "Sano",
    "pares": [
     "7-zip:7-zip"
@@ -10319,7 +10462,8 @@
    "version": "4.62.0",
    "proveedor": "Docker Inc.",
    "tipo": "vulnerable",
-   "producto": "docker_desktop",
+   "producto": "Docker Desktop",
+   "clave": "Docker Desktop@4.62.0",
    "prueba": "Solo el segundo par la encuentra",
    "pares": [
     "docker:desktop",
@@ -10414,7 +10558,8 @@
    "version": "2.51.0",
    "proveedor": "The Git Development Community",
    "tipo": "sano",
-   "producto": "git",
+   "producto": "Git",
+   "clave": "Git@2.51.0",
    "prueba": "Sano",
    "pares": [
     "git-scm:git"
@@ -10435,7 +10580,8 @@
    "version": "157.0.8103.60",
    "proveedor": "Google LLC",
    "tipo": "vulnerable",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.60",
    "prueba": "Inmediato por CVSS, sin KEV",
    "pares": [
     "google:chrome"
@@ -10602,7 +10748,8 @@
    "version": "20.11.1",
    "proveedor": "Node.js Foundation",
    "tipo": "vulnerable",
-   "producto": "nodejs",
+   "producto": "Node.js",
+   "clave": "Node.js@20.11.1",
    "prueba": "Doce versiones conviviendo; KEV de Brotli se empareja por ID",
    "pares": [
     "nodejs:node.js"
@@ -10688,7 +10835,8 @@
    "version": "3.12.10150.0",
    "proveedor": "Python Software Foundation",
    "tipo": "vulnerable",
-   "producto": "python",
+   "producto": "Python",
+   "clave": "Python@3.12.10",
    "prueba": "Versión del instalador distinta; la real viene en el nombre",
    "pares": [
     "python:python"
@@ -10746,7 +10894,8 @@
    "version": "15.70.0",
    "proveedor": "TeamViewer Germany GmbH",
    "tipo": "sano",
-   "producto": "teamviewer",
+   "producto": "TeamViewer",
+   "clave": "TeamViewer@15.70.0",
    "prueba": "Sano",
    "pares": [
     "teamviewer:teamviewer"
@@ -10800,7 +10949,8 @@
    "version": "3.0.18",
    "proveedor": "VideoLAN",
    "tipo": "vulnerable",
-   "producto": "vlc",
+   "producto": "VLC media player",
+   "clave": "VLC media player@3.0.18",
    "prueba": "Inmediato por CVSS 9.8",
    "pares": [
     "videolan:vlc_media_player"
@@ -10829,7 +10979,8 @@
    "version": "26.03",
    "proveedor": "Igor Pavlov",
    "tipo": "sano",
-   "producto": "7zip",
+   "producto": "7-Zip",
+   "clave": "7-Zip@26.03",
    "prueba": "Sano",
    "pares": [
     "7-zip:7-zip"
@@ -10949,7 +11100,8 @@
    "version": "17.0.10+7",
    "proveedor": "Eclipse Adoptium",
    "tipo": "sano",
-   "producto": "temurin",
+   "producto": "Eclipse Temurin JDK",
+   "clave": "Eclipse Temurin JDK@17.0.10",
    "prueba": "Frontera excluyente",
    "pares": [
     "oracle:openjdk"
@@ -10970,7 +11122,8 @@
    "version": "2.45.4",
    "proveedor": "The Git Development Community",
    "tipo": "sano",
-   "producto": "git",
+   "producto": "Git",
+   "clave": "Git@2.45.4",
    "prueba": "Frontera excluyente de la KEV",
    "pares": [
     "git-scm:git"
@@ -10991,7 +11144,8 @@
    "version": "6.3.5",
    "proveedor": "Palo Alto Networks",
    "tipo": "sano",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.3.5",
    "prueba": "Sano en lo preciso",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -11015,7 +11169,8 @@
    "version": "157.0.8103.78",
    "proveedor": "Google LLC",
    "tipo": "sano",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.78",
    "prueba": "Sano en lo preciso, con 13 no precisas",
    "pares": [
     "google:chrome"
@@ -11083,7 +11238,8 @@
    "version": "157.0",
    "proveedor": "Mozilla",
    "tipo": "vulnerable",
-   "producto": "firefox",
+   "producto": "Mozilla Firefox",
+   "clave": "Mozilla Firefox@157.0",
    "prueba": "Una CVE crítica reciente",
    "pares": [
     "mozilla:firefox"
@@ -11136,7 +11292,8 @@
    "version": "22.20.0",
    "proveedor": "Node.js Foundation",
    "tipo": "vulnerable",
-   "producto": "nodejs",
+   "producto": "Node.js",
+   "clave": "Node.js@22.20.0",
    "prueba": "Doce versiones conviviendo; KEV de Brotli se empareja por ID",
    "pares": [
     "nodejs:node.js"
@@ -11228,7 +11385,8 @@
    "version": "3.12.10150.0",
    "proveedor": "Python Software Foundation",
    "tipo": "vulnerable",
-   "producto": "python",
+   "producto": "Python",
+   "clave": "Python@3.12.10",
    "prueba": "Versión del instalador distinta; la real viene en el nombre",
    "pares": [
     "python:python"
@@ -11297,7 +11455,8 @@
    "version": "26.03",
    "proveedor": "Igor Pavlov",
    "tipo": "sano",
-   "producto": "7zip",
+   "producto": "7-Zip",
+   "clave": "7-Zip@26.03",
    "prueba": "Sano",
    "pares": [
     "7-zip:7-zip"
@@ -11318,7 +11477,8 @@
    "version": "25.001.20531",
    "proveedor": "Adobe Inc.",
    "tipo": "vulnerable",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@25.001.20531",
    "prueba": "KEV en un lector de PDF",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -11518,7 +11678,8 @@
    "version": "21.0.5+11",
    "proveedor": "Eclipse Adoptium",
    "tipo": "sano",
-   "producto": "temurin",
+   "producto": "Eclipse Temurin JDK",
+   "clave": "Eclipse Temurin JDK@21.0.5",
    "prueba": "Sano",
    "pares": [
     "oracle:openjdk"
@@ -11594,7 +11755,8 @@
    "version": "6.0.14",
    "proveedor": "Palo Alto Networks",
    "tipo": "vulnerable",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.0.14",
    "prueba": "El par bueno no es globalprotect_app",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -11639,7 +11801,8 @@
    "version": "157.0.8103.78",
    "proveedor": "Google LLC",
    "tipo": "sano",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.78",
    "prueba": "Sano en lo preciso, con 13 no precisas",
    "pares": [
     "google:chrome"
@@ -11707,7 +11870,8 @@
    "version": "157.0",
    "proveedor": "Mozilla",
    "tipo": "vulnerable",
-   "producto": "firefox",
+   "producto": "Mozilla Firefox",
+   "clave": "Mozilla Firefox@157.0",
    "prueba": "Una CVE crítica reciente",
    "pares": [
     "mozilla:firefox"
@@ -11760,7 +11924,8 @@
    "version": "22.20.0",
    "proveedor": "Node.js Foundation",
    "tipo": "vulnerable",
-   "producto": "nodejs",
+   "producto": "Node.js",
+   "clave": "Node.js@22.20.0",
    "prueba": "Doce versiones conviviendo; KEV de Brotli se empareja por ID",
    "pares": [
     "nodejs:node.js"
@@ -11896,7 +12061,8 @@
    "version": "6.22",
    "proveedor": "win.rar GmbH",
    "tipo": "vulnerable",
-   "producto": "winrar",
+   "producto": "WinRAR",
+   "clave": "WinRAR@6.22",
    "prueba": "Vulnerable con explotación y ransomware",
    "pares": [
     "rarlab:winrar"
@@ -12036,7 +12202,8 @@
    "version": "2.51.0",
    "proveedor": "The Git Development Community",
    "tipo": "sano",
-   "producto": "git",
+   "producto": "Git",
+   "clave": "Git@2.51.0",
    "prueba": "Sano",
    "pares": [
     "git-scm:git"
@@ -12057,7 +12224,8 @@
    "version": "6.0.14",
    "proveedor": "Palo Alto Networks",
    "tipo": "vulnerable",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.0.14",
    "prueba": "El par bueno no es globalprotect_app",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -12102,7 +12270,8 @@
    "version": "157.0.8103.78",
    "proveedor": "Google LLC",
    "tipo": "sano",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.78",
    "prueba": "Sano en lo preciso, con 13 no precisas",
    "pares": [
     "google:chrome"
@@ -12148,7 +12317,8 @@
    "version": "18.20.4",
    "proveedor": "Node.js Foundation",
    "tipo": "vulnerable",
-   "producto": "nodejs",
+   "producto": "Node.js",
+   "clave": "Node.js@18.20.4",
    "prueba": "Doce versiones conviviendo; KEV de Brotli se empareja por ID",
    "pares": [
     "nodejs:node.js"
@@ -12295,7 +12465,8 @@
    "version": "6.23",
    "proveedor": "win.rar GmbH",
    "tipo": "vulnerable",
-   "producto": "winrar",
+   "producto": "WinRAR",
+   "clave": "WinRAR@6.23",
    "prueba": "Frontera excluyente: ya no tiene CVE-2023-38831",
    "pares": [
     "rarlab:winrar"
@@ -12331,7 +12502,8 @@
    "version": "26.03",
    "proveedor": "Igor Pavlov",
    "tipo": "sano",
-   "producto": "7zip",
+   "producto": "7-Zip",
+   "clave": "7-Zip@26.03",
    "prueba": "Sano",
    "pares": [
     "7-zip:7-zip"
@@ -12451,7 +12623,8 @@
    "version": "6.3.5",
    "proveedor": "Palo Alto Networks",
    "tipo": "sano",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.3.5",
    "prueba": "Sano en lo preciso",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -12475,7 +12648,8 @@
    "version": "157.0.8103.60",
    "proveedor": "Google LLC",
    "tipo": "vulnerable",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.60",
    "prueba": "Inmediato por CVSS, sin KEV",
    "pares": [
     "google:chrome"
@@ -12700,7 +12874,8 @@
    "version": "15.70.0",
    "proveedor": "TeamViewer Germany GmbH",
    "tipo": "sano",
-   "producto": "teamviewer",
+   "producto": "TeamViewer",
+   "clave": "TeamViewer@15.70.0",
    "prueba": "Sano",
    "pares": [
     "teamviewer:teamviewer"
@@ -12743,7 +12918,8 @@
    "version": "3.0.21",
    "proveedor": "VideoLAN",
    "tipo": "sano",
-   "producto": "vlc",
+   "producto": "VLC media player",
+   "clave": "VLC media player@3.0.21",
    "prueba": "Sano",
    "pares": [
     "videolan:vlc_media_player"
@@ -12775,7 +12951,8 @@
    "version": "26.002.21901",
    "proveedor": "Adobe Systems Incorporated",
    "tipo": "sano",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@26.002.21901",
    "prueba": "Sano, con nombre distinto del mismo producto",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -12895,7 +13072,8 @@
    "version": "156.0.8079.100",
    "proveedor": "Google LLC",
    "tipo": "vulnerable",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@156.0.8079.100",
    "prueba": "KEV de esta semana; volumen alto obliga a agrupar",
    "pares": [
     "google:chrome"
@@ -13537,7 +13715,8 @@
    "version": "0.84",
    "proveedor": "Simon Tatham",
    "tipo": "sano",
-   "producto": "putty",
+   "producto": "PuTTY",
+   "clave": "PuTTY@0.84",
    "prueba": "Sano",
    "pares": [
     "putty:putty"
@@ -13591,7 +13770,8 @@
    "version": "25.001.20531",
    "proveedor": "Adobe Inc.",
    "tipo": "vulnerable",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@25.001.20531",
    "prueba": "KEV en un lector de PDF",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -13849,7 +14029,8 @@
    "version": "6.3.5",
    "proveedor": "Palo Alto Networks",
    "tipo": "sano",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.3.5",
    "prueba": "Sano en lo preciso",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -13873,7 +14054,8 @@
    "version": "156.0.8079.100",
    "proveedor": "Google LLC",
    "tipo": "vulnerable",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@156.0.8079.100",
    "prueba": "KEV de esta semana; volumen alto obliga a agrupar",
    "pares": [
     "google:chrome"
@@ -14570,7 +14752,8 @@
    "version": "15.70.0",
    "proveedor": "TeamViewer Germany GmbH",
    "tipo": "sano",
-   "producto": "teamviewer",
+   "producto": "TeamViewer",
+   "clave": "TeamViewer@15.70.0",
    "prueba": "Sano",
    "pares": [
     "teamviewer:teamviewer"
@@ -14602,7 +14785,8 @@
    "version": "7.13",
    "proveedor": "win.rar GmbH",
    "tipo": "sano",
-   "producto": "winrar",
+   "producto": "WinRAR",
+   "clave": "WinRAR@7.13",
    "prueba": "Sano, justo en el arreglo de CVE-2025-8088",
    "pares": [
     "rarlab:winrar"
@@ -14623,7 +14807,8 @@
    "version": "26.03",
    "proveedor": "Igor Pavlov",
    "tipo": "sano",
-   "producto": "7zip",
+   "producto": "7-Zip",
+   "clave": "7-Zip@26.03",
    "prueba": "Sano",
    "pares": [
     "7-zip:7-zip"
@@ -14644,7 +14829,8 @@
    "version": "26.002.21901",
    "proveedor": "Adobe Systems Incorporated",
    "tipo": "sano",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@26.002.21901",
    "prueba": "Sano, con nombre distinto del mismo producto",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -14742,7 +14928,8 @@
    "version": "6.0.14",
    "proveedor": "Palo Alto Networks",
    "tipo": "vulnerable",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.0.14",
    "prueba": "El par bueno no es globalprotect_app",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -14787,7 +14974,8 @@
    "version": "157.0.8103.60",
    "proveedor": "Google LLC",
    "tipo": "vulnerable",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.60",
    "prueba": "Inmediato por CVSS, sin KEV",
    "pares": [
     "google:chrome"
@@ -14954,7 +15142,8 @@
    "version": "157.0",
    "proveedor": "Mozilla",
    "tipo": "vulnerable",
-   "producto": "firefox",
+   "producto": "Mozilla Firefox",
+   "clave": "Mozilla Firefox@157.0",
    "prueba": "Una CVE crítica reciente",
    "pares": [
     "mozilla:firefox"
@@ -15040,7 +15229,8 @@
    "version": "0.84",
    "proveedor": "Simon Tatham",
    "tipo": "sano",
-   "producto": "putty",
+   "producto": "PuTTY",
+   "clave": "PuTTY@0.84",
    "prueba": "Sano",
    "pares": [
     "putty:putty"
@@ -15094,7 +15284,8 @@
    "version": "26.03",
    "proveedor": "Igor Pavlov",
    "tipo": "sano",
-   "producto": "7zip",
+   "producto": "7-Zip",
+   "clave": "7-Zip@26.03",
    "prueba": "Sano",
    "pares": [
     "7-zip:7-zip"
@@ -15247,7 +15438,8 @@
    "version": "157.0.8103.78",
    "proveedor": "Google LLC",
    "tipo": "sano",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.78",
    "prueba": "Sano en lo preciso, con 13 no precisas",
    "pares": [
     "google:chrome"
@@ -15304,15 +15496,16 @@
    "version": "8.9.6.4",
    "proveedor": "Notepad++ Team",
    "tipo": "sano",
-   "producto": "notepadpp",
+   "producto": "Notepad++",
+   "clave": "Notepad++@8.9.6.4",
    "prueba": "Sano, versión de cuatro componentes",
    "pares": [
-    "notepad-plus-plus:notepad++"
+    "notepad-plus-plus:notepad\\+\\+"
    ],
    "version_comparable": "8.9.6.4",
    "cves": [],
    "cves_por_par": {
-    "notepad-plus-plus:notepad++": []
+    "notepad-plus-plus:notepad\\+\\+": []
    },
    "kev": [],
    "no_precisas": [],
@@ -15358,7 +15551,8 @@
    "version": "14.7.1966",
    "proveedor": "TeamViewer Germany GmbH",
    "tipo": "vulnerable",
-   "producto": "teamviewer",
+   "producto": "TeamViewer",
+   "clave": "TeamViewer@14.7.1966",
    "prueba": "Un número después: sale de la KEV",
    "pares": [
     "teamviewer:teamviewer"
@@ -15415,7 +15609,8 @@
    "version": "3.0.18",
    "proveedor": "VideoLAN",
    "tipo": "vulnerable",
-   "producto": "vlc",
+   "producto": "VLC media player",
+   "clave": "VLC media player@3.0.18",
    "prueba": "Inmediato por CVSS 9.8",
    "pares": [
     "videolan:vlc_media_player"
@@ -15444,7 +15639,8 @@
    "version": "5.61",
    "proveedor": "win.rar GmbH",
    "tipo": "vulnerable",
-   "producto": "winrar",
+   "producto": "WinRAR",
+   "clave": "WinRAR@5.61",
    "prueba": "Frontera inclusiva: CVE-2018-20250 con versionEndIncluding 5.61",
    "pares": [
     "rarlab:winrar"
@@ -15492,7 +15688,8 @@
    "version": "26.03",
    "proveedor": "Igor Pavlov",
    "tipo": "sano",
-   "producto": "7zip",
+   "producto": "7-Zip",
+   "clave": "7-Zip@26.03",
    "prueba": "Sano",
    "pares": [
     "7-zip:7-zip"
@@ -15524,7 +15721,8 @@
    "version": "26.002.21901",
    "proveedor": "Adobe Systems Incorporated",
    "tipo": "sano",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@26.002.21901",
    "prueba": "Sano, con nombre distinto del mismo producto",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -15622,7 +15820,8 @@
    "version": "156.0.8079.100",
    "proveedor": "Google LLC",
    "tipo": "vulnerable",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@156.0.8079.100",
    "prueba": "KEV de esta semana; volumen alto obliga a agrupar",
    "pares": [
     "google:chrome"
@@ -16297,7 +16496,8 @@
    "version": "7.13",
    "proveedor": "win.rar GmbH",
    "tipo": "sano",
-   "producto": "winrar",
+   "producto": "WinRAR",
+   "clave": "WinRAR@7.13",
    "prueba": "Sano, justo en el arreglo de CVE-2025-8088",
    "pares": [
     "rarlab:winrar"
@@ -16318,7 +16518,8 @@
    "version": "24.09",
    "proveedor": "Igor Pavlov",
    "tipo": "vulnerable",
-   "producto": "7zip",
+   "producto": "7-Zip",
+   "clave": "7-Zip@24.09",
    "prueba": "Arregla la KEV pero tiene una CVE más que 24.08",
    "pares": [
     "7-zip:7-zip"
@@ -16382,7 +16583,8 @@
    "version": "25.001.20531",
    "proveedor": "Adobe Inc.",
    "tipo": "vulnerable",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@25.001.20531",
    "prueba": "KEV en un lector de PDF",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -16659,7 +16861,8 @@
    "version": "157.0.8103.60",
    "proveedor": "Google LLC",
    "tipo": "vulnerable",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.60",
    "prueba": "Inmediato por CVSS, sin KEV",
    "pares": [
     "google:chrome"
@@ -16837,10 +17040,11 @@
    "version": "8.8.8",
    "proveedor": "Notepad++ Team",
    "tipo": "vulnerable",
-   "producto": "notepadpp",
+   "producto": "Notepad++",
+   "clave": "Notepad++@8.8.8",
    "prueba": "KEV; CPE con \\+\\+ escapado",
    "pares": [
-    "notepad-plus-plus:notepad++"
+    "notepad-plus-plus:notepad\\+\\+"
    ],
    "version_comparable": "8.8.8",
    "cves": [
@@ -16852,7 +17056,7 @@
     "CVE-2026-52885"
    ],
    "cves_por_par": {
-    "notepad-plus-plus:notepad++": [
+    "notepad-plus-plus:notepad\\+\\+": [
      "CVE-2025-15556",
      "CVE-2026-25926",
      "CVE-2026-48770",
@@ -16940,7 +17144,8 @@
    "version": "15.70.0",
    "proveedor": "TeamViewer Germany GmbH",
    "tipo": "sano",
-   "producto": "teamviewer",
+   "producto": "TeamViewer",
+   "clave": "TeamViewer@15.70.0",
    "prueba": "Sano",
    "pares": [
     "teamviewer:teamviewer"
@@ -16994,7 +17199,8 @@
    "version": "3.0.21",
    "proveedor": "VideoLAN",
    "tipo": "sano",
-   "producto": "vlc",
+   "producto": "VLC media player",
+   "clave": "VLC media player@3.0.21",
    "prueba": "Sano",
    "pares": [
     "videolan:vlc_media_player"
@@ -17015,7 +17221,8 @@
    "version": "24.09",
    "proveedor": "Igor Pavlov",
    "tipo": "vulnerable",
-   "producto": "7zip",
+   "producto": "7-Zip",
+   "clave": "7-Zip@24.09",
    "prueba": "Arregla la KEV pero tiene una CVE más que 24.08",
    "pares": [
     "7-zip:7-zip"
@@ -17068,7 +17275,8 @@
    "version": "26.002.21901",
    "proveedor": "Adobe Systems Incorporated",
    "tipo": "sano",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@26.002.21901",
    "prueba": "Sano, con nombre distinto del mismo producto",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -17166,7 +17374,8 @@
    "version": "6.0.14",
    "proveedor": "Palo Alto Networks",
    "tipo": "vulnerable",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.0.14",
    "prueba": "El par bueno no es globalprotect_app",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -17211,7 +17420,8 @@
    "version": "156.0.8079.100",
    "proveedor": "Google LLC",
    "tipo": "vulnerable",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@156.0.8079.100",
    "prueba": "KEV de esta semana; volumen alto obliga a agrupar",
    "pares": [
     "google:chrome"
@@ -17831,10 +18041,11 @@
    "version": "8.8.8",
    "proveedor": "Notepad++ Team",
    "tipo": "vulnerable",
-   "producto": "notepadpp",
+   "producto": "Notepad++",
+   "clave": "Notepad++@8.8.8",
    "prueba": "KEV; CPE con \\+\\+ escapado",
    "pares": [
-    "notepad-plus-plus:notepad++"
+    "notepad-plus-plus:notepad\\+\\+"
    ],
    "version_comparable": "8.8.8",
    "cves": [
@@ -17846,7 +18057,7 @@
     "CVE-2026-52885"
    ],
    "cves_por_par": {
-    "notepad-plus-plus:notepad++": [
+    "notepad-plus-plus:notepad\\+\\+": [
      "CVE-2025-15556",
      "CVE-2026-25926",
      "CVE-2026-48770",
@@ -17945,7 +18156,8 @@
    "version": "3.0.21",
    "proveedor": "VideoLAN",
    "tipo": "sano",
-   "producto": "vlc",
+   "producto": "VLC media player",
+   "clave": "VLC media player@3.0.21",
    "prueba": "Sano",
    "pares": [
     "videolan:vlc_media_player"
@@ -17966,7 +18178,8 @@
    "version": "24.08",
    "proveedor": "Igor Pavlov",
    "tipo": "vulnerable",
-   "producto": "7zip",
+   "producto": "7-Zip",
+   "clave": "7-Zip@24.08",
    "prueba": "Vulnerable con KEV",
    "pares": [
     "7-zip:7-zip"
@@ -18019,7 +18232,8 @@
    "version": "26.002.21901",
    "proveedor": "Adobe Systems Incorporated",
    "tipo": "sano",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@26.002.21901",
    "prueba": "Sano, con nombre distinto del mismo producto",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -18139,7 +18353,8 @@
    "version": "6.3.5",
    "proveedor": "Palo Alto Networks",
    "tipo": "sano",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.3.5",
    "prueba": "Sano en lo preciso",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -18163,7 +18378,8 @@
    "version": "157.0.8103.78",
    "proveedor": "Google LLC",
    "tipo": "sano",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.78",
    "prueba": "Sano en lo preciso, con 13 no precisas",
    "pares": [
     "google:chrome"
@@ -18242,7 +18458,8 @@
    "version": "157.0",
    "proveedor": "Mozilla",
    "tipo": "vulnerable",
-   "producto": "firefox",
+   "producto": "Mozilla Firefox",
+   "clave": "Mozilla Firefox@157.0",
    "prueba": "Una CVE crítica reciente",
    "pares": [
     "mozilla:firefox"
@@ -18306,15 +18523,16 @@
    "version": "8.9.6.4",
    "proveedor": "Notepad++ Team",
    "tipo": "sano",
-   "producto": "notepadpp",
+   "producto": "Notepad++",
+   "clave": "Notepad++@8.9.6.4",
    "prueba": "Sano, versión de cuatro componentes",
    "pares": [
-    "notepad-plus-plus:notepad++"
+    "notepad-plus-plus:notepad\\+\\+"
    ],
    "version_comparable": "8.9.6.4",
    "cves": [],
    "cves_por_par": {
-    "notepad-plus-plus:notepad++": []
+    "notepad-plus-plus:notepad\\+\\+": []
    },
    "kev": [],
    "no_precisas": [],
@@ -18382,7 +18600,8 @@
    "version": "15.70.0",
    "proveedor": "TeamViewer Germany GmbH",
    "tipo": "sano",
-   "producto": "teamviewer",
+   "producto": "TeamViewer",
+   "clave": "TeamViewer@15.70.0",
    "prueba": "Sano",
    "pares": [
     "teamviewer:teamviewer"
@@ -18425,7 +18644,8 @@
    "version": "7.12",
    "proveedor": "win.rar GmbH",
    "tipo": "vulnerable",
-   "producto": "winrar",
+   "producto": "WinRAR",
+   "clave": "WinRAR@7.12",
    "prueba": "Una sola CVE, explotada con ransomware",
    "pares": [
     "rarlab:winrar"
@@ -18452,7 +18672,8 @@
    "version": "25.001.20531",
    "proveedor": "Adobe Inc.",
    "tipo": "vulnerable",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@25.001.20531",
    "prueba": "KEV en un lector de PDF",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -18685,7 +18906,8 @@
    "version": "157.0.8103.60",
    "proveedor": "Google LLC",
    "tipo": "vulnerable",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.60",
    "prueba": "Inmediato por CVSS, sin KEV",
    "pares": [
     "google:chrome"
@@ -18885,7 +19107,8 @@
    "version": "0.81",
    "proveedor": "Simon Tatham",
    "tipo": "vulnerable",
-   "producto": "putty",
+   "producto": "PuTTY",
+   "clave": "PuTTY@0.81",
    "prueba": "Vulnerable de baja gravedad: informativo",
    "pares": [
     "putty:putty"
@@ -18914,7 +19137,8 @@
    "version": "15.70.0",
    "proveedor": "TeamViewer Germany GmbH",
    "tipo": "sano",
-   "producto": "teamviewer",
+   "producto": "TeamViewer",
+   "clave": "TeamViewer@15.70.0",
    "prueba": "Sano",
    "pares": [
     "teamviewer:teamviewer"
@@ -18957,7 +19181,8 @@
    "version": "7.13",
    "proveedor": "win.rar GmbH",
    "tipo": "sano",
-   "producto": "winrar",
+   "producto": "WinRAR",
+   "clave": "WinRAR@7.13",
    "prueba": "Sano, justo en el arreglo de CVE-2025-8088",
    "pares": [
     "rarlab:winrar"
@@ -18978,7 +19203,8 @@
    "version": "24.08",
    "proveedor": "Igor Pavlov",
    "tipo": "vulnerable",
-   "producto": "7zip",
+   "producto": "7-Zip",
+   "clave": "7-Zip@24.08",
    "prueba": "Vulnerable con KEV",
    "pares": [
     "7-zip:7-zip"
@@ -19031,7 +19257,8 @@
    "version": "25.001.20531",
    "proveedor": "Adobe Inc.",
    "tipo": "vulnerable",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@25.001.20531",
    "prueba": "KEV en un lector de PDF",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -19286,7 +19513,8 @@
    "version": "6.3.5",
    "proveedor": "Palo Alto Networks",
    "tipo": "sano",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.3.5",
    "prueba": "Sano en lo preciso",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -19310,7 +19538,8 @@
    "version": "156.0.8079.100",
    "proveedor": "Google LLC",
    "tipo": "vulnerable",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@156.0.8079.100",
    "prueba": "KEV de esta semana; volumen alto obliga a agrupar",
    "pares": [
     "google:chrome"
@@ -19985,7 +20214,8 @@
    "version": "15.70.0",
    "proveedor": "TeamViewer Germany GmbH",
    "tipo": "sano",
-   "producto": "teamviewer",
+   "producto": "TeamViewer",
+   "clave": "TeamViewer@15.70.0",
    "prueba": "Sano",
    "pares": [
     "teamviewer:teamviewer"
@@ -20006,7 +20236,8 @@
    "version": "24.08",
    "proveedor": "Igor Pavlov",
    "tipo": "vulnerable",
-   "producto": "7zip",
+   "producto": "7-Zip",
+   "clave": "7-Zip@24.08",
    "prueba": "Vulnerable con KEV",
    "pares": [
     "7-zip:7-zip"
@@ -20059,7 +20290,8 @@
    "version": "26.002.21901",
    "proveedor": "Adobe Systems Incorporated",
    "tipo": "sano",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@26.002.21901",
    "prueba": "Sano, con nombre distinto del mismo producto",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -20223,7 +20455,8 @@
    "version": "157.0.8103.60",
    "proveedor": "Google LLC",
    "tipo": "vulnerable",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.60",
    "prueba": "Inmediato por CVSS, sin KEV",
    "pares": [
     "google:chrome"
@@ -20478,7 +20711,8 @@
    "version": "24.08",
    "proveedor": "Igor Pavlov",
    "tipo": "vulnerable",
-   "producto": "7zip",
+   "producto": "7-Zip",
+   "clave": "7-Zip@24.08",
    "prueba": "Vulnerable con KEV",
    "pares": [
     "7-zip:7-zip"
@@ -20619,7 +20853,8 @@
    "version": "6.3.5",
    "proveedor": "Palo Alto Networks",
    "tipo": "sano",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.3.5",
    "prueba": "Sano en lo preciso",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -20643,7 +20878,8 @@
    "version": "156.0.8079.100",
    "proveedor": "Google LLC",
    "tipo": "vulnerable",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@156.0.8079.100",
    "prueba": "KEV de esta semana; volumen alto obliga a agrupar",
    "pares": [
     "google:chrome"
@@ -21252,7 +21488,8 @@
    "version": "156.0.1",
    "proveedor": "Mozilla",
    "tipo": "vulnerable",
-   "producto": "firefox",
+   "producto": "Mozilla Firefox",
+   "clave": "Mozilla Firefox@156.0.1",
    "prueba": "Versión en el nombre y en el campo",
    "pares": [
     "mozilla:firefox"
@@ -21532,7 +21769,8 @@
    "version": "3.0.18",
    "proveedor": "VideoLAN",
    "tipo": "vulnerable",
-   "producto": "vlc",
+   "producto": "VLC media player",
+   "clave": "VLC media player@3.0.18",
    "prueba": "Inmediato por CVSS 9.8",
    "pares": [
     "videolan:vlc_media_player"
@@ -21561,7 +21799,8 @@
    "version": "5.61",
    "proveedor": "win.rar GmbH",
    "tipo": "vulnerable",
-   "producto": "winrar",
+   "producto": "WinRAR",
+   "clave": "WinRAR@5.61",
    "prueba": "Frontera inclusiva: CVE-2018-20250 con versionEndIncluding 5.61",
    "pares": [
     "rarlab:winrar"
@@ -21774,7 +22013,8 @@
    "version": "6.3.5",
    "proveedor": "Palo Alto Networks",
    "tipo": "sano",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.3.5",
    "prueba": "Sano en lo preciso",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -21798,7 +22038,8 @@
    "version": "157.0.8103.60",
    "proveedor": "Google LLC",
    "tipo": "vulnerable",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.60",
    "prueba": "Inmediato por CVSS, sin KEV",
    "pares": [
     "google:chrome"
@@ -22053,7 +22294,8 @@
    "version": "24.09",
    "proveedor": "Igor Pavlov",
    "tipo": "vulnerable",
-   "producto": "7zip",
+   "producto": "7-Zip",
+   "clave": "7-Zip@24.09",
    "prueba": "Arregla la KEV pero tiene una CVE más que 24.08",
    "pares": [
     "7-zip:7-zip"
@@ -22117,7 +22359,8 @@
    "version": "26.002.21901",
    "proveedor": "Adobe Systems Incorporated",
    "tipo": "sano",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@26.002.21901",
    "prueba": "Sano, con nombre distinto del mismo producto",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -22248,7 +22491,8 @@
    "version": "6.3.5",
    "proveedor": "Palo Alto Networks",
    "tipo": "sano",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.3.5",
    "prueba": "Sano en lo preciso",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -22272,7 +22516,8 @@
    "version": "157.0.8103.60",
    "proveedor": "Google LLC",
    "tipo": "vulnerable",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.60",
    "prueba": "Inmediato por CVSS, sin KEV",
    "pares": [
     "google:chrome"
@@ -22505,7 +22750,8 @@
    "version": "3.0.21",
    "proveedor": "VideoLAN",
    "tipo": "sano",
-   "producto": "vlc",
+   "producto": "VLC media player",
+   "clave": "VLC media player@3.0.21",
    "prueba": "Sano",
    "pares": [
     "videolan:vlc_media_player"
@@ -22526,7 +22772,8 @@
    "version": "24.08",
    "proveedor": "Igor Pavlov",
    "tipo": "vulnerable",
-   "producto": "7zip",
+   "producto": "7-Zip",
+   "clave": "7-Zip@24.08",
    "prueba": "Vulnerable con KEV",
    "pares": [
     "7-zip:7-zip"
@@ -22579,7 +22826,8 @@
    "version": "26.002.21901",
    "proveedor": "Adobe Systems Incorporated",
    "tipo": "sano",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@26.002.21901",
    "prueba": "Sano, con nombre distinto del mismo producto",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -22721,7 +22969,8 @@
    "version": "6.0.14",
    "proveedor": "Palo Alto Networks",
    "tipo": "vulnerable",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.0.14",
    "prueba": "El par bueno no es globalprotect_app",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -22766,7 +23015,8 @@
    "version": "157.0.8103.78",
    "proveedor": "Google LLC",
    "tipo": "sano",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.78",
    "prueba": "Sano en lo preciso, con 13 no precisas",
    "pares": [
     "google:chrome"
@@ -22911,7 +23161,8 @@
    "version": "7.13",
    "proveedor": "win.rar GmbH",
    "tipo": "sano",
-   "producto": "winrar",
+   "producto": "WinRAR",
+   "clave": "WinRAR@7.13",
    "prueba": "Sano, justo en el arreglo de CVE-2025-8088",
    "pares": [
     "rarlab:winrar"
@@ -22932,7 +23183,8 @@
    "version": "25.001.20531",
    "proveedor": "Adobe Inc.",
    "tipo": "vulnerable",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@25.001.20531",
    "prueba": "KEV en un lector de PDF",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -23176,7 +23428,8 @@
    "version": "6.0.14",
    "proveedor": "Palo Alto Networks",
    "tipo": "vulnerable",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.0.14",
    "prueba": "El par bueno no es globalprotect_app",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -23221,7 +23474,8 @@
    "version": "157.0.8103.60",
    "proveedor": "Google LLC",
    "tipo": "vulnerable",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.60",
    "prueba": "Inmediato por CVSS, sin KEV",
    "pares": [
     "google:chrome"
@@ -23399,10 +23653,11 @@
    "version": "8.8.9",
    "proveedor": "Notepad++ Team",
    "tipo": "vulnerable",
-   "producto": "notepadpp",
+   "producto": "Notepad++",
+   "clave": "Notepad++@8.8.9",
    "prueba": "Frontera excluyente de la KEV",
    "pares": [
-    "notepad-plus-plus:notepad++"
+    "notepad-plus-plus:notepad\\+\\+"
    ],
    "version_comparable": "8.8.9",
    "cves": [
@@ -23413,7 +23668,7 @@
     "CVE-2026-52885"
    ],
    "cves_por_par": {
-    "notepad-plus-plus:notepad++": [
+    "notepad-plus-plus:notepad\\+\\+": [
      "CVE-2026-25926",
      "CVE-2026-48770",
      "CVE-2026-48778",
@@ -23487,7 +23742,8 @@
    "version": "24.08",
    "proveedor": "Igor Pavlov",
    "tipo": "vulnerable",
-   "producto": "7zip",
+   "producto": "7-Zip",
+   "clave": "7-Zip@24.08",
    "prueba": "Vulnerable con KEV",
    "pares": [
     "7-zip:7-zip"
@@ -23551,7 +23807,8 @@
    "version": "26.002.21901",
    "proveedor": "Adobe Systems Incorporated",
    "tipo": "sano",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@26.002.21901",
    "prueba": "Sano, con nombre distinto del mismo producto",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -23660,7 +23917,8 @@
    "version": "6.3.5",
    "proveedor": "Palo Alto Networks",
    "tipo": "sano",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.3.5",
    "prueba": "Sano en lo preciso",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -23684,7 +23942,8 @@
    "version": "157.0.8103.60",
    "proveedor": "Google LLC",
    "tipo": "vulnerable",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.60",
    "prueba": "Inmediato por CVSS, sin KEV",
    "pares": [
     "google:chrome"
@@ -23953,7 +24212,8 @@
    "version": "26.002.21901",
    "proveedor": "Adobe Systems Incorporated",
    "tipo": "sano",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@26.002.21901",
    "prueba": "Sano, con nombre distinto del mismo producto",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -24087,7 +24347,8 @@
    "version": "6.3.5",
    "proveedor": "Palo Alto Networks",
    "tipo": "sano",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.3.5",
    "prueba": "Sano en lo preciso",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -24111,7 +24372,8 @@
    "version": "156.0.8079.100",
    "proveedor": "Google LLC",
    "tipo": "vulnerable",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@156.0.8079.100",
    "prueba": "KEV de esta semana; volumen alto obliga a agrupar",
    "pares": [
     "google:chrome"
@@ -24775,7 +25037,8 @@
    "version": "26.002.21901",
    "proveedor": "Adobe Systems Incorporated",
    "tipo": "sano",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@26.002.21901",
    "prueba": "Sano, con nombre distinto del mismo producto",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -24884,7 +25147,8 @@
    "version": "6.3.5",
    "proveedor": "Palo Alto Networks",
    "tipo": "sano",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.3.5",
    "prueba": "Sano en lo preciso",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -24908,7 +25172,8 @@
    "version": "156.0.8079.100",
    "proveedor": "Google LLC",
    "tipo": "vulnerable",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@156.0.8079.100",
    "prueba": "KEV de esta semana; volumen alto obliga a agrupar",
    "pares": [
     "google:chrome"
@@ -25528,7 +25793,8 @@
    "version": "156.0.1",
    "proveedor": "Mozilla",
    "tipo": "vulnerable",
-   "producto": "firefox",
+   "producto": "Mozilla Firefox",
+   "clave": "Mozilla Firefox@156.0.1",
    "prueba": "Versión en el nombre y en el campo",
    "pares": [
     "mozilla:firefox"
@@ -25797,7 +26063,8 @@
    "version": "0.84",
    "proveedor": "Simon Tatham",
    "tipo": "sano",
-   "producto": "putty",
+   "producto": "PuTTY",
+   "clave": "PuTTY@0.84",
    "prueba": "Sano",
    "pares": [
     "putty:putty"
@@ -25851,7 +26118,8 @@
    "version": "25.001.20531",
    "proveedor": "Adobe Inc.",
    "tipo": "vulnerable",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@25.001.20531",
    "prueba": "KEV en un lector de PDF",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -26073,7 +26341,8 @@
    "version": "6.3.5",
    "proveedor": "Palo Alto Networks",
    "tipo": "sano",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.3.5",
    "prueba": "Sano en lo preciso",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -26097,7 +26366,8 @@
    "version": "157.0.8103.78",
    "proveedor": "Google LLC",
    "tipo": "sano",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.78",
    "prueba": "Sano en lo preciso, con 13 no precisas",
    "pares": [
     "google:chrome"
@@ -26154,10 +26424,11 @@
    "version": "8.8.9",
    "proveedor": "Notepad++ Team",
    "tipo": "vulnerable",
-   "producto": "notepadpp",
+   "producto": "Notepad++",
+   "clave": "Notepad++@8.8.9",
    "prueba": "Frontera excluyente de la KEV",
    "pares": [
-    "notepad-plus-plus:notepad++"
+    "notepad-plus-plus:notepad\\+\\+"
    ],
    "version_comparable": "8.8.9",
    "cves": [
@@ -26168,7 +26439,7 @@
     "CVE-2026-52885"
    ],
    "cves_por_par": {
-    "notepad-plus-plus:notepad++": [
+    "notepad-plus-plus:notepad\\+\\+": [
      "CVE-2026-25926",
      "CVE-2026-48770",
      "CVE-2026-48778",
@@ -26264,7 +26535,8 @@
    "version": "24.09",
    "proveedor": "Igor Pavlov",
    "tipo": "vulnerable",
-   "producto": "7zip",
+   "producto": "7-Zip",
+   "clave": "7-Zip@24.09",
    "prueba": "Arregla la KEV pero tiene una CVE más que 24.08",
    "pares": [
     "7-zip:7-zip"
@@ -26328,7 +26600,8 @@
    "version": "25.001.20531",
    "proveedor": "Adobe Inc.",
    "tipo": "vulnerable",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@25.001.20531",
    "prueba": "KEV en un lector de PDF",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -26608,7 +26881,8 @@
    "version": "157.0.8103.60",
    "proveedor": "Google LLC",
    "tipo": "vulnerable",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.60",
    "prueba": "Inmediato por CVSS, sin KEV",
    "pares": [
     "google:chrome"
@@ -26852,7 +27126,8 @@
    "version": "3.0.18",
    "proveedor": "VideoLAN",
    "tipo": "vulnerable",
-   "producto": "vlc",
+   "producto": "VLC media player",
+   "clave": "VLC media player@3.0.18",
    "prueba": "Inmediato por CVSS 9.8",
    "pares": [
     "videolan:vlc_media_player"
@@ -26881,7 +27156,8 @@
    "version": "7.12",
    "proveedor": "win.rar GmbH",
    "tipo": "vulnerable",
-   "producto": "winrar",
+   "producto": "WinRAR",
+   "clave": "WinRAR@7.12",
    "prueba": "Una sola CVE, explotada con ransomware",
    "pares": [
     "rarlab:winrar"
@@ -26908,7 +27184,8 @@
    "version": "26.002.21901",
    "proveedor": "Adobe Systems Incorporated",
    "tipo": "sano",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@26.002.21901",
    "prueba": "Sano, con nombre distinto del mismo producto",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -27017,7 +27294,8 @@
    "version": "6.3.5",
    "proveedor": "Palo Alto Networks",
    "tipo": "sano",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.3.5",
    "prueba": "Sano en lo preciso",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -27041,7 +27319,8 @@
    "version": "157.0.8103.60",
    "proveedor": "Google LLC",
    "tipo": "vulnerable",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.60",
    "prueba": "Inmediato por CVSS, sin KEV",
    "pares": [
     "google:chrome"
@@ -27255,15 +27534,16 @@
    "version": "8.9.6.4",
    "proveedor": "Notepad++ Team",
    "tipo": "sano",
-   "producto": "notepadpp",
+   "producto": "Notepad++",
+   "clave": "Notepad++@8.9.6.4",
    "prueba": "Sano, versión de cuatro componentes",
    "pares": [
-    "notepad-plus-plus:notepad++"
+    "notepad-plus-plus:notepad\\+\\+"
    ],
    "version_comparable": "8.9.6.4",
    "cves": [],
    "cves_por_par": {
-    "notepad-plus-plus:notepad++": []
+    "notepad-plus-plus:notepad\\+\\+": []
    },
    "kev": [],
    "no_precisas": [],
@@ -27375,7 +27655,8 @@
    "version": "7.13",
    "proveedor": "win.rar GmbH",
    "tipo": "sano",
-   "producto": "winrar",
+   "producto": "WinRAR",
+   "clave": "WinRAR@7.13",
    "prueba": "Sano, justo en el arreglo de CVE-2025-8088",
    "pares": [
     "rarlab:winrar"
@@ -27407,7 +27688,8 @@
    "version": "26.002.21901",
    "proveedor": "Adobe Systems Incorporated",
    "tipo": "sano",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@26.002.21901",
    "prueba": "Sano, con nombre distinto del mismo producto",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -27527,7 +27809,8 @@
    "version": "6.3.5",
    "proveedor": "Palo Alto Networks",
    "tipo": "sano",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.3.5",
    "prueba": "Sano en lo preciso",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -27551,7 +27834,8 @@
    "version": "157.0.8103.60",
    "proveedor": "Google LLC",
    "tipo": "vulnerable",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.60",
    "prueba": "Inmediato por CVSS, sin KEV",
    "pares": [
     "google:chrome"
@@ -27707,7 +27991,8 @@
    "version": "157.0",
    "proveedor": "Mozilla",
    "tipo": "vulnerable",
-   "producto": "firefox",
+   "producto": "Mozilla Firefox",
+   "clave": "Mozilla Firefox@157.0",
    "prueba": "Una CVE crítica reciente",
    "pares": [
     "mozilla:firefox"
@@ -27760,10 +28045,11 @@
    "version": "8.8.9",
    "proveedor": "Notepad++ Team",
    "tipo": "vulnerable",
-   "producto": "notepadpp",
+   "producto": "Notepad++",
+   "clave": "Notepad++@8.8.9",
    "prueba": "Frontera excluyente de la KEV",
    "pares": [
-    "notepad-plus-plus:notepad++"
+    "notepad-plus-plus:notepad\\+\\+"
    ],
    "version_comparable": "8.8.9",
    "cves": [
@@ -27774,7 +28060,7 @@
     "CVE-2026-52885"
    ],
    "cves_por_par": {
-    "notepad-plus-plus:notepad++": [
+    "notepad-plus-plus:notepad\\+\\+": [
      "CVE-2026-25926",
      "CVE-2026-48770",
      "CVE-2026-48778",
@@ -27851,7 +28137,8 @@
    "version": "3.0.21",
    "proveedor": "VideoLAN",
    "tipo": "sano",
-   "producto": "vlc",
+   "producto": "VLC media player",
+   "clave": "VLC media player@3.0.21",
    "prueba": "Sano",
    "pares": [
     "videolan:vlc_media_player"
@@ -27883,7 +28170,8 @@
    "version": "25.001.20531",
    "proveedor": "Adobe Inc.",
    "tipo": "vulnerable",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@25.001.20531",
    "prueba": "KEV en un lector de PDF",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -28105,7 +28393,8 @@
    "version": "6.0.14",
    "proveedor": "Palo Alto Networks",
    "tipo": "vulnerable",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.0.14",
    "prueba": "El par bueno no es globalprotect_app",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -28150,7 +28439,8 @@
    "version": "156.0.8079.100",
    "proveedor": "Google LLC",
    "tipo": "vulnerable",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@156.0.8079.100",
    "prueba": "KEV de esta semana; volumen alto obliga a agrupar",
    "pares": [
     "google:chrome"
@@ -28781,7 +29071,8 @@
    "version": "156.0.1",
    "proveedor": "Mozilla",
    "tipo": "vulnerable",
-   "producto": "firefox",
+   "producto": "Mozilla Firefox",
+   "clave": "Mozilla Firefox@156.0.1",
    "prueba": "Versión en el nombre y en el campo",
    "pares": [
     "mozilla:firefox"
@@ -28984,15 +29275,16 @@
    "version": "8.9.6.4",
    "proveedor": "Notepad++ Team",
    "tipo": "sano",
-   "producto": "notepadpp",
+   "producto": "Notepad++",
+   "clave": "Notepad++@8.9.6.4",
    "prueba": "Sano, versión de cuatro componentes",
    "pares": [
-    "notepad-plus-plus:notepad++"
+    "notepad-plus-plus:notepad\\+\\+"
    ],
    "version_comparable": "8.9.6.4",
    "cves": [],
    "cves_por_par": {
-    "notepad-plus-plus:notepad++": []
+    "notepad-plus-plus:notepad\\+\\+": []
    },
    "kev": [],
    "no_precisas": [],
@@ -29060,7 +29352,8 @@
    "version": "26.03",
    "proveedor": "Igor Pavlov",
    "tipo": "sano",
-   "producto": "7zip",
+   "producto": "7-Zip",
+   "clave": "7-Zip@26.03",
    "prueba": "Sano",
    "pares": [
     "7-zip:7-zip"
@@ -29081,7 +29374,8 @@
    "version": "26.002.21901",
    "proveedor": "Adobe Systems Incorporated",
    "tipo": "sano",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@26.002.21901",
    "prueba": "Sano, con nombre distinto del mismo producto",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -29190,7 +29484,8 @@
    "version": "6.3.5",
    "proveedor": "Palo Alto Networks",
    "tipo": "sano",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.3.5",
    "prueba": "Sano en lo preciso",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -29214,7 +29509,8 @@
    "version": "157.0.8103.78",
    "proveedor": "Google LLC",
    "tipo": "sano",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.78",
    "prueba": "Sano en lo preciso, con 13 no precisas",
    "pares": [
     "google:chrome"
@@ -29359,7 +29655,8 @@
    "version": "25.001.20531",
    "proveedor": "Adobe Inc.",
    "tipo": "vulnerable",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@25.001.20531",
    "prueba": "KEV en un lector de PDF",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -29603,7 +29900,8 @@
    "version": "6.3.5",
    "proveedor": "Palo Alto Networks",
    "tipo": "sano",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.3.5",
    "prueba": "Sano en lo preciso",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -29627,7 +29925,8 @@
    "version": "157.0.8103.78",
    "proveedor": "Google LLC",
    "tipo": "sano",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.78",
    "prueba": "Sano en lo preciso, con 13 no precisas",
    "pares": [
     "google:chrome"
@@ -29728,7 +30027,8 @@
    "version": "3.0.21",
    "proveedor": "VideoLAN",
    "tipo": "sano",
-   "producto": "vlc",
+   "producto": "VLC media player",
+   "clave": "VLC media player@3.0.21",
    "prueba": "Sano",
    "pares": [
     "videolan:vlc_media_player"
@@ -29749,7 +30049,8 @@
    "version": "7.12",
    "proveedor": "win.rar GmbH",
    "tipo": "vulnerable",
-   "producto": "winrar",
+   "producto": "WinRAR",
+   "clave": "WinRAR@7.12",
    "prueba": "Una sola CVE, explotada con ransomware",
    "pares": [
     "rarlab:winrar"
@@ -29787,7 +30088,8 @@
    "version": "26.002.21901",
    "proveedor": "Adobe Systems Incorporated",
    "tipo": "sano",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@26.002.21901",
    "prueba": "Sano, con nombre distinto del mismo producto",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -29962,7 +30264,8 @@
    "version": "6.3.5",
    "proveedor": "Palo Alto Networks",
    "tipo": "sano",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.3.5",
    "prueba": "Sano en lo preciso",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -29986,7 +30289,8 @@
    "version": "157.0.8103.78",
    "proveedor": "Google LLC",
    "tipo": "sano",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@157.0.8103.78",
    "prueba": "Sano en lo preciso, con 13 no precisas",
    "pares": [
     "google:chrome"
@@ -30032,7 +30336,8 @@
    "version": "156.0.1",
    "proveedor": "Mozilla",
    "tipo": "vulnerable",
-   "producto": "firefox",
+   "producto": "Mozilla Firefox",
+   "clave": "Mozilla Firefox@156.0.1",
    "prueba": "Versión en el nombre y en el campo",
    "pares": [
     "mozilla:firefox"
@@ -30290,7 +30595,8 @@
    "version": "15.70.0",
    "proveedor": "TeamViewer Germany GmbH",
    "tipo": "sano",
-   "producto": "teamviewer",
+   "producto": "TeamViewer",
+   "clave": "TeamViewer@15.70.0",
    "prueba": "Sano",
    "pares": [
     "teamviewer:teamviewer"
@@ -30344,7 +30650,8 @@
    "version": "24.09",
    "proveedor": "Igor Pavlov",
    "tipo": "vulnerable",
-   "producto": "7zip",
+   "producto": "7-Zip",
+   "clave": "7-Zip@24.09",
    "prueba": "Arregla la KEV pero tiene una CVE más que 24.08",
    "pares": [
     "7-zip:7-zip"
@@ -30474,7 +30781,8 @@
    "version": "6.3.5",
    "proveedor": "Palo Alto Networks",
    "tipo": "sano",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.3.5",
    "prueba": "Sano en lo preciso",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -30498,7 +30806,8 @@
    "version": "156.0.8079.100",
    "proveedor": "Google LLC",
    "tipo": "vulnerable",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@156.0.8079.100",
    "prueba": "KEV de esta semana; volumen alto obliga a agrupar",
    "pares": [
     "google:chrome"
@@ -31198,7 +31507,8 @@
    "version": "26.03",
    "proveedor": "Igor Pavlov",
    "tipo": "sano",
-   "producto": "7zip",
+   "producto": "7-Zip",
+   "clave": "7-Zip@26.03",
    "prueba": "Sano",
    "pares": [
     "7-zip:7-zip"
@@ -31230,7 +31540,8 @@
    "version": "26.002.21901",
    "proveedor": "Adobe Systems Incorporated",
    "tipo": "sano",
-   "producto": "acrobat",
+   "producto": "Adobe Acrobat Reader",
+   "clave": "Adobe Acrobat Reader@26.002.21901",
    "prueba": "Sano, con nombre distinto del mismo producto",
    "pares": [
     "adobe:acrobat_reader_dc"
@@ -31361,7 +31672,8 @@
    "version": "6.3.5",
    "proveedor": "Palo Alto Networks",
    "tipo": "sano",
-   "producto": "globalprotect",
+   "producto": "GlobalProtect",
+   "clave": "GlobalProtect@6.3.5",
    "prueba": "Sano en lo preciso",
    "pares": [
     "paloaltonetworks:globalprotect"
@@ -31385,7 +31697,8 @@
    "version": "156.0.8079.100",
    "proveedor": "Google LLC",
    "tipo": "vulnerable",
-   "producto": "chrome",
+   "producto": "Google Chrome",
+   "clave": "Google Chrome@156.0.8079.100",
    "prueba": "KEV de esta semana; volumen alto obliga a agrupar",
    "pares": [
     "google:chrome"
@@ -32082,7 +32395,8 @@
    "version": "14.7.1965",
    "proveedor": "TeamViewer Germany GmbH",
    "tipo": "vulnerable",
-   "producto": "teamviewer",
+   "producto": "TeamViewer",
+   "clave": "TeamViewer@14.7.1965",
    "prueba": "Frontera inclusiva de una KEV",
    "pares": [
     "teamviewer:teamviewer"
@@ -32287,6 +32601,7 @@
    "proveedor": "F5, Inc.",
    "tipo": "vulnerable",
    "producto": "nginx",
+   "clave": "nginx@1.24.0",
    "prueba": "Va bajo f5:nginx",
    "pares": [
     "f5:nginx"
@@ -32536,6 +32851,7 @@
    "proveedor": "F5, Inc.",
    "tipo": "sano",
    "producto": "nginx",
+   "clave": "nginx@1.27.4",
    "prueba": "Sano",
    "pares": [
     "f5:nginx"

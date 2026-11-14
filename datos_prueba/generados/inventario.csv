@@ -1,1334 +1,1334 @@
-equipo,programa,version,proveedor
-EQUIPO-001,Archivo Digital de Expedientes,2.5.0,Área Legal
-EQUIPO-001,Calculadora de Viáticos,1.4.2,Área de Finanzas
-EQUIPO-001,Cliente de Mensajería Interna,8.0.3,Área de Sistemas
-EQUIPO-001,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.
-EQUIPO-001,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.
-EQUIPO-001,Diccionario Técnico Interno,2.0,Área de Ingeniería
-EQUIPO-001,Eclipse Temurin JDK with Hotspot 21.0.5+11 (x64),21.0.5+11,Eclipse Adoptium
-EQUIPO-001,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación
-EQUIPO-001,Gestor de Contratos Interno,1.3.6,Área Legal
-EQUIPO-001,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo
-EQUIPO-001,Git,2.51.0,The Git Development Community
-EQUIPO-001,GlobalProtect,6.3.5,Palo Alto Networks
-EQUIPO-001,Google Chrome,157.0.8103.78,Google LLC
-EQUIPO-001,Kit de Bienvenida Digital,1.1.3,Recursos Humanos
-EQUIPO-001,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas
-EQUIPO-001,MongoDB Compass,1.49.7,MongoDB Inc.
-EQUIPO-001,Node.js,24.22.1,Node.js Foundation
-EQUIPO-001,Notepad++ (64-bit x64),8.9.6.4,Notepad++ Team
-EQUIPO-001,Paquete de Idioma Español (México),26.11,Área de Sistemas
-EQUIPO-001,Planificador de Rutas de Reparto,2.2.7,Área de Logística
-EQUIPO-001,Python 3.12.10 (64-bit),3.12.10150.0,Python Software Foundation
-EQUIPO-001,Simulador de Cotizaciones,4.1.0,Área Comercial
-EQUIPO-001,Tablero de Indicadores Local,2.9.0,Área de Calidad
-EQUIPO-001,TeamViewer,15.70.0,TeamViewer Germany GmbH
-EQUIPO-001,Visor de Planos Interno,2.1.9,Área de Ingeniería
-EQUIPO-001,Visor de Reportes de Calidad,1.0.8,Área de Calidad
-EQUIPO-002,7-Zip 24.08 (x64),24.08,Igor Pavlov
-EQUIPO-002,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated
-EQUIPO-002,Asistente de Respaldo Local,7.0.2,Área de Sistemas
-EQUIPO-002,Calculadora de Viáticos,1.4.2,Área de Finanzas
-EQUIPO-002,Catálogo de Productos Offline,3.14.2,Área Comercial
-EQUIPO-002,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo
-EQUIPO-002,Cliente de Impresión Segura,5.2.4,Área de Sistemas
-EQUIPO-002,Cliente de Mensajería Interna,8.0.3,Área de Sistemas
-EQUIPO-002,Conector de Facturación Electrónica,6.3.0,Área de Finanzas
-EQUIPO-002,Control de Asistencia Biométrico,4.0.7,Recursos Humanos
-EQUIPO-002,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.
-EQUIPO-002,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.
-EQUIPO-002,Eclipse Temurin JDK with Hotspot 21.0.5+11 (x64),21.0.5+11,Eclipse Adoptium
-EQUIPO-002,Encuestas de Clima Laboral,2.2.0,Recursos Humanos
-EQUIPO-002,Firma Electrónica Corporativa,1.8.0,Área de Sistemas
-EQUIPO-002,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación
-EQUIPO-002,Gestor de Contratos Interno,1.3.6,Área Legal
-EQUIPO-002,Git,2.45.4,The Git Development Community
-EQUIPO-002,GlobalProtect,6.3.5,Palo Alto Networks
-EQUIPO-002,Google Chrome,157.0.8103.78,Google LLC
-EQUIPO-002,Herramienta de Inventario Local,0.9.12,Área de Sistemas
-EQUIPO-002,Manual de Procesos Interactivo,3.2,Área de Calidad
-EQUIPO-002,Mozilla Firefox (x64 es-ES),157.0,Mozilla
-EQUIPO-002,Módulo de Tesorería,3.0.5,Área de Finanzas
-EQUIPO-002,Node.js,18.18.0,Node.js Foundation
-EQUIPO-002,Paquete de Fuentes Corporativas,1.0,Área de Comunicación
-EQUIPO-002,Paquete de Idioma Español (México),26.11,Área de Sistemas
-EQUIPO-002,Planificador de Rutas de Reparto,2.2.7,Área de Logística
-EQUIPO-002,Plantillas Corporativas Office,2025.10,Área de Comunicación
-EQUIPO-002,Python 3.11.15 (64-bit),3.11.15,Python Software Foundation
-EQUIPO-002,Simulador de Cotizaciones,4.1.0,Área Comercial
-EQUIPO-002,Tablero de Indicadores Local,2.9.0,Área de Calidad
-EQUIPO-002,Visor de Planos Interno,2.1.9,Área de Ingeniería
-EQUIPO-002,Visor de Reportes de Calidad,1.0.8,Área de Calidad
-EQUIPO-003,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo
-EQUIPO-003,Agenda de Visitas Comercial,1.2.0,Área Comercial
-EQUIPO-003,Catálogo de Productos Offline,3.14.2,Área Comercial
-EQUIPO-003,Cliente de Impresión Segura,5.2.4,Área de Sistemas
-EQUIPO-003,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.
-EQUIPO-003,Diccionario Técnico Interno,2.0,Área de Ingeniería
-EQUIPO-003,Docker Desktop,4.72.0,Docker Inc.
-EQUIPO-003,Eclipse Temurin JDK with Hotspot 17.0.10+7 (x64),17.0.10+7,Eclipse Adoptium
-EQUIPO-003,Encuestas de Clima Laboral,2.2.0,Recursos Humanos
-EQUIPO-003,Etiquetadora de Almacén,3.6.1,Área de Logística
-EQUIPO-003,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación
-EQUIPO-003,Gestor de Contratos Interno,1.3.6,Área Legal
-EQUIPO-003,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo
-EQUIPO-003,Git,2.51.0,The Git Development Community
-EQUIPO-003,GlobalProtect,6.0.14,Palo Alto Networks
-EQUIPO-003,Google Chrome,157.0.8103.78,Google LLC
-EQUIPO-003,Node.js,22.23.4,Node.js Foundation
-EQUIPO-003,Notepad++ (64-bit x64),8.9.6.4,Notepad++ Team
-EQUIPO-003,Paquete de Fuentes Corporativas,1.0,Área de Comunicación
-EQUIPO-003,Paquete de Idioma Español (México),26.11,Área de Sistemas
-EQUIPO-003,Plantillas Corporativas Office,2025.10,Área de Comunicación
-EQUIPO-003,Python 3.13.9 (64-bit),3.13.9,Python Software Foundation
-EQUIPO-003,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.
-EQUIPO-004,Agenda de Visitas Comercial,1.2.0,Área Comercial
-EQUIPO-004,Asistente de Respaldo Local,7.0.2,Área de Sistemas
-EQUIPO-004,Calculadora de Viáticos,1.4.2,Área de Finanzas
-EQUIPO-004,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo
-EQUIPO-004,Cliente de Impresión Segura,5.2.4,Área de Sistemas
-EQUIPO-004,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.
-EQUIPO-004,Docker Desktop,4.62.0,Docker Inc.
-EQUIPO-004,Eclipse Temurin JDK with Hotspot 21.0.5+11 (x64),21.0.5+11,Eclipse Adoptium
-EQUIPO-004,Encuestas de Clima Laboral,2.2.0,Recursos Humanos
-EQUIPO-004,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación
-EQUIPO-004,Gestor de Contratos Interno,1.3.6,Área Legal
-EQUIPO-004,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo
-EQUIPO-004,Git,2.45.1.windows.1,The Git Development Community
-EQUIPO-004,GlobalProtect,6.3.5,Palo Alto Networks
-EQUIPO-004,Google Chrome,157.0.8103.60,Google LLC
-EQUIPO-004,Herramienta de Inventario Local,0.9.12,Área de Sistemas
-EQUIPO-004,MongoDB Compass,1.49.7,MongoDB Inc.
-EQUIPO-004,Monitor de Disco Interno,1.6.0,Área de Sistemas
-EQUIPO-004,Mozilla Firefox (x64 es-ES),157.0,Mozilla
-EQUIPO-004,Node.js,22.23.4,Node.js Foundation
-EQUIPO-004,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas
-EQUIPO-004,Planificador de Rutas de Reparto,2.2.7,Área de Logística
-EQUIPO-004,Plantillas Corporativas Office,2025.10,Área de Comunicación
-EQUIPO-004,Python 3.12.10 (64-bit),3.12.10150.0,Python Software Foundation
-EQUIPO-004,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.
-EQUIPO-004,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.
-EQUIPO-004,Visor de Planos Interno,2.1.9,Área de Ingeniería
-EQUIPO-004,WinRAR 6.22 (32-bit),6.22,win.rar GmbH
-EQUIPO-005,7-Zip 24.08 (x64),24.08,Igor Pavlov
-EQUIPO-005,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo
-EQUIPO-005,Adobe Acrobat Reader (64-bit),25.001.20531,Adobe Inc.
-EQUIPO-005,Agenda de Visitas Comercial,1.2.0,Área Comercial
-EQUIPO-005,Archivo Digital de Expedientes,2.5.0,Área Legal
-EQUIPO-005,Asistente de Respaldo Local,7.0.2,Área de Sistemas
-EQUIPO-005,Calculadora de Viáticos,1.4.2,Área de Finanzas
-EQUIPO-005,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo
-EQUIPO-005,Cliente de Impresión Segura,5.2.4,Área de Sistemas
-EQUIPO-005,Cliente de Mensajería Interna,8.0.3,Área de Sistemas
-EQUIPO-005,Conector de Facturación Electrónica,6.3.0,Área de Finanzas
-EQUIPO-005,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.
-EQUIPO-005,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.
-EQUIPO-005,Docker,"28.1.1, build 4eba377",Docker Inc.
-EQUIPO-005,Eclipse Temurin JDK with Hotspot 17.0.10+7 (x64),17.0.10+7,Eclipse Adoptium
-EQUIPO-005,Etiquetadora de Almacén,3.6.1,Área de Logística
-EQUIPO-005,Gestor de Contratos Interno,1.3.6,Área Legal
-EQUIPO-005,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo
-EQUIPO-005,Git,2.45.1.windows.1,The Git Development Community
-EQUIPO-005,GlobalProtect,6.3.5,Palo Alto Networks
-EQUIPO-005,Google Chrome,157.0.8103.78,Google LLC
-EQUIPO-005,Herramienta de Inventario Local,0.9.12,Área de Sistemas
-EQUIPO-005,Mozilla Firefox (x64 es-ES),157.0,Mozilla
-EQUIPO-005,Node.js,20.18.0,Node.js Foundation
-EQUIPO-005,Notepad++ (64-bit x64),8.9.6.4,Notepad++ Team
-EQUIPO-005,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo
-EQUIPO-005,Planificador de Rutas de Reparto,2.2.7,Área de Logística
-EQUIPO-005,PuTTY release 0.81 (64-bit),0.81,Simon Tatham
-EQUIPO-005,Python 3.11.15 (64-bit),3.11.15,Python Software Foundation
-EQUIPO-005,Tablero de Indicadores Local,2.9.0,Área de Calidad
-EQUIPO-005,TeamViewer,15.70.0,TeamViewer Germany GmbH
-EQUIPO-005,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.
-EQUIPO-005,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.
-EQUIPO-005,Visor de Planos Interno,2.1.9,Área de Ingeniería
-EQUIPO-005,Visor de Reportes de Calidad,1.0.8,Área de Calidad
-EQUIPO-005,VLC media player,3.0.18,VideoLAN
-EQUIPO-006,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated
-EQUIPO-006,Asistente de Respaldo Local,7.0.2,Área de Sistemas
-EQUIPO-006,Catálogo de Productos Offline,3.14.2,Área Comercial
-EQUIPO-006,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo
-EQUIPO-006,Cliente de Impresión Segura,5.2.4,Área de Sistemas
-EQUIPO-006,Control de Asistencia Biométrico,4.0.7,Recursos Humanos
-EQUIPO-006,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.
-EQUIPO-006,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.
-EQUIPO-006,Docker Desktop,4.58.0,Docker Inc.
-EQUIPO-006,Etiquetadora de Almacén,3.6.1,Área de Logística
-EQUIPO-006,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación
-EQUIPO-006,Formulario de Incidencias,1.7.4,Área de Sistemas
-EQUIPO-006,Git,2.51.0,The Git Development Community
-EQUIPO-006,GlobalProtect,6.0.14,Palo Alto Networks
-EQUIPO-006,Google Chrome,157.0.8103.78,Google LLC
-EQUIPO-006,Herramienta de Inventario Local,0.9.12,Área de Sistemas
-EQUIPO-006,Kit de Bienvenida Digital,1.1.3,Recursos Humanos
-EQUIPO-006,Manual de Procesos Interactivo,3.2,Área de Calidad
-EQUIPO-006,MongoDB Compass,1.36.3,MongoDB Inc.
-EQUIPO-006,Monitor de Disco Interno,1.6.0,Área de Sistemas
-EQUIPO-006,Node.js,18.20.4,Node.js Foundation
-EQUIPO-006,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo
-EQUIPO-006,Paquete de Fuentes Corporativas,1.0,Área de Comunicación
-EQUIPO-006,Plantillas Corporativas Office,2025.10,Área de Comunicación
-EQUIPO-006,Portal de Nómina Cliente,2.3.1,Área de Sistemas
-EQUIPO-006,Simulador de Cotizaciones,4.1.0,Área Comercial
-EQUIPO-006,Tablero de Indicadores Local,2.9.0,Área de Calidad
-EQUIPO-006,Visor de Planos Interno,2.1.9,Área de Ingeniería
-EQUIPO-006,Visor de Reportes de Calidad,1.0.8,Área de Calidad
-EQUIPO-006,VLC media player,3.0.21,VideoLAN
-EQUIPO-006,WinRAR 7.12 (64-bit),7.12,win.rar GmbH
-EQUIPO-007,7-Zip 26.03 (x64),26.03,Igor Pavlov
-EQUIPO-007,Calculadora de Viáticos,1.4.2,Área de Finanzas
-EQUIPO-007,Catálogo de Productos Offline,3.14.2,Área Comercial
-EQUIPO-007,Cliente de Impresión Segura,5.2.4,Área de Sistemas
-EQUIPO-007,Conector de Facturación Electrónica,6.3.0,Área de Finanzas
-EQUIPO-007,Control de Asistencia Biométrico,4.0.7,Recursos Humanos
-EQUIPO-007,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.
-EQUIPO-007,Diccionario Técnico Interno,2.0,Área de Ingeniería
-EQUIPO-007,Encuestas de Clima Laboral,2.2.0,Recursos Humanos
-EQUIPO-007,Etiquetadora de Almacén,3.6.1,Área de Logística
-EQUIPO-007,Firma Electrónica Corporativa,1.8.0,Área de Sistemas
-EQUIPO-007,Git,2.51.0,The Git Development Community
-EQUIPO-007,GlobalProtect,6.3.5,Palo Alto Networks
-EQUIPO-007,Google Chrome,157.0.8103.78,Google LLC
-EQUIPO-007,Herramienta de Inventario Local,0.9.12,Área de Sistemas
-EQUIPO-007,Kit de Bienvenida Digital,1.1.3,Recursos Humanos
-EQUIPO-007,Módulo de Tesorería,3.0.5,Área de Finanzas
-EQUIPO-007,Node.js,20.11.1,Node.js Foundation
-EQUIPO-007,Notepad++ (64-bit x64),8.8.8,Notepad++ Team
-EQUIPO-007,Paquete de Idioma Español (México),26.11,Área de Sistemas
-EQUIPO-007,Simulador de Cotizaciones,4.1.0,Área Comercial
-EQUIPO-007,TeamViewer,15.70.0,TeamViewer Germany GmbH
-EQUIPO-007,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.
-EQUIPO-007,WinRAR 7.13 (64-bit),7.13,win.rar GmbH
-EQUIPO-008,7-Zip 26.03 (x64),26.03,Igor Pavlov
-EQUIPO-008,Adobe Acrobat Reader (64-bit),25.001.20531,Adobe Inc.
-EQUIPO-008,Agenda de Visitas Comercial,1.2.0,Área Comercial
-EQUIPO-008,Archivo Digital de Expedientes,2.5.0,Área Legal
-EQUIPO-008,Catálogo de Productos Offline,3.14.2,Área Comercial
-EQUIPO-008,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo
-EQUIPO-008,Cliente de Impresión Segura,5.2.4,Área de Sistemas
-EQUIPO-008,Cliente de Mensajería Interna,8.0.3,Área de Sistemas
-EQUIPO-008,Conector de Facturación Electrónica,6.3.0,Área de Finanzas
-EQUIPO-008,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.
-EQUIPO-008,Diccionario Técnico Interno,2.0,Área de Ingeniería
-EQUIPO-008,Docker Desktop,4.72.0,Docker Inc.
-EQUIPO-008,Firma Electrónica Corporativa,1.8.0,Área de Sistemas
-EQUIPO-008,Formulario de Incidencias,1.7.4,Área de Sistemas
-EQUIPO-008,Gestor de Contratos Interno,1.3.6,Área Legal
-EQUIPO-008,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo
-EQUIPO-008,Git,2.51.0,The Git Development Community
-EQUIPO-008,GlobalProtect,6.3.5,Palo Alto Networks
-EQUIPO-008,Google Chrome,157.0.8103.60,Google LLC
-EQUIPO-008,Monitor de Disco Interno,1.6.0,Área de Sistemas
-EQUIPO-008,Módulo de Tesorería,3.0.5,Área de Finanzas
-EQUIPO-008,Node.js,26.12.1,Node.js Foundation
-EQUIPO-008,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo
-EQUIPO-008,Paquete de Fuentes Corporativas,1.0,Área de Comunicación
-EQUIPO-008,Paquete de Idioma Español (México),26.11,Área de Sistemas
-EQUIPO-008,Portal de Nómina Cliente,2.3.1,Área de Sistemas
-EQUIPO-008,Python 3.12.10 (64-bit),3.12.10150.0,Python Software Foundation
-EQUIPO-008,Simulador de Cotizaciones,4.1.0,Área Comercial
-EQUIPO-008,Tablero de Indicadores Local,2.9.0,Área de Calidad
-EQUIPO-008,TeamViewer,15.70.0,TeamViewer Germany GmbH
-EQUIPO-008,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.
-EQUIPO-008,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.
-EQUIPO-008,Visor de Planos Interno,2.1.9,Área de Ingeniería
-EQUIPO-008,Visor de Reportes de Calidad,1.0.8,Área de Calidad
-EQUIPO-008,WinRAR 6.22 (32-bit),6.22,win.rar GmbH
-EQUIPO-009,7-Zip 24.08 (x64),24.08,Igor Pavlov
-EQUIPO-009,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo
-EQUIPO-009,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated
-EQUIPO-009,Agenda de Visitas Comercial,1.2.0,Área Comercial
-EQUIPO-009,Catálogo de Productos Offline,3.14.2,Área Comercial
-EQUIPO-009,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo
-EQUIPO-009,Conector de Facturación Electrónica,6.3.0,Área de Finanzas
-EQUIPO-009,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.
-EQUIPO-009,Docker Desktop,4.72.0,Docker Inc.
-EQUIPO-009,Encuestas de Clima Laboral,2.2.0,Recursos Humanos
-EQUIPO-009,Etiquetadora de Almacén,3.6.1,Área de Logística
-EQUIPO-009,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación
-EQUIPO-009,Formulario de Incidencias,1.7.4,Área de Sistemas
-EQUIPO-009,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo
-EQUIPO-009,Git,2.51.0,The Git Development Community
-EQUIPO-009,GlobalProtect,6.3.5,Palo Alto Networks
-EQUIPO-009,Google Chrome,157.0.8103.78,Google LLC
-EQUIPO-009,Herramienta de Inventario Local,0.9.12,Área de Sistemas
-EQUIPO-009,Kit de Bienvenida Digital,1.1.3,Recursos Humanos
-EQUIPO-009,Monitor de Disco Interno,1.6.0,Área de Sistemas
-EQUIPO-009,Node.js,24.22.1,Node.js Foundation
-EQUIPO-009,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo
-EQUIPO-009,Paquete de Fuentes Corporativas,1.0,Área de Comunicación
-EQUIPO-009,Paquete de Idioma Español (México),26.11,Área de Sistemas
-EQUIPO-009,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas
-EQUIPO-009,Planificador de Rutas de Reparto,2.2.7,Área de Logística
-EQUIPO-009,Plantillas Corporativas Office,2025.10,Área de Comunicación
-EQUIPO-009,Python 3.11.15 (64-bit),3.11.15,Python Software Foundation
-EQUIPO-009,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.
-EQUIPO-009,Visor de Reportes de Calidad,1.0.8,Área de Calidad
-EQUIPO-010,7-Zip 24.09 (x64 edition),24.09,Igor Pavlov
-EQUIPO-010,Adobe Acrobat Reader (64-bit),25.001.20531,Adobe Inc.
-EQUIPO-010,Agenda de Visitas Comercial,1.2.0,Área Comercial
-EQUIPO-010,Asistente de Respaldo Local,7.0.2,Área de Sistemas
-EQUIPO-010,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo
-EQUIPO-010,Diccionario Técnico Interno,2.0,Área de Ingeniería
-EQUIPO-010,Eclipse Temurin JDK with Hotspot 17.0.9+9 (x64),17.0.9+9,Eclipse Adoptium
-EQUIPO-010,Encuestas de Clima Laboral,2.2.0,Recursos Humanos
-EQUIPO-010,Etiquetadora de Almacén,3.6.1,Área de Logística
-EQUIPO-010,Formulario de Incidencias,1.7.4,Área de Sistemas
-EQUIPO-010,Gestor de Contratos Interno,1.3.6,Área Legal
-EQUIPO-010,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo
-EQUIPO-010,GlobalProtect,6.3.5,Palo Alto Networks
-EQUIPO-010,Google Chrome,156.0.8079.100,Google LLC
-EQUIPO-010,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas
-EQUIPO-010,Monitor de Disco Interno,1.6.0,Área de Sistemas
-EQUIPO-010,Node.js,22.11.0,Node.js Foundation
-EQUIPO-010,Paquete de Fuentes Corporativas,1.0,Área de Comunicación
-EQUIPO-010,Paquete de Idioma Español (México),26.11,Área de Sistemas
-EQUIPO-010,Planificador de Rutas de Reparto,2.2.7,Área de Logística
-EQUIPO-010,Portal de Nómina Cliente,2.3.1,Área de Sistemas
-EQUIPO-010,Python 3.13.9 (64-bit),3.13.9,Python Software Foundation
-EQUIPO-010,Simulador de Cotizaciones,4.1.0,Área Comercial
-EQUIPO-010,Tablero de Indicadores Local,2.9.0,Área de Calidad
-EQUIPO-010,Visor de Planos Interno,2.1.9,Área de Ingeniería
-EQUIPO-010,Visor de Reportes de Calidad,1.0.8,Área de Calidad
-EQUIPO-010,VLC media player,3.0.21,VideoLAN
-EQUIPO-011,Archivo Digital de Expedientes,2.5.0,Área Legal
-EQUIPO-011,Asistente de Respaldo Local,7.0.2,Área de Sistemas
-EQUIPO-011,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo
-EQUIPO-011,Cliente de Impresión Segura,5.2.4,Área de Sistemas
-EQUIPO-011,Control de Asistencia Biométrico,4.0.7,Recursos Humanos
-EQUIPO-011,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.
-EQUIPO-011,Diccionario Técnico Interno,2.0,Área de Ingeniería
-EQUIPO-011,Eclipse Temurin JDK with Hotspot 21.0.5+11 (x64),21.0.5+11,Eclipse Adoptium
-EQUIPO-011,Encuestas de Clima Laboral,2.2.0,Recursos Humanos
-EQUIPO-011,Firma Electrónica Corporativa,1.8.0,Área de Sistemas
-EQUIPO-011,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación
-EQUIPO-011,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo
-EQUIPO-011,Git,2.45.1.windows.1,The Git Development Community
-EQUIPO-011,GlobalProtect,6.3.5,Palo Alto Networks
-EQUIPO-011,Google Chrome,157.0.8103.78,Google LLC
-EQUIPO-011,Herramienta de Inventario Local,0.9.12,Área de Sistemas
-EQUIPO-011,Monitor de Disco Interno,1.6.0,Área de Sistemas
-EQUIPO-011,Mozilla Firefox 156.0.1 (x64 es-ES),156.0.1,Mozilla
-EQUIPO-011,Módulo de Tesorería,3.0.5,Área de Finanzas
-EQUIPO-011,Node.js,22.12.0,Node.js Foundation
-EQUIPO-011,Notepad++ (64-bit x64),8.9.6.4,Notepad++ Team
-EQUIPO-011,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo
-EQUIPO-011,Planificador de Rutas de Reparto,2.2.7,Área de Logística
-EQUIPO-011,Portal de Nómina Cliente,2.3.1,Área de Sistemas
-EQUIPO-011,Python 3.13.9 (64-bit),3.13.9,Python Software Foundation
-EQUIPO-011,Tablero de Indicadores Local,2.9.0,Área de Calidad
-EQUIPO-011,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.
-EQUIPO-011,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.
-EQUIPO-011,Visor de Planos Interno,2.1.9,Área de Ingeniería
-EQUIPO-011,Visor de Reportes de Calidad,1.0.8,Área de Calidad
-EQUIPO-012,7-Zip 26.03 (x64),26.03,Igor Pavlov
-EQUIPO-012,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo
-EQUIPO-012,Adobe Acrobat Reader (64-bit),25.001.20531,Adobe Inc.
-EQUIPO-012,Agenda de Visitas Comercial,1.2.0,Área Comercial
-EQUIPO-012,Archivo Digital de Expedientes,2.5.0,Área Legal
-EQUIPO-012,Asistente de Respaldo Local,7.0.2,Área de Sistemas
-EQUIPO-012,Calculadora de Viáticos,1.4.2,Área de Finanzas
-EQUIPO-012,Catálogo de Productos Offline,3.14.2,Área Comercial
-EQUIPO-012,Cliente de Impresión Segura,5.2.4,Área de Sistemas
-EQUIPO-012,Cliente de Mensajería Interna,8.0.3,Área de Sistemas
-EQUIPO-012,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.
-EQUIPO-012,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.
-EQUIPO-012,Docker Desktop,4.62.0,Docker Inc.
-EQUIPO-012,Encuestas de Clima Laboral,2.2.0,Recursos Humanos
-EQUIPO-012,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación
-EQUIPO-012,Formulario de Incidencias,1.7.4,Área de Sistemas
-EQUIPO-012,Gestor de Contratos Interno,1.3.6,Área Legal
-EQUIPO-012,GlobalProtect,6.3.5,Palo Alto Networks
-EQUIPO-012,Google Chrome,157.0.8103.78,Google LLC
-EQUIPO-012,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas
-EQUIPO-012,MongoDB Compass,1.36.3,MongoDB Inc.
-EQUIPO-012,Monitor de Disco Interno,1.6.0,Área de Sistemas
-EQUIPO-012,Node.js,20.8.0,Node.js Foundation
-EQUIPO-012,Notepad++ (64-bit x64),8.8.8,Notepad++ Team
-EQUIPO-012,Portal de Nómina Cliente,2.3.1,Área de Sistemas
-EQUIPO-012,Simulador de Cotizaciones,4.1.0,Área Comercial
-EQUIPO-012,Tablero de Indicadores Local,2.9.0,Área de Calidad
-EQUIPO-012,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.
-EQUIPO-012,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.
-EQUIPO-013,7-Zip 26.03 (x64),26.03,Igor Pavlov
-EQUIPO-013,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo
-EQUIPO-013,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated
-EQUIPO-013,Calculadora de Viáticos,1.4.2,Área de Finanzas
-EQUIPO-013,Conector de Facturación Electrónica,6.3.0,Área de Finanzas
-EQUIPO-013,Control de Asistencia Biométrico,4.0.7,Recursos Humanos
-EQUIPO-013,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.
-EQUIPO-013,Diccionario Técnico Interno,2.0,Área de Ingeniería
-EQUIPO-013,Eclipse Temurin JDK with Hotspot 17.0.9+9 (x64),17.0.9+9,Eclipse Adoptium
-EQUIPO-013,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación
-EQUIPO-013,Formulario de Incidencias,1.7.4,Área de Sistemas
-EQUIPO-013,Gestor de Contratos Interno,1.3.6,Área Legal
-EQUIPO-013,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo
-EQUIPO-013,Git,2.51.0,The Git Development Community
-EQUIPO-013,GlobalProtect,6.0.14,Palo Alto Networks
-EQUIPO-013,Google Chrome,157.0.8103.78,Google LLC
-EQUIPO-013,Herramienta de Inventario Local,0.9.12,Área de Sistemas
-EQUIPO-013,Manual de Procesos Interactivo,3.2,Área de Calidad
-EQUIPO-013,MongoDB Compass,1.49.7,MongoDB Inc.
-EQUIPO-013,Monitor de Disco Interno,1.6.0,Área de Sistemas
-EQUIPO-013,Módulo de Tesorería,3.0.5,Área de Finanzas
-EQUIPO-013,Node.js,20.18.0,Node.js Foundation
-EQUIPO-013,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo
-EQUIPO-013,Paquete de Idioma Español (México),26.11,Área de Sistemas
-EQUIPO-013,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas
-EQUIPO-013,Planificador de Rutas de Reparto,2.2.7,Área de Logística
-EQUIPO-013,Plantillas Corporativas Office,2025.10,Área de Comunicación
-EQUIPO-013,Portal de Nómina Cliente,2.3.1,Área de Sistemas
-EQUIPO-013,PuTTY release 0.84 (64-bit),0.84,Simon Tatham
-EQUIPO-013,Python 3.13.9 (64-bit),3.13.9,Python Software Foundation
-EQUIPO-013,Visor de Planos Interno,2.1.9,Área de Ingeniería
-EQUIPO-013,Visor de Reportes de Calidad,1.0.8,Área de Calidad
-EQUIPO-013,VLC media player,3.0.21,VideoLAN
-EQUIPO-014,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo
-EQUIPO-014,Agenda de Visitas Comercial,1.2.0,Área Comercial
-EQUIPO-014,Calculadora de Viáticos,1.4.2,Área de Finanzas
-EQUIPO-014,Catálogo de Productos Offline,3.14.2,Área Comercial
-EQUIPO-014,Cliente de Impresión Segura,5.2.4,Área de Sistemas
-EQUIPO-014,Control de Asistencia Biométrico,4.0.7,Recursos Humanos
-EQUIPO-014,Docker Desktop,4.58.0,Docker Inc.
-EQUIPO-014,Etiquetadora de Almacén,3.6.1,Área de Logística
-EQUIPO-014,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación
-EQUIPO-014,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo
-EQUIPO-014,Git,2.45.4,The Git Development Community
-EQUIPO-014,Google Chrome,157.0.8103.60,Google LLC
-EQUIPO-014,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas
-EQUIPO-014,Manual de Procesos Interactivo,3.2,Área de Calidad
-EQUIPO-014,Monitor de Disco Interno,1.6.0,Área de Sistemas
-EQUIPO-014,Mozilla Firefox 156.0.1 (x64 es-ES),156.0.1,Mozilla
-EQUIPO-014,Node.js,20.18.0,Node.js Foundation
-EQUIPO-014,Notepad++ (64-bit x64),8.8.8,Notepad++ Team
-EQUIPO-014,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo
-EQUIPO-014,Paquete de Idioma Español (México),26.11,Área de Sistemas
-EQUIPO-014,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas
-EQUIPO-014,Plantillas Corporativas Office,2025.10,Área de Comunicación
-EQUIPO-014,Simulador de Cotizaciones,4.1.0,Área Comercial
-EQUIPO-015,7-Zip 26.03 (x64),26.03,Igor Pavlov
-EQUIPO-015,Adobe Acrobat Reader (64-bit),25.001.20531,Adobe Inc.
-EQUIPO-015,Agenda de Visitas Comercial,1.2.0,Área Comercial
-EQUIPO-015,Archivo Digital de Expedientes,2.5.0,Área Legal
-EQUIPO-015,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo
-EQUIPO-015,Cliente de Impresión Segura,5.2.4,Área de Sistemas
-EQUIPO-015,Cliente de Mensajería Interna,8.0.3,Área de Sistemas
-EQUIPO-015,Conector de Facturación Electrónica,6.3.0,Área de Finanzas
-EQUIPO-015,Control de Asistencia Biométrico,4.0.7,Recursos Humanos
-EQUIPO-015,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.
-EQUIPO-015,Docker Desktop,4.58.0,Docker Inc.
-EQUIPO-015,Eclipse Temurin JDK with Hotspot 17.0.9+9 (x64),17.0.9+9,Eclipse Adoptium
-EQUIPO-015,Encuestas de Clima Laboral,2.2.0,Recursos Humanos
-EQUIPO-015,Firma Electrónica Corporativa,1.8.0,Área de Sistemas
-EQUIPO-015,Formulario de Incidencias,1.7.4,Área de Sistemas
-EQUIPO-015,Git,2.45.1.windows.1,The Git Development Community
-EQUIPO-015,GlobalProtect,6.3.5,Palo Alto Networks
-EQUIPO-015,Google Chrome,157.0.8103.60,Google LLC
-EQUIPO-015,Kit de Bienvenida Digital,1.1.3,Recursos Humanos
-EQUIPO-015,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas
-EQUIPO-015,Monitor de Disco Interno,1.6.0,Área de Sistemas
-EQUIPO-015,Módulo de Tesorería,3.0.5,Área de Finanzas
-EQUIPO-015,Node.js,22.11.0,Node.js Foundation
-EQUIPO-015,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo
-EQUIPO-015,Paquete de Fuentes Corporativas,1.0,Área de Comunicación
-EQUIPO-015,Portal de Nómina Cliente,2.3.1,Área de Sistemas
-EQUIPO-015,PuTTY release 0.81 (64-bit),0.81,Simon Tatham
-EQUIPO-015,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.
-EQUIPO-015,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.
-EQUIPO-016,7-Zip 24.08 (x64),24.08,Igor Pavlov
-EQUIPO-016,Agenda de Visitas Comercial,1.2.0,Área Comercial
-EQUIPO-016,Calculadora de Viáticos,1.4.2,Área de Finanzas
-EQUIPO-016,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo
-EQUIPO-016,Cliente de Impresión Segura,5.2.4,Área de Sistemas
-EQUIPO-016,Conector de Facturación Electrónica,6.3.0,Área de Finanzas
-EQUIPO-016,Control de Asistencia Biométrico,4.0.7,Recursos Humanos
-EQUIPO-016,Docker,"28.1.1, build 4eba377",Docker Inc.
-EQUIPO-016,Docker Desktop,4.62.0,Docker Inc.
-EQUIPO-016,Eclipse Temurin JDK with Hotspot 17.0.9+9 (x64),17.0.9+9,Eclipse Adoptium
-EQUIPO-016,Encuestas de Clima Laboral,2.2.0,Recursos Humanos
-EQUIPO-016,Firma Electrónica Corporativa,1.8.0,Área de Sistemas
-EQUIPO-016,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación
-EQUIPO-016,Formulario de Incidencias,1.7.4,Área de Sistemas
-EQUIPO-016,Gestor de Contratos Interno,1.3.6,Área Legal
-EQUIPO-016,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo
-EQUIPO-016,Git,2.51.0,The Git Development Community
-EQUIPO-016,Google Chrome,157.0.8103.60,Google LLC
-EQUIPO-016,Herramienta de Inventario Local,0.9.12,Área de Sistemas
-EQUIPO-016,Kit de Bienvenida Digital,1.1.3,Recursos Humanos
-EQUIPO-016,Lector PDF Corporativo,,Área de Sistemas
-EQUIPO-016,Manual de Procesos Interactivo,3.2,Área de Calidad
-EQUIPO-016,Monitor de Disco Interno,1.6.0,Área de Sistemas
-EQUIPO-016,Módulo de Tesorería,3.0.5,Área de Finanzas
-EQUIPO-016,Node.js,24.22.0,Node.js Foundation
-EQUIPO-016,Paquete de Fuentes Corporativas,1.0,Área de Comunicación
-EQUIPO-016,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas
-EQUIPO-016,Plantillas Corporativas Office,2025.10,Área de Comunicación
-EQUIPO-016,Python 3.12.10 (64-bit),3.12.10150.0,Python Software Foundation
-EQUIPO-016,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.
-EQUIPO-016,Visor de Planos Interno,2.1.9,Área de Ingeniería
-EQUIPO-016,Visor de Reportes de Calidad,1.0.8,Área de Calidad
-EQUIPO-016,WinRAR 6.23 (64-bit),6.23,win.rar GmbH
-EQUIPO-017,7-Zip 26.03 (x64),26.03,Igor Pavlov
-EQUIPO-017,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo
-EQUIPO-017,Archivo Digital de Expedientes,2.5.0,Área Legal
-EQUIPO-017,Asistente de Respaldo Local,7.0.2,Área de Sistemas
-EQUIPO-017,Cliente de Mensajería Interna,8.0.3,Área de Sistemas
-EQUIPO-017,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.
-EQUIPO-017,Diccionario Técnico Interno,2.0,Área de Ingeniería
-EQUIPO-017,Docker Desktop,4.62.0,Docker Inc.
-EQUIPO-017,Encuestas de Clima Laboral,2.2.0,Recursos Humanos
-EQUIPO-017,Etiquetadora de Almacén,3.6.1,Área de Logística
-EQUIPO-017,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación
-EQUIPO-017,Formulario de Incidencias,1.7.4,Área de Sistemas
-EQUIPO-017,Gestor de Contratos Interno,1.3.6,Área Legal
-EQUIPO-017,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo
-EQUIPO-017,Git,2.51.0,The Git Development Community
-EQUIPO-017,Google Chrome,157.0.8103.60,Google LLC
-EQUIPO-017,Herramienta de Inventario Local,0.9.12,Área de Sistemas
-EQUIPO-017,Módulo de Tesorería,3.0.5,Área de Finanzas
-EQUIPO-017,Node.js,20.11.1,Node.js Foundation
-EQUIPO-017,Paquete de Fuentes Corporativas,1.0,Área de Comunicación
-EQUIPO-017,Paquete de Idioma Español (México),26.11,Área de Sistemas
-EQUIPO-017,Planificador de Rutas de Reparto,2.2.7,Área de Logística
-EQUIPO-017,Python 3.12.10 (64-bit),3.12.10150.0,Python Software Foundation
-EQUIPO-017,Simulador de Cotizaciones,4.1.0,Área Comercial
-EQUIPO-017,TeamViewer,15.70.0,TeamViewer Germany GmbH
-EQUIPO-017,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.
-EQUIPO-017,Visor de Planos Interno,2.1.9,Área de Ingeniería
-EQUIPO-017,Visor de Reportes de Calidad,1.0.8,Área de Calidad
-EQUIPO-017,VLC media player,3.0.18,VideoLAN
-EQUIPO-018,7-Zip 26.03 (x64),26.03,Igor Pavlov
-EQUIPO-018,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo
-EQUIPO-018,Agenda de Visitas Comercial,1.2.0,Área Comercial
-EQUIPO-018,Asistente de Respaldo Local,7.0.2,Área de Sistemas
-EQUIPO-018,Calculadora de Viáticos,1.4.2,Área de Finanzas
-EQUIPO-018,Catálogo de Productos Offline,3.14.2,Área Comercial
-EQUIPO-018,Cliente de Mensajería Interna,8.0.3,Área de Sistemas
-EQUIPO-018,Control de Asistencia Biométrico,4.0.7,Recursos Humanos
-EQUIPO-018,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.
-EQUIPO-018,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.
-EQUIPO-018,Eclipse Temurin JDK with Hotspot 17.0.10+7 (x64),17.0.10+7,Eclipse Adoptium
-EQUIPO-018,Git,2.45.4,The Git Development Community
-EQUIPO-018,GlobalProtect,6.3.5,Palo Alto Networks
-EQUIPO-018,Google Chrome,157.0.8103.78,Google LLC
-EQUIPO-018,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas
-EQUIPO-018,Manual de Procesos Interactivo,3.2,Área de Calidad
-EQUIPO-018,Monitor de Disco Interno,1.6.0,Área de Sistemas
-EQUIPO-018,Mozilla Firefox (x64 es-ES),157.0,Mozilla
-EQUIPO-018,Node.js,22.20.0,Node.js Foundation
-EQUIPO-018,Paquete de Fuentes Corporativas,1.0,Área de Comunicación
-EQUIPO-018,Planificador de Rutas de Reparto,2.2.7,Área de Logística
-EQUIPO-018,Plantillas Corporativas Office,2025.10,Área de Comunicación
-EQUIPO-018,Python 3.12.10 (64-bit),3.12.10150.0,Python Software Foundation
-EQUIPO-018,Visor de Planos Interno,2.1.9,Área de Ingeniería
-EQUIPO-018,Visor de Reportes de Calidad,1.0.8,Área de Calidad
-EQUIPO-019,7-Zip 26.03 (x64),26.03,Igor Pavlov
-EQUIPO-019,Adobe Acrobat Reader (64-bit),25.001.20531,Adobe Inc.
-EQUIPO-019,Asistente de Respaldo Local,7.0.2,Área de Sistemas
-EQUIPO-019,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo
-EQUIPO-019,Control de Asistencia Biométrico,4.0.7,Recursos Humanos
-EQUIPO-019,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.
-EQUIPO-019,Diccionario Técnico Interno,2.0,Área de Ingeniería
-EQUIPO-019,Eclipse Temurin JDK with Hotspot 21.0.5+11 (x64),21.0.5+11,Eclipse Adoptium
-EQUIPO-019,Encuestas de Clima Laboral,2.2.0,Recursos Humanos
-EQUIPO-019,Firma Electrónica Corporativa,1.8.0,Área de Sistemas
-EQUIPO-019,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación
-EQUIPO-019,Formulario de Incidencias,1.7.4,Área de Sistemas
-EQUIPO-019,Gestor de Contratos Interno,1.3.6,Área Legal
-EQUIPO-019,GlobalProtect,6.0.14,Palo Alto Networks
-EQUIPO-019,Google Chrome,157.0.8103.78,Google LLC
-EQUIPO-019,Kit de Bienvenida Digital,1.1.3,Recursos Humanos
-EQUIPO-019,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas
-EQUIPO-019,Monitor de Disco Interno,1.6.0,Área de Sistemas
-EQUIPO-019,Mozilla Firefox (x64 es-ES),157.0,Mozilla
-EQUIPO-019,Node.js,22.20.0,Node.js Foundation
-EQUIPO-019,Paquete de Idioma Español (México),26.11,Área de Sistemas
-EQUIPO-019,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas
-EQUIPO-019,Planificador de Rutas de Reparto,2.2.7,Área de Logística
-EQUIPO-019,Portal de Nómina Cliente,2.3.1,Área de Sistemas
-EQUIPO-019,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.
-EQUIPO-019,Visor de Planos Interno,2.1.9,Área de Ingeniería
-EQUIPO-019,Visor de Reportes de Calidad,1.0.8,Área de Calidad
-EQUIPO-019,WinRAR 6.22 (32-bit),6.22,win.rar GmbH
-EQUIPO-020,Agenda de Visitas Comercial,1.2.0,Área Comercial
-EQUIPO-020,Archivo Digital de Expedientes,2.5.0,Área Legal
-EQUIPO-020,Calculadora de Viáticos,1.4.2,Área de Finanzas
-EQUIPO-020,Cliente de Mensajería Interna,8.0.3,Área de Sistemas
-EQUIPO-020,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.
-EQUIPO-020,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.
-EQUIPO-020,Diccionario Técnico Interno,2.0,Área de Ingeniería
-EQUIPO-020,Etiquetadora de Almacén,3.6.1,Área de Logística
-EQUIPO-020,Firma Electrónica Corporativa,1.8.0,Área de Sistemas
-EQUIPO-020,Git,2.51.0,The Git Development Community
-EQUIPO-020,GlobalProtect,6.0.14,Palo Alto Networks
-EQUIPO-020,Google Chrome,157.0.8103.78,Google LLC
-EQUIPO-020,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas
-EQUIPO-020,Node.js,18.20.4,Node.js Foundation
-EQUIPO-020,NoSQLBooster for MongoDB,8.1.9,NoSQLBooster
-EQUIPO-020,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo
-EQUIPO-020,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas
-EQUIPO-020,Planificador de Rutas de Reparto,2.2.7,Área de Logística
-EQUIPO-020,Plantillas Corporativas Office,2025.10,Área de Comunicación
-EQUIPO-020,Portal de Nómina Cliente,2.3.1,Área de Sistemas
-EQUIPO-020,Simulador de Cotizaciones,4.1.0,Área Comercial
-EQUIPO-020,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.
-EQUIPO-020,Visor de Planos Interno,2.1.9,Área de Ingeniería
-EQUIPO-020,WinRAR 6.23 (64-bit),6.23,win.rar GmbH
-EQUIPO-021,7-Zip 26.03 (x64),26.03,Igor Pavlov
-EQUIPO-021,Archivo Digital de Expedientes,2.5.0,Área Legal
-EQUIPO-021,Calculadora de Viáticos,1.4.2,Área de Finanzas
-EQUIPO-021,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo
-EQUIPO-021,Cliente de Mensajería Interna,8.0.3,Área de Sistemas
-EQUIPO-021,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.
-EQUIPO-021,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.
-EQUIPO-021,Encuestas de Clima Laboral,2.2.0,Recursos Humanos
-EQUIPO-021,Formulario de Incidencias,1.7.4,Área de Sistemas
-EQUIPO-021,Gestor de Contratos Interno,1.3.6,Área Legal
-EQUIPO-021,GlobalProtect,6.3.5,Palo Alto Networks
-EQUIPO-021,Google Chrome,157.0.8103.60,Google LLC
-EQUIPO-021,Kit de Bienvenida Digital,1.1.3,Recursos Humanos
-EQUIPO-021,Monitor de Disco Interno,1.6.0,Área de Sistemas
-EQUIPO-021,Paquete de Idioma Español (México),26.11,Área de Sistemas
-EQUIPO-021,Portal de Nómina Cliente,2.3.1,Área de Sistemas
-EQUIPO-021,Simulador de Cotizaciones,4.1.0,Área Comercial
-EQUIPO-021,Sistema Contable Interno,4.2,Área de Sistemas
-EQUIPO-021,Tablero de Indicadores Local,2.9.0,Área de Calidad
-EQUIPO-021,TeamViewer,15.70.0,TeamViewer Germany GmbH
-EQUIPO-021,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.
-EQUIPO-021,Visor de Planos Interno,2.1.9,Área de Ingeniería
-EQUIPO-021,VLC media player,3.0.21,VideoLAN
-EQUIPO-022,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo
-EQUIPO-022,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated
-EQUIPO-022,Agenda de Visitas Comercial,1.2.0,Área Comercial
-EQUIPO-022,Calculadora de Viáticos,1.4.2,Área de Finanzas
-EQUIPO-022,Catálogo de Productos Offline,3.14.2,Área Comercial
-EQUIPO-022,Cliente de Mensajería Interna,8.0.3,Área de Sistemas
-EQUIPO-022,Conector de Facturación Electrónica,6.3.0,Área de Finanzas
-EQUIPO-022,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.
-EQUIPO-022,Encuestas de Clima Laboral,2.2.0,Recursos Humanos
-EQUIPO-022,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación
-EQUIPO-022,Formulario de Incidencias,1.7.4,Área de Sistemas
-EQUIPO-022,Google Chrome,156.0.8079.100,Google LLC
-EQUIPO-022,Kit de Bienvenida Digital,1.1.3,Recursos Humanos
-EQUIPO-022,Monitor de Disco Interno,1.6.0,Área de Sistemas
-EQUIPO-022,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo
-EQUIPO-022,Paquete de Idioma Español (México),26.11,Área de Sistemas
-EQUIPO-022,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas
-EQUIPO-022,PuTTY release 0.84 (64-bit),0.84,Simon Tatham
-EQUIPO-022,Tablero de Indicadores Local,2.9.0,Área de Calidad
-EQUIPO-022,Visor de Planos Interno,2.1.9,Área de Ingeniería
-EQUIPO-022,Visor de Reportes de Calidad,1.0.8,Área de Calidad
-EQUIPO-023,Adobe Acrobat Reader (64-bit),25.001.20531,Adobe Inc.
-EQUIPO-023,Agente RMM Ficticio,3.0,RMM Ficticio S.A.
-EQUIPO-023,Archivo Digital de Expedientes,2.5.0,Área Legal
-EQUIPO-023,Asistente de Respaldo Local,7.0.2,Área de Sistemas
-EQUIPO-023,Calculadora de Viáticos,1.4.2,Área de Finanzas
-EQUIPO-023,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo
-EQUIPO-023,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.
-EQUIPO-023,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.
-EQUIPO-023,Firma Electrónica Corporativa,1.8.0,Área de Sistemas
-EQUIPO-023,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación
-EQUIPO-023,Gestor de Contratos Interno,1.3.6,Área Legal
-EQUIPO-023,GlobalProtect,6.3.5,Palo Alto Networks
-EQUIPO-023,Google Chrome,156.0.8079.100,Google LLC
-EQUIPO-023,Herramienta de Inventario Local,0.9.12,Área de Sistemas
-EQUIPO-023,Kit de Bienvenida Digital,1.1.3,Recursos Humanos
-EQUIPO-023,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas
-EQUIPO-023,Manual de Procesos Interactivo,3.2,Área de Calidad
-EQUIPO-023,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo
-EQUIPO-023,Paquete de Fuentes Corporativas,1.0,Área de Comunicación
-EQUIPO-023,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas
-EQUIPO-023,Planificador de Rutas de Reparto,2.2.7,Área de Logística
-EQUIPO-023,Plantillas Corporativas Office,2025.10,Área de Comunicación
-EQUIPO-023,Portal de Nómina Cliente,2.3.1,Área de Sistemas
-EQUIPO-023,TeamViewer,15.70.0,TeamViewer Germany GmbH
-EQUIPO-023,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.
-EQUIPO-023,WinRAR 7.13 (64-bit),7.13,win.rar GmbH
-EQUIPO-024,7-Zip 26.03 (x64),26.03,Igor Pavlov
-EQUIPO-024,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated
-EQUIPO-024,Archivo Digital de Expedientes,2.5.0,Área Legal
-EQUIPO-024,Asistente de Respaldo Local,7.0.2,Área de Sistemas
-EQUIPO-024,Calculadora de Viáticos,1.4.2,Área de Finanzas
-EQUIPO-024,Catálogo de Productos Offline,3.14.2,Área Comercial
-EQUIPO-024,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo
-EQUIPO-024,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.
-EQUIPO-024,Diccionario Técnico Interno,2.0,Área de Ingeniería
-EQUIPO-024,GlobalProtect,6.0.14,Palo Alto Networks
-EQUIPO-024,Google Chrome,157.0.8103.60,Google LLC
-EQUIPO-024,Herramienta de Inventario Local,0.9.12,Área de Sistemas
-EQUIPO-024,Monitor de Disco Interno,1.6.0,Área de Sistemas
-EQUIPO-024,Mozilla Firefox (x64 es-ES),157.0,Mozilla
-EQUIPO-024,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo
-EQUIPO-024,Plantillas Corporativas Office,2025.10,Área de Comunicación
-EQUIPO-024,Portal de Nómina Cliente,2.3.1,Área de Sistemas
-EQUIPO-024,PuTTY release 0.84 (64-bit),0.84,Simon Tatham
-EQUIPO-024,Simulador de Cotizaciones,4.1.0,Área Comercial
-EQUIPO-024,Visor de Planos Interno,2.1.9,Área de Ingeniería
-EQUIPO-024,Visor de Reportes de Calidad,1.0.8,Área de Calidad
-EQUIPO-025,7-Zip 26.03 (x64),26.03,Igor Pavlov
-EQUIPO-025,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo
-EQUIPO-025,Asistente de Respaldo Local,7.0.2,Área de Sistemas
-EQUIPO-025,Calculadora de Viáticos,1.4.2,Área de Finanzas
-EQUIPO-025,Catálogo de Productos Offline,3.14.2,Área Comercial
-EQUIPO-025,Cliente de Mensajería Interna,8.0.3,Área de Sistemas
-EQUIPO-025,Conector de Facturación Electrónica,6.3.0,Área de Finanzas
-EQUIPO-025,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.
-EQUIPO-025,Encuestas de Clima Laboral,2.2.0,Recursos Humanos
-EQUIPO-025,Firma Electrónica Corporativa,1.8.0,Área de Sistemas
-EQUIPO-025,Formulario de Incidencias,1.7.4,Área de Sistemas
-EQUIPO-025,Gestor de Contratos Interno,1.3.6,Área Legal
-EQUIPO-025,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo
-EQUIPO-025,Google Chrome,157.0.8103.78,Google LLC
-EQUIPO-025,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas
-EQUIPO-025,Manual de Procesos Interactivo,3.2,Área de Calidad
-EQUIPO-025,Notepad++ (64-bit x64),8.9.6.4,Notepad++ Team
-EQUIPO-025,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas
-EQUIPO-025,Simulador de Cotizaciones,4.1.0,Área Comercial
-EQUIPO-025,Tablero de Indicadores Local,2.9.0,Área de Calidad
-EQUIPO-025,TeamViewer 14,14.7.1966,TeamViewer Germany GmbH
-EQUIPO-025,Visor de Planos Interno,2.1.9,Área de Ingeniería
-EQUIPO-025,Visor de Reportes de Calidad,1.0.8,Área de Calidad
-EQUIPO-025,VLC media player,3.0.18,VideoLAN
-EQUIPO-025,WinRAR 5.61 (64-bit),5.61,win.rar GmbH
-EQUIPO-026,7-Zip 26.03 (x64),26.03,Igor Pavlov
-EQUIPO-026,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo
-EQUIPO-026,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated
-EQUIPO-026,Asistente de Respaldo Local,7.0.2,Área de Sistemas
-EQUIPO-026,Calculadora de Viáticos,1.4.2,Área de Finanzas
-EQUIPO-026,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo
-EQUIPO-026,Cliente de Mensajería Interna,8.0.3,Área de Sistemas
-EQUIPO-026,Diccionario Técnico Interno,2.0,Área de Ingeniería
-EQUIPO-026,Etiquetadora de Almacén,3.6.1,Área de Logística
-EQUIPO-026,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación
-EQUIPO-026,Google Chrome,156.0.8079.100,Google LLC
-EQUIPO-026,Herramienta de Inventario Local,0.9.12,Área de Sistemas
-EQUIPO-026,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas
-EQUIPO-026,Monitor de Disco Interno,1.6.0,Área de Sistemas
-EQUIPO-026,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo
-EQUIPO-026,Tablero de Indicadores Local,2.9.0,Área de Calidad
-EQUIPO-026,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.
-EQUIPO-026,Visor de Planos Interno,2.1.9,Área de Ingeniería
-EQUIPO-026,Visor de Reportes de Calidad,1.0.8,Área de Calidad
-EQUIPO-026,WinRAR 7.13 (64-bit),7.13,win.rar GmbH
-EQUIPO-027,7-Zip 24.09 (x64 edition),24.09,Igor Pavlov
-EQUIPO-027,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo
-EQUIPO-027,Adobe Acrobat Reader (64-bit),25.001.20531,Adobe Inc.
-EQUIPO-027,Agenda de Visitas Comercial,1.2.0,Área Comercial
-EQUIPO-027,Archivo Digital de Expedientes,2.5.0,Área Legal
-EQUIPO-027,Asistente de Respaldo Local,7.0.2,Área de Sistemas
-EQUIPO-027,Calculadora de Viáticos,1.4.2,Área de Finanzas
-EQUIPO-027,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo
-EQUIPO-027,Cliente de Mensajería Interna,8.0.3,Área de Sistemas
-EQUIPO-027,Conector de Facturación Electrónica,6.3.0,Área de Finanzas
-EQUIPO-027,Control de Asistencia Biométrico,4.0.7,Recursos Humanos
-EQUIPO-027,Encuestas de Clima Laboral,2.2.0,Recursos Humanos
-EQUIPO-027,Etiquetadora de Almacén,3.6.1,Área de Logística
-EQUIPO-027,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación
-EQUIPO-027,Formulario de Incidencias,1.7.4,Área de Sistemas
-EQUIPO-027,Google Chrome,157.0.8103.60,Google LLC
-EQUIPO-027,Kit de Bienvenida Digital,1.1.3,Recursos Humanos
-EQUIPO-027,Monitor de Disco Interno,1.6.0,Área de Sistemas
-EQUIPO-027,Módulo de Tesorería,3.0.5,Área de Finanzas
-EQUIPO-027,Notepad++ (64-bit x64),8.8.8,Notepad++ Team
-EQUIPO-027,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo
-EQUIPO-027,Paquete de Fuentes Corporativas,1.0,Área de Comunicación
-EQUIPO-027,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas
-EQUIPO-027,Planificador de Rutas de Reparto,2.2.7,Área de Logística
-EQUIPO-027,Portal de Nómina Cliente,2.3.1,Área de Sistemas
-EQUIPO-027,Simulador de Cotizaciones,4.1.0,Área Comercial
-EQUIPO-027,TeamViewer,15.70.0,TeamViewer Germany GmbH
-EQUIPO-027,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.
-EQUIPO-027,Visor de Planos Interno,2.1.9,Área de Ingeniería
-EQUIPO-027,Visor de Reportes de Calidad,1.0.8,Área de Calidad
-EQUIPO-027,VLC media player,3.0.21,VideoLAN
-EQUIPO-028,7-Zip 24.09 (x64 edition),24.09,Igor Pavlov
-EQUIPO-028,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated
-EQUIPO-028,Catálogo de Productos Offline,3.14.2,Área Comercial
-EQUIPO-028,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo
-EQUIPO-028,Cliente de Mensajería Interna,8.0.3,Área de Sistemas
-EQUIPO-028,Control de Asistencia Biométrico,4.0.7,Recursos Humanos
-EQUIPO-028,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.
-EQUIPO-028,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación
-EQUIPO-028,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo
-EQUIPO-028,GlobalProtect,6.0.14,Palo Alto Networks
-EQUIPO-028,Google Chrome,156.0.8079.100,Google LLC
-EQUIPO-028,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas
-EQUIPO-028,Monitor de Disco Interno,1.6.0,Área de Sistemas
-EQUIPO-028,Módulo de Tesorería,3.0.5,Área de Finanzas
-EQUIPO-028,Notepad++ (64-bit x64),8.8.8,Notepad++ Team
-EQUIPO-028,Paquete de Idioma Español (México),26.11,Área de Sistemas
-EQUIPO-028,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas
-EQUIPO-028,Planificador de Rutas de Reparto,2.2.7,Área de Logística
-EQUIPO-028,Plantillas Corporativas Office,2025.10,Área de Comunicación
-EQUIPO-028,Portal de Nómina Cliente,2.3.1,Área de Sistemas
-EQUIPO-028,Simulador de Cotizaciones,4.1.0,Área Comercial
-EQUIPO-028,Visor de Reportes de Calidad,1.0.8,Área de Calidad
-EQUIPO-028,VLC media player,3.0.21,VideoLAN
-EQUIPO-029,7-Zip 24.08 (x64),24.08,Igor Pavlov
-EQUIPO-029,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated
-EQUIPO-029,Asistente de Respaldo Local,7.0.2,Área de Sistemas
-EQUIPO-029,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo
-EQUIPO-029,Control de Asistencia Biométrico,4.0.7,Recursos Humanos
-EQUIPO-029,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.
-EQUIPO-029,Encuestas de Clima Laboral,2.2.0,Recursos Humanos
-EQUIPO-029,Etiquetadora de Almacén,3.6.1,Área de Logística
-EQUIPO-029,Firma Electrónica Corporativa,1.8.0,Área de Sistemas
-EQUIPO-029,Gestor de Contratos Interno,1.3.6,Área Legal
-EQUIPO-029,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo
-EQUIPO-029,GlobalProtect,6.3.5,Palo Alto Networks
-EQUIPO-029,Google Chrome,157.0.8103.78,Google LLC
-EQUIPO-029,Herramienta de Inventario Local,0.9.12,Área de Sistemas
-EQUIPO-029,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas
-EQUIPO-029,Manual de Procesos Interactivo,3.2,Área de Calidad
-EQUIPO-029,Monitor de Disco Interno,1.6.0,Área de Sistemas
-EQUIPO-029,Mozilla Firefox (x64 es-ES),157.0,Mozilla
-EQUIPO-029,Módulo de Tesorería,3.0.5,Área de Finanzas
-EQUIPO-029,Notepad++ (64-bit x64),8.9.6.4,Notepad++ Team
-EQUIPO-029,Paquete de Fuentes Corporativas,1.0,Área de Comunicación
-EQUIPO-029,Paquete de Idioma Español (México),26.11,Área de Sistemas
-EQUIPO-029,Portal de Nómina Cliente,2.3.1,Área de Sistemas
-EQUIPO-029,Simulador de Cotizaciones,4.1.0,Área Comercial
-EQUIPO-029,Tablero de Indicadores Local,2.9.0,Área de Calidad
-EQUIPO-029,TeamViewer,15.70.0,TeamViewer Germany GmbH
-EQUIPO-029,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.
-EQUIPO-029,Visor de Planos Interno,2.1.9,Área de Ingeniería
-EQUIPO-029,WinRAR 7.12 (64-bit),7.12,win.rar GmbH
-EQUIPO-030,Adobe Acrobat Reader (64-bit),25.001.20531,Adobe Inc.
-EQUIPO-030,Agenda de Visitas Comercial,1.2.0,Área Comercial
-EQUIPO-030,Archivo Digital de Expedientes,2.5.0,Área Legal
-EQUIPO-030,Catálogo de Productos Offline,3.14.2,Área Comercial
-EQUIPO-030,Cliente de Impresión Segura,5.2.4,Área de Sistemas
-EQUIPO-030,Cliente de Mensajería Interna,8.0.3,Área de Sistemas
-EQUIPO-030,Control de Asistencia Biométrico,4.0.7,Recursos Humanos
-EQUIPO-030,Encuestas de Clima Laboral,2.2.0,Recursos Humanos
-EQUIPO-030,Etiquetadora de Almacén,3.6.1,Área de Logística
-EQUIPO-030,Google Chrome,157.0.8103.60,Google LLC
-EQUIPO-030,Kit de Bienvenida Digital,1.1.3,Recursos Humanos
-EQUIPO-030,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo
-EQUIPO-030,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas
-EQUIPO-030,Planificador de Rutas de Reparto,2.2.7,Área de Logística
-EQUIPO-030,Portal de Nómina Cliente,2.3.1,Área de Sistemas
-EQUIPO-030,PuTTY release 0.81 (64-bit),0.81,Simon Tatham
-EQUIPO-030,TeamViewer,15.70.0,TeamViewer Germany GmbH
-EQUIPO-030,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.
-EQUIPO-030,Visor de Planos Interno,2.1.9,Área de Ingeniería
-EQUIPO-030,WinRAR 7.13 (64-bit),7.13,win.rar GmbH
-EQUIPO-031,7-Zip 24.08 (x64),24.08,Igor Pavlov
-EQUIPO-031,Adobe Acrobat Reader (64-bit),25.001.20531,Adobe Inc.
-EQUIPO-031,Agenda de Visitas Comercial,1.2.0,Área Comercial
-EQUIPO-031,Archivo Digital de Expedientes,2.5.0,Área Legal
-EQUIPO-031,Asistente de Respaldo Local,7.0.2,Área de Sistemas
-EQUIPO-031,Conector de Facturación Electrónica,6.3.0,Área de Finanzas
-EQUIPO-031,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.
-EQUIPO-031,Etiquetadora de Almacén,3.6.1,Área de Logística
-EQUIPO-031,Firma Electrónica Corporativa,1.8.0,Área de Sistemas
-EQUIPO-031,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación
-EQUIPO-031,Formulario de Incidencias,1.7.4,Área de Sistemas
-EQUIPO-031,Gestor de Contratos Interno,1.3.6,Área Legal
-EQUIPO-031,GlobalProtect,6.3.5,Palo Alto Networks
-EQUIPO-031,Google Chrome,156.0.8079.100,Google LLC
-EQUIPO-031,Kit de Bienvenida Digital,1.1.3,Recursos Humanos
-EQUIPO-031,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas
-EQUIPO-031,Manual de Procesos Interactivo,3.2,Área de Calidad
-EQUIPO-031,Paquete de Fuentes Corporativas,1.0,Área de Comunicación
-EQUIPO-031,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas
-EQUIPO-031,Portal de Nómina Cliente,2.3.1,Área de Sistemas
-EQUIPO-031,Simulador de Cotizaciones,4.1.0,Área Comercial
-EQUIPO-031,Tablero de Indicadores Local,2.9.0,Área de Calidad
-EQUIPO-031,TeamViewer,15.70.0,TeamViewer Germany GmbH
-EQUIPO-032,7-Zip 24.08 (x64),24.08,Igor Pavlov
-EQUIPO-032,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated
-EQUIPO-032,Agenda de Visitas Comercial,1.2.0,Área Comercial
-EQUIPO-032,Asistente de Respaldo Local,7.0.2,Área de Sistemas
-EQUIPO-032,Catálogo de Productos Offline,3.14.2,Área Comercial
-EQUIPO-032,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo
-EQUIPO-032,Cliente de Impresión Segura,5.2.4,Área de Sistemas
-EQUIPO-032,Cliente de Mensajería Interna,8.0.3,Área de Sistemas
-EQUIPO-032,Conector de Facturación Electrónica,6.3.0,Área de Finanzas
-EQUIPO-032,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.
-EQUIPO-032,Diccionario Técnico Interno,2.0,Área de Ingeniería
-EQUIPO-032,Encuestas de Clima Laboral,2.2.0,Recursos Humanos
-EQUIPO-032,Firma Electrónica Corporativa,1.8.0,Área de Sistemas
-EQUIPO-032,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación
-EQUIPO-032,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo
-EQUIPO-032,Google Chrome,157.0.8103.60,Google LLC
-EQUIPO-032,Herramienta de Inventario Local,0.9.12,Área de Sistemas
-EQUIPO-032,Módulo de Tesorería,3.0.5,Área de Finanzas
-EQUIPO-032,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo
-EQUIPO-032,Paquete de Fuentes Corporativas,1.0,Área de Comunicación
-EQUIPO-032,Planificador de Rutas de Reparto,2.2.7,Área de Logística
-EQUIPO-032,Plantillas Corporativas Office,2025.10,Área de Comunicación
-EQUIPO-032,Portal de Nómina Cliente,2.3.1,Área de Sistemas
-EQUIPO-032,Simulador de Cotizaciones,4.1.0,Área Comercial
-EQUIPO-032,Tablero de Indicadores Local,2.9.0,Área de Calidad
-EQUIPO-032,Visor de Reportes de Calidad,1.0.8,Área de Calidad
-EQUIPO-033,7-Zip 24.08 (x64),24.08,Igor Pavlov
-EQUIPO-033,Archivo Digital de Expedientes,2.5.0,Área Legal
-EQUIPO-033,Calculadora de Viáticos,1.4.2,Área de Finanzas
-EQUIPO-033,Catálogo de Productos Offline,3.14.2,Área Comercial
-EQUIPO-033,Cliente de Impresión Segura,5.2.4,Área de Sistemas
-EQUIPO-033,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.
-EQUIPO-033,Encuestas de Clima Laboral,2.2.0,Recursos Humanos
-EQUIPO-033,Etiquetadora de Almacén,3.6.1,Área de Logística
-EQUIPO-033,Formulario de Incidencias,1.7.4,Área de Sistemas
-EQUIPO-033,GlobalProtect,6.3.5,Palo Alto Networks
-EQUIPO-033,Google Chrome,156.0.8079.100,Google LLC
-EQUIPO-033,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas
-EQUIPO-033,Manual de Procesos Interactivo,3.2,Área de Calidad
-EQUIPO-033,Mozilla Firefox 156.0.1 (x64 es-ES),156.0.1,Mozilla
-EQUIPO-033,Módulo de Tesorería,3.0.5,Área de Finanzas
-EQUIPO-033,Paquete de Idioma Español (México),26.11,Área de Sistemas
-EQUIPO-033,Plantillas Corporativas Office,2025.10,Área de Comunicación
-EQUIPO-033,Simulador de Cotizaciones,4.1.0,Área Comercial
-EQUIPO-033,Tablero de Indicadores Local,2.9.0,Área de Calidad
-EQUIPO-033,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.
-EQUIPO-033,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.
-EQUIPO-033,VLC media player,3.0.18,VideoLAN
-EQUIPO-033,WinRAR 5.61 (64-bit),5.61,win.rar GmbH
-EQUIPO-034,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo
-EQUIPO-034,Archivo Digital de Expedientes,2.5.0,Área Legal
-EQUIPO-034,Asistente de Respaldo Local,7.0.2,Área de Sistemas
-EQUIPO-034,Calculadora de Viáticos,1.4.2,Área de Finanzas
-EQUIPO-034,Cliente de Impresión Segura,5.2.4,Área de Sistemas
-EQUIPO-034,Cliente de Mensajería Interna,8.0.3,Área de Sistemas
-EQUIPO-034,Conector de Facturación Electrónica,6.3.0,Área de Finanzas
-EQUIPO-034,Control de Asistencia Biométrico,4.0.7,Recursos Humanos
-EQUIPO-034,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.
-EQUIPO-034,Diccionario Técnico Interno,2.0,Área de Ingeniería
-EQUIPO-034,Etiquetadora de Almacén,3.6.1,Área de Logística
-EQUIPO-034,Firma Electrónica Corporativa,1.8.0,Área de Sistemas
-EQUIPO-034,Formulario de Incidencias,1.7.4,Área de Sistemas
-EQUIPO-034,Gestor de Contratos Interno,1.3.6,Área Legal
-EQUIPO-034,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo
-EQUIPO-034,GlobalProtect,6.3.5,Palo Alto Networks
-EQUIPO-034,Google Chrome,157.0.8103.60,Google LLC
-EQUIPO-034,Herramienta de Inventario Local,0.9.12,Área de Sistemas
-EQUIPO-034,Kit de Bienvenida Digital,1.1.3,Recursos Humanos
-EQUIPO-034,Monitor de Disco Interno,1.6.0,Área de Sistemas
-EQUIPO-034,Paquete de Fuentes Corporativas,1.0,Área de Comunicación
-EQUIPO-034,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas
-EQUIPO-034,Planificador de Rutas de Reparto,2.2.7,Área de Logística
-EQUIPO-034,Portal de Nómina Cliente,2.3.1,Área de Sistemas
-EQUIPO-034,Simulador de Cotizaciones,4.1.0,Área Comercial
-EQUIPO-034,Tablero de Indicadores Local,2.9.0,Área de Calidad
-EQUIPO-034,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.
-EQUIPO-035,7-Zip 24.09 (x64 edition),24.09,Igor Pavlov
-EQUIPO-035,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo
-EQUIPO-035,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated
-EQUIPO-035,Agenda de Visitas Comercial,1.2.0,Área Comercial
-EQUIPO-035,Asistente de Respaldo Local,7.0.2,Área de Sistemas
-EQUIPO-035,Calculadora de Viáticos,1.4.2,Área de Finanzas
-EQUIPO-035,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo
-EQUIPO-035,Cliente de Impresión Segura,5.2.4,Área de Sistemas
-EQUIPO-035,Control de Asistencia Biométrico,4.0.7,Recursos Humanos
-EQUIPO-035,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.
-EQUIPO-035,Encuestas de Clima Laboral,2.2.0,Recursos Humanos
-EQUIPO-035,Gestor de Contratos Interno,1.3.6,Área Legal
-EQUIPO-035,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo
-EQUIPO-035,GlobalProtect,6.3.5,Palo Alto Networks
-EQUIPO-035,Google Chrome,157.0.8103.60,Google LLC
-EQUIPO-035,Herramienta de Inventario Local,0.9.12,Área de Sistemas
-EQUIPO-035,Kit de Bienvenida Digital,1.1.3,Recursos Humanos
-EQUIPO-035,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas
-EQUIPO-035,Módulo de Tesorería,3.0.5,Área de Finanzas
-EQUIPO-035,Paquete de Idioma Español (México),26.11,Área de Sistemas
-EQUIPO-035,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.
-EQUIPO-035,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.
-EQUIPO-035,Visor de Planos Interno,2.1.9,Área de Ingeniería
-EQUIPO-035,VLC media player,3.0.21,VideoLAN
-EQUIPO-036,7-Zip 24.08 (x64),24.08,Igor Pavlov
-EQUIPO-036,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated
-EQUIPO-036,Calculadora de Viáticos,1.4.2,Área de Finanzas
-EQUIPO-036,Catálogo de Productos Offline,3.14.2,Área Comercial
-EQUIPO-036,Cliente de Mensajería Interna,8.0.3,Área de Sistemas
-EQUIPO-036,Control de Asistencia Biométrico,4.0.7,Recursos Humanos
-EQUIPO-036,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.
-EQUIPO-036,Diccionario Técnico Interno,2.0,Área de Ingeniería
-EQUIPO-036,Encuestas de Clima Laboral,2.2.0,Recursos Humanos
-EQUIPO-036,Etiquetadora de Almacén,3.6.1,Área de Logística
-EQUIPO-036,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación
-EQUIPO-036,Formulario de Incidencias,1.7.4,Área de Sistemas
-EQUIPO-036,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo
-EQUIPO-036,GlobalProtect,6.0.14,Palo Alto Networks
-EQUIPO-036,Google Chrome,157.0.8103.78,Google LLC
-EQUIPO-036,Kit de Bienvenida Digital,1.1.3,Recursos Humanos
-EQUIPO-036,Monitor de Disco Interno,1.6.0,Área de Sistemas
-EQUIPO-036,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas
-EQUIPO-036,Planificador de Rutas de Reparto,2.2.7,Área de Logística
-EQUIPO-036,Plantillas Corporativas Office,2025.10,Área de Comunicación
-EQUIPO-036,Portal de Nómina Cliente,2.3.1,Área de Sistemas
-EQUIPO-036,Simulador de Cotizaciones,4.1.0,Área Comercial
-EQUIPO-036,Tablero de Indicadores Local,2.9.0,Área de Calidad
-EQUIPO-036,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.
-EQUIPO-036,Visor de Reportes de Calidad,1.0.8,Área de Calidad
-EQUIPO-036,WinRAR 7.13 (64-bit),7.13,win.rar GmbH
-EQUIPO-037,Adobe Acrobat Reader (64-bit),25.001.20531,Adobe Inc.
-EQUIPO-037,Calculadora de Viáticos,1.4.2,Área de Finanzas
-EQUIPO-037,Cliente de Impresión Segura,5.2.4,Área de Sistemas
-EQUIPO-037,Conector de Facturación Electrónica,6.3.0,Área de Finanzas
-EQUIPO-037,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.
-EQUIPO-037,Encuestas de Clima Laboral,2.2.0,Recursos Humanos
-EQUIPO-037,Firma Electrónica Corporativa,1.8.0,Área de Sistemas
-EQUIPO-037,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación
-EQUIPO-037,Gestor de Contratos Interno,1.3.6,Área Legal
-EQUIPO-037,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo
-EQUIPO-037,GlobalProtect,6.0.14,Palo Alto Networks
-EQUIPO-037,Google Chrome,157.0.8103.60,Google LLC
-EQUIPO-037,Herramienta de Inventario Local,0.9.12,Área de Sistemas
-EQUIPO-037,Kit de Bienvenida Digital,1.1.3,Recursos Humanos
-EQUIPO-037,Manual de Procesos Interactivo,3.2,Área de Calidad
-EQUIPO-037,Notepad++ (64-bit x64),8.8.9,Notepad++ Team
-EQUIPO-037,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo
-EQUIPO-037,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas
-EQUIPO-037,Portal de Nómina Cliente,2.3.1,Área de Sistemas
-EQUIPO-037,Tablero de Indicadores Local,2.9.0,Área de Calidad
-EQUIPO-037,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.
-EQUIPO-038,7-Zip 24.08 (x64),24.08,Igor Pavlov
-EQUIPO-038,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo
-EQUIPO-038,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated
-EQUIPO-038,Agenda de Visitas Comercial,1.2.0,Área Comercial
-EQUIPO-038,Archivo Digital de Expedientes,2.5.0,Área Legal
-EQUIPO-038,Asistente de Respaldo Local,7.0.2,Área de Sistemas
-EQUIPO-038,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo
-EQUIPO-038,Cliente de Impresión Segura,5.2.4,Área de Sistemas
-EQUIPO-038,Cliente de Mensajería Interna,8.0.3,Área de Sistemas
-EQUIPO-038,Diccionario Técnico Interno,2.0,Área de Ingeniería
-EQUIPO-038,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo
-EQUIPO-038,GlobalProtect,6.3.5,Palo Alto Networks
-EQUIPO-038,Google Chrome,157.0.8103.60,Google LLC
-EQUIPO-038,Manual de Procesos Interactivo,3.2,Área de Calidad
-EQUIPO-038,Paquete de Fuentes Corporativas,1.0,Área de Comunicación
-EQUIPO-038,Paquete de Idioma Español (México),26.11,Área de Sistemas
-EQUIPO-038,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas
-EQUIPO-038,Planificador de Rutas de Reparto,2.2.7,Área de Logística
-EQUIPO-038,Plantillas Corporativas Office,2025.10,Área de Comunicación
-EQUIPO-038,Portal de Nómina Cliente,2.3.1,Área de Sistemas
-EQUIPO-038,Sistema Contable Interno,4.2,Área de Sistemas
-EQUIPO-038,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.
-EQUIPO-038,Visor de Reportes de Calidad,1.0.8,Área de Calidad
-EQUIPO-039,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo
-EQUIPO-039,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated
-EQUIPO-039,Agente RMM Ficticio,3.0,RMM Ficticio S.A.
-EQUIPO-039,Cliente de Impresión Segura,5.2.4,Área de Sistemas
-EQUIPO-039,Cliente de Mensajería Interna,8.0.3,Área de Sistemas
-EQUIPO-039,Conector de Facturación Electrónica,6.3.0,Área de Finanzas
-EQUIPO-039,Control de Asistencia Biométrico,4.0.7,Recursos Humanos
-EQUIPO-039,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.
-EQUIPO-039,Firma Electrónica Corporativa,1.8.0,Área de Sistemas
-EQUIPO-039,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación
-EQUIPO-039,Gestor de Contratos Interno,1.3.6,Área Legal
-EQUIPO-039,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo
-EQUIPO-039,GlobalProtect,6.3.5,Palo Alto Networks
-EQUIPO-039,Google Chrome,156.0.8079.100,Google LLC
-EQUIPO-039,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas
-EQUIPO-039,Manual de Procesos Interactivo,3.2,Área de Calidad
-EQUIPO-039,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo
-EQUIPO-039,Paquete de Fuentes Corporativas,1.0,Área de Comunicación
-EQUIPO-039,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas
-EQUIPO-039,Planificador de Rutas de Reparto,2.2.7,Área de Logística
-EQUIPO-039,Visor de Planos Interno,2.1.9,Área de Ingeniería
-EQUIPO-040,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated
-EQUIPO-040,Asistente de Respaldo Local,7.0.2,Área de Sistemas
-EQUIPO-040,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo
-EQUIPO-040,Control de Asistencia Biométrico,4.0.7,Recursos Humanos
-EQUIPO-040,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.
-EQUIPO-040,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.
-EQUIPO-040,Firma Electrónica Corporativa,1.8.0,Área de Sistemas
-EQUIPO-040,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación
-EQUIPO-040,Formulario de Incidencias,1.7.4,Área de Sistemas
-EQUIPO-040,GlobalProtect,6.3.5,Palo Alto Networks
-EQUIPO-040,Google Chrome,156.0.8079.100,Google LLC
-EQUIPO-040,Kit de Bienvenida Digital,1.1.3,Recursos Humanos
-EQUIPO-040,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas
-EQUIPO-040,Monitor de Disco Interno,1.6.0,Área de Sistemas
-EQUIPO-040,Mozilla Firefox 156.0.1 (x64 es-ES),156.0.1,Mozilla
-EQUIPO-040,Módulo de Tesorería,3.0.5,Área de Finanzas
-EQUIPO-040,Paquete de Fuentes Corporativas,1.0,Área de Comunicación
-EQUIPO-040,Paquete de Idioma Español (México),26.11,Área de Sistemas
-EQUIPO-040,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas
-EQUIPO-040,Planificador de Rutas de Reparto,2.2.7,Área de Logística
-EQUIPO-040,Plantillas Corporativas Office,2025.10,Área de Comunicación
-EQUIPO-040,PuTTY release 0.84 (64-bit),0.84,Simon Tatham
-EQUIPO-040,Visor de Planos Interno,2.1.9,Área de Ingeniería
-EQUIPO-040,Visor de Reportes de Calidad,1.0.8,Área de Calidad
-EQUIPO-041,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo
-EQUIPO-041,Adobe Acrobat Reader (64-bit),25.001.20531,Adobe Inc.
-EQUIPO-041,Calculadora de Viáticos,1.4.2,Área de Finanzas
-EQUIPO-041,Cliente de Impresión Segura,5.2.4,Área de Sistemas
-EQUIPO-041,Conector de Facturación Electrónica,6.3.0,Área de Finanzas
-EQUIPO-041,Control de Asistencia Biométrico,4.0.7,Recursos Humanos
-EQUIPO-041,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.
-EQUIPO-041,Encuestas de Clima Laboral,2.2.0,Recursos Humanos
-EQUIPO-041,Formulario de Incidencias,1.7.4,Área de Sistemas
-EQUIPO-041,GlobalProtect,6.3.5,Palo Alto Networks
-EQUIPO-041,Google Chrome,157.0.8103.78,Google LLC
-EQUIPO-041,Herramienta de Inventario Local,0.9.12,Área de Sistemas
-EQUIPO-041,Manual de Procesos Interactivo,3.2,Área de Calidad
-EQUIPO-041,Notepad++ (64-bit x64),8.8.9,Notepad++ Team
-EQUIPO-041,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo
-EQUIPO-041,Paquete de Fuentes Corporativas,1.0,Área de Comunicación
-EQUIPO-041,Paquete de Idioma Español (México),26.11,Área de Sistemas
-EQUIPO-041,Planificador de Rutas de Reparto,2.2.7,Área de Logística
-EQUIPO-041,Portal de Nómina Cliente,2.3.1,Área de Sistemas
-EQUIPO-041,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.
-EQUIPO-041,Visor de Reportes de Calidad,1.0.8,Área de Calidad
-EQUIPO-042,7-Zip 24.09 (x64 edition),24.09,Igor Pavlov
-EQUIPO-042,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo
-EQUIPO-042,Adobe Acrobat Reader (64-bit),25.001.20531,Adobe Inc.
-EQUIPO-042,Agente RMM Ficticio,3.0,RMM Ficticio S.A.
-EQUIPO-042,Archivo Digital de Expedientes,2.5.0,Área Legal
-EQUIPO-042,Calculadora de Viáticos,1.4.2,Área de Finanzas
-EQUIPO-042,Catálogo de Productos Offline,3.14.2,Área Comercial
-EQUIPO-042,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo
-EQUIPO-042,Conector de Facturación Electrónica,6.3.0,Área de Finanzas
-EQUIPO-042,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.
-EQUIPO-042,Encuestas de Clima Laboral,2.2.0,Recursos Humanos
-EQUIPO-042,Etiquetadora de Almacén,3.6.1,Área de Logística
-EQUIPO-042,Firma Electrónica Corporativa,1.8.0,Área de Sistemas
-EQUIPO-042,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación
-EQUIPO-042,Formulario de Incidencias,1.7.4,Área de Sistemas
-EQUIPO-042,Google Chrome,157.0.8103.60,Google LLC
-EQUIPO-042,Kit de Bienvenida Digital,1.1.3,Recursos Humanos
-EQUIPO-042,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas
-EQUIPO-042,Monitor de Disco Interno,1.6.0,Área de Sistemas
-EQUIPO-042,Módulo de Tesorería,3.0.5,Área de Finanzas
-EQUIPO-042,Paquete de Fuentes Corporativas,1.0,Área de Comunicación
-EQUIPO-042,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas
-EQUIPO-042,Plantillas Corporativas Office,2025.10,Área de Comunicación
-EQUIPO-042,Tablero de Indicadores Local,2.9.0,Área de Calidad
-EQUIPO-042,Visor de Reportes de Calidad,1.0.8,Área de Calidad
-EQUIPO-042,VLC media player,3.0.18,VideoLAN
-EQUIPO-042,WinRAR 7.12 (64-bit),7.12,win.rar GmbH
-EQUIPO-043,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated
-EQUIPO-043,Archivo Digital de Expedientes,2.5.0,Área Legal
-EQUIPO-043,Asistente de Respaldo Local,7.0.2,Área de Sistemas
-EQUIPO-043,Calculadora de Viáticos,1.4.2,Área de Finanzas
-EQUIPO-043,Catálogo de Productos Offline,3.14.2,Área Comercial
-EQUIPO-043,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.
-EQUIPO-043,Diccionario Técnico Interno,2.0,Área de Ingeniería
-EQUIPO-043,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación
-EQUIPO-043,Gestor de Contratos Interno,1.3.6,Área Legal
-EQUIPO-043,GlobalProtect,6.3.5,Palo Alto Networks
-EQUIPO-043,Google Chrome,157.0.8103.60,Google LLC
-EQUIPO-043,Herramienta de Inventario Local,0.9.12,Área de Sistemas
-EQUIPO-043,Kit de Bienvenida Digital,1.1.3,Recursos Humanos
-EQUIPO-043,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas
-EQUIPO-043,Lector PDF Corporativo,,Área de Sistemas
-EQUIPO-043,Manual de Procesos Interactivo,3.2,Área de Calidad
-EQUIPO-043,Monitor de Disco Interno,1.6.0,Área de Sistemas
-EQUIPO-043,Notepad++ (64-bit x64),8.9.6.4,Notepad++ Team
-EQUIPO-043,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo
-EQUIPO-043,Paquete de Idioma Español (México),26.11,Área de Sistemas
-EQUIPO-043,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas
-EQUIPO-043,Simulador de Cotizaciones,4.1.0,Área Comercial
-EQUIPO-043,Tablero de Indicadores Local,2.9.0,Área de Calidad
-EQUIPO-043,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.
-EQUIPO-043,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.
-EQUIPO-043,Visor de Planos Interno,2.1.9,Área de Ingeniería
-EQUIPO-043,Visor de Reportes de Calidad,1.0.8,Área de Calidad
-EQUIPO-043,WinRAR 7.13 (64-bit),7.13,win.rar GmbH
-EQUIPO-044,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo
-EQUIPO-044,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated
-EQUIPO-044,Archivo Digital de Expedientes,2.5.0,Área Legal
-EQUIPO-044,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo
-EQUIPO-044,Conector de Facturación Electrónica,6.3.0,Área de Finanzas
-EQUIPO-044,Control de Asistencia Biométrico,4.0.7,Recursos Humanos
-EQUIPO-044,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.
-EQUIPO-044,Diccionario Técnico Interno,2.0,Área de Ingeniería
-EQUIPO-044,Firma Electrónica Corporativa,1.8.0,Área de Sistemas
-EQUIPO-044,Formulario de Incidencias,1.7.4,Área de Sistemas
-EQUIPO-044,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo
-EQUIPO-044,GlobalProtect,6.3.5,Palo Alto Networks
-EQUIPO-044,Google Chrome,157.0.8103.60,Google LLC
-EQUIPO-044,Herramienta de Inventario Local,0.9.12,Área de Sistemas
-EQUIPO-044,Mozilla Firefox (x64 es-ES),157.0,Mozilla
-EQUIPO-044,Notepad++ (64-bit x64),8.8.9,Notepad++ Team
-EQUIPO-044,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas
-EQUIPO-044,Planificador de Rutas de Reparto,2.2.7,Área de Logística
-EQUIPO-044,Plantillas Corporativas Office,2025.10,Área de Comunicación
-EQUIPO-044,Sistema Contable Interno,4.2,Área de Sistemas
-EQUIPO-044,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.
-EQUIPO-044,VLC media player,3.0.21,VideoLAN
-EQUIPO-045,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo
-EQUIPO-045,Adobe Acrobat Reader (64-bit),25.001.20531,Adobe Inc.
-EQUIPO-045,Cliente de Impresión Segura,5.2.4,Área de Sistemas
-EQUIPO-045,Cliente de Mensajería Interna,8.0.3,Área de Sistemas
-EQUIPO-045,Conector de Facturación Electrónica,6.3.0,Área de Finanzas
-EQUIPO-045,Diccionario Técnico Interno,2.0,Área de Ingeniería
-EQUIPO-045,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación
-EQUIPO-045,Gestor de Contratos Interno,1.3.6,Área Legal
-EQUIPO-045,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo
-EQUIPO-045,GlobalProtect,6.0.14,Palo Alto Networks
-EQUIPO-045,Google Chrome,156.0.8079.100,Google LLC
-EQUIPO-045,Herramienta de Inventario Local,0.9.12,Área de Sistemas
-EQUIPO-045,Kit de Bienvenida Digital,1.1.3,Recursos Humanos
-EQUIPO-045,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas
-EQUIPO-045,Manual de Procesos Interactivo,3.2,Área de Calidad
-EQUIPO-045,Mozilla Firefox 156.0.1 (x64 es-ES),156.0.1,Mozilla
-EQUIPO-045,Notepad++ (64-bit x64),8.9.6.4,Notepad++ Team
-EQUIPO-045,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo
-EQUIPO-045,Paquete de Fuentes Corporativas,1.0,Área de Comunicación
-EQUIPO-045,Portal de Nómina Cliente,2.3.1,Área de Sistemas
-EQUIPO-045,Tablero de Indicadores Local,2.9.0,Área de Calidad
-EQUIPO-045,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.
-EQUIPO-046,7-Zip 26.03 (x64),26.03,Igor Pavlov
-EQUIPO-046,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated
-EQUIPO-046,Agenda de Visitas Comercial,1.2.0,Área Comercial
-EQUIPO-046,Cliente de Mensajería Interna,8.0.3,Área de Sistemas
-EQUIPO-046,Conector de Facturación Electrónica,6.3.0,Área de Finanzas
-EQUIPO-046,Control de Asistencia Biométrico,4.0.7,Recursos Humanos
-EQUIPO-046,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.
-EQUIPO-046,Encuestas de Clima Laboral,2.2.0,Recursos Humanos
-EQUIPO-046,Etiquetadora de Almacén,3.6.1,Área de Logística
-EQUIPO-046,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación
-EQUIPO-046,GlobalProtect,6.3.5,Palo Alto Networks
-EQUIPO-046,Google Chrome,157.0.8103.78,Google LLC
-EQUIPO-046,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas
-EQUIPO-046,Manual de Procesos Interactivo,3.2,Área de Calidad
-EQUIPO-046,Monitor de Disco Interno,1.6.0,Área de Sistemas
-EQUIPO-046,Paquete de Fuentes Corporativas,1.0,Área de Comunicación
-EQUIPO-046,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas
-EQUIPO-046,Planificador de Rutas de Reparto,2.2.7,Área de Logística
-EQUIPO-046,Plantillas Corporativas Office,2025.10,Área de Comunicación
-EQUIPO-046,Simulador de Cotizaciones,4.1.0,Área Comercial
-EQUIPO-046,Visor de Planos Interno,2.1.9,Área de Ingeniería
-EQUIPO-046,Visor de Reportes de Calidad,1.0.8,Área de Calidad
-EQUIPO-047,Adobe Acrobat Reader (64-bit),25.001.20531,Adobe Inc.
-EQUIPO-047,Agenda de Visitas Comercial,1.2.0,Área Comercial
-EQUIPO-047,Asistente de Respaldo Local,7.0.2,Área de Sistemas
-EQUIPO-047,Cliente de Impresión Segura,5.2.4,Área de Sistemas
-EQUIPO-047,Diccionario Técnico Interno,2.0,Área de Ingeniería
-EQUIPO-047,Encuestas de Clima Laboral,2.2.0,Recursos Humanos
-EQUIPO-047,Etiquetadora de Almacén,3.6.1,Área de Logística
-EQUIPO-047,Firma Electrónica Corporativa,1.8.0,Área de Sistemas
-EQUIPO-047,Formulario de Incidencias,1.7.4,Área de Sistemas
-EQUIPO-047,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo
-EQUIPO-047,GlobalProtect,6.3.5,Palo Alto Networks
-EQUIPO-047,Google Chrome,157.0.8103.78,Google LLC
-EQUIPO-047,Herramienta de Inventario Local,0.9.12,Área de Sistemas
-EQUIPO-047,Kit de Bienvenida Digital,1.1.3,Recursos Humanos
-EQUIPO-047,Manual de Procesos Interactivo,3.2,Área de Calidad
-EQUIPO-047,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas
-EQUIPO-047,Portal de Nómina Cliente,2.3.1,Área de Sistemas
-EQUIPO-047,Visor de Reportes de Calidad,1.0.8,Área de Calidad
-EQUIPO-047,VLC media player,3.0.21,VideoLAN
-EQUIPO-047,WinRAR 7.12 (64-bit),7.12,win.rar GmbH
-EQUIPO-048,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo
-EQUIPO-048,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated
-EQUIPO-048,Agenda de Visitas Comercial,1.2.0,Área Comercial
-EQUIPO-048,Archivo Digital de Expedientes,2.5.0,Área Legal
-EQUIPO-048,Asistente de Respaldo Local,7.0.2,Área de Sistemas
-EQUIPO-048,Calculadora de Viáticos,1.4.2,Área de Finanzas
-EQUIPO-048,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo
-EQUIPO-048,Conector de Facturación Electrónica,6.3.0,Área de Finanzas
-EQUIPO-048,Control de Asistencia Biométrico,4.0.7,Recursos Humanos
-EQUIPO-048,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.
-EQUIPO-048,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.
-EQUIPO-048,Diccionario Técnico Interno,2.0,Área de Ingeniería
-EQUIPO-048,Encuestas de Clima Laboral,2.2.0,Recursos Humanos
-EQUIPO-048,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación
-EQUIPO-048,Formulario de Incidencias,1.7.4,Área de Sistemas
-EQUIPO-048,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo
-EQUIPO-048,GlobalProtect,6.3.5,Palo Alto Networks
-EQUIPO-048,Google Chrome,157.0.8103.78,Google LLC
-EQUIPO-048,Monitor de Disco Interno,1.6.0,Área de Sistemas
-EQUIPO-048,Mozilla Firefox 156.0.1 (x64 es-ES),156.0.1,Mozilla
-EQUIPO-048,Paquete de Fuentes Corporativas,1.0,Área de Comunicación
-EQUIPO-048,Paquete de Idioma Español (México),26.11,Área de Sistemas
-EQUIPO-048,Planificador de Rutas de Reparto,2.2.7,Área de Logística
-EQUIPO-048,Simulador de Cotizaciones,4.1.0,Área Comercial
-EQUIPO-048,Tablero de Indicadores Local,2.9.0,Área de Calidad
-EQUIPO-048,TeamViewer,15.70.0,TeamViewer Germany GmbH
-EQUIPO-048,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.
-EQUIPO-048,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.
-EQUIPO-048,Visor de Reportes de Calidad,1.0.8,Área de Calidad
-EQUIPO-049,7-Zip 24.09 (x64 edition),24.09,Igor Pavlov
-EQUIPO-049,Agenda de Visitas Comercial,1.2.0,Área Comercial
-EQUIPO-049,Archivo Digital de Expedientes,2.5.0,Área Legal
-EQUIPO-049,Conector de Facturación Electrónica,6.3.0,Área de Finanzas
-EQUIPO-049,Etiquetadora de Almacén,3.6.1,Área de Logística
-EQUIPO-049,Firma Electrónica Corporativa,1.8.0,Área de Sistemas
-EQUIPO-049,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación
-EQUIPO-049,Gestor de Contratos Interno,1.3.6,Área Legal
-EQUIPO-049,GlobalProtect,6.3.5,Palo Alto Networks
-EQUIPO-049,Google Chrome,156.0.8079.100,Google LLC
-EQUIPO-049,Herramienta de Inventario Local,0.9.12,Área de Sistemas
-EQUIPO-049,Manual de Procesos Interactivo,3.2,Área de Calidad
-EQUIPO-049,Módulo de Tesorería,3.0.5,Área de Finanzas
-EQUIPO-049,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo
-EQUIPO-049,Paquete de Fuentes Corporativas,1.0,Área de Comunicación
-EQUIPO-049,Planificador de Rutas de Reparto,2.2.7,Área de Logística
-EQUIPO-049,Portal de Nómina Cliente,2.3.1,Área de Sistemas
-EQUIPO-049,Sistema Contable Interno,4.2,Área de Sistemas
-EQUIPO-049,Tablero de Indicadores Local,2.9.0,Área de Calidad
-EQUIPO-049,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.
-EQUIPO-050,7-Zip 26.03 (x64),26.03,Igor Pavlov
-EQUIPO-050,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo
-EQUIPO-050,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated
-EQUIPO-050,Agenda de Visitas Comercial,1.2.0,Área Comercial
-EQUIPO-050,Calculadora de Viáticos,1.4.2,Área de Finanzas
-EQUIPO-050,Catálogo de Productos Offline,3.14.2,Área Comercial
-EQUIPO-050,Conector de Facturación Electrónica,6.3.0,Área de Finanzas
-EQUIPO-050,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.
-EQUIPO-050,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.
-EQUIPO-050,Encuestas de Clima Laboral,2.2.0,Recursos Humanos
-EQUIPO-050,Firma Electrónica Corporativa,1.8.0,Área de Sistemas
-EQUIPO-050,Formulario de Incidencias,1.7.4,Área de Sistemas
-EQUIPO-050,Gestor de Contratos Interno,1.3.6,Área Legal
-EQUIPO-050,GlobalProtect,6.3.5,Palo Alto Networks
-EQUIPO-050,Google Chrome,156.0.8079.100,Google LLC
-EQUIPO-050,Kit de Bienvenida Digital,1.1.3,Recursos Humanos
-EQUIPO-050,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas
-EQUIPO-050,Monitor de Disco Interno,1.6.0,Área de Sistemas
-EQUIPO-050,Módulo de Tesorería,3.0.5,Área de Finanzas
-EQUIPO-050,Paquete de Idioma Español (México),26.11,Área de Sistemas
-EQUIPO-050,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas
-EQUIPO-050,Planificador de Rutas de Reparto,2.2.7,Área de Logística
-EQUIPO-050,Portal de Nómina Cliente,2.3.1,Área de Sistemas
-EQUIPO-050,Simulador de Cotizaciones,4.1.0,Área Comercial
-EQUIPO-050,Tablero de Indicadores Local,2.9.0,Área de Calidad
-EQUIPO-050,TeamViewer 14,14.7.1965,TeamViewer Germany GmbH
-EQUIPO-050,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.
-EQUIPO-050,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.
-EQUIPO-050,Visor de Reportes de Calidad,1.0.8,Área de Calidad
-SRV-01,Calculadora de Viáticos,1.4.2,Área de Finanzas
-SRV-01,Cliente de Impresión Segura,5.2.4,Área de Sistemas
-SRV-01,Conector de Facturación Electrónica,6.3.0,Área de Finanzas
-SRV-01,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.
-SRV-01,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.
-SRV-01,Diccionario Técnico Interno,2.0,Área de Ingeniería
-SRV-01,Encuestas de Clima Laboral,2.2.0,Recursos Humanos
-SRV-01,Firma Electrónica Corporativa,1.8.0,Área de Sistemas
-SRV-01,Gestor de Contratos Interno,1.3.6,Área Legal
-SRV-01,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo
-SRV-01,Herramienta de Inventario Local,0.9.12,Área de Sistemas
-SRV-01,Monitor de Disco Interno,1.6.0,Área de Sistemas
-SRV-01,nginx,1.24.0,"F5, Inc."
-SRV-01,Paquete de Fuentes Corporativas,1.0,Área de Comunicación
-SRV-01,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas
-SRV-01,Planificador de Rutas de Reparto,2.2.7,Área de Logística
-SRV-01,Simulador de Cotizaciones,4.1.0,Área Comercial
-SRV-01,Tablero de Indicadores Local,2.9.0,Área de Calidad
-SRV-01,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.
-SRV-02,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo
-SRV-02,Cliente de Impresión Segura,5.2.4,Área de Sistemas
-SRV-02,Cliente de Mensajería Interna,8.0.3,Área de Sistemas
-SRV-02,Control de Asistencia Biométrico,4.0.7,Recursos Humanos
-SRV-02,Diccionario Técnico Interno,2.0,Área de Ingeniería
-SRV-02,Encuestas de Clima Laboral,2.2.0,Recursos Humanos
-SRV-02,Etiquetadora de Almacén,3.6.1,Área de Logística
-SRV-02,Firma Electrónica Corporativa,1.8.0,Área de Sistemas
-SRV-02,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación
-SRV-02,Formulario de Incidencias,1.7.4,Área de Sistemas
-SRV-02,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo
-SRV-02,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas
-SRV-02,Monitor de Disco Interno,1.6.0,Área de Sistemas
-SRV-02,Módulo de Tesorería,3.0.5,Área de Finanzas
-SRV-02,nginx,1.27.4,"F5, Inc."
-SRV-02,Planificador de Rutas de Reparto,2.2.7,Área de Logística
-SRV-02,Plantillas Corporativas Office,2025.10,Área de Comunicación
-SRV-02,Portal de Nómina Cliente,2.3.1,Área de Sistemas
-SRV-02,Tablero de Indicadores Local,2.9.0,Área de Calidad
-SRV-02,Visor de Planos Interno,2.1.9,Área de Ingeniería
+equipo,programa,version,proveedor,sistema
+EQUIPO-001,Archivo Digital de Expedientes,2.5.0,Área Legal,Windows 11 Pro
+EQUIPO-001,Calculadora de Viáticos,1.4.2,Área de Finanzas,Windows 11 Pro
+EQUIPO-001,Cliente de Mensajería Interna,8.0.3,Área de Sistemas,Windows 11 Pro
+EQUIPO-001,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.,Windows 11 Pro
+EQUIPO-001,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.,Windows 11 Pro
+EQUIPO-001,Diccionario Técnico Interno,2.0,Área de Ingeniería,Windows 11 Pro
+EQUIPO-001,Eclipse Temurin JDK with Hotspot 21.0.5+11 (x64),21.0.5+11,Eclipse Adoptium,Windows 11 Pro
+EQUIPO-001,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación,Windows 11 Pro
+EQUIPO-001,Gestor de Contratos Interno,1.3.6,Área Legal,Windows 11 Pro
+EQUIPO-001,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-001,Git,2.51.0,The Git Development Community,Windows 11 Pro
+EQUIPO-001,GlobalProtect,6.3.5,Palo Alto Networks,Windows 11 Pro
+EQUIPO-001,Google Chrome,157.0.8103.78,Google LLC,Windows 11 Pro
+EQUIPO-001,Kit de Bienvenida Digital,1.1.3,Recursos Humanos,Windows 11 Pro
+EQUIPO-001,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-001,MongoDB Compass,1.49.7,MongoDB Inc.,Windows 11 Pro
+EQUIPO-001,Node.js,24.22.1,Node.js Foundation,Windows 11 Pro
+EQUIPO-001,Notepad++ (64-bit x64),8.9.6.4,Notepad++ Team,Windows 11 Pro
+EQUIPO-001,Paquete de Idioma Español (México),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-001,Planificador de Rutas de Reparto,2.2.7,Área de Logística,Windows 11 Pro
+EQUIPO-001,Python 3.12.10 (64-bit),3.12.10150.0,Python Software Foundation,Windows 11 Pro
+EQUIPO-001,Simulador de Cotizaciones,4.1.0,Área Comercial,Windows 11 Pro
+EQUIPO-001,Tablero de Indicadores Local,2.9.0,Área de Calidad,Windows 11 Pro
+EQUIPO-001,TeamViewer,15.70.0,TeamViewer Germany GmbH,Windows 11 Pro
+EQUIPO-001,Visor de Planos Interno,2.1.9,Área de Ingeniería,Windows 11 Pro
+EQUIPO-001,Visor de Reportes de Calidad,1.0.8,Área de Calidad,Windows 11 Pro
+EQUIPO-002,7-Zip 24.08 (x64),24.08,Igor Pavlov,Windows 11 Pro
+EQUIPO-002,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated,Windows 11 Pro
+EQUIPO-002,Asistente de Respaldo Local,7.0.2,Área de Sistemas,Windows 11 Pro
+EQUIPO-002,Calculadora de Viáticos,1.4.2,Área de Finanzas,Windows 11 Pro
+EQUIPO-002,Catálogo de Productos Offline,3.14.2,Área Comercial,Windows 11 Pro
+EQUIPO-002,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-002,Cliente de Impresión Segura,5.2.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-002,Cliente de Mensajería Interna,8.0.3,Área de Sistemas,Windows 11 Pro
+EQUIPO-002,Conector de Facturación Electrónica,6.3.0,Área de Finanzas,Windows 11 Pro
+EQUIPO-002,Control de Asistencia Biométrico,4.0.7,Recursos Humanos,Windows 11 Pro
+EQUIPO-002,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.,Windows 11 Pro
+EQUIPO-002,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.,Windows 11 Pro
+EQUIPO-002,Eclipse Temurin JDK with Hotspot 21.0.5+11 (x64),21.0.5+11,Eclipse Adoptium,Windows 11 Pro
+EQUIPO-002,Encuestas de Clima Laboral,2.2.0,Recursos Humanos,Windows 11 Pro
+EQUIPO-002,Firma Electrónica Corporativa,1.8.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-002,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación,Windows 11 Pro
+EQUIPO-002,Gestor de Contratos Interno,1.3.6,Área Legal,Windows 11 Pro
+EQUIPO-002,Git,2.45.4,The Git Development Community,Windows 11 Pro
+EQUIPO-002,GlobalProtect,6.3.5,Palo Alto Networks,Windows 11 Pro
+EQUIPO-002,Google Chrome,157.0.8103.78,Google LLC,Windows 11 Pro
+EQUIPO-002,Herramienta de Inventario Local,0.9.12,Área de Sistemas,Windows 11 Pro
+EQUIPO-002,Manual de Procesos Interactivo,3.2,Área de Calidad,Windows 11 Pro
+EQUIPO-002,Mozilla Firefox (x64 es-ES),157.0,Mozilla,Windows 11 Pro
+EQUIPO-002,Módulo de Tesorería,3.0.5,Área de Finanzas,Windows 11 Pro
+EQUIPO-002,Node.js,18.18.0,Node.js Foundation,Windows 11 Pro
+EQUIPO-002,Paquete de Fuentes Corporativas,1.0,Área de Comunicación,Windows 11 Pro
+EQUIPO-002,Paquete de Idioma Español (México),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-002,Planificador de Rutas de Reparto,2.2.7,Área de Logística,Windows 11 Pro
+EQUIPO-002,Plantillas Corporativas Office,2025.10,Área de Comunicación,Windows 11 Pro
+EQUIPO-002,Python 3.11.15 (64-bit),3.11.15,Python Software Foundation,Windows 11 Pro
+EQUIPO-002,Simulador de Cotizaciones,4.1.0,Área Comercial,Windows 11 Pro
+EQUIPO-002,Tablero de Indicadores Local,2.9.0,Área de Calidad,Windows 11 Pro
+EQUIPO-002,Visor de Planos Interno,2.1.9,Área de Ingeniería,Windows 11 Pro
+EQUIPO-002,Visor de Reportes de Calidad,1.0.8,Área de Calidad,Windows 11 Pro
+EQUIPO-003,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-003,Agenda de Visitas Comercial,1.2.0,Área Comercial,Windows 11 Pro
+EQUIPO-003,Catálogo de Productos Offline,3.14.2,Área Comercial,Windows 11 Pro
+EQUIPO-003,Cliente de Impresión Segura,5.2.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-003,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.,Windows 11 Pro
+EQUIPO-003,Diccionario Técnico Interno,2.0,Área de Ingeniería,Windows 11 Pro
+EQUIPO-003,Docker Desktop,4.72.0,Docker Inc.,Windows 11 Pro
+EQUIPO-003,Eclipse Temurin JDK with Hotspot 17.0.10+7 (x64),17.0.10+7,Eclipse Adoptium,Windows 11 Pro
+EQUIPO-003,Encuestas de Clima Laboral,2.2.0,Recursos Humanos,Windows 11 Pro
+EQUIPO-003,Etiquetadora de Almacén,3.6.1,Área de Logística,Windows 11 Pro
+EQUIPO-003,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación,Windows 11 Pro
+EQUIPO-003,Gestor de Contratos Interno,1.3.6,Área Legal,Windows 11 Pro
+EQUIPO-003,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-003,Git,2.51.0,The Git Development Community,Windows 11 Pro
+EQUIPO-003,GlobalProtect,6.0.14,Palo Alto Networks,Windows 11 Pro
+EQUIPO-003,Google Chrome,157.0.8103.78,Google LLC,Windows 11 Pro
+EQUIPO-003,Node.js,22.23.4,Node.js Foundation,Windows 11 Pro
+EQUIPO-003,Notepad++ (64-bit x64),8.9.6.4,Notepad++ Team,Windows 11 Pro
+EQUIPO-003,Paquete de Fuentes Corporativas,1.0,Área de Comunicación,Windows 11 Pro
+EQUIPO-003,Paquete de Idioma Español (México),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-003,Plantillas Corporativas Office,2025.10,Área de Comunicación,Windows 11 Pro
+EQUIPO-003,Python 3.13.9 (64-bit),3.13.9,Python Software Foundation,Windows 11 Pro
+EQUIPO-003,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-004,Agenda de Visitas Comercial,1.2.0,Área Comercial,Windows 11 Pro
+EQUIPO-004,Asistente de Respaldo Local,7.0.2,Área de Sistemas,Windows 11 Pro
+EQUIPO-004,Calculadora de Viáticos,1.4.2,Área de Finanzas,Windows 11 Pro
+EQUIPO-004,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-004,Cliente de Impresión Segura,5.2.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-004,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.,Windows 11 Pro
+EQUIPO-004,Docker Desktop,4.62.0,Docker Inc.,Windows 11 Pro
+EQUIPO-004,Eclipse Temurin JDK with Hotspot 21.0.5+11 (x64),21.0.5+11,Eclipse Adoptium,Windows 11 Pro
+EQUIPO-004,Encuestas de Clima Laboral,2.2.0,Recursos Humanos,Windows 11 Pro
+EQUIPO-004,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación,Windows 11 Pro
+EQUIPO-004,Gestor de Contratos Interno,1.3.6,Área Legal,Windows 11 Pro
+EQUIPO-004,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-004,Git,2.45.1.windows.1,The Git Development Community,Windows 11 Pro
+EQUIPO-004,GlobalProtect,6.3.5,Palo Alto Networks,Windows 11 Pro
+EQUIPO-004,Google Chrome,157.0.8103.60,Google LLC,Windows 11 Pro
+EQUIPO-004,Herramienta de Inventario Local,0.9.12,Área de Sistemas,Windows 11 Pro
+EQUIPO-004,MongoDB Compass,1.49.7,MongoDB Inc.,Windows 11 Pro
+EQUIPO-004,Monitor de Disco Interno,1.6.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-004,Mozilla Firefox (x64 es-ES),157.0,Mozilla,Windows 11 Pro
+EQUIPO-004,Node.js,22.23.4,Node.js Foundation,Windows 11 Pro
+EQUIPO-004,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-004,Planificador de Rutas de Reparto,2.2.7,Área de Logística,Windows 11 Pro
+EQUIPO-004,Plantillas Corporativas Office,2025.10,Área de Comunicación,Windows 11 Pro
+EQUIPO-004,Python 3.12.10 (64-bit),3.12.10150.0,Python Software Foundation,Windows 11 Pro
+EQUIPO-004,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-004,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-004,Visor de Planos Interno,2.1.9,Área de Ingeniería,Windows 11 Pro
+EQUIPO-004,WinRAR 6.22 (32-bit),6.22,win.rar GmbH,Windows 11 Pro
+EQUIPO-005,7-Zip 24.08 (x64),24.08,Igor Pavlov,Windows 11 Pro
+EQUIPO-005,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-005,Adobe Acrobat Reader (64-bit),25.001.20531,Adobe Inc.,Windows 11 Pro
+EQUIPO-005,Agenda de Visitas Comercial,1.2.0,Área Comercial,Windows 11 Pro
+EQUIPO-005,Archivo Digital de Expedientes,2.5.0,Área Legal,Windows 11 Pro
+EQUIPO-005,Asistente de Respaldo Local,7.0.2,Área de Sistemas,Windows 11 Pro
+EQUIPO-005,Calculadora de Viáticos,1.4.2,Área de Finanzas,Windows 11 Pro
+EQUIPO-005,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-005,Cliente de Impresión Segura,5.2.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-005,Cliente de Mensajería Interna,8.0.3,Área de Sistemas,Windows 11 Pro
+EQUIPO-005,Conector de Facturación Electrónica,6.3.0,Área de Finanzas,Windows 11 Pro
+EQUIPO-005,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.,Windows 11 Pro
+EQUIPO-005,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.,Windows 11 Pro
+EQUIPO-005,Docker,"28.1.1, build 4eba377",Docker Inc.,Windows 11 Pro
+EQUIPO-005,Eclipse Temurin JDK with Hotspot 17.0.10+7 (x64),17.0.10+7,Eclipse Adoptium,Windows 11 Pro
+EQUIPO-005,Etiquetadora de Almacén,3.6.1,Área de Logística,Windows 11 Pro
+EQUIPO-005,Gestor de Contratos Interno,1.3.6,Área Legal,Windows 11 Pro
+EQUIPO-005,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-005,Git,2.45.1.windows.1,The Git Development Community,Windows 11 Pro
+EQUIPO-005,GlobalProtect,6.3.5,Palo Alto Networks,Windows 11 Pro
+EQUIPO-005,Google Chrome,157.0.8103.78,Google LLC,Windows 11 Pro
+EQUIPO-005,Herramienta de Inventario Local,0.9.12,Área de Sistemas,Windows 11 Pro
+EQUIPO-005,Mozilla Firefox (x64 es-ES),157.0,Mozilla,Windows 11 Pro
+EQUIPO-005,Node.js,20.18.0,Node.js Foundation,Windows 11 Pro
+EQUIPO-005,Notepad++ (64-bit x64),8.9.6.4,Notepad++ Team,Windows 11 Pro
+EQUIPO-005,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-005,Planificador de Rutas de Reparto,2.2.7,Área de Logística,Windows 11 Pro
+EQUIPO-005,PuTTY release 0.81 (64-bit),0.81,Simon Tatham,Windows 11 Pro
+EQUIPO-005,Python 3.11.15 (64-bit),3.11.15,Python Software Foundation,Windows 11 Pro
+EQUIPO-005,Tablero de Indicadores Local,2.9.0,Área de Calidad,Windows 11 Pro
+EQUIPO-005,TeamViewer,15.70.0,TeamViewer Germany GmbH,Windows 11 Pro
+EQUIPO-005,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-005,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-005,Visor de Planos Interno,2.1.9,Área de Ingeniería,Windows 11 Pro
+EQUIPO-005,Visor de Reportes de Calidad,1.0.8,Área de Calidad,Windows 11 Pro
+EQUIPO-005,VLC media player,3.0.18,VideoLAN,Windows 11 Pro
+EQUIPO-006,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated,Windows 11 Pro
+EQUIPO-006,Asistente de Respaldo Local,7.0.2,Área de Sistemas,Windows 11 Pro
+EQUIPO-006,Catálogo de Productos Offline,3.14.2,Área Comercial,Windows 11 Pro
+EQUIPO-006,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-006,Cliente de Impresión Segura,5.2.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-006,Control de Asistencia Biométrico,4.0.7,Recursos Humanos,Windows 11 Pro
+EQUIPO-006,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.,Windows 11 Pro
+EQUIPO-006,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.,Windows 11 Pro
+EQUIPO-006,Docker Desktop,4.58.0,Docker Inc.,Windows 11 Pro
+EQUIPO-006,Etiquetadora de Almacén,3.6.1,Área de Logística,Windows 11 Pro
+EQUIPO-006,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación,Windows 11 Pro
+EQUIPO-006,Formulario de Incidencias,1.7.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-006,Git,2.51.0,The Git Development Community,Windows 11 Pro
+EQUIPO-006,GlobalProtect,6.0.14,Palo Alto Networks,Windows 11 Pro
+EQUIPO-006,Google Chrome,157.0.8103.78,Google LLC,Windows 11 Pro
+EQUIPO-006,Herramienta de Inventario Local,0.9.12,Área de Sistemas,Windows 11 Pro
+EQUIPO-006,Kit de Bienvenida Digital,1.1.3,Recursos Humanos,Windows 11 Pro
+EQUIPO-006,Manual de Procesos Interactivo,3.2,Área de Calidad,Windows 11 Pro
+EQUIPO-006,MongoDB Compass,1.36.3,MongoDB Inc.,Windows 11 Pro
+EQUIPO-006,Monitor de Disco Interno,1.6.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-006,Node.js,18.20.4,Node.js Foundation,Windows 11 Pro
+EQUIPO-006,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-006,Paquete de Fuentes Corporativas,1.0,Área de Comunicación,Windows 11 Pro
+EQUIPO-006,Plantillas Corporativas Office,2025.10,Área de Comunicación,Windows 11 Pro
+EQUIPO-006,Portal de Nómina Cliente,2.3.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-006,Simulador de Cotizaciones,4.1.0,Área Comercial,Windows 11 Pro
+EQUIPO-006,Tablero de Indicadores Local,2.9.0,Área de Calidad,Windows 11 Pro
+EQUIPO-006,Visor de Planos Interno,2.1.9,Área de Ingeniería,Windows 11 Pro
+EQUIPO-006,Visor de Reportes de Calidad,1.0.8,Área de Calidad,Windows 11 Pro
+EQUIPO-006,VLC media player,3.0.21,VideoLAN,Windows 11 Pro
+EQUIPO-006,WinRAR 7.12 (64-bit),7.12,win.rar GmbH,Windows 11 Pro
+EQUIPO-007,7-Zip 26.03 (x64),26.03,Igor Pavlov,Windows 10 Pro
+EQUIPO-007,Calculadora de Viáticos,1.4.2,Área de Finanzas,Windows 10 Pro
+EQUIPO-007,Catálogo de Productos Offline,3.14.2,Área Comercial,Windows 10 Pro
+EQUIPO-007,Cliente de Impresión Segura,5.2.4,Área de Sistemas,Windows 10 Pro
+EQUIPO-007,Conector de Facturación Electrónica,6.3.0,Área de Finanzas,Windows 10 Pro
+EQUIPO-007,Control de Asistencia Biométrico,4.0.7,Recursos Humanos,Windows 10 Pro
+EQUIPO-007,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.,Windows 10 Pro
+EQUIPO-007,Diccionario Técnico Interno,2.0,Área de Ingeniería,Windows 10 Pro
+EQUIPO-007,Encuestas de Clima Laboral,2.2.0,Recursos Humanos,Windows 10 Pro
+EQUIPO-007,Etiquetadora de Almacén,3.6.1,Área de Logística,Windows 10 Pro
+EQUIPO-007,Firma Electrónica Corporativa,1.8.0,Área de Sistemas,Windows 10 Pro
+EQUIPO-007,Git,2.51.0,The Git Development Community,Windows 10 Pro
+EQUIPO-007,GlobalProtect,6.3.5,Palo Alto Networks,Windows 10 Pro
+EQUIPO-007,Google Chrome,157.0.8103.78,Google LLC,Windows 10 Pro
+EQUIPO-007,Herramienta de Inventario Local,0.9.12,Área de Sistemas,Windows 10 Pro
+EQUIPO-007,Kit de Bienvenida Digital,1.1.3,Recursos Humanos,Windows 10 Pro
+EQUIPO-007,Módulo de Tesorería,3.0.5,Área de Finanzas,Windows 10 Pro
+EQUIPO-007,Node.js,20.11.1,Node.js Foundation,Windows 10 Pro
+EQUIPO-007,Notepad++ (64-bit x64),8.8.8,Notepad++ Team,Windows 10 Pro
+EQUIPO-007,Paquete de Idioma Español (México),26.11,Área de Sistemas,Windows 10 Pro
+EQUIPO-007,Simulador de Cotizaciones,4.1.0,Área Comercial,Windows 10 Pro
+EQUIPO-007,TeamViewer,15.70.0,TeamViewer Germany GmbH,Windows 10 Pro
+EQUIPO-007,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.,Windows 10 Pro
+EQUIPO-007,WinRAR 7.13 (64-bit),7.13,win.rar GmbH,Windows 10 Pro
+EQUIPO-008,7-Zip 26.03 (x64),26.03,Igor Pavlov,Windows 11 Pro
+EQUIPO-008,Adobe Acrobat Reader (64-bit),25.001.20531,Adobe Inc.,Windows 11 Pro
+EQUIPO-008,Agenda de Visitas Comercial,1.2.0,Área Comercial,Windows 11 Pro
+EQUIPO-008,Archivo Digital de Expedientes,2.5.0,Área Legal,Windows 11 Pro
+EQUIPO-008,Catálogo de Productos Offline,3.14.2,Área Comercial,Windows 11 Pro
+EQUIPO-008,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-008,Cliente de Impresión Segura,5.2.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-008,Cliente de Mensajería Interna,8.0.3,Área de Sistemas,Windows 11 Pro
+EQUIPO-008,Conector de Facturación Electrónica,6.3.0,Área de Finanzas,Windows 11 Pro
+EQUIPO-008,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.,Windows 11 Pro
+EQUIPO-008,Diccionario Técnico Interno,2.0,Área de Ingeniería,Windows 11 Pro
+EQUIPO-008,Docker Desktop,4.72.0,Docker Inc.,Windows 11 Pro
+EQUIPO-008,Firma Electrónica Corporativa,1.8.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-008,Formulario de Incidencias,1.7.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-008,Gestor de Contratos Interno,1.3.6,Área Legal,Windows 11 Pro
+EQUIPO-008,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-008,Git,2.51.0,The Git Development Community,Windows 11 Pro
+EQUIPO-008,GlobalProtect,6.3.5,Palo Alto Networks,Windows 11 Pro
+EQUIPO-008,Google Chrome,157.0.8103.60,Google LLC,Windows 11 Pro
+EQUIPO-008,Monitor de Disco Interno,1.6.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-008,Módulo de Tesorería,3.0.5,Área de Finanzas,Windows 11 Pro
+EQUIPO-008,Node.js,26.12.1,Node.js Foundation,Windows 11 Pro
+EQUIPO-008,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-008,Paquete de Fuentes Corporativas,1.0,Área de Comunicación,Windows 11 Pro
+EQUIPO-008,Paquete de Idioma Español (México),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-008,Portal de Nómina Cliente,2.3.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-008,Python 3.12.10 (64-bit),3.12.10150.0,Python Software Foundation,Windows 11 Pro
+EQUIPO-008,Simulador de Cotizaciones,4.1.0,Área Comercial,Windows 11 Pro
+EQUIPO-008,Tablero de Indicadores Local,2.9.0,Área de Calidad,Windows 11 Pro
+EQUIPO-008,TeamViewer,15.70.0,TeamViewer Germany GmbH,Windows 11 Pro
+EQUIPO-008,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-008,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-008,Visor de Planos Interno,2.1.9,Área de Ingeniería,Windows 11 Pro
+EQUIPO-008,Visor de Reportes de Calidad,1.0.8,Área de Calidad,Windows 11 Pro
+EQUIPO-008,WinRAR 6.22 (32-bit),6.22,win.rar GmbH,Windows 11 Pro
+EQUIPO-009,7-Zip 24.08 (x64),24.08,Igor Pavlov,Windows 11 Pro
+EQUIPO-009,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-009,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated,Windows 11 Pro
+EQUIPO-009,Agenda de Visitas Comercial,1.2.0,Área Comercial,Windows 11 Pro
+EQUIPO-009,Catálogo de Productos Offline,3.14.2,Área Comercial,Windows 11 Pro
+EQUIPO-009,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-009,Conector de Facturación Electrónica,6.3.0,Área de Finanzas,Windows 11 Pro
+EQUIPO-009,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.,Windows 11 Pro
+EQUIPO-009,Docker Desktop,4.72.0,Docker Inc.,Windows 11 Pro
+EQUIPO-009,Encuestas de Clima Laboral,2.2.0,Recursos Humanos,Windows 11 Pro
+EQUIPO-009,Etiquetadora de Almacén,3.6.1,Área de Logística,Windows 11 Pro
+EQUIPO-009,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación,Windows 11 Pro
+EQUIPO-009,Formulario de Incidencias,1.7.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-009,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-009,Git,2.51.0,The Git Development Community,Windows 11 Pro
+EQUIPO-009,GlobalProtect,6.3.5,Palo Alto Networks,Windows 11 Pro
+EQUIPO-009,Google Chrome,157.0.8103.78,Google LLC,Windows 11 Pro
+EQUIPO-009,Herramienta de Inventario Local,0.9.12,Área de Sistemas,Windows 11 Pro
+EQUIPO-009,Kit de Bienvenida Digital,1.1.3,Recursos Humanos,Windows 11 Pro
+EQUIPO-009,Monitor de Disco Interno,1.6.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-009,Node.js,24.22.1,Node.js Foundation,Windows 11 Pro
+EQUIPO-009,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-009,Paquete de Fuentes Corporativas,1.0,Área de Comunicación,Windows 11 Pro
+EQUIPO-009,Paquete de Idioma Español (México),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-009,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-009,Planificador de Rutas de Reparto,2.2.7,Área de Logística,Windows 11 Pro
+EQUIPO-009,Plantillas Corporativas Office,2025.10,Área de Comunicación,Windows 11 Pro
+EQUIPO-009,Python 3.11.15 (64-bit),3.11.15,Python Software Foundation,Windows 11 Pro
+EQUIPO-009,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-009,Visor de Reportes de Calidad,1.0.8,Área de Calidad,Windows 11 Pro
+EQUIPO-010,7-Zip 24.09 (x64 edition),24.09,Igor Pavlov,Windows 11 Pro
+EQUIPO-010,Adobe Acrobat Reader (64-bit),25.001.20531,Adobe Inc.,Windows 11 Pro
+EQUIPO-010,Agenda de Visitas Comercial,1.2.0,Área Comercial,Windows 11 Pro
+EQUIPO-010,Asistente de Respaldo Local,7.0.2,Área de Sistemas,Windows 11 Pro
+EQUIPO-010,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-010,Diccionario Técnico Interno,2.0,Área de Ingeniería,Windows 11 Pro
+EQUIPO-010,Eclipse Temurin JDK with Hotspot 17.0.9+9 (x64),17.0.9+9,Eclipse Adoptium,Windows 11 Pro
+EQUIPO-010,Encuestas de Clima Laboral,2.2.0,Recursos Humanos,Windows 11 Pro
+EQUIPO-010,Etiquetadora de Almacén,3.6.1,Área de Logística,Windows 11 Pro
+EQUIPO-010,Formulario de Incidencias,1.7.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-010,Gestor de Contratos Interno,1.3.6,Área Legal,Windows 11 Pro
+EQUIPO-010,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-010,GlobalProtect,6.3.5,Palo Alto Networks,Windows 11 Pro
+EQUIPO-010,Google Chrome,156.0.8079.100,Google LLC,Windows 11 Pro
+EQUIPO-010,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-010,Monitor de Disco Interno,1.6.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-010,Node.js,22.11.0,Node.js Foundation,Windows 11 Pro
+EQUIPO-010,Paquete de Fuentes Corporativas,1.0,Área de Comunicación,Windows 11 Pro
+EQUIPO-010,Paquete de Idioma Español (México),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-010,Planificador de Rutas de Reparto,2.2.7,Área de Logística,Windows 11 Pro
+EQUIPO-010,Portal de Nómina Cliente,2.3.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-010,Python 3.13.9 (64-bit),3.13.9,Python Software Foundation,Windows 11 Pro
+EQUIPO-010,Simulador de Cotizaciones,4.1.0,Área Comercial,Windows 11 Pro
+EQUIPO-010,Tablero de Indicadores Local,2.9.0,Área de Calidad,Windows 11 Pro
+EQUIPO-010,Visor de Planos Interno,2.1.9,Área de Ingeniería,Windows 11 Pro
+EQUIPO-010,Visor de Reportes de Calidad,1.0.8,Área de Calidad,Windows 11 Pro
+EQUIPO-010,VLC media player,3.0.21,VideoLAN,Windows 11 Pro
+EQUIPO-011,Archivo Digital de Expedientes,2.5.0,Área Legal,Windows 11 Pro
+EQUIPO-011,Asistente de Respaldo Local,7.0.2,Área de Sistemas,Windows 11 Pro
+EQUIPO-011,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-011,Cliente de Impresión Segura,5.2.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-011,Control de Asistencia Biométrico,4.0.7,Recursos Humanos,Windows 11 Pro
+EQUIPO-011,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.,Windows 11 Pro
+EQUIPO-011,Diccionario Técnico Interno,2.0,Área de Ingeniería,Windows 11 Pro
+EQUIPO-011,Eclipse Temurin JDK with Hotspot 21.0.5+11 (x64),21.0.5+11,Eclipse Adoptium,Windows 11 Pro
+EQUIPO-011,Encuestas de Clima Laboral,2.2.0,Recursos Humanos,Windows 11 Pro
+EQUIPO-011,Firma Electrónica Corporativa,1.8.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-011,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación,Windows 11 Pro
+EQUIPO-011,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-011,Git,2.45.1.windows.1,The Git Development Community,Windows 11 Pro
+EQUIPO-011,GlobalProtect,6.3.5,Palo Alto Networks,Windows 11 Pro
+EQUIPO-011,Google Chrome,157.0.8103.78,Google LLC,Windows 11 Pro
+EQUIPO-011,Herramienta de Inventario Local,0.9.12,Área de Sistemas,Windows 11 Pro
+EQUIPO-011,Monitor de Disco Interno,1.6.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-011,Mozilla Firefox 156.0.1 (x64 es-ES),156.0.1,Mozilla,Windows 11 Pro
+EQUIPO-011,Módulo de Tesorería,3.0.5,Área de Finanzas,Windows 11 Pro
+EQUIPO-011,Node.js,22.12.0,Node.js Foundation,Windows 11 Pro
+EQUIPO-011,Notepad++ (64-bit x64),8.9.6.4,Notepad++ Team,Windows 11 Pro
+EQUIPO-011,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-011,Planificador de Rutas de Reparto,2.2.7,Área de Logística,Windows 11 Pro
+EQUIPO-011,Portal de Nómina Cliente,2.3.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-011,Python 3.13.9 (64-bit),3.13.9,Python Software Foundation,Windows 11 Pro
+EQUIPO-011,Tablero de Indicadores Local,2.9.0,Área de Calidad,Windows 11 Pro
+EQUIPO-011,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-011,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-011,Visor de Planos Interno,2.1.9,Área de Ingeniería,Windows 11 Pro
+EQUIPO-011,Visor de Reportes de Calidad,1.0.8,Área de Calidad,Windows 11 Pro
+EQUIPO-012,7-Zip 26.03 (x64),26.03,Igor Pavlov,Windows 11 Pro
+EQUIPO-012,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-012,Adobe Acrobat Reader (64-bit),25.001.20531,Adobe Inc.,Windows 11 Pro
+EQUIPO-012,Agenda de Visitas Comercial,1.2.0,Área Comercial,Windows 11 Pro
+EQUIPO-012,Archivo Digital de Expedientes,2.5.0,Área Legal,Windows 11 Pro
+EQUIPO-012,Asistente de Respaldo Local,7.0.2,Área de Sistemas,Windows 11 Pro
+EQUIPO-012,Calculadora de Viáticos,1.4.2,Área de Finanzas,Windows 11 Pro
+EQUIPO-012,Catálogo de Productos Offline,3.14.2,Área Comercial,Windows 11 Pro
+EQUIPO-012,Cliente de Impresión Segura,5.2.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-012,Cliente de Mensajería Interna,8.0.3,Área de Sistemas,Windows 11 Pro
+EQUIPO-012,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.,Windows 11 Pro
+EQUIPO-012,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.,Windows 11 Pro
+EQUIPO-012,Docker Desktop,4.62.0,Docker Inc.,Windows 11 Pro
+EQUIPO-012,Encuestas de Clima Laboral,2.2.0,Recursos Humanos,Windows 11 Pro
+EQUIPO-012,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación,Windows 11 Pro
+EQUIPO-012,Formulario de Incidencias,1.7.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-012,Gestor de Contratos Interno,1.3.6,Área Legal,Windows 11 Pro
+EQUIPO-012,GlobalProtect,6.3.5,Palo Alto Networks,Windows 11 Pro
+EQUIPO-012,Google Chrome,157.0.8103.78,Google LLC,Windows 11 Pro
+EQUIPO-012,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-012,MongoDB Compass,1.36.3,MongoDB Inc.,Windows 11 Pro
+EQUIPO-012,Monitor de Disco Interno,1.6.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-012,Node.js,20.8.0,Node.js Foundation,Windows 11 Pro
+EQUIPO-012,Notepad++ (64-bit x64),8.8.8,Notepad++ Team,Windows 11 Pro
+EQUIPO-012,Portal de Nómina Cliente,2.3.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-012,Simulador de Cotizaciones,4.1.0,Área Comercial,Windows 11 Pro
+EQUIPO-012,Tablero de Indicadores Local,2.9.0,Área de Calidad,Windows 11 Pro
+EQUIPO-012,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-012,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-013,7-Zip 26.03 (x64),26.03,Igor Pavlov,Windows 11 Pro
+EQUIPO-013,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-013,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated,Windows 11 Pro
+EQUIPO-013,Calculadora de Viáticos,1.4.2,Área de Finanzas,Windows 11 Pro
+EQUIPO-013,Conector de Facturación Electrónica,6.3.0,Área de Finanzas,Windows 11 Pro
+EQUIPO-013,Control de Asistencia Biométrico,4.0.7,Recursos Humanos,Windows 11 Pro
+EQUIPO-013,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.,Windows 11 Pro
+EQUIPO-013,Diccionario Técnico Interno,2.0,Área de Ingeniería,Windows 11 Pro
+EQUIPO-013,Eclipse Temurin JDK with Hotspot 17.0.9+9 (x64),17.0.9+9,Eclipse Adoptium,Windows 11 Pro
+EQUIPO-013,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación,Windows 11 Pro
+EQUIPO-013,Formulario de Incidencias,1.7.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-013,Gestor de Contratos Interno,1.3.6,Área Legal,Windows 11 Pro
+EQUIPO-013,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-013,Git,2.51.0,The Git Development Community,Windows 11 Pro
+EQUIPO-013,GlobalProtect,6.0.14,Palo Alto Networks,Windows 11 Pro
+EQUIPO-013,Google Chrome,157.0.8103.78,Google LLC,Windows 11 Pro
+EQUIPO-013,Herramienta de Inventario Local,0.9.12,Área de Sistemas,Windows 11 Pro
+EQUIPO-013,Manual de Procesos Interactivo,3.2,Área de Calidad,Windows 11 Pro
+EQUIPO-013,MongoDB Compass,1.49.7,MongoDB Inc.,Windows 11 Pro
+EQUIPO-013,Monitor de Disco Interno,1.6.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-013,Módulo de Tesorería,3.0.5,Área de Finanzas,Windows 11 Pro
+EQUIPO-013,Node.js,20.18.0,Node.js Foundation,Windows 11 Pro
+EQUIPO-013,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-013,Paquete de Idioma Español (México),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-013,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-013,Planificador de Rutas de Reparto,2.2.7,Área de Logística,Windows 11 Pro
+EQUIPO-013,Plantillas Corporativas Office,2025.10,Área de Comunicación,Windows 11 Pro
+EQUIPO-013,Portal de Nómina Cliente,2.3.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-013,PuTTY release 0.84 (64-bit),0.84,Simon Tatham,Windows 11 Pro
+EQUIPO-013,Python 3.13.9 (64-bit),3.13.9,Python Software Foundation,Windows 11 Pro
+EQUIPO-013,Visor de Planos Interno,2.1.9,Área de Ingeniería,Windows 11 Pro
+EQUIPO-013,Visor de Reportes de Calidad,1.0.8,Área de Calidad,Windows 11 Pro
+EQUIPO-013,VLC media player,3.0.21,VideoLAN,Windows 11 Pro
+EQUIPO-014,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo,Windows 10 Pro
+EQUIPO-014,Agenda de Visitas Comercial,1.2.0,Área Comercial,Windows 10 Pro
+EQUIPO-014,Calculadora de Viáticos,1.4.2,Área de Finanzas,Windows 10 Pro
+EQUIPO-014,Catálogo de Productos Offline,3.14.2,Área Comercial,Windows 10 Pro
+EQUIPO-014,Cliente de Impresión Segura,5.2.4,Área de Sistemas,Windows 10 Pro
+EQUIPO-014,Control de Asistencia Biométrico,4.0.7,Recursos Humanos,Windows 10 Pro
+EQUIPO-014,Docker Desktop,4.58.0,Docker Inc.,Windows 10 Pro
+EQUIPO-014,Etiquetadora de Almacén,3.6.1,Área de Logística,Windows 10 Pro
+EQUIPO-014,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación,Windows 10 Pro
+EQUIPO-014,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo,Windows 10 Pro
+EQUIPO-014,Git,2.45.4,The Git Development Community,Windows 10 Pro
+EQUIPO-014,Google Chrome,157.0.8103.60,Google LLC,Windows 10 Pro
+EQUIPO-014,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas,Windows 10 Pro
+EQUIPO-014,Manual de Procesos Interactivo,3.2,Área de Calidad,Windows 10 Pro
+EQUIPO-014,Monitor de Disco Interno,1.6.0,Área de Sistemas,Windows 10 Pro
+EQUIPO-014,Mozilla Firefox 156.0.1 (x64 es-ES),156.0.1,Mozilla,Windows 10 Pro
+EQUIPO-014,Node.js,20.18.0,Node.js Foundation,Windows 10 Pro
+EQUIPO-014,Notepad++ (64-bit x64),8.8.8,Notepad++ Team,Windows 10 Pro
+EQUIPO-014,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo,Windows 10 Pro
+EQUIPO-014,Paquete de Idioma Español (México),26.11,Área de Sistemas,Windows 10 Pro
+EQUIPO-014,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas,Windows 10 Pro
+EQUIPO-014,Plantillas Corporativas Office,2025.10,Área de Comunicación,Windows 10 Pro
+EQUIPO-014,Simulador de Cotizaciones,4.1.0,Área Comercial,Windows 10 Pro
+EQUIPO-015,7-Zip 26.03 (x64),26.03,Igor Pavlov,Windows 11 Pro
+EQUIPO-015,Adobe Acrobat Reader (64-bit),25.001.20531,Adobe Inc.,Windows 11 Pro
+EQUIPO-015,Agenda de Visitas Comercial,1.2.0,Área Comercial,Windows 11 Pro
+EQUIPO-015,Archivo Digital de Expedientes,2.5.0,Área Legal,Windows 11 Pro
+EQUIPO-015,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-015,Cliente de Impresión Segura,5.2.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-015,Cliente de Mensajería Interna,8.0.3,Área de Sistemas,Windows 11 Pro
+EQUIPO-015,Conector de Facturación Electrónica,6.3.0,Área de Finanzas,Windows 11 Pro
+EQUIPO-015,Control de Asistencia Biométrico,4.0.7,Recursos Humanos,Windows 11 Pro
+EQUIPO-015,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.,Windows 11 Pro
+EQUIPO-015,Docker Desktop,4.58.0,Docker Inc.,Windows 11 Pro
+EQUIPO-015,Eclipse Temurin JDK with Hotspot 17.0.9+9 (x64),17.0.9+9,Eclipse Adoptium,Windows 11 Pro
+EQUIPO-015,Encuestas de Clima Laboral,2.2.0,Recursos Humanos,Windows 11 Pro
+EQUIPO-015,Firma Electrónica Corporativa,1.8.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-015,Formulario de Incidencias,1.7.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-015,Git,2.45.1.windows.1,The Git Development Community,Windows 11 Pro
+EQUIPO-015,GlobalProtect,6.3.5,Palo Alto Networks,Windows 11 Pro
+EQUIPO-015,Google Chrome,157.0.8103.60,Google LLC,Windows 11 Pro
+EQUIPO-015,Kit de Bienvenida Digital,1.1.3,Recursos Humanos,Windows 11 Pro
+EQUIPO-015,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-015,Monitor de Disco Interno,1.6.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-015,Módulo de Tesorería,3.0.5,Área de Finanzas,Windows 11 Pro
+EQUIPO-015,Node.js,22.11.0,Node.js Foundation,Windows 11 Pro
+EQUIPO-015,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-015,Paquete de Fuentes Corporativas,1.0,Área de Comunicación,Windows 11 Pro
+EQUIPO-015,Portal de Nómina Cliente,2.3.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-015,PuTTY release 0.81 (64-bit),0.81,Simon Tatham,Windows 11 Pro
+EQUIPO-015,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-015,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-016,7-Zip 24.08 (x64),24.08,Igor Pavlov,Windows 11 Pro
+EQUIPO-016,Agenda de Visitas Comercial,1.2.0,Área Comercial,Windows 11 Pro
+EQUIPO-016,Calculadora de Viáticos,1.4.2,Área de Finanzas,Windows 11 Pro
+EQUIPO-016,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-016,Cliente de Impresión Segura,5.2.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-016,Conector de Facturación Electrónica,6.3.0,Área de Finanzas,Windows 11 Pro
+EQUIPO-016,Control de Asistencia Biométrico,4.0.7,Recursos Humanos,Windows 11 Pro
+EQUIPO-016,Docker,"28.1.1, build 4eba377",Docker Inc.,Windows 11 Pro
+EQUIPO-016,Docker Desktop,4.62.0,Docker Inc.,Windows 11 Pro
+EQUIPO-016,Eclipse Temurin JDK with Hotspot 17.0.9+9 (x64),17.0.9+9,Eclipse Adoptium,Windows 11 Pro
+EQUIPO-016,Encuestas de Clima Laboral,2.2.0,Recursos Humanos,Windows 11 Pro
+EQUIPO-016,Firma Electrónica Corporativa,1.8.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-016,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación,Windows 11 Pro
+EQUIPO-016,Formulario de Incidencias,1.7.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-016,Gestor de Contratos Interno,1.3.6,Área Legal,Windows 11 Pro
+EQUIPO-016,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-016,Git,2.51.0,The Git Development Community,Windows 11 Pro
+EQUIPO-016,Google Chrome,157.0.8103.60,Google LLC,Windows 11 Pro
+EQUIPO-016,Herramienta de Inventario Local,0.9.12,Área de Sistemas,Windows 11 Pro
+EQUIPO-016,Kit de Bienvenida Digital,1.1.3,Recursos Humanos,Windows 11 Pro
+EQUIPO-016,Lector PDF Corporativo,,Área de Sistemas,Windows 11 Pro
+EQUIPO-016,Manual de Procesos Interactivo,3.2,Área de Calidad,Windows 11 Pro
+EQUIPO-016,Monitor de Disco Interno,1.6.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-016,Módulo de Tesorería,3.0.5,Área de Finanzas,Windows 11 Pro
+EQUIPO-016,Node.js,24.22.0,Node.js Foundation,Windows 11 Pro
+EQUIPO-016,Paquete de Fuentes Corporativas,1.0,Área de Comunicación,Windows 11 Pro
+EQUIPO-016,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-016,Plantillas Corporativas Office,2025.10,Área de Comunicación,Windows 11 Pro
+EQUIPO-016,Python 3.12.10 (64-bit),3.12.10150.0,Python Software Foundation,Windows 11 Pro
+EQUIPO-016,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-016,Visor de Planos Interno,2.1.9,Área de Ingeniería,Windows 11 Pro
+EQUIPO-016,Visor de Reportes de Calidad,1.0.8,Área de Calidad,Windows 11 Pro
+EQUIPO-016,WinRAR 6.23 (64-bit),6.23,win.rar GmbH,Windows 11 Pro
+EQUIPO-017,7-Zip 26.03 (x64),26.03,Igor Pavlov,Windows 11 Pro
+EQUIPO-017,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-017,Archivo Digital de Expedientes,2.5.0,Área Legal,Windows 11 Pro
+EQUIPO-017,Asistente de Respaldo Local,7.0.2,Área de Sistemas,Windows 11 Pro
+EQUIPO-017,Cliente de Mensajería Interna,8.0.3,Área de Sistemas,Windows 11 Pro
+EQUIPO-017,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.,Windows 11 Pro
+EQUIPO-017,Diccionario Técnico Interno,2.0,Área de Ingeniería,Windows 11 Pro
+EQUIPO-017,Docker Desktop,4.62.0,Docker Inc.,Windows 11 Pro
+EQUIPO-017,Encuestas de Clima Laboral,2.2.0,Recursos Humanos,Windows 11 Pro
+EQUIPO-017,Etiquetadora de Almacén,3.6.1,Área de Logística,Windows 11 Pro
+EQUIPO-017,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación,Windows 11 Pro
+EQUIPO-017,Formulario de Incidencias,1.7.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-017,Gestor de Contratos Interno,1.3.6,Área Legal,Windows 11 Pro
+EQUIPO-017,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-017,Git,2.51.0,The Git Development Community,Windows 11 Pro
+EQUIPO-017,Google Chrome,157.0.8103.60,Google LLC,Windows 11 Pro
+EQUIPO-017,Herramienta de Inventario Local,0.9.12,Área de Sistemas,Windows 11 Pro
+EQUIPO-017,Módulo de Tesorería,3.0.5,Área de Finanzas,Windows 11 Pro
+EQUIPO-017,Node.js,20.11.1,Node.js Foundation,Windows 11 Pro
+EQUIPO-017,Paquete de Fuentes Corporativas,1.0,Área de Comunicación,Windows 11 Pro
+EQUIPO-017,Paquete de Idioma Español (México),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-017,Planificador de Rutas de Reparto,2.2.7,Área de Logística,Windows 11 Pro
+EQUIPO-017,Python 3.12.10 (64-bit),3.12.10150.0,Python Software Foundation,Windows 11 Pro
+EQUIPO-017,Simulador de Cotizaciones,4.1.0,Área Comercial,Windows 11 Pro
+EQUIPO-017,TeamViewer,15.70.0,TeamViewer Germany GmbH,Windows 11 Pro
+EQUIPO-017,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-017,Visor de Planos Interno,2.1.9,Área de Ingeniería,Windows 11 Pro
+EQUIPO-017,Visor de Reportes de Calidad,1.0.8,Área de Calidad,Windows 11 Pro
+EQUIPO-017,VLC media player,3.0.18,VideoLAN,Windows 11 Pro
+EQUIPO-018,7-Zip 26.03 (x64),26.03,Igor Pavlov,Windows 11 Pro
+EQUIPO-018,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-018,Agenda de Visitas Comercial,1.2.0,Área Comercial,Windows 11 Pro
+EQUIPO-018,Asistente de Respaldo Local,7.0.2,Área de Sistemas,Windows 11 Pro
+EQUIPO-018,Calculadora de Viáticos,1.4.2,Área de Finanzas,Windows 11 Pro
+EQUIPO-018,Catálogo de Productos Offline,3.14.2,Área Comercial,Windows 11 Pro
+EQUIPO-018,Cliente de Mensajería Interna,8.0.3,Área de Sistemas,Windows 11 Pro
+EQUIPO-018,Control de Asistencia Biométrico,4.0.7,Recursos Humanos,Windows 11 Pro
+EQUIPO-018,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.,Windows 11 Pro
+EQUIPO-018,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.,Windows 11 Pro
+EQUIPO-018,Eclipse Temurin JDK with Hotspot 17.0.10+7 (x64),17.0.10+7,Eclipse Adoptium,Windows 11 Pro
+EQUIPO-018,Git,2.45.4,The Git Development Community,Windows 11 Pro
+EQUIPO-018,GlobalProtect,6.3.5,Palo Alto Networks,Windows 11 Pro
+EQUIPO-018,Google Chrome,157.0.8103.78,Google LLC,Windows 11 Pro
+EQUIPO-018,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-018,Manual de Procesos Interactivo,3.2,Área de Calidad,Windows 11 Pro
+EQUIPO-018,Monitor de Disco Interno,1.6.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-018,Mozilla Firefox (x64 es-ES),157.0,Mozilla,Windows 11 Pro
+EQUIPO-018,Node.js,22.20.0,Node.js Foundation,Windows 11 Pro
+EQUIPO-018,Paquete de Fuentes Corporativas,1.0,Área de Comunicación,Windows 11 Pro
+EQUIPO-018,Planificador de Rutas de Reparto,2.2.7,Área de Logística,Windows 11 Pro
+EQUIPO-018,Plantillas Corporativas Office,2025.10,Área de Comunicación,Windows 11 Pro
+EQUIPO-018,Python 3.12.10 (64-bit),3.12.10150.0,Python Software Foundation,Windows 11 Pro
+EQUIPO-018,Visor de Planos Interno,2.1.9,Área de Ingeniería,Windows 11 Pro
+EQUIPO-018,Visor de Reportes de Calidad,1.0.8,Área de Calidad,Windows 11 Pro
+EQUIPO-019,7-Zip 26.03 (x64),26.03,Igor Pavlov,Windows 11 Pro
+EQUIPO-019,Adobe Acrobat Reader (64-bit),25.001.20531,Adobe Inc.,Windows 11 Pro
+EQUIPO-019,Asistente de Respaldo Local,7.0.2,Área de Sistemas,Windows 11 Pro
+EQUIPO-019,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-019,Control de Asistencia Biométrico,4.0.7,Recursos Humanos,Windows 11 Pro
+EQUIPO-019,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.,Windows 11 Pro
+EQUIPO-019,Diccionario Técnico Interno,2.0,Área de Ingeniería,Windows 11 Pro
+EQUIPO-019,Eclipse Temurin JDK with Hotspot 21.0.5+11 (x64),21.0.5+11,Eclipse Adoptium,Windows 11 Pro
+EQUIPO-019,Encuestas de Clima Laboral,2.2.0,Recursos Humanos,Windows 11 Pro
+EQUIPO-019,Firma Electrónica Corporativa,1.8.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-019,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación,Windows 11 Pro
+EQUIPO-019,Formulario de Incidencias,1.7.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-019,Gestor de Contratos Interno,1.3.6,Área Legal,Windows 11 Pro
+EQUIPO-019,GlobalProtect,6.0.14,Palo Alto Networks,Windows 11 Pro
+EQUIPO-019,Google Chrome,157.0.8103.78,Google LLC,Windows 11 Pro
+EQUIPO-019,Kit de Bienvenida Digital,1.1.3,Recursos Humanos,Windows 11 Pro
+EQUIPO-019,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-019,Monitor de Disco Interno,1.6.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-019,Mozilla Firefox (x64 es-ES),157.0,Mozilla,Windows 11 Pro
+EQUIPO-019,Node.js,22.20.0,Node.js Foundation,Windows 11 Pro
+EQUIPO-019,Paquete de Idioma Español (México),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-019,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-019,Planificador de Rutas de Reparto,2.2.7,Área de Logística,Windows 11 Pro
+EQUIPO-019,Portal de Nómina Cliente,2.3.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-019,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-019,Visor de Planos Interno,2.1.9,Área de Ingeniería,Windows 11 Pro
+EQUIPO-019,Visor de Reportes de Calidad,1.0.8,Área de Calidad,Windows 11 Pro
+EQUIPO-019,WinRAR 6.22 (32-bit),6.22,win.rar GmbH,Windows 11 Pro
+EQUIPO-020,Agenda de Visitas Comercial,1.2.0,Área Comercial,Windows 11 Pro
+EQUIPO-020,Archivo Digital de Expedientes,2.5.0,Área Legal,Windows 11 Pro
+EQUIPO-020,Calculadora de Viáticos,1.4.2,Área de Finanzas,Windows 11 Pro
+EQUIPO-020,Cliente de Mensajería Interna,8.0.3,Área de Sistemas,Windows 11 Pro
+EQUIPO-020,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.,Windows 11 Pro
+EQUIPO-020,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.,Windows 11 Pro
+EQUIPO-020,Diccionario Técnico Interno,2.0,Área de Ingeniería,Windows 11 Pro
+EQUIPO-020,Etiquetadora de Almacén,3.6.1,Área de Logística,Windows 11 Pro
+EQUIPO-020,Firma Electrónica Corporativa,1.8.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-020,Git,2.51.0,The Git Development Community,Windows 11 Pro
+EQUIPO-020,GlobalProtect,6.0.14,Palo Alto Networks,Windows 11 Pro
+EQUIPO-020,Google Chrome,157.0.8103.78,Google LLC,Windows 11 Pro
+EQUIPO-020,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-020,Node.js,18.20.4,Node.js Foundation,Windows 11 Pro
+EQUIPO-020,NoSQLBooster for MongoDB,8.1.9,NoSQLBooster,Windows 11 Pro
+EQUIPO-020,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-020,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-020,Planificador de Rutas de Reparto,2.2.7,Área de Logística,Windows 11 Pro
+EQUIPO-020,Plantillas Corporativas Office,2025.10,Área de Comunicación,Windows 11 Pro
+EQUIPO-020,Portal de Nómina Cliente,2.3.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-020,Simulador de Cotizaciones,4.1.0,Área Comercial,Windows 11 Pro
+EQUIPO-020,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-020,Visor de Planos Interno,2.1.9,Área de Ingeniería,Windows 11 Pro
+EQUIPO-020,WinRAR 6.23 (64-bit),6.23,win.rar GmbH,Windows 11 Pro
+EQUIPO-021,7-Zip 26.03 (x64),26.03,Igor Pavlov,Windows 10 Pro
+EQUIPO-021,Archivo Digital de Expedientes,2.5.0,Área Legal,Windows 10 Pro
+EQUIPO-021,Calculadora de Viáticos,1.4.2,Área de Finanzas,Windows 10 Pro
+EQUIPO-021,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo,Windows 10 Pro
+EQUIPO-021,Cliente de Mensajería Interna,8.0.3,Área de Sistemas,Windows 10 Pro
+EQUIPO-021,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.,Windows 10 Pro
+EQUIPO-021,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.,Windows 10 Pro
+EQUIPO-021,Encuestas de Clima Laboral,2.2.0,Recursos Humanos,Windows 10 Pro
+EQUIPO-021,Formulario de Incidencias,1.7.4,Área de Sistemas,Windows 10 Pro
+EQUIPO-021,Gestor de Contratos Interno,1.3.6,Área Legal,Windows 10 Pro
+EQUIPO-021,GlobalProtect,6.3.5,Palo Alto Networks,Windows 10 Pro
+EQUIPO-021,Google Chrome,157.0.8103.60,Google LLC,Windows 10 Pro
+EQUIPO-021,Kit de Bienvenida Digital,1.1.3,Recursos Humanos,Windows 10 Pro
+EQUIPO-021,Monitor de Disco Interno,1.6.0,Área de Sistemas,Windows 10 Pro
+EQUIPO-021,Paquete de Idioma Español (México),26.11,Área de Sistemas,Windows 10 Pro
+EQUIPO-021,Portal de Nómina Cliente,2.3.1,Área de Sistemas,Windows 10 Pro
+EQUIPO-021,Simulador de Cotizaciones,4.1.0,Área Comercial,Windows 10 Pro
+EQUIPO-021,Sistema Contable Interno,4.2,Área de Sistemas,Windows 10 Pro
+EQUIPO-021,Tablero de Indicadores Local,2.9.0,Área de Calidad,Windows 10 Pro
+EQUIPO-021,TeamViewer,15.70.0,TeamViewer Germany GmbH,Windows 10 Pro
+EQUIPO-021,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.,Windows 10 Pro
+EQUIPO-021,Visor de Planos Interno,2.1.9,Área de Ingeniería,Windows 10 Pro
+EQUIPO-021,VLC media player,3.0.21,VideoLAN,Windows 10 Pro
+EQUIPO-022,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-022,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated,Windows 11 Pro
+EQUIPO-022,Agenda de Visitas Comercial,1.2.0,Área Comercial,Windows 11 Pro
+EQUIPO-022,Calculadora de Viáticos,1.4.2,Área de Finanzas,Windows 11 Pro
+EQUIPO-022,Catálogo de Productos Offline,3.14.2,Área Comercial,Windows 11 Pro
+EQUIPO-022,Cliente de Mensajería Interna,8.0.3,Área de Sistemas,Windows 11 Pro
+EQUIPO-022,Conector de Facturación Electrónica,6.3.0,Área de Finanzas,Windows 11 Pro
+EQUIPO-022,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.,Windows 11 Pro
+EQUIPO-022,Encuestas de Clima Laboral,2.2.0,Recursos Humanos,Windows 11 Pro
+EQUIPO-022,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación,Windows 11 Pro
+EQUIPO-022,Formulario de Incidencias,1.7.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-022,Google Chrome,156.0.8079.100,Google LLC,Windows 11 Pro
+EQUIPO-022,Kit de Bienvenida Digital,1.1.3,Recursos Humanos,Windows 11 Pro
+EQUIPO-022,Monitor de Disco Interno,1.6.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-022,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-022,Paquete de Idioma Español (México),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-022,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-022,PuTTY release 0.84 (64-bit),0.84,Simon Tatham,Windows 11 Pro
+EQUIPO-022,Tablero de Indicadores Local,2.9.0,Área de Calidad,Windows 11 Pro
+EQUIPO-022,Visor de Planos Interno,2.1.9,Área de Ingeniería,Windows 11 Pro
+EQUIPO-022,Visor de Reportes de Calidad,1.0.8,Área de Calidad,Windows 11 Pro
+EQUIPO-023,Adobe Acrobat Reader (64-bit),25.001.20531,Adobe Inc.,Windows 11 Pro
+EQUIPO-023,Agente RMM Ficticio,3.0,RMM Ficticio S.A.,Windows 11 Pro
+EQUIPO-023,Archivo Digital de Expedientes,2.5.0,Área Legal,Windows 11 Pro
+EQUIPO-023,Asistente de Respaldo Local,7.0.2,Área de Sistemas,Windows 11 Pro
+EQUIPO-023,Calculadora de Viáticos,1.4.2,Área de Finanzas,Windows 11 Pro
+EQUIPO-023,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-023,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.,Windows 11 Pro
+EQUIPO-023,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.,Windows 11 Pro
+EQUIPO-023,Firma Electrónica Corporativa,1.8.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-023,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación,Windows 11 Pro
+EQUIPO-023,Gestor de Contratos Interno,1.3.6,Área Legal,Windows 11 Pro
+EQUIPO-023,GlobalProtect,6.3.5,Palo Alto Networks,Windows 11 Pro
+EQUIPO-023,Google Chrome,156.0.8079.100,Google LLC,Windows 11 Pro
+EQUIPO-023,Herramienta de Inventario Local,0.9.12,Área de Sistemas,Windows 11 Pro
+EQUIPO-023,Kit de Bienvenida Digital,1.1.3,Recursos Humanos,Windows 11 Pro
+EQUIPO-023,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-023,Manual de Procesos Interactivo,3.2,Área de Calidad,Windows 11 Pro
+EQUIPO-023,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-023,Paquete de Fuentes Corporativas,1.0,Área de Comunicación,Windows 11 Pro
+EQUIPO-023,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-023,Planificador de Rutas de Reparto,2.2.7,Área de Logística,Windows 11 Pro
+EQUIPO-023,Plantillas Corporativas Office,2025.10,Área de Comunicación,Windows 11 Pro
+EQUIPO-023,Portal de Nómina Cliente,2.3.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-023,TeamViewer,15.70.0,TeamViewer Germany GmbH,Windows 11 Pro
+EQUIPO-023,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-023,WinRAR 7.13 (64-bit),7.13,win.rar GmbH,Windows 11 Pro
+EQUIPO-024,7-Zip 26.03 (x64),26.03,Igor Pavlov,Windows 11 Pro
+EQUIPO-024,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated,Windows 11 Pro
+EQUIPO-024,Archivo Digital de Expedientes,2.5.0,Área Legal,Windows 11 Pro
+EQUIPO-024,Asistente de Respaldo Local,7.0.2,Área de Sistemas,Windows 11 Pro
+EQUIPO-024,Calculadora de Viáticos,1.4.2,Área de Finanzas,Windows 11 Pro
+EQUIPO-024,Catálogo de Productos Offline,3.14.2,Área Comercial,Windows 11 Pro
+EQUIPO-024,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-024,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.,Windows 11 Pro
+EQUIPO-024,Diccionario Técnico Interno,2.0,Área de Ingeniería,Windows 11 Pro
+EQUIPO-024,GlobalProtect,6.0.14,Palo Alto Networks,Windows 11 Pro
+EQUIPO-024,Google Chrome,157.0.8103.60,Google LLC,Windows 11 Pro
+EQUIPO-024,Herramienta de Inventario Local,0.9.12,Área de Sistemas,Windows 11 Pro
+EQUIPO-024,Monitor de Disco Interno,1.6.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-024,Mozilla Firefox (x64 es-ES),157.0,Mozilla,Windows 11 Pro
+EQUIPO-024,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-024,Plantillas Corporativas Office,2025.10,Área de Comunicación,Windows 11 Pro
+EQUIPO-024,Portal de Nómina Cliente,2.3.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-024,PuTTY release 0.84 (64-bit),0.84,Simon Tatham,Windows 11 Pro
+EQUIPO-024,Simulador de Cotizaciones,4.1.0,Área Comercial,Windows 11 Pro
+EQUIPO-024,Visor de Planos Interno,2.1.9,Área de Ingeniería,Windows 11 Pro
+EQUIPO-024,Visor de Reportes de Calidad,1.0.8,Área de Calidad,Windows 11 Pro
+EQUIPO-025,7-Zip 26.03 (x64),26.03,Igor Pavlov,Windows 11 Pro
+EQUIPO-025,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-025,Asistente de Respaldo Local,7.0.2,Área de Sistemas,Windows 11 Pro
+EQUIPO-025,Calculadora de Viáticos,1.4.2,Área de Finanzas,Windows 11 Pro
+EQUIPO-025,Catálogo de Productos Offline,3.14.2,Área Comercial,Windows 11 Pro
+EQUIPO-025,Cliente de Mensajería Interna,8.0.3,Área de Sistemas,Windows 11 Pro
+EQUIPO-025,Conector de Facturación Electrónica,6.3.0,Área de Finanzas,Windows 11 Pro
+EQUIPO-025,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.,Windows 11 Pro
+EQUIPO-025,Encuestas de Clima Laboral,2.2.0,Recursos Humanos,Windows 11 Pro
+EQUIPO-025,Firma Electrónica Corporativa,1.8.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-025,Formulario de Incidencias,1.7.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-025,Gestor de Contratos Interno,1.3.6,Área Legal,Windows 11 Pro
+EQUIPO-025,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-025,Google Chrome,157.0.8103.78,Google LLC,Windows 11 Pro
+EQUIPO-025,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-025,Manual de Procesos Interactivo,3.2,Área de Calidad,Windows 11 Pro
+EQUIPO-025,Notepad++ (64-bit x64),8.9.6.4,Notepad++ Team,Windows 11 Pro
+EQUIPO-025,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-025,Simulador de Cotizaciones,4.1.0,Área Comercial,Windows 11 Pro
+EQUIPO-025,Tablero de Indicadores Local,2.9.0,Área de Calidad,Windows 11 Pro
+EQUIPO-025,TeamViewer 14,14.7.1966,TeamViewer Germany GmbH,Windows 11 Pro
+EQUIPO-025,Visor de Planos Interno,2.1.9,Área de Ingeniería,Windows 11 Pro
+EQUIPO-025,Visor de Reportes de Calidad,1.0.8,Área de Calidad,Windows 11 Pro
+EQUIPO-025,VLC media player,3.0.18,VideoLAN,Windows 11 Pro
+EQUIPO-025,WinRAR 5.61 (64-bit),5.61,win.rar GmbH,Windows 11 Pro
+EQUIPO-026,7-Zip 26.03 (x64),26.03,Igor Pavlov,Windows 11 Pro
+EQUIPO-026,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-026,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated,Windows 11 Pro
+EQUIPO-026,Asistente de Respaldo Local,7.0.2,Área de Sistemas,Windows 11 Pro
+EQUIPO-026,Calculadora de Viáticos,1.4.2,Área de Finanzas,Windows 11 Pro
+EQUIPO-026,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-026,Cliente de Mensajería Interna,8.0.3,Área de Sistemas,Windows 11 Pro
+EQUIPO-026,Diccionario Técnico Interno,2.0,Área de Ingeniería,Windows 11 Pro
+EQUIPO-026,Etiquetadora de Almacén,3.6.1,Área de Logística,Windows 11 Pro
+EQUIPO-026,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación,Windows 11 Pro
+EQUIPO-026,Google Chrome,156.0.8079.100,Google LLC,Windows 11 Pro
+EQUIPO-026,Herramienta de Inventario Local,0.9.12,Área de Sistemas,Windows 11 Pro
+EQUIPO-026,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-026,Monitor de Disco Interno,1.6.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-026,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-026,Tablero de Indicadores Local,2.9.0,Área de Calidad,Windows 11 Pro
+EQUIPO-026,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-026,Visor de Planos Interno,2.1.9,Área de Ingeniería,Windows 11 Pro
+EQUIPO-026,Visor de Reportes de Calidad,1.0.8,Área de Calidad,Windows 11 Pro
+EQUIPO-026,WinRAR 7.13 (64-bit),7.13,win.rar GmbH,Windows 11 Pro
+EQUIPO-027,7-Zip 24.09 (x64 edition),24.09,Igor Pavlov,Windows 11 Pro
+EQUIPO-027,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-027,Adobe Acrobat Reader (64-bit),25.001.20531,Adobe Inc.,Windows 11 Pro
+EQUIPO-027,Agenda de Visitas Comercial,1.2.0,Área Comercial,Windows 11 Pro
+EQUIPO-027,Archivo Digital de Expedientes,2.5.0,Área Legal,Windows 11 Pro
+EQUIPO-027,Asistente de Respaldo Local,7.0.2,Área de Sistemas,Windows 11 Pro
+EQUIPO-027,Calculadora de Viáticos,1.4.2,Área de Finanzas,Windows 11 Pro
+EQUIPO-027,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-027,Cliente de Mensajería Interna,8.0.3,Área de Sistemas,Windows 11 Pro
+EQUIPO-027,Conector de Facturación Electrónica,6.3.0,Área de Finanzas,Windows 11 Pro
+EQUIPO-027,Control de Asistencia Biométrico,4.0.7,Recursos Humanos,Windows 11 Pro
+EQUIPO-027,Encuestas de Clima Laboral,2.2.0,Recursos Humanos,Windows 11 Pro
+EQUIPO-027,Etiquetadora de Almacén,3.6.1,Área de Logística,Windows 11 Pro
+EQUIPO-027,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación,Windows 11 Pro
+EQUIPO-027,Formulario de Incidencias,1.7.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-027,Google Chrome,157.0.8103.60,Google LLC,Windows 11 Pro
+EQUIPO-027,Kit de Bienvenida Digital,1.1.3,Recursos Humanos,Windows 11 Pro
+EQUIPO-027,Monitor de Disco Interno,1.6.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-027,Módulo de Tesorería,3.0.5,Área de Finanzas,Windows 11 Pro
+EQUIPO-027,Notepad++ (64-bit x64),8.8.8,Notepad++ Team,Windows 11 Pro
+EQUIPO-027,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-027,Paquete de Fuentes Corporativas,1.0,Área de Comunicación,Windows 11 Pro
+EQUIPO-027,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-027,Planificador de Rutas de Reparto,2.2.7,Área de Logística,Windows 11 Pro
+EQUIPO-027,Portal de Nómina Cliente,2.3.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-027,Simulador de Cotizaciones,4.1.0,Área Comercial,Windows 11 Pro
+EQUIPO-027,TeamViewer,15.70.0,TeamViewer Germany GmbH,Windows 11 Pro
+EQUIPO-027,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-027,Visor de Planos Interno,2.1.9,Área de Ingeniería,Windows 11 Pro
+EQUIPO-027,Visor de Reportes de Calidad,1.0.8,Área de Calidad,Windows 11 Pro
+EQUIPO-027,VLC media player,3.0.21,VideoLAN,Windows 11 Pro
+EQUIPO-028,7-Zip 24.09 (x64 edition),24.09,Igor Pavlov,Windows 10 Pro
+EQUIPO-028,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated,Windows 10 Pro
+EQUIPO-028,Catálogo de Productos Offline,3.14.2,Área Comercial,Windows 10 Pro
+EQUIPO-028,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo,Windows 10 Pro
+EQUIPO-028,Cliente de Mensajería Interna,8.0.3,Área de Sistemas,Windows 10 Pro
+EQUIPO-028,Control de Asistencia Biométrico,4.0.7,Recursos Humanos,Windows 10 Pro
+EQUIPO-028,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.,Windows 10 Pro
+EQUIPO-028,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación,Windows 10 Pro
+EQUIPO-028,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo,Windows 10 Pro
+EQUIPO-028,GlobalProtect,6.0.14,Palo Alto Networks,Windows 10 Pro
+EQUIPO-028,Google Chrome,156.0.8079.100,Google LLC,Windows 10 Pro
+EQUIPO-028,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas,Windows 10 Pro
+EQUIPO-028,Monitor de Disco Interno,1.6.0,Área de Sistemas,Windows 10 Pro
+EQUIPO-028,Módulo de Tesorería,3.0.5,Área de Finanzas,Windows 10 Pro
+EQUIPO-028,Notepad++ (64-bit x64),8.8.8,Notepad++ Team,Windows 10 Pro
+EQUIPO-028,Paquete de Idioma Español (México),26.11,Área de Sistemas,Windows 10 Pro
+EQUIPO-028,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas,Windows 10 Pro
+EQUIPO-028,Planificador de Rutas de Reparto,2.2.7,Área de Logística,Windows 10 Pro
+EQUIPO-028,Plantillas Corporativas Office,2025.10,Área de Comunicación,Windows 10 Pro
+EQUIPO-028,Portal de Nómina Cliente,2.3.1,Área de Sistemas,Windows 10 Pro
+EQUIPO-028,Simulador de Cotizaciones,4.1.0,Área Comercial,Windows 10 Pro
+EQUIPO-028,Visor de Reportes de Calidad,1.0.8,Área de Calidad,Windows 10 Pro
+EQUIPO-028,VLC media player,3.0.21,VideoLAN,Windows 10 Pro
+EQUIPO-029,7-Zip 24.08 (x64),24.08,Igor Pavlov,Windows 11 Pro
+EQUIPO-029,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated,Windows 11 Pro
+EQUIPO-029,Asistente de Respaldo Local,7.0.2,Área de Sistemas,Windows 11 Pro
+EQUIPO-029,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-029,Control de Asistencia Biométrico,4.0.7,Recursos Humanos,Windows 11 Pro
+EQUIPO-029,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.,Windows 11 Pro
+EQUIPO-029,Encuestas de Clima Laboral,2.2.0,Recursos Humanos,Windows 11 Pro
+EQUIPO-029,Etiquetadora de Almacén,3.6.1,Área de Logística,Windows 11 Pro
+EQUIPO-029,Firma Electrónica Corporativa,1.8.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-029,Gestor de Contratos Interno,1.3.6,Área Legal,Windows 11 Pro
+EQUIPO-029,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-029,GlobalProtect,6.3.5,Palo Alto Networks,Windows 11 Pro
+EQUIPO-029,Google Chrome,157.0.8103.78,Google LLC,Windows 11 Pro
+EQUIPO-029,Herramienta de Inventario Local,0.9.12,Área de Sistemas,Windows 11 Pro
+EQUIPO-029,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-029,Manual de Procesos Interactivo,3.2,Área de Calidad,Windows 11 Pro
+EQUIPO-029,Monitor de Disco Interno,1.6.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-029,Mozilla Firefox (x64 es-ES),157.0,Mozilla,Windows 11 Pro
+EQUIPO-029,Módulo de Tesorería,3.0.5,Área de Finanzas,Windows 11 Pro
+EQUIPO-029,Notepad++ (64-bit x64),8.9.6.4,Notepad++ Team,Windows 11 Pro
+EQUIPO-029,Paquete de Fuentes Corporativas,1.0,Área de Comunicación,Windows 11 Pro
+EQUIPO-029,Paquete de Idioma Español (México),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-029,Portal de Nómina Cliente,2.3.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-029,Simulador de Cotizaciones,4.1.0,Área Comercial,Windows 11 Pro
+EQUIPO-029,Tablero de Indicadores Local,2.9.0,Área de Calidad,Windows 11 Pro
+EQUIPO-029,TeamViewer,15.70.0,TeamViewer Germany GmbH,Windows 11 Pro
+EQUIPO-029,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-029,Visor de Planos Interno,2.1.9,Área de Ingeniería,Windows 11 Pro
+EQUIPO-029,WinRAR 7.12 (64-bit),7.12,win.rar GmbH,Windows 11 Pro
+EQUIPO-030,Adobe Acrobat Reader (64-bit),25.001.20531,Adobe Inc.,Windows 11 Pro
+EQUIPO-030,Agenda de Visitas Comercial,1.2.0,Área Comercial,Windows 11 Pro
+EQUIPO-030,Archivo Digital de Expedientes,2.5.0,Área Legal,Windows 11 Pro
+EQUIPO-030,Catálogo de Productos Offline,3.14.2,Área Comercial,Windows 11 Pro
+EQUIPO-030,Cliente de Impresión Segura,5.2.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-030,Cliente de Mensajería Interna,8.0.3,Área de Sistemas,Windows 11 Pro
+EQUIPO-030,Control de Asistencia Biométrico,4.0.7,Recursos Humanos,Windows 11 Pro
+EQUIPO-030,Encuestas de Clima Laboral,2.2.0,Recursos Humanos,Windows 11 Pro
+EQUIPO-030,Etiquetadora de Almacén,3.6.1,Área de Logística,Windows 11 Pro
+EQUIPO-030,Google Chrome,157.0.8103.60,Google LLC,Windows 11 Pro
+EQUIPO-030,Kit de Bienvenida Digital,1.1.3,Recursos Humanos,Windows 11 Pro
+EQUIPO-030,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-030,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-030,Planificador de Rutas de Reparto,2.2.7,Área de Logística,Windows 11 Pro
+EQUIPO-030,Portal de Nómina Cliente,2.3.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-030,PuTTY release 0.81 (64-bit),0.81,Simon Tatham,Windows 11 Pro
+EQUIPO-030,TeamViewer,15.70.0,TeamViewer Germany GmbH,Windows 11 Pro
+EQUIPO-030,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-030,Visor de Planos Interno,2.1.9,Área de Ingeniería,Windows 11 Pro
+EQUIPO-030,WinRAR 7.13 (64-bit),7.13,win.rar GmbH,Windows 11 Pro
+EQUIPO-031,7-Zip 24.08 (x64),24.08,Igor Pavlov,Windows 11 Pro
+EQUIPO-031,Adobe Acrobat Reader (64-bit),25.001.20531,Adobe Inc.,Windows 11 Pro
+EQUIPO-031,Agenda de Visitas Comercial,1.2.0,Área Comercial,Windows 11 Pro
+EQUIPO-031,Archivo Digital de Expedientes,2.5.0,Área Legal,Windows 11 Pro
+EQUIPO-031,Asistente de Respaldo Local,7.0.2,Área de Sistemas,Windows 11 Pro
+EQUIPO-031,Conector de Facturación Electrónica,6.3.0,Área de Finanzas,Windows 11 Pro
+EQUIPO-031,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.,Windows 11 Pro
+EQUIPO-031,Etiquetadora de Almacén,3.6.1,Área de Logística,Windows 11 Pro
+EQUIPO-031,Firma Electrónica Corporativa,1.8.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-031,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación,Windows 11 Pro
+EQUIPO-031,Formulario de Incidencias,1.7.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-031,Gestor de Contratos Interno,1.3.6,Área Legal,Windows 11 Pro
+EQUIPO-031,GlobalProtect,6.3.5,Palo Alto Networks,Windows 11 Pro
+EQUIPO-031,Google Chrome,156.0.8079.100,Google LLC,Windows 11 Pro
+EQUIPO-031,Kit de Bienvenida Digital,1.1.3,Recursos Humanos,Windows 11 Pro
+EQUIPO-031,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-031,Manual de Procesos Interactivo,3.2,Área de Calidad,Windows 11 Pro
+EQUIPO-031,Paquete de Fuentes Corporativas,1.0,Área de Comunicación,Windows 11 Pro
+EQUIPO-031,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-031,Portal de Nómina Cliente,2.3.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-031,Simulador de Cotizaciones,4.1.0,Área Comercial,Windows 11 Pro
+EQUIPO-031,Tablero de Indicadores Local,2.9.0,Área de Calidad,Windows 11 Pro
+EQUIPO-031,TeamViewer,15.70.0,TeamViewer Germany GmbH,Windows 11 Pro
+EQUIPO-032,7-Zip 24.08 (x64),24.08,Igor Pavlov,Windows 11 Pro
+EQUIPO-032,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated,Windows 11 Pro
+EQUIPO-032,Agenda de Visitas Comercial,1.2.0,Área Comercial,Windows 11 Pro
+EQUIPO-032,Asistente de Respaldo Local,7.0.2,Área de Sistemas,Windows 11 Pro
+EQUIPO-032,Catálogo de Productos Offline,3.14.2,Área Comercial,Windows 11 Pro
+EQUIPO-032,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-032,Cliente de Impresión Segura,5.2.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-032,Cliente de Mensajería Interna,8.0.3,Área de Sistemas,Windows 11 Pro
+EQUIPO-032,Conector de Facturación Electrónica,6.3.0,Área de Finanzas,Windows 11 Pro
+EQUIPO-032,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.,Windows 11 Pro
+EQUIPO-032,Diccionario Técnico Interno,2.0,Área de Ingeniería,Windows 11 Pro
+EQUIPO-032,Encuestas de Clima Laboral,2.2.0,Recursos Humanos,Windows 11 Pro
+EQUIPO-032,Firma Electrónica Corporativa,1.8.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-032,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación,Windows 11 Pro
+EQUIPO-032,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-032,Google Chrome,157.0.8103.60,Google LLC,Windows 11 Pro
+EQUIPO-032,Herramienta de Inventario Local,0.9.12,Área de Sistemas,Windows 11 Pro
+EQUIPO-032,Módulo de Tesorería,3.0.5,Área de Finanzas,Windows 11 Pro
+EQUIPO-032,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-032,Paquete de Fuentes Corporativas,1.0,Área de Comunicación,Windows 11 Pro
+EQUIPO-032,Planificador de Rutas de Reparto,2.2.7,Área de Logística,Windows 11 Pro
+EQUIPO-032,Plantillas Corporativas Office,2025.10,Área de Comunicación,Windows 11 Pro
+EQUIPO-032,Portal de Nómina Cliente,2.3.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-032,Simulador de Cotizaciones,4.1.0,Área Comercial,Windows 11 Pro
+EQUIPO-032,Tablero de Indicadores Local,2.9.0,Área de Calidad,Windows 11 Pro
+EQUIPO-032,Visor de Reportes de Calidad,1.0.8,Área de Calidad,Windows 11 Pro
+EQUIPO-033,7-Zip 24.08 (x64),24.08,Igor Pavlov,Windows 11 Pro
+EQUIPO-033,Archivo Digital de Expedientes,2.5.0,Área Legal,Windows 11 Pro
+EQUIPO-033,Calculadora de Viáticos,1.4.2,Área de Finanzas,Windows 11 Pro
+EQUIPO-033,Catálogo de Productos Offline,3.14.2,Área Comercial,Windows 11 Pro
+EQUIPO-033,Cliente de Impresión Segura,5.2.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-033,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.,Windows 11 Pro
+EQUIPO-033,Encuestas de Clima Laboral,2.2.0,Recursos Humanos,Windows 11 Pro
+EQUIPO-033,Etiquetadora de Almacén,3.6.1,Área de Logística,Windows 11 Pro
+EQUIPO-033,Formulario de Incidencias,1.7.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-033,GlobalProtect,6.3.5,Palo Alto Networks,Windows 11 Pro
+EQUIPO-033,Google Chrome,156.0.8079.100,Google LLC,Windows 11 Pro
+EQUIPO-033,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-033,Manual de Procesos Interactivo,3.2,Área de Calidad,Windows 11 Pro
+EQUIPO-033,Mozilla Firefox 156.0.1 (x64 es-ES),156.0.1,Mozilla,Windows 11 Pro
+EQUIPO-033,Módulo de Tesorería,3.0.5,Área de Finanzas,Windows 11 Pro
+EQUIPO-033,Paquete de Idioma Español (México),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-033,Plantillas Corporativas Office,2025.10,Área de Comunicación,Windows 11 Pro
+EQUIPO-033,Simulador de Cotizaciones,4.1.0,Área Comercial,Windows 11 Pro
+EQUIPO-033,Tablero de Indicadores Local,2.9.0,Área de Calidad,Windows 11 Pro
+EQUIPO-033,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-033,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-033,VLC media player,3.0.18,VideoLAN,Windows 11 Pro
+EQUIPO-033,WinRAR 5.61 (64-bit),5.61,win.rar GmbH,Windows 11 Pro
+EQUIPO-034,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-034,Archivo Digital de Expedientes,2.5.0,Área Legal,Windows 11 Pro
+EQUIPO-034,Asistente de Respaldo Local,7.0.2,Área de Sistemas,Windows 11 Pro
+EQUIPO-034,Calculadora de Viáticos,1.4.2,Área de Finanzas,Windows 11 Pro
+EQUIPO-034,Cliente de Impresión Segura,5.2.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-034,Cliente de Mensajería Interna,8.0.3,Área de Sistemas,Windows 11 Pro
+EQUIPO-034,Conector de Facturación Electrónica,6.3.0,Área de Finanzas,Windows 11 Pro
+EQUIPO-034,Control de Asistencia Biométrico,4.0.7,Recursos Humanos,Windows 11 Pro
+EQUIPO-034,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.,Windows 11 Pro
+EQUIPO-034,Diccionario Técnico Interno,2.0,Área de Ingeniería,Windows 11 Pro
+EQUIPO-034,Etiquetadora de Almacén,3.6.1,Área de Logística,Windows 11 Pro
+EQUIPO-034,Firma Electrónica Corporativa,1.8.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-034,Formulario de Incidencias,1.7.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-034,Gestor de Contratos Interno,1.3.6,Área Legal,Windows 11 Pro
+EQUIPO-034,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-034,GlobalProtect,6.3.5,Palo Alto Networks,Windows 11 Pro
+EQUIPO-034,Google Chrome,157.0.8103.60,Google LLC,Windows 11 Pro
+EQUIPO-034,Herramienta de Inventario Local,0.9.12,Área de Sistemas,Windows 11 Pro
+EQUIPO-034,Kit de Bienvenida Digital,1.1.3,Recursos Humanos,Windows 11 Pro
+EQUIPO-034,Monitor de Disco Interno,1.6.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-034,Paquete de Fuentes Corporativas,1.0,Área de Comunicación,Windows 11 Pro
+EQUIPO-034,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-034,Planificador de Rutas de Reparto,2.2.7,Área de Logística,Windows 11 Pro
+EQUIPO-034,Portal de Nómina Cliente,2.3.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-034,Simulador de Cotizaciones,4.1.0,Área Comercial,Windows 11 Pro
+EQUIPO-034,Tablero de Indicadores Local,2.9.0,Área de Calidad,Windows 11 Pro
+EQUIPO-034,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-035,7-Zip 24.09 (x64 edition),24.09,Igor Pavlov,Windows 10 Pro
+EQUIPO-035,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo,Windows 10 Pro
+EQUIPO-035,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated,Windows 10 Pro
+EQUIPO-035,Agenda de Visitas Comercial,1.2.0,Área Comercial,Windows 10 Pro
+EQUIPO-035,Asistente de Respaldo Local,7.0.2,Área de Sistemas,Windows 10 Pro
+EQUIPO-035,Calculadora de Viáticos,1.4.2,Área de Finanzas,Windows 10 Pro
+EQUIPO-035,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo,Windows 10 Pro
+EQUIPO-035,Cliente de Impresión Segura,5.2.4,Área de Sistemas,Windows 10 Pro
+EQUIPO-035,Control de Asistencia Biométrico,4.0.7,Recursos Humanos,Windows 10 Pro
+EQUIPO-035,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.,Windows 10 Pro
+EQUIPO-035,Encuestas de Clima Laboral,2.2.0,Recursos Humanos,Windows 10 Pro
+EQUIPO-035,Gestor de Contratos Interno,1.3.6,Área Legal,Windows 10 Pro
+EQUIPO-035,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo,Windows 10 Pro
+EQUIPO-035,GlobalProtect,6.3.5,Palo Alto Networks,Windows 10 Pro
+EQUIPO-035,Google Chrome,157.0.8103.60,Google LLC,Windows 10 Pro
+EQUIPO-035,Herramienta de Inventario Local,0.9.12,Área de Sistemas,Windows 10 Pro
+EQUIPO-035,Kit de Bienvenida Digital,1.1.3,Recursos Humanos,Windows 10 Pro
+EQUIPO-035,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas,Windows 10 Pro
+EQUIPO-035,Módulo de Tesorería,3.0.5,Área de Finanzas,Windows 10 Pro
+EQUIPO-035,Paquete de Idioma Español (México),26.11,Área de Sistemas,Windows 10 Pro
+EQUIPO-035,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.,Windows 10 Pro
+EQUIPO-035,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.,Windows 10 Pro
+EQUIPO-035,Visor de Planos Interno,2.1.9,Área de Ingeniería,Windows 10 Pro
+EQUIPO-035,VLC media player,3.0.21,VideoLAN,Windows 10 Pro
+EQUIPO-036,7-Zip 24.08 (x64),24.08,Igor Pavlov,Windows 11 Pro
+EQUIPO-036,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated,Windows 11 Pro
+EQUIPO-036,Calculadora de Viáticos,1.4.2,Área de Finanzas,Windows 11 Pro
+EQUIPO-036,Catálogo de Productos Offline,3.14.2,Área Comercial,Windows 11 Pro
+EQUIPO-036,Cliente de Mensajería Interna,8.0.3,Área de Sistemas,Windows 11 Pro
+EQUIPO-036,Control de Asistencia Biométrico,4.0.7,Recursos Humanos,Windows 11 Pro
+EQUIPO-036,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.,Windows 11 Pro
+EQUIPO-036,Diccionario Técnico Interno,2.0,Área de Ingeniería,Windows 11 Pro
+EQUIPO-036,Encuestas de Clima Laboral,2.2.0,Recursos Humanos,Windows 11 Pro
+EQUIPO-036,Etiquetadora de Almacén,3.6.1,Área de Logística,Windows 11 Pro
+EQUIPO-036,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación,Windows 11 Pro
+EQUIPO-036,Formulario de Incidencias,1.7.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-036,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-036,GlobalProtect,6.0.14,Palo Alto Networks,Windows 11 Pro
+EQUIPO-036,Google Chrome,157.0.8103.78,Google LLC,Windows 11 Pro
+EQUIPO-036,Kit de Bienvenida Digital,1.1.3,Recursos Humanos,Windows 11 Pro
+EQUIPO-036,Monitor de Disco Interno,1.6.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-036,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-036,Planificador de Rutas de Reparto,2.2.7,Área de Logística,Windows 11 Pro
+EQUIPO-036,Plantillas Corporativas Office,2025.10,Área de Comunicación,Windows 11 Pro
+EQUIPO-036,Portal de Nómina Cliente,2.3.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-036,Simulador de Cotizaciones,4.1.0,Área Comercial,Windows 11 Pro
+EQUIPO-036,Tablero de Indicadores Local,2.9.0,Área de Calidad,Windows 11 Pro
+EQUIPO-036,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-036,Visor de Reportes de Calidad,1.0.8,Área de Calidad,Windows 11 Pro
+EQUIPO-036,WinRAR 7.13 (64-bit),7.13,win.rar GmbH,Windows 11 Pro
+EQUIPO-037,Adobe Acrobat Reader (64-bit),25.001.20531,Adobe Inc.,Windows 11 Pro
+EQUIPO-037,Calculadora de Viáticos,1.4.2,Área de Finanzas,Windows 11 Pro
+EQUIPO-037,Cliente de Impresión Segura,5.2.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-037,Conector de Facturación Electrónica,6.3.0,Área de Finanzas,Windows 11 Pro
+EQUIPO-037,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.,Windows 11 Pro
+EQUIPO-037,Encuestas de Clima Laboral,2.2.0,Recursos Humanos,Windows 11 Pro
+EQUIPO-037,Firma Electrónica Corporativa,1.8.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-037,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación,Windows 11 Pro
+EQUIPO-037,Gestor de Contratos Interno,1.3.6,Área Legal,Windows 11 Pro
+EQUIPO-037,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-037,GlobalProtect,6.0.14,Palo Alto Networks,Windows 11 Pro
+EQUIPO-037,Google Chrome,157.0.8103.60,Google LLC,Windows 11 Pro
+EQUIPO-037,Herramienta de Inventario Local,0.9.12,Área de Sistemas,Windows 11 Pro
+EQUIPO-037,Kit de Bienvenida Digital,1.1.3,Recursos Humanos,Windows 11 Pro
+EQUIPO-037,Manual de Procesos Interactivo,3.2,Área de Calidad,Windows 11 Pro
+EQUIPO-037,Notepad++ (64-bit x64),8.8.9,Notepad++ Team,Windows 11 Pro
+EQUIPO-037,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-037,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-037,Portal de Nómina Cliente,2.3.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-037,Tablero de Indicadores Local,2.9.0,Área de Calidad,Windows 11 Pro
+EQUIPO-037,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-038,7-Zip 24.08 (x64),24.08,Igor Pavlov,Windows 11 Pro
+EQUIPO-038,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-038,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated,Windows 11 Pro
+EQUIPO-038,Agenda de Visitas Comercial,1.2.0,Área Comercial,Windows 11 Pro
+EQUIPO-038,Archivo Digital de Expedientes,2.5.0,Área Legal,Windows 11 Pro
+EQUIPO-038,Asistente de Respaldo Local,7.0.2,Área de Sistemas,Windows 11 Pro
+EQUIPO-038,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-038,Cliente de Impresión Segura,5.2.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-038,Cliente de Mensajería Interna,8.0.3,Área de Sistemas,Windows 11 Pro
+EQUIPO-038,Diccionario Técnico Interno,2.0,Área de Ingeniería,Windows 11 Pro
+EQUIPO-038,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-038,GlobalProtect,6.3.5,Palo Alto Networks,Windows 11 Pro
+EQUIPO-038,Google Chrome,157.0.8103.60,Google LLC,Windows 11 Pro
+EQUIPO-038,Manual de Procesos Interactivo,3.2,Área de Calidad,Windows 11 Pro
+EQUIPO-038,Paquete de Fuentes Corporativas,1.0,Área de Comunicación,Windows 11 Pro
+EQUIPO-038,Paquete de Idioma Español (México),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-038,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-038,Planificador de Rutas de Reparto,2.2.7,Área de Logística,Windows 11 Pro
+EQUIPO-038,Plantillas Corporativas Office,2025.10,Área de Comunicación,Windows 11 Pro
+EQUIPO-038,Portal de Nómina Cliente,2.3.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-038,Sistema Contable Interno,4.2,Área de Sistemas,Windows 11 Pro
+EQUIPO-038,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-038,Visor de Reportes de Calidad,1.0.8,Área de Calidad,Windows 11 Pro
+EQUIPO-039,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-039,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated,Windows 11 Pro
+EQUIPO-039,Agente RMM Ficticio,3.0,RMM Ficticio S.A.,Windows 11 Pro
+EQUIPO-039,Cliente de Impresión Segura,5.2.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-039,Cliente de Mensajería Interna,8.0.3,Área de Sistemas,Windows 11 Pro
+EQUIPO-039,Conector de Facturación Electrónica,6.3.0,Área de Finanzas,Windows 11 Pro
+EQUIPO-039,Control de Asistencia Biométrico,4.0.7,Recursos Humanos,Windows 11 Pro
+EQUIPO-039,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.,Windows 11 Pro
+EQUIPO-039,Firma Electrónica Corporativa,1.8.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-039,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación,Windows 11 Pro
+EQUIPO-039,Gestor de Contratos Interno,1.3.6,Área Legal,Windows 11 Pro
+EQUIPO-039,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-039,GlobalProtect,6.3.5,Palo Alto Networks,Windows 11 Pro
+EQUIPO-039,Google Chrome,156.0.8079.100,Google LLC,Windows 11 Pro
+EQUIPO-039,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-039,Manual de Procesos Interactivo,3.2,Área de Calidad,Windows 11 Pro
+EQUIPO-039,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-039,Paquete de Fuentes Corporativas,1.0,Área de Comunicación,Windows 11 Pro
+EQUIPO-039,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-039,Planificador de Rutas de Reparto,2.2.7,Área de Logística,Windows 11 Pro
+EQUIPO-039,Visor de Planos Interno,2.1.9,Área de Ingeniería,Windows 11 Pro
+EQUIPO-040,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated,Windows 11 Pro
+EQUIPO-040,Asistente de Respaldo Local,7.0.2,Área de Sistemas,Windows 11 Pro
+EQUIPO-040,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-040,Control de Asistencia Biométrico,4.0.7,Recursos Humanos,Windows 11 Pro
+EQUIPO-040,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.,Windows 11 Pro
+EQUIPO-040,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.,Windows 11 Pro
+EQUIPO-040,Firma Electrónica Corporativa,1.8.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-040,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación,Windows 11 Pro
+EQUIPO-040,Formulario de Incidencias,1.7.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-040,GlobalProtect,6.3.5,Palo Alto Networks,Windows 11 Pro
+EQUIPO-040,Google Chrome,156.0.8079.100,Google LLC,Windows 11 Pro
+EQUIPO-040,Kit de Bienvenida Digital,1.1.3,Recursos Humanos,Windows 11 Pro
+EQUIPO-040,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-040,Monitor de Disco Interno,1.6.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-040,Mozilla Firefox 156.0.1 (x64 es-ES),156.0.1,Mozilla,Windows 11 Pro
+EQUIPO-040,Módulo de Tesorería,3.0.5,Área de Finanzas,Windows 11 Pro
+EQUIPO-040,Paquete de Fuentes Corporativas,1.0,Área de Comunicación,Windows 11 Pro
+EQUIPO-040,Paquete de Idioma Español (México),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-040,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-040,Planificador de Rutas de Reparto,2.2.7,Área de Logística,Windows 11 Pro
+EQUIPO-040,Plantillas Corporativas Office,2025.10,Área de Comunicación,Windows 11 Pro
+EQUIPO-040,PuTTY release 0.84 (64-bit),0.84,Simon Tatham,Windows 11 Pro
+EQUIPO-040,Visor de Planos Interno,2.1.9,Área de Ingeniería,Windows 11 Pro
+EQUIPO-040,Visor de Reportes de Calidad,1.0.8,Área de Calidad,Windows 11 Pro
+EQUIPO-041,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-041,Adobe Acrobat Reader (64-bit),25.001.20531,Adobe Inc.,Windows 11 Pro
+EQUIPO-041,Calculadora de Viáticos,1.4.2,Área de Finanzas,Windows 11 Pro
+EQUIPO-041,Cliente de Impresión Segura,5.2.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-041,Conector de Facturación Electrónica,6.3.0,Área de Finanzas,Windows 11 Pro
+EQUIPO-041,Control de Asistencia Biométrico,4.0.7,Recursos Humanos,Windows 11 Pro
+EQUIPO-041,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.,Windows 11 Pro
+EQUIPO-041,Encuestas de Clima Laboral,2.2.0,Recursos Humanos,Windows 11 Pro
+EQUIPO-041,Formulario de Incidencias,1.7.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-041,GlobalProtect,6.3.5,Palo Alto Networks,Windows 11 Pro
+EQUIPO-041,Google Chrome,157.0.8103.78,Google LLC,Windows 11 Pro
+EQUIPO-041,Herramienta de Inventario Local,0.9.12,Área de Sistemas,Windows 11 Pro
+EQUIPO-041,Manual de Procesos Interactivo,3.2,Área de Calidad,Windows 11 Pro
+EQUIPO-041,Notepad++ (64-bit x64),8.8.9,Notepad++ Team,Windows 11 Pro
+EQUIPO-041,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-041,Paquete de Fuentes Corporativas,1.0,Área de Comunicación,Windows 11 Pro
+EQUIPO-041,Paquete de Idioma Español (México),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-041,Planificador de Rutas de Reparto,2.2.7,Área de Logística,Windows 11 Pro
+EQUIPO-041,Portal de Nómina Cliente,2.3.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-041,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-041,Visor de Reportes de Calidad,1.0.8,Área de Calidad,Windows 11 Pro
+EQUIPO-042,7-Zip 24.09 (x64 edition),24.09,Igor Pavlov,Windows 10 Pro
+EQUIPO-042,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo,Windows 10 Pro
+EQUIPO-042,Adobe Acrobat Reader (64-bit),25.001.20531,Adobe Inc.,Windows 10 Pro
+EQUIPO-042,Agente RMM Ficticio,3.0,RMM Ficticio S.A.,Windows 10 Pro
+EQUIPO-042,Archivo Digital de Expedientes,2.5.0,Área Legal,Windows 10 Pro
+EQUIPO-042,Calculadora de Viáticos,1.4.2,Área de Finanzas,Windows 10 Pro
+EQUIPO-042,Catálogo de Productos Offline,3.14.2,Área Comercial,Windows 10 Pro
+EQUIPO-042,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo,Windows 10 Pro
+EQUIPO-042,Conector de Facturación Electrónica,6.3.0,Área de Finanzas,Windows 10 Pro
+EQUIPO-042,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.,Windows 10 Pro
+EQUIPO-042,Encuestas de Clima Laboral,2.2.0,Recursos Humanos,Windows 10 Pro
+EQUIPO-042,Etiquetadora de Almacén,3.6.1,Área de Logística,Windows 10 Pro
+EQUIPO-042,Firma Electrónica Corporativa,1.8.0,Área de Sistemas,Windows 10 Pro
+EQUIPO-042,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación,Windows 10 Pro
+EQUIPO-042,Formulario de Incidencias,1.7.4,Área de Sistemas,Windows 10 Pro
+EQUIPO-042,Google Chrome,157.0.8103.60,Google LLC,Windows 10 Pro
+EQUIPO-042,Kit de Bienvenida Digital,1.1.3,Recursos Humanos,Windows 10 Pro
+EQUIPO-042,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas,Windows 10 Pro
+EQUIPO-042,Monitor de Disco Interno,1.6.0,Área de Sistemas,Windows 10 Pro
+EQUIPO-042,Módulo de Tesorería,3.0.5,Área de Finanzas,Windows 10 Pro
+EQUIPO-042,Paquete de Fuentes Corporativas,1.0,Área de Comunicación,Windows 10 Pro
+EQUIPO-042,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas,Windows 10 Pro
+EQUIPO-042,Plantillas Corporativas Office,2025.10,Área de Comunicación,Windows 10 Pro
+EQUIPO-042,Tablero de Indicadores Local,2.9.0,Área de Calidad,Windows 10 Pro
+EQUIPO-042,Visor de Reportes de Calidad,1.0.8,Área de Calidad,Windows 10 Pro
+EQUIPO-042,VLC media player,3.0.18,VideoLAN,Windows 10 Pro
+EQUIPO-042,WinRAR 7.12 (64-bit),7.12,win.rar GmbH,Windows 10 Pro
+EQUIPO-043,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated,Windows 11 Pro
+EQUIPO-043,Archivo Digital de Expedientes,2.5.0,Área Legal,Windows 11 Pro
+EQUIPO-043,Asistente de Respaldo Local,7.0.2,Área de Sistemas,Windows 11 Pro
+EQUIPO-043,Calculadora de Viáticos,1.4.2,Área de Finanzas,Windows 11 Pro
+EQUIPO-043,Catálogo de Productos Offline,3.14.2,Área Comercial,Windows 11 Pro
+EQUIPO-043,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.,Windows 11 Pro
+EQUIPO-043,Diccionario Técnico Interno,2.0,Área de Ingeniería,Windows 11 Pro
+EQUIPO-043,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación,Windows 11 Pro
+EQUIPO-043,Gestor de Contratos Interno,1.3.6,Área Legal,Windows 11 Pro
+EQUIPO-043,GlobalProtect,6.3.5,Palo Alto Networks,Windows 11 Pro
+EQUIPO-043,Google Chrome,157.0.8103.60,Google LLC,Windows 11 Pro
+EQUIPO-043,Herramienta de Inventario Local,0.9.12,Área de Sistemas,Windows 11 Pro
+EQUIPO-043,Kit de Bienvenida Digital,1.1.3,Recursos Humanos,Windows 11 Pro
+EQUIPO-043,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-043,Lector PDF Corporativo,,Área de Sistemas,Windows 11 Pro
+EQUIPO-043,Manual de Procesos Interactivo,3.2,Área de Calidad,Windows 11 Pro
+EQUIPO-043,Monitor de Disco Interno,1.6.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-043,Notepad++ (64-bit x64),8.9.6.4,Notepad++ Team,Windows 11 Pro
+EQUIPO-043,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-043,Paquete de Idioma Español (México),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-043,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-043,Simulador de Cotizaciones,4.1.0,Área Comercial,Windows 11 Pro
+EQUIPO-043,Tablero de Indicadores Local,2.9.0,Área de Calidad,Windows 11 Pro
+EQUIPO-043,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-043,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-043,Visor de Planos Interno,2.1.9,Área de Ingeniería,Windows 11 Pro
+EQUIPO-043,Visor de Reportes de Calidad,1.0.8,Área de Calidad,Windows 11 Pro
+EQUIPO-043,WinRAR 7.13 (64-bit),7.13,win.rar GmbH,Windows 11 Pro
+EQUIPO-044,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-044,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated,Windows 11 Pro
+EQUIPO-044,Archivo Digital de Expedientes,2.5.0,Área Legal,Windows 11 Pro
+EQUIPO-044,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-044,Conector de Facturación Electrónica,6.3.0,Área de Finanzas,Windows 11 Pro
+EQUIPO-044,Control de Asistencia Biométrico,4.0.7,Recursos Humanos,Windows 11 Pro
+EQUIPO-044,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.,Windows 11 Pro
+EQUIPO-044,Diccionario Técnico Interno,2.0,Área de Ingeniería,Windows 11 Pro
+EQUIPO-044,Firma Electrónica Corporativa,1.8.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-044,Formulario de Incidencias,1.7.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-044,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-044,GlobalProtect,6.3.5,Palo Alto Networks,Windows 11 Pro
+EQUIPO-044,Google Chrome,157.0.8103.60,Google LLC,Windows 11 Pro
+EQUIPO-044,Herramienta de Inventario Local,0.9.12,Área de Sistemas,Windows 11 Pro
+EQUIPO-044,Mozilla Firefox (x64 es-ES),157.0,Mozilla,Windows 11 Pro
+EQUIPO-044,Notepad++ (64-bit x64),8.8.9,Notepad++ Team,Windows 11 Pro
+EQUIPO-044,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-044,Planificador de Rutas de Reparto,2.2.7,Área de Logística,Windows 11 Pro
+EQUIPO-044,Plantillas Corporativas Office,2025.10,Área de Comunicación,Windows 11 Pro
+EQUIPO-044,Sistema Contable Interno,4.2,Área de Sistemas,Windows 11 Pro
+EQUIPO-044,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-044,VLC media player,3.0.21,VideoLAN,Windows 11 Pro
+EQUIPO-045,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-045,Adobe Acrobat Reader (64-bit),25.001.20531,Adobe Inc.,Windows 11 Pro
+EQUIPO-045,Cliente de Impresión Segura,5.2.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-045,Cliente de Mensajería Interna,8.0.3,Área de Sistemas,Windows 11 Pro
+EQUIPO-045,Conector de Facturación Electrónica,6.3.0,Área de Finanzas,Windows 11 Pro
+EQUIPO-045,Diccionario Técnico Interno,2.0,Área de Ingeniería,Windows 11 Pro
+EQUIPO-045,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación,Windows 11 Pro
+EQUIPO-045,Gestor de Contratos Interno,1.3.6,Área Legal,Windows 11 Pro
+EQUIPO-045,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-045,GlobalProtect,6.0.14,Palo Alto Networks,Windows 11 Pro
+EQUIPO-045,Google Chrome,156.0.8079.100,Google LLC,Windows 11 Pro
+EQUIPO-045,Herramienta de Inventario Local,0.9.12,Área de Sistemas,Windows 11 Pro
+EQUIPO-045,Kit de Bienvenida Digital,1.1.3,Recursos Humanos,Windows 11 Pro
+EQUIPO-045,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-045,Manual de Procesos Interactivo,3.2,Área de Calidad,Windows 11 Pro
+EQUIPO-045,Mozilla Firefox 156.0.1 (x64 es-ES),156.0.1,Mozilla,Windows 11 Pro
+EQUIPO-045,Notepad++ (64-bit x64),8.9.6.4,Notepad++ Team,Windows 11 Pro
+EQUIPO-045,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-045,Paquete de Fuentes Corporativas,1.0,Área de Comunicación,Windows 11 Pro
+EQUIPO-045,Portal de Nómina Cliente,2.3.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-045,Tablero de Indicadores Local,2.9.0,Área de Calidad,Windows 11 Pro
+EQUIPO-045,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-046,7-Zip 26.03 (x64),26.03,Igor Pavlov,Windows 11 Pro
+EQUIPO-046,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated,Windows 11 Pro
+EQUIPO-046,Agenda de Visitas Comercial,1.2.0,Área Comercial,Windows 11 Pro
+EQUIPO-046,Cliente de Mensajería Interna,8.0.3,Área de Sistemas,Windows 11 Pro
+EQUIPO-046,Conector de Facturación Electrónica,6.3.0,Área de Finanzas,Windows 11 Pro
+EQUIPO-046,Control de Asistencia Biométrico,4.0.7,Recursos Humanos,Windows 11 Pro
+EQUIPO-046,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.,Windows 11 Pro
+EQUIPO-046,Encuestas de Clima Laboral,2.2.0,Recursos Humanos,Windows 11 Pro
+EQUIPO-046,Etiquetadora de Almacén,3.6.1,Área de Logística,Windows 11 Pro
+EQUIPO-046,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación,Windows 11 Pro
+EQUIPO-046,GlobalProtect,6.3.5,Palo Alto Networks,Windows 11 Pro
+EQUIPO-046,Google Chrome,157.0.8103.78,Google LLC,Windows 11 Pro
+EQUIPO-046,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-046,Manual de Procesos Interactivo,3.2,Área de Calidad,Windows 11 Pro
+EQUIPO-046,Monitor de Disco Interno,1.6.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-046,Paquete de Fuentes Corporativas,1.0,Área de Comunicación,Windows 11 Pro
+EQUIPO-046,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-046,Planificador de Rutas de Reparto,2.2.7,Área de Logística,Windows 11 Pro
+EQUIPO-046,Plantillas Corporativas Office,2025.10,Área de Comunicación,Windows 11 Pro
+EQUIPO-046,Simulador de Cotizaciones,4.1.0,Área Comercial,Windows 11 Pro
+EQUIPO-046,Visor de Planos Interno,2.1.9,Área de Ingeniería,Windows 11 Pro
+EQUIPO-046,Visor de Reportes de Calidad,1.0.8,Área de Calidad,Windows 11 Pro
+EQUIPO-047,Adobe Acrobat Reader (64-bit),25.001.20531,Adobe Inc.,Windows 11 Pro
+EQUIPO-047,Agenda de Visitas Comercial,1.2.0,Área Comercial,Windows 11 Pro
+EQUIPO-047,Asistente de Respaldo Local,7.0.2,Área de Sistemas,Windows 11 Pro
+EQUIPO-047,Cliente de Impresión Segura,5.2.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-047,Diccionario Técnico Interno,2.0,Área de Ingeniería,Windows 11 Pro
+EQUIPO-047,Encuestas de Clima Laboral,2.2.0,Recursos Humanos,Windows 11 Pro
+EQUIPO-047,Etiquetadora de Almacén,3.6.1,Área de Logística,Windows 11 Pro
+EQUIPO-047,Firma Electrónica Corporativa,1.8.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-047,Formulario de Incidencias,1.7.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-047,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-047,GlobalProtect,6.3.5,Palo Alto Networks,Windows 11 Pro
+EQUIPO-047,Google Chrome,157.0.8103.78,Google LLC,Windows 11 Pro
+EQUIPO-047,Herramienta de Inventario Local,0.9.12,Área de Sistemas,Windows 11 Pro
+EQUIPO-047,Kit de Bienvenida Digital,1.1.3,Recursos Humanos,Windows 11 Pro
+EQUIPO-047,Manual de Procesos Interactivo,3.2,Área de Calidad,Windows 11 Pro
+EQUIPO-047,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-047,Portal de Nómina Cliente,2.3.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-047,Visor de Reportes de Calidad,1.0.8,Área de Calidad,Windows 11 Pro
+EQUIPO-047,VLC media player,3.0.21,VideoLAN,Windows 11 Pro
+EQUIPO-047,WinRAR 7.12 (64-bit),7.12,win.rar GmbH,Windows 11 Pro
+EQUIPO-048,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-048,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated,Windows 11 Pro
+EQUIPO-048,Agenda de Visitas Comercial,1.2.0,Área Comercial,Windows 11 Pro
+EQUIPO-048,Archivo Digital de Expedientes,2.5.0,Área Legal,Windows 11 Pro
+EQUIPO-048,Asistente de Respaldo Local,7.0.2,Área de Sistemas,Windows 11 Pro
+EQUIPO-048,Calculadora de Viáticos,1.4.2,Área de Finanzas,Windows 11 Pro
+EQUIPO-048,Centro de Ayuda del Fabricante,2.4.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-048,Conector de Facturación Electrónica,6.3.0,Área de Finanzas,Windows 11 Pro
+EQUIPO-048,Control de Asistencia Biométrico,4.0.7,Recursos Humanos,Windows 11 Pro
+EQUIPO-048,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.,Windows 11 Pro
+EQUIPO-048,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.,Windows 11 Pro
+EQUIPO-048,Diccionario Técnico Interno,2.0,Área de Ingeniería,Windows 11 Pro
+EQUIPO-048,Encuestas de Clima Laboral,2.2.0,Recursos Humanos,Windows 11 Pro
+EQUIPO-048,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación,Windows 11 Pro
+EQUIPO-048,Formulario de Incidencias,1.7.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-048,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-048,GlobalProtect,6.3.5,Palo Alto Networks,Windows 11 Pro
+EQUIPO-048,Google Chrome,157.0.8103.78,Google LLC,Windows 11 Pro
+EQUIPO-048,Monitor de Disco Interno,1.6.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-048,Mozilla Firefox 156.0.1 (x64 es-ES),156.0.1,Mozilla,Windows 11 Pro
+EQUIPO-048,Paquete de Fuentes Corporativas,1.0,Área de Comunicación,Windows 11 Pro
+EQUIPO-048,Paquete de Idioma Español (México),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-048,Planificador de Rutas de Reparto,2.2.7,Área de Logística,Windows 11 Pro
+EQUIPO-048,Simulador de Cotizaciones,4.1.0,Área Comercial,Windows 11 Pro
+EQUIPO-048,Tablero de Indicadores Local,2.9.0,Área de Calidad,Windows 11 Pro
+EQUIPO-048,TeamViewer,15.70.0,TeamViewer Germany GmbH,Windows 11 Pro
+EQUIPO-048,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-048,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-048,Visor de Reportes de Calidad,1.0.8,Área de Calidad,Windows 11 Pro
+EQUIPO-049,7-Zip 24.09 (x64 edition),24.09,Igor Pavlov,Windows 10 Pro
+EQUIPO-049,Agenda de Visitas Comercial,1.2.0,Área Comercial,Windows 10 Pro
+EQUIPO-049,Archivo Digital de Expedientes,2.5.0,Área Legal,Windows 10 Pro
+EQUIPO-049,Conector de Facturación Electrónica,6.3.0,Área de Finanzas,Windows 10 Pro
+EQUIPO-049,Etiquetadora de Almacén,3.6.1,Área de Logística,Windows 10 Pro
+EQUIPO-049,Firma Electrónica Corporativa,1.8.0,Área de Sistemas,Windows 10 Pro
+EQUIPO-049,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación,Windows 10 Pro
+EQUIPO-049,Gestor de Contratos Interno,1.3.6,Área Legal,Windows 10 Pro
+EQUIPO-049,GlobalProtect,6.3.5,Palo Alto Networks,Windows 10 Pro
+EQUIPO-049,Google Chrome,156.0.8079.100,Google LLC,Windows 10 Pro
+EQUIPO-049,Herramienta de Inventario Local,0.9.12,Área de Sistemas,Windows 10 Pro
+EQUIPO-049,Manual de Procesos Interactivo,3.2,Área de Calidad,Windows 10 Pro
+EQUIPO-049,Módulo de Tesorería,3.0.5,Área de Finanzas,Windows 10 Pro
+EQUIPO-049,Panel de Audio del Equipo,6.0.9600,Fabricante del Equipo,Windows 10 Pro
+EQUIPO-049,Paquete de Fuentes Corporativas,1.0,Área de Comunicación,Windows 10 Pro
+EQUIPO-049,Planificador de Rutas de Reparto,2.2.7,Área de Logística,Windows 10 Pro
+EQUIPO-049,Portal de Nómina Cliente,2.3.1,Área de Sistemas,Windows 10 Pro
+EQUIPO-049,Sistema Contable Interno,4.2,Área de Sistemas,Windows 10 Pro
+EQUIPO-049,Tablero de Indicadores Local,2.9.0,Área de Calidad,Windows 10 Pro
+EQUIPO-049,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.,Windows 10 Pro
+EQUIPO-050,7-Zip 26.03 (x64),26.03,Igor Pavlov,Windows 11 Pro
+EQUIPO-050,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo,Windows 11 Pro
+EQUIPO-050,Adobe Acrobat Reader DC - Español,26.002.21901,Adobe Systems Incorporated,Windows 11 Pro
+EQUIPO-050,Agenda de Visitas Comercial,1.2.0,Área Comercial,Windows 11 Pro
+EQUIPO-050,Calculadora de Viáticos,1.4.2,Área de Finanzas,Windows 11 Pro
+EQUIPO-050,Catálogo de Productos Offline,3.14.2,Área Comercial,Windows 11 Pro
+EQUIPO-050,Conector de Facturación Electrónica,6.3.0,Área de Finanzas,Windows 11 Pro
+EQUIPO-050,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.,Windows 11 Pro
+EQUIPO-050,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.,Windows 11 Pro
+EQUIPO-050,Encuestas de Clima Laboral,2.2.0,Recursos Humanos,Windows 11 Pro
+EQUIPO-050,Firma Electrónica Corporativa,1.8.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-050,Formulario de Incidencias,1.7.4,Área de Sistemas,Windows 11 Pro
+EQUIPO-050,Gestor de Contratos Interno,1.3.6,Área Legal,Windows 11 Pro
+EQUIPO-050,GlobalProtect,6.3.5,Palo Alto Networks,Windows 11 Pro
+EQUIPO-050,Google Chrome,156.0.8079.100,Google LLC,Windows 11 Pro
+EQUIPO-050,Kit de Bienvenida Digital,1.1.3,Recursos Humanos,Windows 11 Pro
+EQUIPO-050,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-050,Monitor de Disco Interno,1.6.0,Área de Sistemas,Windows 11 Pro
+EQUIPO-050,Módulo de Tesorería,3.0.5,Área de Finanzas,Windows 11 Pro
+EQUIPO-050,Paquete de Idioma Español (México),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-050,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas,Windows 11 Pro
+EQUIPO-050,Planificador de Rutas de Reparto,2.2.7,Área de Logística,Windows 11 Pro
+EQUIPO-050,Portal de Nómina Cliente,2.3.1,Área de Sistemas,Windows 11 Pro
+EQUIPO-050,Simulador de Cotizaciones,4.1.0,Área Comercial,Windows 11 Pro
+EQUIPO-050,Tablero de Indicadores Local,2.9.0,Área de Calidad,Windows 11 Pro
+EQUIPO-050,TeamViewer 14,14.7.1965,TeamViewer Germany GmbH,Windows 11 Pro
+EQUIPO-050,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-050,Utilidad de Teclado Ergonómico,3.3.3,Periféricos Sur S.A.,Windows 11 Pro
+EQUIPO-050,Visor de Reportes de Calidad,1.0.8,Área de Calidad,Windows 11 Pro
+SRV-01,Calculadora de Viáticos,1.4.2,Área de Finanzas,Windows Server 2022 Standard
+SRV-01,Cliente de Impresión Segura,5.2.4,Área de Sistemas,Windows Server 2022 Standard
+SRV-01,Conector de Facturación Electrónica,6.3.0,Área de Finanzas,Windows Server 2022 Standard
+SRV-01,Controlador de Escáner Documental,11.2.0,Escáneres del Valle S.A.,Windows Server 2022 Standard
+SRV-01,Controlador de Lector de Credenciales,2.0.14,Lectores Andinos S.A.,Windows Server 2022 Standard
+SRV-01,Diccionario Técnico Interno,2.0,Área de Ingeniería,Windows Server 2022 Standard
+SRV-01,Encuestas de Clima Laboral,2.2.0,Recursos Humanos,Windows Server 2022 Standard
+SRV-01,Firma Electrónica Corporativa,1.8.0,Área de Sistemas,Windows Server 2022 Standard
+SRV-01,Gestor de Contratos Interno,1.3.6,Área Legal,Windows Server 2022 Standard
+SRV-01,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo,Windows Server 2022 Standard
+SRV-01,Herramienta de Inventario Local,0.9.12,Área de Sistemas,Windows Server 2022 Standard
+SRV-01,Monitor de Disco Interno,1.6.0,Área de Sistemas,Windows Server 2022 Standard
+SRV-01,nginx,1.24.0,"F5, Inc.",Windows Server 2022 Standard
+SRV-01,Paquete de Fuentes Corporativas,1.0,Área de Comunicación,Windows Server 2022 Standard
+SRV-01,Paquete de Idioma Inglés (EE. UU.),26.11,Área de Sistemas,Windows Server 2022 Standard
+SRV-01,Planificador de Rutas de Reparto,2.2.7,Área de Logística,Windows Server 2022 Standard
+SRV-01,Simulador de Cotizaciones,4.1.0,Área Comercial,Windows Server 2022 Standard
+SRV-01,Tablero de Indicadores Local,2.9.0,Área de Calidad,Windows Server 2022 Standard
+SRV-01,Utilidad de Ratón Inalámbrico,1.9.0,Periféricos Sur S.A.,Windows Server 2022 Standard
+SRV-02,Actualizador de BIOS del Fabricante,1.12.0,Fabricante del Equipo,Windows Server 2022 Standard
+SRV-02,Cliente de Impresión Segura,5.2.4,Área de Sistemas,Windows Server 2022 Standard
+SRV-02,Cliente de Mensajería Interna,8.0.3,Área de Sistemas,Windows Server 2022 Standard
+SRV-02,Control de Asistencia Biométrico,4.0.7,Recursos Humanos,Windows Server 2022 Standard
+SRV-02,Diccionario Técnico Interno,2.0,Área de Ingeniería,Windows Server 2022 Standard
+SRV-02,Encuestas de Clima Laboral,2.2.0,Recursos Humanos,Windows Server 2022 Standard
+SRV-02,Etiquetadora de Almacén,3.6.1,Área de Logística,Windows Server 2022 Standard
+SRV-02,Firma Electrónica Corporativa,1.8.0,Área de Sistemas,Windows Server 2022 Standard
+SRV-02,Fondos de Pantalla Institucionales,2026.1,Área de Comunicación,Windows Server 2022 Standard
+SRV-02,Formulario de Incidencias,1.7.4,Área de Sistemas,Windows Server 2022 Standard
+SRV-02,Gestor de Energía del Fabricante,5.1.2,Fabricante del Equipo,Windows Server 2022 Standard
+SRV-02,Lanzador de Aplicaciones Corporativas,4.5.1,Área de Sistemas,Windows Server 2022 Standard
+SRV-02,Monitor de Disco Interno,1.6.0,Área de Sistemas,Windows Server 2022 Standard
+SRV-02,Módulo de Tesorería,3.0.5,Área de Finanzas,Windows Server 2022 Standard
+SRV-02,nginx,1.27.4,"F5, Inc.",Windows Server 2022 Standard
+SRV-02,Planificador de Rutas de Reparto,2.2.7,Área de Logística,Windows Server 2022 Standard
+SRV-02,Plantillas Corporativas Office,2025.10,Área de Comunicación,Windows Server 2022 Standard
+SRV-02,Portal de Nómina Cliente,2.3.1,Área de Sistemas,Windows Server 2022 Standard
+SRV-02,Tablero de Indicadores Local,2.9.0,Área de Calidad,Windows Server 2022 Standard
+SRV-02,Visor de Planos Interno,2.1.9,Área de Ingeniería,Windows Server 2022 Standard

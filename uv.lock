@@ -980,6 +980,8 @@ api = [
 ]
 mcp = [
     { name = "mcp" },
+    { name = "openpyxl" },
+    { name = "pandas" },
 ]
 
 [package.dev-dependencies]
@@ -997,7 +999,9 @@ requires-dist = [
     { name = "httpx", specifier = ">=0.27" },
     { name = "mcp", marker = "extra == 'mcp'" },
     { name = "openpyxl", marker = "extra == 'api'" },
+    { name = "openpyxl", marker = "extra == 'mcp'" },
     { name = "pandas", marker = "extra == 'api'" },
+    { name = "pandas", marker = "extra == 'mcp'" },
     { name = "pydantic", specifier = ">=2.9" },
     { name = "python-dotenv", specifier = ">=1.0" },
     { name = "python-multipart", marker = "extra == 'api'" },

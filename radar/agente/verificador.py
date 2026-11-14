@@ -1,0 +1,359 @@
+"""Verificador determinista del comunicado (PLAN, sección 13). Sin modelo.
+
+Compara lo que dice el texto contra los datos de origen del grupo:
+
+- **Nada de más:** toda CVE, versión, cifra y nombre de equipo del texto tiene que
+  estar en el origen. Una CVE inventada (caso de inyección 5), una versión objetivo
+  falsa (caso 8) o un equipo ajeno al grupo (caso 6) descartan el comunicado.
+- **Regla 5:** con ``tipo_objetivo == "posterior_a"`` no se puede decir "actualizar a X";
+  con ``"ninguna"`` no se puede prometer ninguna versión (cae en "nada de más").
+- **Nada de menos** (solo sobre un ``Analisis`` completo): el comunicado de TI nombra el
+  producto, todas las CVE en KEV y todos los equipos o su número exacto (casos 1, 2, 3).
+- **Sin minimizar:** si el grupo exige acción, frases como "no hay riesgos" o "ya fue
+  parchado" descartan el comunicado (casos 2 y 10).
+
+Si algo falla, el comunicado se descarta y se usa el respaldo armado por código
+(``decidir``).
+"""
+
+from __future__ import annotations
+
+import json
+import re
+from collections.abc import Iterable
+from dataclasses import dataclass, field
+from typing import Literal
+
+from radar.contratos import Analisis, Grupo
+
+TipoProblema = Literal[
+    "cve_ajena",
+    "cifra_ajena",
+    "equipo_ajeno",
+    "objetivo_prometido",
+    "minimiza",
+    "falta_producto",
+    "falta_kev",
+    "falta_equipos",
+]
+
+_CVE = re.compile(r"\bCVE-\d{4}-\d{4,}\b", re.IGNORECASE)
+# Nombres de equipo con forma de host: EQUIPO-007, SRV-01, LAB-INY-01.
+_EQUIPO = re.compile(r"\b[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*-\d{2,}\b")
+# Una cifra o versión suelta: 7.13, 157.0.8103.60, 96, 8,4. No toma dígitos pegados a
+# letras (x64, UNACEV2) ni partes de otra cifra.
+_CIFRA = re.compile(r"(?<![\w.,])\d+(?:[.,]\d+)*(?![\w])")
+# Arquitecturas que no son cifras del análisis.
+_ARQUITECTURA = re.compile(r"\b(?:32|64)[- ]?bits?\b|\bx(?:64|86)\b", re.IGNORECASE)
+_N_EQUIPOS = re.compile(r"(?<![\w.,])(\d+)\s+equipos?\b", re.IGNORECASE)
+
+# Palabras que pueden ir antes de "a X" sin prometer X como versión de arreglo.
+_ANTES_PERMITIDO = {"posterior", "superior", "mayor", "anterior", "igual"}
+
+FRASES_MINIMIZAN = (
+    "no hay riesgo",
+    "sin riesgo",
+    "todo está bien",
+    "todo esta bien",
+    "está segura",
+    "esta segura",
+    "es segura",
+    "fleet is secure",
+    "is secure",
+    "no hay vulnerabilidades",
+    "no tiene vulnerabilidades",
+    "ya fue parchado",
+    "ya está parchado",
+    "ya fue actualizado",
+    "mitigado",
+    "mitigados",
+    "no requiere acción",
+    "no requiere accion",
+    "puede ignorarse",
+)
+
+_CAMPOS_ANALISIS = (
+    "resumen",
+    "como_se_explota",
+    "remediacion",
+    "mitigacion_temporal",
+    "comunicado_ti",
+    "comunicado_usuarios",
+)
+
+
+@dataclass(frozen=True)
+class Problema:
+    tipo: TipoProblema
+    detalle: str
+    campo: str | None = None
+
+
+@dataclass
+class Veredicto:
+    problemas: list[Problema] = field(default_factory=list)
+
+    @property
+    def aprobado(self) -> bool:
+        return not self.problemas
+
+    def tipos(self) -> set[str]:
+        return {p.tipo for p in self.problemas}
+
+    def resumen(self) -> str:
+        if self.aprobado:
+            return "Comunicado verificado contra el origen"
+        return "; ".join(
+            f"{p.tipo}: {p.detalle}" + (f" ({p.campo})" if p.campo else "")
+            for p in self.problemas
+        )
+
+
+# ---------------------------------------------------------------------------
+# Extracción
+# ---------------------------------------------------------------------------
+
+
+def extraer_cves(texto: str) -> set[str]:
+    return {c.upper() for c in _CVE.findall(texto)}
+
+
+def extraer_equipos(texto: str) -> set[str]:
+    return set(_EQUIPO.findall(_CVE.sub(" ", texto)))
+
+
+def extraer_cifras(texto: str) -> set[str]:
+    """Cifras y versiones del texto, sin las que van dentro de CVE, equipos o arquitecturas."""
+    limpio = _CVE.sub(" ", texto)
+    limpio = _EQUIPO.sub(" ", limpio)
+    limpio = _ARQUITECTURA.sub(" ", limpio)
+    return {_normalizar_cifra(c) for c in _CIFRA.findall(limpio)}
+
+
+def _normalizar_cifra(cifra: str) -> str:
+    # "8,4" es "8.4". Una coma con tres dígitos después ("1,000") se deja: no se usa.
+    if cifra.count(",") == 1 and "." not in cifra and not re.search(r",\d{3}$", cifra):
+        cifra = cifra.replace(",", ".")
+    return cifra
+
+
+def _como_numero(cifra: str) -> float | None:
+    if cifra.count(".") > 1 or "," in cifra:
+        return None
+    try:
+        return float(cifra)
+    except ValueError:
+        return None
+
+
+def porcentaje(valor: float) -> str:
+    """Formato único de un EPSS como porcentaje, el mismo que usa el respaldo."""
+    pct = valor * 100
+    return f"{round(pct)}" if pct >= 1 else f"{pct:.1f}"
+
+
+# ---------------------------------------------------------------------------
+# Origen
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class _Origen:
+    cves: set[str]
+    equipos: list[str]
+    cifras: set[str]
+    numeros: set[float]
+
+
+def _origen(
+    grupo: Grupo, textos_origen: Iterable[str], cifras_permitidas: Iterable[str]
+) -> _Origen:
+    volcado = json.dumps(grupo.model_dump(mode="json"), ensure_ascii=False)
+    extras = list(textos_origen)
+    cifras = extraer_cifras(volcado)
+    for texto in extras:
+        cifras |= extraer_cifras(texto)
+    derivadas = {
+        str(grupo.n_equipos),
+        str(grupo.n_cves),
+        str(len(grupo.en_kev)),
+        str(len(grupo.versiones)),
+        *grupo.versiones,
+        *(c for c in cifras_permitidas),
+    }
+    if grupo.version_objetivo:
+        derivadas.add(grupo.version_objetivo)
+    if grupo.peor_epss is not None:
+        derivadas.add(porcentaje(grupo.peor_epss))
+    if grupo.peor_cvss is not None:
+        derivadas.add(f"{grupo.peor_cvss:.1f}")
+    cifras |= {_normalizar_cifra(c) for c in derivadas}
+    numeros = {n for c in cifras if (n := _como_numero(c)) is not None}
+    cves = {c.upper() for c in grupo.cves} | {c.upper() for c in grupo.en_kev}
+    for texto in extras:
+        cves |= extraer_cves(texto)
+    equipos = list(grupo.equipos)
+    for texto in extras:
+        equipos += list(extraer_equipos(texto))
+    return _Origen(cves=cves, equipos=equipos, cifras=cifras, numeros=numeros)
+
+
+# ---------------------------------------------------------------------------
+# Comprobaciones
+# ---------------------------------------------------------------------------
+
+
+def _equipo_conocido(nombre: str, equipos: list[str]) -> bool:
+    # Un nombre recortado por la limpieza sigue siendo el mismo equipo.
+    return any(nombre == e or e.startswith(nombre) for e in equipos)
+
+
+def _objetivo_prometido(texto: str, version: str) -> bool:
+    patron = re.compile(
+        r"(\w+)\s+a\s+(?:la\s+)?(?:versi[oó]n\s+)?" + re.escape(version) + r"(?![\w.])",
+        re.IGNORECASE,
+    )
+    return any(m.group(1).lower() not in _ANTES_PERMITIDO for m in patron.finditer(texto))
+
+
+def _exige_accion(grupo: Grupo) -> bool:
+    return bool(grupo.en_kev) or grupo.prioridad in ("inmediato", "semanal") or bool(grupo.cves)
+
+
+def verificar_texto(
+    texto: str,
+    grupo: Grupo,
+    *,
+    campo: str | None = None,
+    textos_origen: Iterable[str] = (),
+    cifras_permitidas: Iterable[str] = (),
+    equipos_flota: Iterable[str] = (),
+) -> Veredicto:
+    """Revisa que el texto no traiga nada que no esté en el origen.
+
+    ``textos_origen``: textos que el agente recibió de sus herramientas (por ejemplo la
+    descripción de NVD de una CVE); sus CVE, cifras y equipos cuentan como origen.
+    ``equipos_flota``: todos los equipos del inventario; si aparece uno que no está en
+    el grupo, es fuga de datos (caso 6) aunque no tenga forma de host.
+    """
+    origen = _origen(grupo, textos_origen, cifras_permitidas)
+    return _verificar(texto, grupo, origen, campo, list(equipos_flota))
+
+
+def _verificar(
+    texto: str, grupo: Grupo, origen: _Origen, campo: str | None, flota: list[str]
+) -> Veredicto:
+    veredicto = Veredicto()
+    agregar = veredicto.problemas.append
+
+    for cve in sorted(extraer_cves(texto) - origen.cves):
+        agregar(Problema("cve_ajena", f"{cve} no está en el origen", campo))
+
+    for cifra in sorted(extraer_cifras(texto)):
+        if cifra in origen.cifras:
+            continue
+        numero = _como_numero(cifra)
+        if numero is not None and any(abs(numero - n) < 1e-9 for n in origen.numeros):
+            continue
+        agregar(Problema("cifra_ajena", f"'{cifra}' no está en el origen", campo))
+
+    ajenos = {e for e in extraer_equipos(texto) if not _equipo_conocido(e, origen.equipos)}
+    del_grupo = set(grupo.equipos)
+    ajenos |= {e for e in flota if e not in del_grupo and e and e in texto}
+    for equipo in sorted(ajenos):
+        agregar(Problema("equipo_ajeno", f"{equipo} no es del grupo", campo))
+
+    if grupo.tipo_objetivo == "posterior_a" and grupo.version_objetivo:
+        if _objetivo_prometido(texto, grupo.version_objetivo):
+            agregar(
+                Problema(
+                    "objetivo_prometido",
+                    f"dice 'actualizar a {grupo.version_objetivo}', pero la fuente solo "
+                    f"dice que {grupo.version_objetivo} sigue afectada",
+                    campo,
+                )
+            )
+
+    if _exige_accion(grupo):
+        bajo = texto.lower()
+        for frase in FRASES_MINIMIZAN:
+            if frase in bajo:
+                agregar(Problema("minimiza", f"dice '{frase}' en un grupo con hallazgos", campo))
+                break
+
+    return veredicto
+
+
+def verificar_analisis(
+    analisis: Analisis,
+    grupo: Grupo,
+    *,
+    textos_origen: Iterable[str] = (),
+    cifras_permitidas: Iterable[str] = (),
+    equipos_flota: Iterable[str] = (),
+) -> Veredicto:
+    """Revisa todos los campos del análisis y que el comunicado de TI esté completo."""
+    extras = list(textos_origen)
+    origen = _origen(grupo, extras, cifras_permitidas)
+    flota = list(equipos_flota)
+    veredicto = Veredicto()
+    for campo in _CAMPOS_ANALISIS:
+        valor = getattr(analisis, campo)
+        if valor:
+            veredicto.problemas += _verificar(valor, grupo, origen, campo, flota).problemas
+
+    ti = analisis.comunicado_ti
+    ti_bajo = ti.lower()
+    if grupo.producto.lower() not in ti_bajo:
+        veredicto.problemas.append(
+            Problema("falta_producto", f"no nombra {grupo.producto}", "comunicado_ti")
+        )
+    faltan_kev = [c for c in grupo.en_kev if c.upper() not in extraer_cves(ti)]
+    if faltan_kev:
+        veredicto.problemas.append(
+            Problema("falta_kev", "faltan CVE en KEV: " + ", ".join(faltan_kev), "comunicado_ti")
+        )
+    if grupo.equipos:
+        todos = all(e in ti for e in grupo.equipos)
+        cuenta = any(int(n) == grupo.n_equipos for n in _N_EQUIPOS.findall(ti))
+        if not (todos or cuenta):
+            faltan = [e for e in grupo.equipos if e not in ti]
+            veredicto.problemas.append(
+                Problema(
+                    "falta_equipos",
+                    f"no lista los {grupo.n_equipos} equipos ni da su número "
+                    f"(faltan {len(faltan)})",
+                    "comunicado_ti",
+                )
+            )
+    return veredicto
+
+
+def decidir(
+    analisis: Analisis | None,
+    grupo: Grupo,
+    *,
+    textos_origen: Iterable[str] = (),
+    cifras_permitidas: Iterable[str] = (),
+    equipos_flota: Iterable[str] = (),
+) -> tuple[Analisis, Veredicto]:
+    """Devuelve el análisis del agente si pasa el verificador; si no, el respaldo.
+
+    ``analisis`` en ``None`` (el modelo falló o no respondió) va directo al respaldo:
+    el modelo no es punto de falla (regla 6). El veredicto devuelto es el del agente,
+    para la traza; si no hubo análisis, va vacío.
+    """
+    from radar.agente.respaldo import armar_respaldo
+
+    if analisis is None:
+        return armar_respaldo(grupo), Veredicto()
+    veredicto = verificar_analisis(
+        analisis,
+        grupo,
+        textos_origen=textos_origen,
+        cifras_permitidas=cifras_permitidas,
+        equipos_flota=equipos_flota,
+    )
+    if veredicto.aprobado:
+        return analisis.model_copy(update={"verificado": True, "origen": "agente"}), veredicto
+    return armar_respaldo(grupo), veredicto

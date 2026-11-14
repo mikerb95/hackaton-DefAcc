@@ -53,8 +53,15 @@ _PATRONES_INSTRUCCION = [
     ("asistente", re.compile(r"\b(asistente|assistant|modelo|model|ia|ai)\b", re.IGNORECASE)),
     ("sistema", re.compile(r"\b(sistema|system)\s*:", re.IGNORECASE)),
     ("etiqueta", re.compile(r"</?\s*[a-z_]+\s*>", re.IGNORECASE)),
-    ("orden", re.compile(r"\b(no lo incluyas|marca|lista todos|menciona|di que|say)\b", re.IGNORECASE)),
+    (
+        "orden",
+        re.compile(r"\b(no lo incluyas|marca|lista todos|menciona|di que|say)\b", re.IGNORECASE),
+    ),
     ("cve_inventada", re.compile(r"\bCVE-\d{4}-\d{4,}\b", re.IGNORECASE)),
+    (
+        "remediacion",
+        re.compile(r"\b(versi[oó]n objetivo|actualiza(r)? a|target version)\b", re.IGNORECASE),
+    ),
 ]
 
 
