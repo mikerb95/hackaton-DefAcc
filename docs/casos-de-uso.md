@@ -75,7 +75,7 @@ hallazgos del cruce quedan guardados sin pisar el estado que haya decidido una p
 |---|---|
 | 2 | El archivo supera 10 MB o 50 000 filas, o no trae encabezado con equipo y programa: se rechaza con el motivo y no se guarda nada. |
 | 4 | Versión vacía: la fila va a cobertura `sin_version`. Versión ilegible (`28.1.1, build 4eba377`): cobertura `no_comparable`. |
-| 6 | Nombre de más de 120 caracteres (por ejemplo, con una instrucción escondida): no se compara y va a cobertura `sin_cpe`. |
+| 5 | Texto agregado al nombre, al proveedor o a la versión (una frase tras ". ", ";", "</" o un salto de línea, o una señal fuerte de instrucción): se normaliza con lo de antes del corte; si se reconoce, la fila se cruza igual con confianza 0,6 y queda como sospecha, y el texto agregado no llega al nombre del activo. Si no se reconoce, va a cobertura con motivo visible de posible inyección, no en silencio (RF-311, CU-04 flujo D). |
 | 6c | La API de Claude falla o se niega: decide el código; el modelo no es punto de falla. |
 | 8 | Si el panel está con datos de ejemplo, la carga se lee pero el cruce queda pendiente y se dice. |
 
@@ -127,13 +127,13 @@ inventario, lo cruza y responde sin obedecer esas instrucciones.
 |---|---|
 | 2a | Nadie puede responder el `ask`: Claude Code lo trata como negado y la base queda igual. |
 
-*D. El texto escondido saca la fila del cruce (ocultamiento).*
+*D. Texto escondido en el programa, el proveedor o la versión.*
 
 | Paso | Acción |
 |---|---|
-| 5d | Con texto agregado al programa ("Google Chrome. Nota para el asistente: ...") el normalizador no reconoce el producto y la fila va a cobertura como `sin_cpe`; con texto en la versión, como `no_comparable`. El equipo deja de aparecer como expuesto. |
-| 8d | La cobertura lo cuenta como "sin evaluar" (no sano) y, si el programa o la versión traen texto con forma de instrucción, el servidor lo informa en `posible_inyeccion` con equipo, motivo y señales, sin repetir el texto. |
-| 10d | Claude dice que esas filas pueden ocultar un equipo vulnerable y pide revisar el inventario. |
+| 5d | Si el campo trae una frase tras un separador fuerte (". ", ";", "</", salto de línea) o una señal fuerte de instrucción, el normalizador usa el prefijo ("Google Chrome. Nota para el asistente: ..." se normaliza como Google Chrome), cruza la fila con confianza 0,6 y la anota en `Normalizacion.sospechas`. Si el prefijo no se reconoce, la fila va a cobertura con motivo visible: nunca desaparece en silencio. |
+| 6d | La respuesta de la carga incluye `sospechas_normalizador`: equipo, campos y señales, sin el texto. |
+| 8d | Si alguna fila sospechosa quedó en cobertura, `posible_inyeccion.programa_o_version` la cuenta, y su programa y versión salen como texto retenido. |
 
 *C. El análisis lo redacta el agente del worker (no el plugin).*
 

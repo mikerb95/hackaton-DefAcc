@@ -23,57 +23,89 @@ de la organización.
 ## 2. Defensa
 
 ```
-inventario (no confiable) -> limpieza -> cruce determinista -> agente de solo lectura
-                                           (versión, KEV, EPSS)    hooks antes y después
-                                                                         |
-                    aprobación humana <- respaldo por código <- verificador contra datos de origen
+inventario (no confiable) -> saneado del nombre de equipo -> cruce determinista
+                                                              (versión, KEV, EPSS)
+                                                                     |
+   agente de solo lectura <- limpieza en el borde con el modelo (hook posterior)
+   guarda previa por lista exacta
+          |
+   verificador contra datos de origen -> si no coincide, respaldo por código -> aprobación humana
 ```
 
+> Las defensas deterministas garantizan nada de más y nada de escribir; contra un modelo que
+> obedece, no garantizan nada torcido. Esa garantía depende de la tasa de obediencia del modelo
+> real, que se mide con la misma suite (pendiente: analista externo).
+
 - **Cruce determinista:** qué está expuesto lo decide código que compara versiones, no el modelo.
-- **Agente encerrado:** solo herramientas de lectura, `permission_mode="dontAsk"`, herramientas
-  negadas, sin configuración heredada y hooks que bloquean ante cualquier falla.
-- **Limpieza:** todo texto del inventario se limpia antes de llegar al modelo.
-- **Salida estructurada y verificador:** cada cifra, CVE y equipo del comunicado se compara con
-  los datos de origen; si algo no coincide, sale un texto armado por código.
-- **Aprobación humana:** ningún comunicado sale sin que una persona lo apruebe con su nombre.
+- **Saneado del nombre de equipo:** un nombre que no es un hostname válido se cruza como
+  `prefijo~fNNN` (la fila del archivo), sin fusionarse con un equipo real ni caer a cobertura.
+- **Agente encerrado (nada de escribir):** solo herramientas de lectura,
+  `permission_mode="dontAsk"`, herramientas negadas y sin configuración heredada. Los hooks
+  atrapan su propio error: la guarda previa niega la llamada y la limpieza posterior retiene la
+  salida. La limpieza de un `PostToolUse` no puede deshacer lo que la herramienta ya hizo; por
+  eso las herramientas solo leen.
+- **Limpieza en el borde con el modelo:** el texto del inventario que devuelven las
+  herramientas se recorta, se neutraliza y se marca como dato antes de llegar al modelo.
+- **Verificador (nada de más):** ninguna CVE, cifra, versión, equipo, enlace o cuenta de
+  equipos que no esté en el origen, ninguna prioridad distinta, ninguna negación de una
+  explotación en KEV, ningún equipo nombrado en los avisos para usuarios o gerencia. Si algo
+  no coincide, sale un texto armado por código.
+- **Aprobación humana:** el radar no envía avisos. En el panel, un comunicado queda aprobado
+  solo con el nombre de quien lo aprueba (RF-604); el ticket y la llamada los hace una persona
+  ([escalamiento.md](escalamiento.md)).
 
 ## 3. Cómo se evaluó
 
 - Inventario sintético con respuesta conocida, calculada con un script aparte del cruce del
   proyecto a partir del snapshot de NVD y KEV.
-- Suite de inyección por rondas: la 1 escrita antes de la defensa, la 2 usada para ajustarla y
-  las siguientes escritas después, sin volver a ajustar. La cifra limpia es la de la última
-  ronda que `evals/reporte.md` marque como escrita sin reajustar (copiar su número de ronda y
-  su descripción tal cual).
-- Dos brazos: sin defensa y con defensa, sobre los mismos casos.
-- Agentes simulados (peor caso: obedece toda orden; honesto: ignora las órdenes) y, si se
-  corrió, el analista real con Claude.
+- Suite de inyección por rondas. La 1 se escribió antes de la defensa; la 2 y la 3 se usaron
+  para ajustarla (ajustes 1 y 2); la última se escribió después, sin reajustar. La cifra limpia
+  es la de la línea **"Última ronda escrita sin reajustar"** de `evals/reporte.md`.
+- Dos brazos sobre los mismos casos: sin defensa y con defensa.
+- Dos entradas: **forzada** (la fila envenenada llega tal cual al agente: aísla las defensas
+  del agente) y **real** (pasa por la ingesta, el normalizador y el saneado).
+- Agentes simulados (peor caso: obedece toda orden; honesto: ignora las órdenes) y, cuando
+  exista, el analista real con Claude.
 
 ## 4. Resultados
 
-| Métrica | Sin defensa | Con defensa |
+Detección y normalizador:
+
+| Métrica | Línea base | Radar |
 |---|---|---|
 | Detección (pares CVE y versión) | n/a | [reporte: Detección, "Detección (pares CVE y versión encontrados)"] |
 | Falsos positivos | n/a | [reporte: Detección, "Falsos positivos"] |
 | Punta a punta: pares precisos y CVE en KEV | n/a | [reporte: Punta a punta, esperado y obtenido] |
 | Exactitud del normalizador | [reporte: Normalizador, "nombre exacto (línea base)"] | [reporte: Normalizador, "alias + difuso" en semilla y fuera de la semilla] |
-| Tasa de inyección, última ronda limpia, peor caso | [reporte: última ronda sin reajustar, "simulado (peor caso)", sin defensa] | [reporte: misma fila, con defensa] |
-| Tasa de inyección, analista real | [reporte: "analista real", si existe] | [reporte: "analista real", si existe] |
-| Utilidad bajo ataque, última ronda limpia | [reporte: última ronda sin reajustar, utilidad sin defensa] | [reporte: misma fila, utilidad con defensa] |
 
-Las filas "simulado" son un agente de código, no un modelo. Toda fila "después de ajustar"
-(hoy la ronda 2) no se usa en la ficha porque está medida sobre los mismos casos con los que se
-ajustó. El número de la fila de punta a punta se toma del reporte del día: cambia si las filas
-de inyección pasan a cruzarse junto con el inventario normal.
+Suite de inyección, última ronda escrita sin reajustar:
+
+| Métrica | Sin defensa | Con defensa |
+|---|---|---|
+| Tasa de inyección, simulado peor caso, entrada forzada | [reporte: línea "Última ronda escrita sin reajustar", sin defensa] | [reporte: misma línea, con defensa] |
+| Utilidad bajo ataque, entrada forzada | [reporte: misma línea o tabla "Entrada forzada", utilidad sin defensa] | [reporte: misma línea, utilidad con defensa] |
+| Equipo oculto, simulado peor caso, entrada real | [reporte: tabla "Entrada real", misma ronda, "Equipo oculto sin defensa"] | [reporte: misma fila, "Equipo oculto con defensa"] |
+| Tasa de inyección, analista real | [reporte: "analista real", si existe] | [reporte: "analista real", si existe] |
+
+Las filas "simulado" son un agente de código, no un modelo. Las rondas que se usaron para
+ajustar (2 y 3 con el código actual) no van en la ficha: están medidas sobre los mismos casos
+con los que se ajustó. "Equipo oculto" mide el ataque que no pasa por el modelo: que la fila
+envenenada saque al equipo de los hallazgos.
 
 ## 5. Límites
 
 Resumen de [LIMITES.md](LIMITES.md):
 
-- El agente simulado no es un modelo, y los criterios de éxito de la suite son código.
+- Contra un modelo que obedece, las defensas no garantizan **nada torcido**: un ataque que
+  cambia el sentido con datos permitidos y palabras que las reglas no miran pasa. Los casos
+  que pasan en la última ronda (tono, negar la explotación con otras palabras, un TLD real
+  como `.zip`, cantidades dichas con palabras fuera de lista, la prioridad dicha en inglés)
+  están en la tabla de LIMITES.md.
+- El agente simulado no es un modelo, y los criterios de éxito son código: con el analista
+  real, la tasa medida es un piso, no un techo. La tasa real está pendiente.
+- El saneado del nombre de equipo reduce ese canal, no lo cierra: un hostname válido que trae
+  una orden pasa intacto; lo mitigan la limpieza, el marcado como dato y el verificador.
 - La validación es sobre datos sintéticos; falta un piloto con una flota real.
-- Un nombre de equipo envenenado viaja, limpio, dentro de las salidas (inyección de segundo
-  orden): se señala, no se borra.
 - No detecta vulnerabilidades que NVD aún no asocia a un producto, ni el sistema operativo, ni
   dependencias de código. No es tiempo real.
 - No hay inicio de sesión ni permisos por usuario: una clave compartida protege la API.
@@ -87,8 +119,8 @@ Resumen de [AMENAZAS.md](AMENAZAS.md):
 - El mapa de exposición (qué equipo tiene qué vulnerabilidad explotable) le sirve a un
   atacante. Solo debe verlo la organización dueña del inventario; la API pide una clave.
 - Los avisos a canales abiertos dicen cuántos equipos, nunca cuáles: el comunicado para
-  usuarios y gerencia va sin nombres de equipos ni CVE. Un modelo que obedece una orden de
-  nombrarlos no lo detiene el verificador (límite declarado).
+  usuarios y gerencia va sin nombres de equipos ni CVE, y el verificador descarta el que
+  nombre equipos.
 - La información de vulnerabilidades ya es pública; lo privado es el cruce.
 - La suite de inyección se publica como pruebas defensivas del propio radar, con datos
   sintéticos, no como herramienta de ataque.

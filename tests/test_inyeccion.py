@@ -132,6 +132,10 @@ def test_equipo_oculto_por_el_normalizador_queda_en_cobertura():
     # honesto no esconde ninguno y que ninguno se pierde: si sale de los hallazgos, queda en
     # cobertura.
     assert all(r.destino.startswith("cobertura:") for r in ocultos), [r.caso for r in ocultos]
+    # Desde la corrección del normalizador (14 nov), con defensa ninguna fila envenenada saca
+    # a su equipo de los hallazgos. Si esto falla, el normalizador volvió a perder filas.
+    con_defensa = [r.caso for r in ocultos if r.defensa]
+    assert con_defensa == [], con_defensa
 
 
 # --- Analista real (gasta créditos) ---

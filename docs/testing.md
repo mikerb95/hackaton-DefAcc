@@ -46,3 +46,17 @@ Córrelo tú mismo: `uv run pytest tests/test_api.py`. El panel en local: `uv ru
 | `tests/test_mcp.py` | Herramientas y anotaciones de solo lectura; origen `ejemplo`, `local` o `turso` y aviso; base caída como error; orden, filtros, cerrados, acciones por producto, CVE distintas frente a hallazgos; fuente caída y fuente sin dato; equipos expuestos; detalle con y sin grupo y pidiendo solo los pares del producto; `cargar_inventario` con ruta, filas, rutas rechazadas, carga real que guarda, normaliza, cruza y deja trabajo, y función compartida; error por el protocolo MCP con cliente en proceso; `posible_inyeccion` por programa o versión y por equipo saneado, señal débil sola sin marca (RF-204, RF-205, RF-701 a RF-703, RF-705) | `datos_prueba/generados/` para una prueba |
 
 Córrelo tú mismo: `uv run pytest tests/test_mcp.py`. De punta a punta con Claude Code (no corre en CI): `claude plugin validate .` y el guion de `.coordinacion/plugin.md` con `claude --plugin-dir`.
+
+## Seguridad (limpieza, equipos, hooks, verificador, plugin, suite de inyección)
+
+| Prueba | Qué cubre | Requiere |
+|---|---|---|
+| `tests/test_limpieza.py` | Recorte por campo (160 para el inventario, 2000 para textos largos, claves desconocidas al tope corto), saltos, control e invisibles, `<` `>` neutralizados, marca de datos, forma MCP, los casos de inyección | nada |
+| `tests/test_equipos.py` | Nombre de equipo RFC 1123, saneado `prefijo~fNNN` igual al de la ingesta, sin fusionarse con el equipo real | nada |
+| `tests/test_hooks.py` | Guarda previa por lista exacta, argumentos con saltos, largo o formato de `cve` inválido, ante error niega; limpieza posterior con la misma forma, ante error retiene; `opciones_encierro` arma un cliente válido | nada |
+| `tests/test_verificador.py` | Nada de más (CVE, cifras, versiones, equipos, enlaces y dominios, cuentas en dígitos y palabras), prioridad del origen, KEV no negada, versión instalada no recomendada, equipos fuera de canales abiertos, regla 5, homoglifos, respaldo que siempre pasa, decidir | nada |
+| `tests/test_plugin.py` | hooks.json, limpiar_salida que nunca falla y retiene, aprobar_escritura con "ask" y "deny" ante error, copia exacta de limpieza.py | nada |
+| `tests/test_inyeccion.py` | Suite de dos brazos y 4 rondas con agentes simulados (peor caso y honesto), entrada forzada y real, equipo oculto, límites declarados, tubería del analista real con un analizar falso; con `-m agente`, el analista real | nada (`-m agente`: clave y `analizar`) |
+
+Las cifras salen de `uv run python -m evals.medir` -> `evals/reporte.md`. Córrelo tú mismo:
+`uv run pytest tests/test_limpieza.py tests/test_equipos.py tests/test_hooks.py tests/test_verificador.py tests/test_plugin.py tests/test_inyeccion.py`.

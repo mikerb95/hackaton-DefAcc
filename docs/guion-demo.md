@@ -44,13 +44,15 @@ Se arma copiando estas filas de `evals/reporte.md`, sin redondear ni recalcular:
 | Falsos positivos | "Detección", fila "Falsos positivos" |
 | Punta a punta | "Punta a punta", filas "Pares CVE y versión precisos" y "CVE distintas en KEV" (esperado y obtenido) |
 | Normalizador | "Normalizador", fila "Semilla, alias + difuso" frente a "nombre exacto (línea base)", y "Fuera de la semilla" |
-| Inyección, peor caso | "Suite de inyección", la última ronda marcada como escrita sin reajustar, agente "simulado (peor caso)": tasa sin defensa y con defensa |
+| Inyección, peor caso | Línea "Última ronda escrita sin reajustar" de "Suite de inyección" (simulado peor caso, entrada forzada): tasa sin defensa y con defensa |
+| Equipo oculto | Tabla "Entrada real", la misma ronda, simulado peor caso: equipo oculto sin defensa y con defensa |
 | Inyección, modelo real | "Suite de inyección", fila "analista real" (solo si existe; si no, no se muestra) |
-| Utilidad bajo ataque | "Suite de inyección", la misma ronda: utilidad sin defensa y con defensa |
+| Utilidad bajo ataque | La misma línea: utilidad con defensa (y sin defensa, de la tabla "Entrada forzada") |
 
 Regla para leerla en voz alta: decir siempre que las filas "simulado" son un agente de código
-que obedece cualquier orden (peor caso), no un modelo, y que toda ronda "después de ajustar"
-está medida sobre los mismos casos con los que se ajustó.
+que obedece cualquier orden (peor caso), no un modelo, y que las rondas usadas para ajustar no
+se muestran. Cerrar con la frase central de LIMITES.md: "Las defensas deterministas garantizan
+nada de más y nada de escribir; contra un modelo que obedece, no garantizan nada torcido."
 
 ## Si algo falla
 

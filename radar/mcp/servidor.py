@@ -101,7 +101,8 @@ def _guardar(filas: list, reemplazar: bool) -> dict[str, Any]:
     try:
         bd.crear_esquema(conexion)
         guardadas = bd.guardar_inventario(conexion, filas, reemplazar)
-        activos, cobertura = normalizar(filas)
+        normalizacion = normalizar(filas)
+        activos, cobertura = normalizacion
         resultado = corrida.correr(conexion, activos, cobertura)
         trabajo = bd.crear_trabajo(conexion, "analizar", DETALLE_TRABAJO)
     finally:
@@ -111,6 +112,12 @@ def _guardar(filas: list, reemplazar: bool) -> dict[str, Any]:
         "resultado": resultado.resumen,
         "propuestos_resueltos": resultado.propuestos_resueltos[:DESCARTADAS_MOSTRADAS],
         "trabajo": trabajo,
+        # Filas con posible texto inyectado que el normalizador cruzó por su prefijo o mandó
+        # a cobertura con motivo visible. Sin el texto: equipo, campos y señales.
+        "sospechas": [
+            {"equipo": s.equipo, "campos": s.campos, "senales": s.senales}
+            for s in getattr(normalizacion, "sospechas", [])
+        ],
     }
 
 
@@ -140,6 +147,7 @@ def _cargar(
             "guardadas": cruce["guardadas"] if cruce else 0,
             "cruce": cruce["resultado"] if cruce else None,
             "propuestos_resueltos": cruce["propuestos_resueltos"] if cruce else [],
+            "sospechas_normalizador": (cruce or {}).get("sospechas", [])[:SOSPECHOSAS_MOSTRADAS],
             "equipos": len({f.equipo for f in contratos}),
             "programas": len({f.programa.lower() for f in contratos}),
             "equipos_no_validos_detalle": [

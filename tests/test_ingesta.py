@@ -227,7 +227,9 @@ def test_sanear_equipo(nombre, saneado):
     csv.writer(salida).writerows([["equipo", "programa"], [nombre, "Zoom"]])
     lectura = leer_inventario(salida.getvalue().encode(), "x.csv")
     assert lectura.filas[0]["equipo"] == saneado
-    assert len(saneado.split("~")[0]) <= archivos.LARGO_PREFIJO_SANEADO
+    from radar.seguridad.equipos import LARGO_PREFIJO_SANEADO
+
+    assert len(saneado.split("~")[0]) <= LARGO_PREFIJO_SANEADO
 
 
 def test_registros_mcp_tambien_se_sanean():

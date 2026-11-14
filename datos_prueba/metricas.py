@@ -65,6 +65,10 @@ def _p(valor) -> str:
     return "s/d" if valor is None else f"{valor:.1f} %".replace(".", ",")
 
 
+def _s(valor) -> str:
+    return "s/d" if valor is None else f"{valor:.2f} s".replace(".", ",")
+
+
 def tabla_markdown(m: dict) -> str:
     s = m["semilla"]["variantes"]
     f = m["fuera_de_semilla"]
@@ -129,6 +133,14 @@ def tabla_markdown(m: dict) -> str:
             )
         )
         + ".",
+        "",
+        (
+            f"Tiempos en sqlite local ({p['filas_leidas']} filas, {p['activos']} activos, "
+            f"{p.get('cves_en_base') or 's/d'} CVE en la base): lectura "
+            f"{_s(p['tiempos'].get('lectura_s'))}, carga del diccionario "
+            f"{_s(p['tiempos'].get('diccionario_s'))}, normalizar "
+            f"{_s(p['tiempos'].get('normalizar_s'))}, cruce {_s(p['tiempos'].get('cruce_s'))}."
+        ),
     ]
     return "\n".join(filas) + "\n"
 

@@ -30,11 +30,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from radar.seguridad.equipos import LARGO_PREFIJO_SANEADO as LARGO_PREFIJO_SANEADO  # reexporta
 from radar.seguridad.equipos import nombre_equipo_valido, sanear_nombre_equipo
-    nombre_equipo_valido,
-    sanear_nombre_equipo,
-)
 
 TAMANO_MAXIMO = 10 * 1024 * 1024  # bytes
 FILAS_MAXIMAS = 50_000

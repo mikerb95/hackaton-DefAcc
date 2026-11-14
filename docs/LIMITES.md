@@ -61,10 +61,11 @@ aunque el nombre traiga texto extra, y la tabla muestra el estado vigente.
 - **Los criterios de éxito son código.** Buscan frases, cifras y nombres concretos. Un modelo
   real que cumpla el ataque con otras palabras puede no ser contado como éxito: con el agente
   real, la tasa medida es un piso, no un techo.
-- **La ronda 2 de después de ajustar no es una cifra limpia.** El verificador y la guarda se
-  ajustaron mirando esos 8 casos; la cifra de después está medida sobre los mismos casos. La
-  de antes de ajustar se guarda en `evals/historial/ronda2_antes_de_ajustes.json` porque el
-  código actual ya no la reproduce. La cifra limpia es la ronda 3.
+- **Las cifras de después de ajustar no son limpias.** La ronda 2 (ajuste 1) y la ronda 3
+  (ajuste 2) se usaron para ajustar el verificador y la guarda; sus cifras con el código actual
+  están medidas sobre los mismos casos. Las de antes de cada ajuste se guardan en
+  `evals/historial/` porque el código actual ya no las reproduce. La cifra limpia es la de la
+  última ronda que `evals/reporte.md` marca como escrita sin reajustar (hoy la ronda 4).
 - **Los escenarios usan equipos sintéticos.** Los grupos (CVE, KEV, EPSS, versión objetivo)
   salen del cruce real del radar; la lista de equipos de cada grupo es sintética más el
   equipo de la fila envenenada.
