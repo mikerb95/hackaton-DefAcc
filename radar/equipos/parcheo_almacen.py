@@ -36,9 +36,7 @@ class ClaveYaRegistrada(ValueError):
 
 def registrar_clave(conexion: Any, publica: bytes, nombre: str, por: str) -> str:
     huella = ed25519.huella(publica)
-    if conexion.execute(
-        "SELECT 1 FROM claves_aprobacion WHERE huella = ?", [huella]
-    ).fetchone():
+    if conexion.execute("SELECT 1 FROM claves_aprobacion WHERE huella = ?", [huella]).fetchone():
         raise ClaveYaRegistrada(huella)
     conexion.execute(
         "INSERT INTO claves_aprobacion (huella, publica, nombre, registrada, registrada_por) "
@@ -151,15 +149,16 @@ def marcar_entregado(conexion: Any, plan_id: str, momento: str) -> None:
 
 
 def leer_plan(conexion: Any, plan_id: str) -> dict[str, Any] | None:
-    filas = bd._consultar(conexion, f"SELECT {_COLUMNAS} FROM planes_parcheo WHERE id = ?", [plan_id])
+    filas = bd._consultar(
+        conexion, f"SELECT {_COLUMNAS} FROM planes_parcheo WHERE id = ?", [plan_id]
+    )
     return _plan(filas[0]) if filas else None
 
 
 def planes_de_equipo(conexion: Any, equipo_id: str, limite: int = 20) -> list[dict[str, Any]]:
     filas = bd._consultar(
         conexion,
-        f"SELECT {_COLUMNAS} FROM planes_parcheo WHERE equipo_id = ? ORDER BY creado DESC "
-        "LIMIT ?",
+        f"SELECT {_COLUMNAS} FROM planes_parcheo WHERE equipo_id = ? ORDER BY creado DESC LIMIT ?",
         [equipo_id, limite],
     )
     return [_plan(f) for f in filas]

@@ -33,12 +33,17 @@ def _equipo_autenticado(conexion, credencial: str | None):
     return equipo
 
 
-def _quien_o_422(request: Request) -> str:
+def _quien_o_422(request: Request, declarado: str | None = None) -> str:
+    """Nombre de quien aprueba: el de la sesión; en modo local, el del modo local; con la
+    clave compartida, el declarado en el cuerpo. La firma es la prueba; el nombre, el registro."""
     from radar.seguridad.limpieza import limpiar_texto
 
-    por = quien(request, None)
+    por = quien(request, declarado.strip() if declarado else None)
+    identidad = getattr(request.state, "identidad", None)
+    if not por and identidad is not None and identidad.via == "local":
+        por = identidad.nombre
     if not por:
-        raise HTTPException(422, "Planes y claves se aprueban con una sesión de usuario.")
+        raise HTTPException(422, "Falta quién aprueba (inicia sesión o envía 'por').")
     return limpiar_texto(por, 100)
 
 
@@ -108,7 +113,9 @@ def parcheo_de_equipo(equipo_id: str) -> dict:
         datos = parcheo.propuesta(conexion, equipo_id)
         if datos is None:
             raise HTTPException(status.HTTP_404_NOT_FOUND, "Equipo no encontrado.")
-        planes = [parcheo_reporte.resumen_plan(p) for p in tablas.planes_de_equipo(conexion, equipo_id)]
+        planes = [
+            parcheo_reporte.resumen_plan(p) for p in tablas.planes_de_equipo(conexion, equipo_id)
+        ]
         claves = [
             {"huella": c["huella"], "nombre": c["nombre"], "publica": c["publica"]}
             for c in tablas.claves_vigentes(conexion)
@@ -120,6 +127,7 @@ def parcheo_de_equipo(equipo_id: str) -> dict:
 
 class PedidoBorrador(BaseModel):
     acciones: list[str] = Field(min_length=1, max_length=60)
+    por: str | None = Field(default=None, min_length=1, max_length=100, pattern=r"\S")
 
 
 @router_parcheo.post("/equipos/{equipo_id}/parcheo/borrador", dependencies=ADMIN)
@@ -128,7 +136,7 @@ def borrador(equipo_id: str, cuerpo: PedidoBorrador, request: Request) -> dict:
     from radar.equipos import parcheo
     from radar.seguridad import plan_parcheo
 
-    por = _quien_o_422(request)
+    por = _quien_o_422(request, cuerpo.por)
     _exigir_base()
     conexion = _conexion()
     try:
@@ -147,13 +155,14 @@ def borrador(equipo_id: str, cuerpo: PedidoBorrador, request: Request) -> dict:
 class PlanFirmado(BaseModel):
     plan: str = Field(min_length=2, max_length=200_000)
     firma: str = Field(min_length=80, max_length=100)
+    por: str | None = Field(default=None, min_length=1, max_length=100, pattern=r"\S")
 
 
 @router_parcheo.post("/equipos/{equipo_id}/parcheo", dependencies=ADMIN)
 def registrar_plan(equipo_id: str, cuerpo: PlanFirmado, request: Request) -> dict:
     from radar.equipos import parcheo
 
-    _quien_o_422(request)
+    _quien_o_422(request, cuerpo.por)
     _exigir_base()
     conexion = _conexion()
     try:
@@ -217,15 +226,17 @@ def claves() -> dict:
 class NuevaClave(BaseModel):
     publica: str = Field(min_length=40, max_length=60)
     nombre: str = Field(min_length=1, max_length=80, pattern=r"\S")
+    por: str | None = Field(default=None, min_length=1, max_length=100, pattern=r"\S")
 
 
 @router_parcheo.post("/parcheo/claves", dependencies=ADMIN)
 def registrar_clave(cuerpo: NuevaClave, request: Request) -> dict:
     """Registra la clave pública de un aprobador. La privada se queda en su navegador."""
-    from radar.equipos import parcheo, parcheo_almacen as tablas
+    from radar.equipos import parcheo
+    from radar.equipos import parcheo_almacen as tablas
     from radar.seguridad.limpieza import limpiar_texto
 
-    por = _quien_o_422(request)
+    por = _quien_o_422(request, cuerpo.por)
     _exigir_base()
     try:
         publica = parcheo.leer_clave_publica(cuerpo.publica)

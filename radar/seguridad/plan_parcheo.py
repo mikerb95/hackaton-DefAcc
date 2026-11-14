@@ -181,9 +181,7 @@ def validar_accion(accion: Any, plataforma: str) -> str | None:
         return "prioridad inválida"
 
     if ejecutor == "winget":
-        if accion.get("paquete") not in WINGET_PERMITIDOS or not ID_WINGET.match(
-            accion["paquete"]
-        ):
+        if accion.get("paquete") not in WINGET_PERMITIDOS or not ID_WINGET.match(accion["paquete"]):
             return "paquete de winget fuera de la lista blanca"
         if not _texto_humano(accion.get("programa"), 160):
             return "nombre de programa inválido"

@@ -194,7 +194,7 @@ def _momento(texto: str | None) -> datetime | None:
     if not texto:
         return None
     try:
-        return datetime.fromisoformat(texto.replace("Z", "+00:00"))
+        return datetime.fromisoformat(texto)
     except ValueError:
         return None
 
@@ -232,7 +232,10 @@ def _verificacion(
         valor = (postura or {}).get(accion["regla"])
         if valor == "si":
             return {"estado": "confirmada", "texto": "El último reporte la muestra activa."}
-        return {"estado": "sin_confirmar", "texto": f"El último reporte dice: {valor or 'sin dato'}."}
+        return {
+            "estado": "sin_confirmar",
+            "texto": f"El último reporte dice: {valor or 'sin dato'}.",
+        }
     cves = accion.get("cves") or []
     if not cves:
         return {"estado": "no_aplica", "texto": "La acción no tiene CVE asociadas."}

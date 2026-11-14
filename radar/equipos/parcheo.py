@@ -87,7 +87,8 @@ def _programa_registrado(conexion: Any, equipo: Equipo, producto: str, version: 
     """El nombre tal como lo reportó el equipo (DisplayName), para que el agente encuentre la
     entrada del registro al verificar. Si no aparece, el nombre del producto."""
     filas = conexion.execute(
-        "SELECT programa, version FROM inventario WHERE equipo = ?", [equipo.nombre]
+        "SELECT programa, version FROM inventario WHERE equipo = ? ORDER BY programa",
+        [equipo.nombre],
     ).fetchall()
     clave = producto.lower().split()[0] if producto.strip() else ""
     candidatos = [p for p, v in filas if (v or "") == version and clave and clave in p.lower()]
@@ -392,9 +393,7 @@ def registrar(
     if plan["equipo_id"] != equipo_id:
         raise ErrorPlan("El plan es de otro equipo.", 422)
     emitido = catalogo.leer_fecha(plan["emitido"])
-    if not (
-        ahora - timedelta(minutes=MINUTOS_BORRADOR) <= emitido <= ahora + timedelta(minutes=2)
-    ):
+    if not (ahora - timedelta(minutes=MINUTOS_BORRADOR) <= emitido <= ahora + timedelta(minutes=2)):
         raise ErrorPlan("El borrador venció: vuelve a armar el plan.")
 
     firma = _b64(firma_b64, ed25519.LARGO_FIRMA, "La firma")
