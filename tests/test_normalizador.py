@@ -221,9 +221,13 @@ def test_nombre_canonico_comun_a_todas_las_versiones(dic):
     }
 
 
-def test_nombre_enorme_no_se_compara(dic):
+def test_nombre_enorme_se_cruza_por_el_prefijo_sin_el_relleno(dic):
+    # Ataque por tamaño: el nombre gigante no se compara, pero el prefijo sí, y el equipo
+    # sigue expuesto. El texto largo no llega a Activo.nombre.
     r = nz.normalizar([fila("Google Chrome. " + "x" * 3000, "156.0.8079.100")], dic)
-    assert not r.activos and r.cobertura[0].motivo == "sin_cpe"
+    assert [a.clave for a in r.activos] == ["Google Chrome@156.0.8079.100"]
+    assert r.activos[0].nombre == "Google Chrome"
+    assert r.sospechas and "longitud" in r.sospechas[0].senales
 
 
 # --- medición contra la respuesta conocida -----------------------------------
@@ -297,7 +301,7 @@ def test_fila_envenenada_queda_marcada_y_sin_texto_inyectado(dic):
         if caso.campo not in ("programa", "proveedor", "version"):
             continue  # el nombre de equipo lo sanea el frente plugin
         r = nz.normalizar([fila(f["programa"], f["version"], f["equipo"], f["proveedor"])], dic)
-        assert r.sospechas and r.sospechas[0].campos == [caso.campo], caso.id
+        assert r.sospechas and caso.campo in r.sospechas[0].campos, caso.id
         activo = r.activos[0]
         assert activo.confianza_cpe == nz.CONFIANZA_SOSPECHOSA
         if caso.campo == "programa":

@@ -1,6 +1,6 @@
 # Reporte de validación
 
-Generado por `uv run python -m evals.medir` el 2026-11-14 10:47. No se edita a mano: toda cifra de docs, ficha y pitch sale de aquí o de pytest.
+Generado por `uv run python -m evals.medir` el 2026-11-14 10:51. No se edita a mano: toda cifra de docs, ficha y pitch sale de aquí o de pytest.
 
 ## Detección
 
@@ -21,7 +21,7 @@ Sin modelo (el desempate con Claude está detrás de una bandera).
 |---|---|---|---|
 | Semilla (316 filas, ajustada) | alias + difuso | 100,0 % | 100,0 % |
 | Semilla | solo difuso | 88,3 % | 85,8 % |
-| Semilla | nombre exacto (línea base) | 21,2 % | 1,6 % |
+| Semilla | nombre exacto (línea base) | 49,4 % | 70,7 % |
 | Fuera de la semilla (30 nombres, no ajustada) | alias + difuso | 83,3 % (25 de 30) | |
 
 Fuera de la semilla: 4 quedan sin CPE (visibles en cobertura), 1 con CPE equivocado, 0 CPE inventados.
