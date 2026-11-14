@@ -194,7 +194,11 @@ class Hallazgo(Contrato):
     comentario: str | None = None
     por: str | None = Field(default=None, description="Quién decidió el estado")
     detectado: datetime | None = None
-    avisado: bool = False
+    avisado: bool = Field(default=False, description="Ya comunicado: no se vuelve a avisar")
+    propuesto_resuelto: bool = Field(
+        default=False,
+        description="La última corrida ya no lo encontró: se propone cerrarlo (lo decide una persona)",
+    )
 
 
 class Grupo(Contrato):

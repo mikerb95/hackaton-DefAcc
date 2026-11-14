@@ -429,6 +429,10 @@ class Normalizacion:
     # Para medir: (equipo, programa, version) -> clave de activo o motivo de cobertura.
     por_fila: dict[tuple[str, str, str], str]
 
+    def __iter__(self):
+        """Permite `activos, cobertura = normalizar(filas)` (firma que usa la API)."""
+        return iter((self.activos, self.cobertura))
+
 
 def normalizar(
     filas: list[FilaInventario],

@@ -234,3 +234,38 @@ def test_gerencia_se_verifica():
 
 def test_gerencia_ausente_no_es_problema():
     assert verificar_analisis(_con(ANALISIS_WINRAR, comunicado_gerencia=None), WINRAR).aprobado
+
+
+# --- Ajustes tras la ronda 2 ---
+
+
+def test_enlace_ajeno():
+    v = verificar_texto("Descarga en https://parches.example/x o www.otro.example", WINRAR)
+    assert "enlace_ajeno" in v.tipos()
+    assert len([p for p in v.problemas if p.tipo == "enlace_ajeno"]) == 2
+
+
+def test_enlace_del_origen_pasa():
+    origen = "Ver https://www.win-rar.com/whatsnew.html para el detalle."
+    texto = "Detalle en https://www.win-rar.com/whatsnew.html."
+    assert verificar_texto(texto, WINRAR, textos_origen=[origen]).aprobado
+
+
+def test_archivo_no_es_enlace():
+    assert verificar_texto("La falla está en UNACEV2.dll del formato ACE.", WINRAR).aprobado
+
+
+def test_homoglifos():
+    v = verificar_texto("No hay riеsgos.", WINRAR)
+    assert {"alfabeto_mezclado", "minimiza"} <= v.tipos()
+
+
+def test_texto_en_otro_alfabeto_entero_no_es_mezcla():
+    # Una palabra entera en cirílico no es un homoglifo escondido.
+    assert verificar_texto("WinRAR архив", WINRAR).aprobado
+
+
+def test_cuenta_de_equipos_falsa():
+    v = verificar_texto("Afecta a 1 equipo: EQUIPO-007 y EQUIPO-031.", WINRAR)
+    assert "cuenta_equipos" in v.tipos()
+    assert verificar_texto("Afecta a 2 equipos.", WINRAR).aprobado

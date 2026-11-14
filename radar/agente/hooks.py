@@ -23,6 +23,7 @@ Uso desde el analista::
 
 from __future__ import annotations
 
+import re
 import time
 import unicodedata
 from collections.abc import Iterable
@@ -120,20 +121,30 @@ def _negar(motivo: str) -> dict[str, Any]:
     }
 
 
-def _argumento_sospechoso(valor: Any) -> str | None:
+# Formato exacto de los argumentos que son identificadores. Agregado tras la ronda 2
+# (r2-06): un texto del ataque como argumento de una herramienta permitida pasaba.
+FORMATOS_ARGUMENTO = {
+    "cve": re.compile(r"^CVE-\d{4}-\d{4,}$"),
+}
+
+
+def _argumento_sospechoso(valor: Any, clave: str | None = None) -> str | None:
     """Motivo para negar un argumento, o None si es un identificador razonable."""
     if isinstance(valor, dict):
-        for v in valor.values():
-            if motivo := _argumento_sospechoso(v):
+        for k, v in valor.items():
+            if motivo := _argumento_sospechoso(v, k if isinstance(k, str) else None):
                 return motivo
         return None
     if isinstance(valor, (list, tuple)):
         for v in valor:
-            if motivo := _argumento_sospechoso(v):
+            if motivo := _argumento_sospechoso(v, clave):
                 return motivo
         return None
     if not isinstance(valor, str):
         return None
+    formato = FORMATOS_ARGUMENTO.get((clave or "").lower())
+    if formato is not None and not formato.fullmatch(valor):
+        return f"el argumento '{clave}' no tiene el formato esperado"
     if len(valor) > LONGITUD_MAXIMA:
         return f"argumento de {len(valor)} caracteres (máximo {LONGITUD_MAXIMA})"
     if any(c in "\r\n" or unicodedata.category(c) in {"Cc", "Cf", "Zl", "Zp"} for c in valor):

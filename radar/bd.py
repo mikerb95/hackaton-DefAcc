@@ -20,7 +20,7 @@ import sqlite3
 from collections.abc import Iterable, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, get_args
 
 from radar import config
 from radar.contratos import (
@@ -28,6 +28,7 @@ from radar.contratos import (
     Analisis,
     Cobertura,
     Ejecucion,
+    EstadoHallazgo,
     FilaInventario,
     Grupo,
     Hallazgo,
@@ -116,8 +117,25 @@ def conexion_opcional(solo_lectura: bool = True):
     return decorador
 
 
+# Columnas agregadas después de crear el esquema: (tabla, columna, definición).
+# `CREATE TABLE IF NOT EXISTS` no toca una tabla que ya existe, así que se agregan aquí.
+_MIGRACIONES = (
+    ("hallazgos", "propuesto_resuelto", "INTEGER DEFAULT 0"),
+    ("analisis", "aprobado", "TEXT"),
+    ("analisis", "aprobado_por", "TEXT"),
+)
+
+
 def crear_esquema(conexion: Any) -> None:
+    """Crea las tablas que falten y agrega las columnas nuevas a las que ya existen."""
     conexion.executescript(ESQUEMA.read_text(encoding="utf-8"))
+    for tabla, columna, definicion in _MIGRACIONES:
+        existentes = {
+            f[0]
+            for f in conexion.execute("SELECT name FROM pragma_table_info(?)", [tabla]).fetchall()
+        }
+        if columna not in existentes:
+            conexion.execute(f"ALTER TABLE {tabla} ADD COLUMN {columna} {definicion}")
     conexion.commit()
 
 
@@ -456,10 +474,18 @@ _COLUMNAS_DATOS = (
 def guardar_hallazgos(conexion: Any, hallazgos: Iterable[Hallazgo]) -> int:
     """Inserta hallazgos nuevos y actualiza los datos de los existentes.
 
-    Nunca pisa `estado`, `comentario`, `por`, `avisado` ni `detectado` de uno que ya existe.
+    Nunca pisa `estado`, `comentario`, `por` ni `detectado` de uno que ya existe (la decisión
+    humana manda). `avisado` se conserva (sin repetir avisos) salvo que el hallazgo suba a
+    "inmediato" en esta corrida (por ejemplo, entró a KEV): eso es información nueva y se vuelve
+    a avisar. Un hallazgo que la corrida encontró deja de estar `propuesto_resuelto`.
     """
     lista = list(hallazgos)
     asignar = ", ".join(f"{c} = excluded.{c}" for c in _COLUMNAS_DATOS)
+    asignar += (
+        ", propuesto_resuelto = 0"
+        ", avisado = CASE WHEN excluded.prioridad = 'inmediato' "
+        "AND hallazgos.prioridad <> 'inmediato' THEN 0 ELSE hallazgos.avisado END"
+    )
     _en_lotes(
         conexion,
         f"INSERT INTO hallazgos (id, {', '.join(_COLUMNAS_DATOS)}, estado, comentario, por, "
@@ -516,6 +542,7 @@ def _hallazgo(f: dict[str, Any]) -> Hallazgo:
         por=f["por"],
         detectado=_fecha(f["detectado"]),
         avisado=bool(f["avisado"]),
+        propuesto_resuelto=bool(f.get("propuesto_resuelto") or 0),
     )
 
 
@@ -528,13 +555,29 @@ def leer_hallazgos(conexion: Any, producto: str | None = None) -> list[Hallazgo]
     return [_hallazgo(f) for f in filas]
 
 
+ESTADOS = get_args(EstadoHallazgo)
+# Cerrar un hallazgo exige decir por qué.
+ESTADOS_CON_COMENTARIO = frozenset({"mitigado", "descartado"})
+
+
 def cambiar_estado(
     conexion: Any, hallazgo_id: str, estado: str, por: str, comentario: str | None = None
 ) -> bool:
-    """Lo usa una persona (API o panel). Devuelve False si el hallazgo no existe."""
+    """Cambio de estado por una persona (API o panel). Es la única vía para cambiarlo.
+
+    Exige quién decide (`por`) y, para cerrar (mitigado o descartado), un comentario.
+    Devuelve False si el hallazgo no existe; lanza ValueError si faltan datos.
+    """
+    if estado not in ESTADOS:
+        raise ValueError(f"Estado no válido: {estado!r}. Válidos: {', '.join(ESTADOS)}")
+    if not por or not por.strip():
+        raise ValueError("El cambio de estado lo hace una persona: falta quién decide ('por')")
+    comentario = comentario.strip() if comentario else None
+    if estado in ESTADOS_CON_COMENTARIO and not comentario:
+        raise ValueError(f"Marcar como '{estado}' exige un comentario")
     cursor = conexion.execute(
         "UPDATE hallazgos SET estado = ?, comentario = ?, por = ? WHERE id = ?",
-        [estado, comentario, por, hallazgo_id],
+        [estado, comentario, por.strip(), hallazgo_id],
     )
     conexion.commit()
     return cursor.rowcount > 0
@@ -550,12 +593,26 @@ def marcar_avisados(conexion: Any, ids: Iterable[str]) -> None:
     conexion.commit()
 
 
+def marcar_propuestos(conexion: Any, ids: Iterable[str]) -> None:
+    """Marca hallazgos que la última corrida ya no encontró (cierre propuesto)."""
+    lista = list(ids)
+    for i in range(0, len(lista), LOTE):
+        lote = lista[i : i + LOTE]
+        conexion.execute(
+            f"UPDATE hallazgos SET propuesto_resuelto = 1 WHERE id IN ({_marcadores(len(lote))})",
+            lote,
+        )
+    conexion.commit()
+
+
 # ---------------------------------------------------------------------------
 # Análisis
 # ---------------------------------------------------------------------------
 
 
 def guardar_analisis(conexion: Any, analisis: Analisis) -> None:
+    """Guarda el análisis de un producto. Reemplaza el anterior y borra su aprobación: lo que
+    se aprobó fue otro texto."""
     clave = analisis.producto or analisis.hallazgo
     conexion.execute(
         "INSERT OR REPLACE INTO analisis (producto, contenido, verificado, origen, creado) "
@@ -702,3 +759,58 @@ def insertar_inventario(
         return guardar_inventario(propia, filas, reemplazar)
     finally:
         propia.close()
+
+
+# ---------------------------------------------------------------------------
+# Aprobación del comunicado (pedido de panel) y trazas
+# ---------------------------------------------------------------------------
+
+
+def aprobar_comunicado(conexion: Any, producto: str, por: str) -> bool:
+    """Una persona aprueba el comunicado de un producto.
+
+    Los hallazgos abiertos del producto quedan como avisados (sin repetir avisos). Devuelve
+    False si el producto no tiene análisis guardado.
+    """
+    if not por or not por.strip():
+        raise ValueError("La aprobación la hace una persona: falta quién aprueba ('por')")
+    cursor = conexion.execute(
+        "UPDATE analisis SET aprobado = ?, aprobado_por = ? WHERE producto = ?",
+        [ahora(), por.strip(), producto],
+    )
+    if cursor.rowcount == 0:
+        conexion.commit()
+        return False
+    conexion.execute(
+        "UPDATE hallazgos SET avisado = 1 WHERE producto = ? "
+        "AND estado NOT IN ('mitigado', 'descartado')",
+        [producto],
+    )
+    conexion.commit()
+    return True
+
+
+@conexion_opcional()
+def leer_aprobacion(conexion: Any, producto: str) -> dict[str, str] | None:
+    """{'aprobado': fecha, 'aprobado_por': quién} o None si no está aprobado."""
+    filas = _consultar(
+        conexion,
+        "SELECT aprobado, aprobado_por FROM analisis WHERE producto = ? AND aprobado IS NOT NULL",
+        [producto],
+    )
+    return filas[0] if filas else None
+
+
+@conexion_opcional()
+def leer_trazas(conexion: Any, limite: int = 100) -> list[dict[str, Any]]:
+    """Últimas llamadas del agente a herramientas: momento, herramienta, entrada, decisión."""
+    return _consultar(
+        conexion,
+        "SELECT momento, herramienta, entrada, decision FROM trazas ORDER BY id DESC LIMIT ?",
+        [limite],
+    )
+
+
+@conexion_opcional()
+def hay_hallazgos(conexion: Any) -> bool:
+    return conexion.execute("SELECT 1 FROM hallazgos LIMIT 1").fetchone() is not None

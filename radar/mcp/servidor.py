@@ -35,6 +35,7 @@ from radar.seguridad.limpieza import limpiar_estructura, limpiar_texto
 EXTENSIONES_PERMITIDAS = archivos.EXTENSIONES_CSV | archivos.EXTENSIONES_EXCEL
 DESCARTADAS_MOSTRADAS = 20
 LIMITE_ERROR = 400
+DETALLE_TRABAJO = "inventario cargado por el servidor MCP"
 
 INSTRUCCIONES = (
     "Radar de vulnerabilidades: cruza el inventario de software con NVD, KEV y EPSS. "
@@ -77,16 +78,36 @@ def _validar_ruta(ruta: str) -> Path:
     return camino
 
 
-def _guardar(filas: list, reemplazar: bool) -> int:
-    """Escribe en Turso por medio de radar/bd.py. Devuelve cuántas filas quedaron."""
-    from radar import bd
+def _guardar(filas: list, reemplazar: bool) -> dict[str, Any]:
+    """Guarda, normaliza, cruza contra las CVE guardadas y deja un trabajo de análisis.
 
-    insertar = getattr(bd, "insertar_inventario", None)
-    if insertar is None:
-        raise ErrorHerramienta(
-            "La base todavía no admite cargas desde aquí. Usa simular=true para validar."
-        )
-    return insertar(filas, reemplazar=reemplazar)
+    Es la misma secuencia que POST /api/inventario del panel. Si el núcleo publica
+    `radar.nucleo.corrida.cargar_y_cruzar`, se usa esa para que haya una sola.
+    """
+    from radar.nucleo import corrida
+
+    compartida = getattr(corrida, "cargar_y_cruzar", None)
+    if compartida is not None:
+        return compartida(filas, reemplazar=reemplazar, detalle=DETALLE_TRABAJO)
+
+    from radar import bd
+    from radar.ingesta.normalizador import normalizar
+
+    conexion = bd.conectar()
+    try:
+        bd.crear_esquema(conexion)
+        guardadas = bd.guardar_inventario(conexion, filas, reemplazar)
+        activos, cobertura = normalizar(filas)
+        resultado = corrida.correr(conexion, activos, cobertura)
+        trabajo = bd.crear_trabajo(conexion, "analizar", DETALLE_TRABAJO)
+    finally:
+        conexion.close()
+    return {
+        "guardadas": guardadas,
+        "resultado": resultado.resumen,
+        "propuestos_resueltos": resultado.propuestos_resueltos[:DESCARTADAS_MOSTRADAS],
+        "trabajo": trabajo,
+    }
 
 
 def _cargar(
@@ -105,14 +126,16 @@ def _cargar(
         lectura = archivos.leer_registros([f.model_dump() for f in filas])
 
     contratos = [archivos.a_contrato(fila) for fila in lectura.filas]
-    guardadas = 0 if simular else _guardar(contratos, reemplazar)
+    cruce = None if simular else _guardar(contratos, reemplazar)
 
     resultado = lectura.resumen()
     resultado.update(
         {
             "simulado": simular,
             "reemplazo": reemplazar and not simular,
-            "guardadas": guardadas,
+            "guardadas": cruce["guardadas"] if cruce else 0,
+            "cruce": cruce["resultado"] if cruce else None,
+            "propuestos_resueltos": cruce["propuestos_resueltos"] if cruce else [],
             "equipos": len({f.equipo for f in contratos}),
             "programas": len({f.programa.lower() for f in contratos}),
             "descartadas_detalle": [
@@ -120,8 +143,8 @@ def _cargar(
                 for d in lectura.descartadas[:DESCARTADAS_MOSTRADAS]
             ],
             "nota": (
-                "Las filas sin versión se guardan y aparecerán en cobertura (sin comparación "
-                "no hay hallazgo). Los hallazgos se recalculan en el siguiente cruce."
+                "Al guardar se normaliza y se cruza de nuevo. Filas sin versión o sin CPE "
+                "van a cobertura: no se sabe."
             ),
         }
     )
@@ -177,8 +200,9 @@ SOLO_LECTURA = ToolAnnotations(
 )
 CERRADOS = {"mitigado", "descartado"}
 FUENTES_ESPERADAS = {"nvd", "kev", "epss"}
-EQUIPOS_MOSTRADOS = 25
-LIMITE_DETALLE = 4000  # texto largo (descripciones de NVD, comunicados)
+EQUIPOS_MOSTRADOS = 10
+HALLAZGOS_DETALLE = 15
+LARGO_DESCRIPCION = 400  # la guarda permite 2000 en "descripcion"; aquí se ahorra espacio
 
 AVISO_EJEMPLO = (
     "Datos de EJEMPLO, no del inventario real: la base todavía no está conectada a esta "
@@ -311,7 +335,7 @@ def consultar_hallazgos(
     incluir_cerrados: Annotated[
         bool, Field(description="Incluye hallazgos mitigados o descartados.")
     ] = False,
-    limite: Annotated[int, Field(ge=1, le=200, description="Máximo de hallazgos.")] = 50,
+    limite: Annotated[int, Field(ge=1, le=100, description="Máximo de hallazgos.")] = 25,
 ) -> dict[str, Any]:
     """Lista los hallazgos (CVE que afectan al inventario), lo más urgente primero.
 
@@ -354,11 +378,13 @@ def consultar_hallazgos(
                 "hallazgos_en_kev": sum(h.kev for h in abiertos),
                 "equipos_afectados": len({e for h in abiertos for e in h.equipos}),
             },
+            # Cobertura y fuentes antes de la lista: si la guarda recorta el total
+            # (20 000 caracteres), lo que se pierde es la cola de hallazgos.
+            "cobertura": _resumen_cobertura(cobertura),
+            "fuentes": fuentes,
             "total_filtrados": len(filtrados),
             "mostrados": min(limite, len(filtrados)),
             "hallazgos": [_hallazgo_corto(h) for h in filtrados[:limite]],
-            "cobertura": _resumen_cobertura(cobertura),
-            "fuentes": fuentes,
         }
     )
     return limpiar_estructura(respuesta)
@@ -373,7 +399,7 @@ def equipos_expuestos(
         Prioridad | None,
         Field(description="Solo hallazgos de esta prioridad o más urgentes."),
     ] = None,
-    limite: Annotated[int, Field(ge=1, le=500, description="Máximo de equipos.")] = 100,
+    limite: Annotated[int, Field(ge=1, le=200, description="Máximo de equipos.")] = 50,
 ) -> dict[str, Any]:
     """Dice qué equipos están expuestos y por qué, el peor primero.
 
@@ -431,11 +457,11 @@ def equipos_expuestos(
     respuesta.update(
         {
             "equipos_expuestos": len(fichas),
-            "mostrados": len(equipos),
-            "equipos": equipos,
             "equipos_con_programas_sin_evaluar": len(sin_evaluar),
             "cobertura": _resumen_cobertura(cobertura),
             "fuentes": fuentes,
+            "mostrados": len(equipos),
+            "equipos": equipos,
         }
     )
     return limpiar_estructura(respuesta)
@@ -500,7 +526,7 @@ def detalle_producto(
                 "fuentes": fuentes,
             }
         )
-        return limpiar_estructura(respuesta, LIMITE_DETALLE)
+        return limpiar_estructura(respuesta)
 
     propios = sorted((h for h in hallazgos if h.producto == nombre), key=_orden_hallazgo)
     grupo = next((g for g in grupos if g.producto == nombre), None)
@@ -546,19 +572,6 @@ def detalle_producto(
             "n_equipos": len(equipos),
             "equipos": equipos[:EQUIPOS_MOSTRADOS],
             **resumen,
-            "hallazgos": [_hallazgo_corto(h) for h in propios],
-            "detalle_cves": [
-                {
-                    "id": c.id,
-                    "cvss": c.cvss,
-                    "severidad": c.severidad,
-                    "descripcion": c.descripcion,
-                    "sin_productos": c.sin_productos,
-                }
-                for c in cves
-                if c.id in ids
-            ],
-            "cves_sin_detalle": sorted(ids - {c.id for c in cves}),
             "analisis": [
                 a.model_dump(mode="json")
                 for a in analisis
@@ -566,9 +579,29 @@ def detalle_producto(
             ],
             "sin_evaluar": _sin_evaluar(cobertura, nombre),
             "fuentes": fuentes,
+            # Lo largo va al final: si la guarda recorta el total, se pierde la cola.
+            "total_hallazgos": len(propios),
+            "hallazgos": [_hallazgo_corto(h) for h in propios[:HALLAZGOS_DETALLE]],
+            "detalle_cves": [
+                {
+                    "id": cve.id,
+                    "cvss": cve.cvss,
+                    "severidad": cve.severidad,
+                    "descripcion": cve.descripcion[:LARGO_DESCRIPCION],
+                    "sin_productos": cve.sin_productos,
+                }
+                for cve in _cves_en_orden(propios[:HALLAZGOS_DETALLE], cves)
+            ],
+            "cves_sin_detalle": sorted(ids - {c.id for c in cves}),
         }
     )
-    return limpiar_estructura(respuesta, LIMITE_DETALLE)
+    return limpiar_estructura(respuesta)
+
+
+def _cves_en_orden(hallazgos: list, cves: list) -> list:
+    """Las CVE de esos hallazgos, sin repetir y en el orden de urgencia de los hallazgos."""
+    por_id = {c.id: c for c in cves}
+    return [por_id[i] for i in dict.fromkeys(h.cve for h in hallazgos) if i in por_id]
 
 
 def _resolver_producto(buscado: str, grupos: list, hallazgos: list) -> str | None:

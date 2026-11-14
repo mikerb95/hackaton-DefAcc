@@ -8,6 +8,10 @@
 - **RF-106** Agrupar por producto (una acción por producto) con versiones, equipos, CVE, KEV, ransomware, peor CVSS y EPSS, versión objetivo y razones. `radar/nucleo/agrupar.py`.
 - **RF-107** Corrida completa: cruzar el inventario contra todas las CVE guardadas, guardar sin pisar la decisión humana y proponer como resueltos los hallazgos que desaparecen. `radar/nucleo/corrida.py`.
 - **RF-108** Cargar NVD y KEV desde el snapshot local y EPSS del día, registrando qué fuente respondió. `worker/descargar.py --desde-snapshot`.
+- **RF-110** El estado de un hallazgo (nuevo, en curso, mitigado, descartado) solo lo cambia una persona, con quién decide y, para cerrar, un comentario; la corrida automática nunca lo pisa. `radar/bd.py: cambiar_estado`.
+- **RF-111** Reglas de aviso: línea base silenciosa en la primera corrida (salvo CVE publicadas o agregadas a KEV en los últimos 7 días), sin repetir avisos, nuevo aviso si un hallazgo sube a inmediato, avisos pendientes agrupados por producto y cierre automático propuesto (nunca aplicado solo). `radar/nucleo/corrida.py`.
+- **RF-112** Aprobación del comunicado por una persona, guardada con fecha y quién; un análisis nuevo borra la aprobación anterior. `radar/bd.py: aprobar_comunicado`.
+- **RF-113** Barrido de umbrales: alertas inmediatas (hallazgos, productos, CVE, equipos) para una rejilla de EPSS y CVSS, con el piso de KEV y la celda vigente. `radar/nucleo/umbrales.py`.
 - **RF-109** Persistencia en sqlite local con el esquema de Turso; el cambio a Turso es solo de conexión. Conexión de solo lectura para el agente que rechaza escrituras. `radar/bd.py`.
 
 ## Normalizador y datos de prueba
@@ -19,3 +23,14 @@
 - **RF-305** Desempate con Claude solo entre los 5 candidatos (salida "1" a "5" o "ninguno"), detrás de la bandera `RADAR_DESEMPATE_MODELO=1`; ante cualquier falla decide el código. `radar/ingesta/normalizador.py`.
 - **RF-306** Inventario de prueba reproducible (CSV y Excel, 52 equipos, relleno de 15 a 25 programas por equipo, filas de inyección aparte) con su respuesta conocida, que sale del snapshot y nunca del cruce. `datos_prueba/generar.py`, `datos_prueba/respuesta.py`.
 - **RF-307** Medir el normalizador contra la respuesta conocida, con la línea base por nombre exacto y la variante sin alias. `datos_prueba/medir_normalizador.py`.
+
+## API y panel
+
+- **RF-601** Toda ruta de la API pide la clave compartida en `X-Clave-Acceso`; en Vercel, si `CLAVE_ACCESO` no está configurada, la API responde 503 en vez de quedar abierta. `radar/api/acceso.py`.
+- **RF-602** El responsable de TI ve el estado de la última revisión y qué fuentes respondieron (si alguna falló se dice arriba), las cifras de cabecera, la cobertura con su motivo, los productos afectados y los hallazgos con filtros por prioridad, KEV y texto. EPSS ausente se muestra "sin dato". `radar/api/rutas.py`, `radar/api/datos.py`, `public/`. Tablas `hallazgos`, `cobertura`, `inventario`, `ejecuciones`.
+- **RF-603** La versión objetivo de un producto se dice según su tipo: "actualizar a X" solo con versión exacta, "posterior a X" con `versionEndIncluding`, y nada si alguna CVE no acota versión (RF-104). `radar/api/rutas.py::texto_objetivo`.
+- **RF-604** El responsable de TI cambia el estado de un hallazgo con comentario y aprueba el comunicado de un producto desde el detalle, donde ve análisis, remediación, comunicados, si el texto fue verificado y si lo redactó el agente o el respaldo. `radar/api/rutas.py`, `public/panel.js`. Tablas `hallazgos`, `analisis`.
+- **RF-605** El responsable de TI sube un inventario CSV o Excel; la API lo lee (RF de ingesta), lo guarda, lo normaliza (RF-301), lo cruza contra todas las CVE guardadas (RF-107) y deja un trabajo de análisis. Un archivo ilegible responde 400 con el motivo. `radar/api/rutas.py`. Tablas `inventario`, `hallazgos`, `cobertura`, `trabajos`.
+- **RF-606** La API lee la base (Turso o sqlite local con el mismo esquema) cuando está configurada, o datos de ejemplo marcados como no persistentes; el panel avisa cuál está usando. `radar/api/datos.py`.
+
+Prioridad alta para RF-601 a RF-605, media para RF-606. Prueba: `tests/test_api.py`.

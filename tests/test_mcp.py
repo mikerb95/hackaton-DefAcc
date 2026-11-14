@@ -184,7 +184,12 @@ def test_cargar_filas_guarda_contratos(monkeypatch):
 
     def guardar(filas, reemplazar):
         recibido.update(filas=filas, reemplazar=reemplazar)
-        return len(filas)
+        return {
+            "guardadas": len(filas),
+            "resultado": {"hallazgos": 1},
+            "propuestos_resueltos": [],
+            "trabajo": 7,
+        }
 
     monkeypatch.setattr(srv, "_guardar", guardar)
     filas = [
@@ -194,6 +199,7 @@ def test_cargar_filas_guarda_contratos(monkeypatch):
     ]
     respuesta = srv.cargar_inventario(filas=filas, reemplazar=True)
     assert respuesta["guardadas"] == 2
+    assert respuesta["cruce"] == {"hallazgos": 1}
     assert respuesta["descartadas_detalle"] == [{"fila": 4, "motivo": "falta equipo"}]
     assert recibido["reemplazar"] is True
     contratos = recibido["filas"]
@@ -201,10 +207,32 @@ def test_cargar_filas_guarda_contratos(monkeypatch):
     assert contratos[1].version is None  # sin versión: va a cobertura, no se descarta
 
 
-def test_cargar_sin_lectura_en_bd_pide_simular(monkeypatch):
-    monkeypatch.delattr(bd, "insertar_inventario", raising=False)
-    with pytest.raises(ToolError, match="simular"):
-        srv.cargar_inventario(filas=[srv.FilaEntrada(equipo="E1", programa="Zoom")])
+def test_cargar_guarda_normaliza_y_cruza(monkeypatch, tmp_path):
+    """Secuencia real contra una base sqlite vacía: guarda, normaliza, cruza, deja trabajo."""
+    monkeypatch.setenv("RADAR_SQLITE", str(tmp_path / "radar.db"))
+    monkeypatch.delenv("TURSO_DATABASE_URL", raising=False)
+    filas = [
+        srv.FilaEntrada(equipo="E1", programa="WinRAR", version="5.61"),
+        srv.FilaEntrada(equipo="E2", programa="Programa Inventado XYZ", version="1.0"),
+    ]
+    respuesta = srv.cargar_inventario(filas=filas)
+    assert respuesta["guardadas"] == 2
+    assert respuesta["cruce"]["cobertura"] >= 1  # el inventado no tiene CPE
+    assert bd.leer_trabajos(bd.conectar(solo_lectura=True))[0].tipo == "analizar"
+
+
+def test_cargar_usa_la_funcion_compartida_si_existe(monkeypatch):
+    from radar.nucleo import corrida
+
+    llamadas = []
+
+    def compartida(filas, reemplazar, detalle):
+        llamadas.append((len(filas), reemplazar, detalle))
+        return {"guardadas": len(filas), "resultado": {}, "propuestos_resueltos": [], "trabajo": 1}
+
+    monkeypatch.setattr(corrida, "cargar_y_cruzar", compartida, raising=False)
+    srv.cargar_inventario(filas=[srv.FilaEntrada(equipo="E1", programa="Zoom")], reemplazar=True)
+    assert llamadas == [(1, True, srv.DETALLE_TRABAJO)]
 
 
 @pytest.mark.parametrize("ruta", ["/etc/passwd", "~/.ssh/id_rsa", "/no/existe/inv.csv"])

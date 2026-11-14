@@ -83,6 +83,13 @@ class Registro:
         self.resumen.append(texto)
         _log(texto)
 
+    def sin_bajar(self, fuente: str, motivo: str) -> None:
+        """La fuente no se consultó a propósito. Queda en False: sin dato no es cero."""
+        self.fuentes[fuente] = False
+        texto = f"{fuente.upper()} sin bajar: {motivo}"
+        self.resumen.append(texto)
+        _log(texto)
+
     def fallo(self, fuente: str, error: Exception | str) -> None:
         self.fuentes[fuente] = False
         self.errores.append(f"{fuente.upper()}: {error}")
@@ -114,10 +121,18 @@ def paso_kev(conexion: Any, registro: Registro, datos: dict[str, Any] | None = N
         registro.fallo("kev", e)
 
 
-def paso_epss(conexion: Any, registro: Registro) -> None:
-    """EPSS del día para todas las CVE guardadas (una sola descarga del CSV completo)."""
+def paso_epss(conexion: Any, registro: Registro, con_epss: bool = True) -> None:
+    """EPSS del día para todas las CVE guardadas (una sola descarga del CSV completo).
+
+    Siempre deja `epss` en la ejecución: True si se bajó, False si falló o no se pidió. Así el
+    resumen dice que la prioridad se calculó sin una de sus tres señales.
+    """
+    if not con_epss:
+        registro.sin_bajar("epss", "se pidió --sin-epss; las prioridades no usan EPSS")
+        return
     ids = [f[0] for f in conexion.execute("SELECT id FROM cves").fetchall()]
     if not ids:
+        registro.sin_bajar("epss", "no hay CVE guardadas")
         return
     try:
         senales = fuente_epss.descargar_completo(solo=ids)
@@ -169,8 +184,7 @@ def descargar_desde_snapshot(
     except (OSError, ValueError) as e:
         registro.fallo("nvd", e)
 
-    if con_epss and registro.fuentes.get("nvd"):
-        paso_epss(conexion, registro)
+    paso_epss(conexion, registro, con_epss)
     return registro.cerrar(conexion)
 
 
@@ -233,8 +247,7 @@ def descargar_en_linea(
     else:
         registro.ok("nvd", texto)
 
-    if con_epss:
-        paso_epss(conexion, registro)
+    paso_epss(conexion, registro, con_epss)
     return registro.cerrar(conexion)
 
 
@@ -289,11 +302,10 @@ def principal(argv: list[str] | None = None) -> int:
             ejecucion = descargar_en_linea(conexion, pares, desde, con_epss=not args.sin_epss)
     finally:
         conexion.close()
-    caidas = [f for f, ok in ejecucion.fuentes.items() if not ok]
-    if caidas:
-        _log(f"Fuentes caídas: {', '.join(caidas)}")
-        return 1
-    return 0
+    sin_dato = [f for f, ok in ejecucion.fuentes.items() if not ok]
+    if sin_dato:
+        _log(f"Fuentes sin dato en esta ejecución: {', '.join(sin_dato)}")
+    return 1 if ejecucion.error else 0
 
 
 if __name__ == "__main__":

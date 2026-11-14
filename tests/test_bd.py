@@ -116,7 +116,7 @@ def test_descarga_desde_snapshot_y_cruce(tmp_path):
 
     c = bd.conectar(ruta_sqlite=tmp_path / "radar.db")
     ejecucion = descargar_desde_snapshot(c, carpeta, con_epss=False)
-    assert ejecucion.fuentes == {"kev": True, "nvd": True}
+    assert ejecucion.fuentes == {"kev": True, "nvd": True, "epss": False}
     assert bd.ultima_ejecucion(c, "descargar").fuentes == ejecucion.fuentes
 
     winrar = next(a for a in ejemplos.ACTIVOS if a.producto == "WinRAR")
@@ -146,7 +146,7 @@ def test_fuente_caida_queda_registrada(tmp_path):
     vacia.mkdir()
     c = bd.conectar(ruta_sqlite=tmp_path / "radar.db")
     ejecucion = descargar_desde_snapshot(c, vacia, con_epss=False)
-    assert ejecucion.fuentes == {"kev": False, "nvd": False}
+    assert ejecucion.fuentes == {"kev": False, "nvd": False, "epss": False}
     assert ejecucion.error
     c.close()
 

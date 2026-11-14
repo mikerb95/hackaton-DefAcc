@@ -95,7 +95,8 @@ CREATE TABLE IF NOT EXISTS hallazgos (
   comentario TEXT,
   por TEXT,
   detectado TEXT,
-  avisado INTEGER DEFAULT 0
+  avisado INTEGER DEFAULT 0,     -- ya comunicado
+  propuesto_resuelto INTEGER DEFAULT 0  -- la última corrida ya no lo encontró
 );
 CREATE INDEX IF NOT EXISTS idx_hallazgos_producto ON hallazgos (producto);
 
@@ -104,7 +105,9 @@ CREATE TABLE IF NOT EXISTS analisis (
   contenido TEXT,                -- JSON con la salida estructurada (contrato Analisis)
   verificado INTEGER,
   origen TEXT,                   -- agente o respaldo
-  creado TEXT
+  creado TEXT,
+  aprobado TEXT,                 -- fecha de aprobación del comunicado (NULL: sin aprobar)
+  aprobado_por TEXT
 );
 
 CREATE TABLE IF NOT EXISTS cobertura (

@@ -18,6 +18,7 @@ import argparse
 import csv
 import json
 import random
+import re
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -168,6 +169,13 @@ def _fijar_fechas_zip(ruta: Path) -> None:
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
         for nombre, datos in entradas:
+            if nombre == "docProps/core.xml":
+                # openpyxl pone la hora actual en dcterms:modified al guardar.
+                datos = re.sub(
+                    rb"(<dcterms:(?:created|modified)[^>]*>)[^<]*(</dcterms:)",
+                    rb"\g<1>2026-11-14T00:00:00Z\g<2>",
+                    datos,
+                )
             z.writestr(
                 zipfile.ZipInfo(nombre, date_time=(2026, 11, 14, 0, 0, 0)),
                 datos,

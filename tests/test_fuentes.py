@@ -152,7 +152,7 @@ def test_descarga_en_linea_con_par_caido(tmp_path, monkeypatch):
     e = descargar.descargar_en_linea(
         c, ["rarlab:winrar", "google:chrome"], con_epss=False, cliente=nvd
     )
-    assert e.fuentes == {"kev": True, "nvd": False}  # un par caído no es cero
+    assert e.fuentes == {"kev": True, "nvd": False, "epss": False}  # un par caído no es cero
     assert "google:chrome" in e.error
     [cve] = bd.leer_cves(c)
     assert [r.par for r in cve.rangos] == ["rarlab:winrar"]  # rangos ajenos fuera

@@ -253,3 +253,11 @@ def test_medicion_contra_respuesta_conocida(tmp_path, monkeypatch):
         r["variantes"]["nombre_exacto"]["exactitud_pct"]
         < r["variantes"]["solo_difuso"]["exactitud_pct"]
     )
+
+
+def test_firma_de_la_api_activos_y_cobertura(dic):
+    activos, cobertura = nz.normalizar(
+        [fila("WinRAR 5.61 (64-bit)", "5.61"), fila("Docker", "28.1.1, build 4eba377")], dic
+    )
+    assert [a.clave for a in activos] == ["WinRAR@5.61"]
+    assert [c.motivo for c in cobertura] == ["no_comparable"]

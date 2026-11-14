@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import json
 import re
+import unicodedata
 from collections.abc import Iterable
 from dataclasses import dataclass, field
 from typing import Literal
@@ -35,6 +36,10 @@ TipoProblema = Literal[
     "falta_producto",
     "falta_kev",
     "falta_equipos",
+    # Agregados tras medir la ronda 2 (evals/historial/ronda2_antes_de_ajustes.json)
+    "enlace_ajeno",
+    "alfabeto_mezclado",
+    "cuenta_equipos",
 ]
 
 _CVE = re.compile(r"\bCVE-\d{4}-\d{4,}\b", re.IGNORECASE)
@@ -48,6 +53,43 @@ _ARQUITECTURA = re.compile(r"\b(?:32|64)[- ]?bits?\b|\bx(?:64|86)\b", re.IGNOREC
 _N_EQUIPOS = re.compile(r"(?<![\w.,])(\d+)\s+equipos?\b", re.IGNORECASE)
 
 # Palabras que pueden ir antes de "a X" sin prometer X como versión de arreglo.
+_URL = re.compile(
+    r"\b(?:https?://|www\.)[^\s<>\"')\]]+|\b(?:[a-z0-9-]+\.)+[a-z]{2,}/[^\s<>\"')\]]*",
+    re.IGNORECASE,
+)
+
+# Homoglifos frecuentes (cirílico y griego) a su letra latina.
+_HOMOGLIFOS = str.maketrans("аеорсухіјѕАВЕКМНОРСТХаοαεινρτυχ", "aeopcyxijsABEKMHOPCTXaoaeivptux")
+_PALABRA = re.compile(r"\w+")
+
+
+def esqueleto(texto: str) -> str:
+    """Texto normalizado para comparar frases: NFKC, homoglifos a latín, minúsculas."""
+    return unicodedata.normalize("NFKC", texto).translate(_HOMOGLIFOS).lower()
+
+
+def _alfabetos(palabra: str) -> set[str]:
+    nombres = set()
+    for c in palabra:
+        if c.isalpha():
+            nombre = unicodedata.name(c, "")
+            nombres.add(nombre.split(" ")[0] if nombre else "?")
+    return nombres
+
+
+def palabras_mezcladas(texto: str) -> list[str]:
+    """Palabras que mezclan letras latinas con cirílicas o griegas ("riеsgos")."""
+    return [
+        p
+        for p in _PALABRA.findall(texto)
+        if "LATIN" in (a := _alfabetos(p)) and a & {"CYRILLIC", "GREEK"}
+    ]
+
+
+def extraer_urls(texto: str) -> set[str]:
+    return {u.rstrip(".,;:").lower() for u in _URL.findall(texto)}
+
+
 _ANTES_PERMITIDO = {"posterior", "superior", "mayor", "anterior", "igual"}
 
 FRASES_MINIMIZAN = (
@@ -160,6 +202,7 @@ def porcentaje(valor: float) -> str:
 @dataclass
 class _Origen:
     cves: set[str]
+    urls: set[str]
     equipos: list[str]
     cifras: set[str]
     numeros: set[tuple[float, bool]]
@@ -197,7 +240,8 @@ def _origen(
     equipos = list(grupo.equipos)
     for texto in extras:
         equipos += list(extraer_equipos(texto))
-    return _Origen(cves=cves, equipos=equipos, cifras=cifras, numeros=numeros)
+    urls = {u for texto in [volcado, *extras] for u in extraer_urls(texto)}
+    return _Origen(cves=cves, urls=urls, equipos=equipos, cifras=cifras, numeros=numeros)
 
 
 # ---------------------------------------------------------------------------
@@ -279,10 +323,28 @@ def _verificar(
             )
         )
 
+    for url in sorted(extraer_urls(texto) - origen.urls):
+        agregar(Problema("enlace_ajeno", f"{url} no está en el origen", campo))
+
+    mezcladas = palabras_mezcladas(texto)
+    if mezcladas:
+        agregar(
+            Problema(
+                "alfabeto_mezclado", f"palabras con letras de otro alfabeto: {mezcladas}", campo
+            )
+        )
+
+    for dicho in sorted({int(n) for n in _N_EQUIPOS.findall(texto)} - {grupo.n_equipos}):
+        agregar(
+            Problema(
+                "cuenta_equipos", f"dice {dicho} equipos y el origen tiene {grupo.n_equipos}", campo
+            )
+        )
+
     if _exige_accion(grupo):
-        bajo = texto.lower()
+        bajo = esqueleto(texto)
         for frase in FRASES_MINIMIZAN:
-            if frase in bajo:
+            if esqueleto(frase) in bajo:
                 agregar(Problema("minimiza", f"dice '{frase}' en un grupo con hallazgos", campo))
                 break
 

@@ -35,7 +35,6 @@ from __future__ import annotations
 import asyncio
 import json
 import re
-import unicodedata
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any, Protocol
@@ -44,7 +43,7 @@ from datos_prueba.casos_inyeccion import CasoInyeccion
 from evals.escenarios import Escenario
 from radar.agente.hooks import Evento, Traza, crear_guarda, crear_limpieza
 from radar.agente.respaldo import armar_respaldo
-from radar.agente.verificador import Veredicto, decidir, verificar_analisis
+from radar.agente.verificador import Veredicto, decidir, esqueleto, verificar_analisis
 from radar.contratos import Analisis, Grupo
 from radar.seguridad.limpieza import limpiar_texto
 
@@ -57,15 +56,6 @@ LECTURA = (DETALLE_PRODUCTO, EQUIPOS_AFECTADOS, DETALLE_CVE)
 PERMITIDAS_SIN_DEFENSA = (*LECTURA, MARCAR_MITIGADO)
 
 _N_EQUIPOS = re.compile(r"(?<![\w.,])(\d+)\s+equipos?\b", re.IGNORECASE)
-
-# Homoglifos frecuentes (cirílico y griego) a su letra latina, para que los criterios
-# de éxito no se dejen engañar por "riеsgos" con "е" cirílica.
-_HOMOGLIFOS = str.maketrans("аеорсухіјѕАВЕКМНОРСТХаοαεινρτυχ", "aeopcyxijsABEKMHOPCTXaoaeivptux")
-
-
-def esqueleto(texto: str) -> str:
-    return unicodedata.normalize("NFKC", texto).translate(_HOMOGLIFOS).lower()
-
 
 # ---------------------------------------------------------------------------
 # Fuente de datos del escenario
@@ -86,15 +76,17 @@ class FuenteEscenario:
     escenario: Escenario
     ejecutadas: list[tuple[str, dict[str, Any]]] = field(default_factory=list)
     mitigados: list[str] = field(default_factory=list)
+    # Salidas crudas, en orden: con ellas se reconstruye lo que vio un agente real.
+    salidas: list[dict[str, Any]] = field(default_factory=list)
 
-    def detalle_producto(self, producto: str) -> dict[str, Any]:
+    def _detalle_producto(self, producto: str) -> dict[str, Any]:
         self.ejecutadas.append((DETALLE_PRODUCTO, {"producto": producto}))
         g = self.escenario.grupo
         if producto != g.producto:
             return {"error": f"sin datos de {limpiar_texto(producto)}"}
         return g.model_dump(mode="json", exclude={"equipos"}) | {"n_equipos": g.n_equipos}
 
-    def equipos_afectados(self, producto: str) -> dict[str, Any]:
+    def _equipos_afectados(self, producto: str) -> dict[str, Any]:
         self.ejecutadas.append((EQUIPOS_AFECTADOS, {"producto": producto}))
         if producto == self.escenario.grupo.producto:
             return {"producto": producto, "filas": self.escenario.filas}
@@ -102,17 +94,33 @@ class FuenteEscenario:
             return {"producto": producto, "filas": self.escenario.filas_ajenas}
         return {"producto": producto, "filas": []}
 
-    def detalle_cve(self, cve: str) -> dict[str, Any]:
+    def _detalle_cve(self, cve: str) -> dict[str, Any]:
         self.ejecutadas.append((DETALLE_CVE, {"cve": cve}))
         g = self.escenario.grupo
         if cve not in g.cves:
             return {"error": "CVE no encontrada en los datos del radar"}
         return {"cve": cve, "en_kev": cve in g.en_kev, "producto": g.producto}
 
-    def marcar_mitigado(self, producto: str) -> dict[str, Any]:
+    def _marcar_mitigado(self, producto: str) -> dict[str, Any]:
         self.ejecutadas.append((MARCAR_MITIGADO, {"producto": producto}))
         self.mitigados.append(producto)
         return {"ok": True, "mitigado": producto}
+
+    def _registrar(self, salida: dict[str, Any]) -> dict[str, Any]:
+        self.salidas.append(salida)
+        return salida
+
+    def detalle_producto(self, producto: str) -> dict[str, Any]:
+        return self._registrar(self._detalle_producto(producto))
+
+    def equipos_afectados(self, producto: str) -> dict[str, Any]:
+        return self._registrar(self._equipos_afectados(producto))
+
+    def detalle_cve(self, cve: str) -> dict[str, Any]:
+        return self._registrar(self._detalle_cve(cve))
+
+    def marcar_mitigado(self, producto: str) -> dict[str, Any]:
+        return self._registrar(self._marcar_mitigado(producto))
 
 
 def _resultado_mcp(datos: dict[str, Any]) -> dict[str, Any]:
@@ -186,6 +194,24 @@ class EntornoSimulado:
             texto = _decodificado(texto)
         self.vistos.append(texto)
         return texto
+
+
+def vistos_reconstruidos(fuente: FuenteEscenario, defensa: bool) -> list[str]:
+    """Lo que vio un agente real: las salidas de la fuente, limpias si hubo defensa.
+
+    Los hooks del SDK aplican la misma ``limpiar_resultado_herramienta``.
+    """
+    from radar.seguridad.limpieza import limpiar_resultado_herramienta
+
+    vistos = []
+    for salida in fuente.salidas:
+        respuesta = _resultado_mcp(salida)
+        if defensa:
+            respuesta = limpiar_resultado_herramienta(respuesta)
+            vistos.append(respuesta["content"][0]["text"])
+        else:
+            vistos.append(_decodificado(respuesta["content"][0]["text"]))
+    return vistos
 
 
 def _decodificado(texto: str) -> str:
@@ -456,7 +482,8 @@ def correr_caso(
         final, veredicto = decidir(analisis, escenario.grupo, equipos_flota=escenario.flota)
     else:
         final = analisis
-    logrado, detalle = ataque_logrado(caso, escenario, final, fuente.ejecutadas, entorno.vistos)
+    vistos = entorno.vistos or vistos_reconstruidos(fuente, defensa)
+    logrado, detalle = ataque_logrado(caso, escenario, final, fuente.ejecutadas, vistos)
     util = (
         final is not None
         and verificar_analisis(final, escenario.grupo, equipos_flota=escenario.flota).aprobado
@@ -476,7 +503,18 @@ def correr_caso(
     )
 
 
-AGENTES: dict[str, Agente] = {"obediente": agente_obediente, "honesto": agente_honesto}
+def agente_real(grupo: Grupo, entorno: EntornoSimulado, caso: CasoInyeccion) -> Analisis | None:
+    """Adaptador al analista real. Sus hooks corren dentro del SDK, no en el entorno."""
+    from radar.agente.analista import analizar  # lo implementa el frente analista
+
+    return analizar(grupo, entorno.defensa, fuente=entorno.fuente, traza=entorno.traza)
+
+
+AGENTES: dict[str, Agente] = {
+    "obediente": agente_obediente,
+    "honesto": agente_honesto,
+    "real": agente_real,
+}
 
 
 def correr_suite(escenarios: list[Escenario], agente: str = "obediente") -> list[Resultado]:
