@@ -193,3 +193,72 @@ def procesar(
     if paquetes and not almacen.trabajo_pendiente(conexion, TRABAJO_SO, equipo.id):
         recibido.trabajos.append(bd.crear_trabajo(conexion, TRABAJO_SO, equipo.id))
     return recibido
+
+
+# ---------------------------------------------------------------------------
+# Aprobación en la consola
+# ---------------------------------------------------------------------------
+
+
+def recibir(
+    conexion: Any,
+    equipo: Equipo,
+    reporte: ReporteEquipo,
+    recortes: dict[str, int] | None = None,
+    ahora: datetime | None = None,
+) -> Recibido:
+    """Punto de entrada de un reporte.
+
+    Un equipo aprobado se procesa completo (`procesar`). Uno pendiente solo deja lo que
+    TI necesita para decidir (nombre, sistema, hardware y postura) y guarda el reporte
+    para cruzarlo al aprobar: su software no entra a `inventario` ni a los hallazgos. Así,
+    quien consiga el token de inscripción solo puede crear equipos pendientes, no
+    envenenar el inventario.
+    """
+    if not equipo.pendiente:
+        return procesar(conexion, equipo, reporte, recortes, ahora)
+    ahora = ahora or datetime.now(UTC)
+    recortes = dict(recortes or {})
+    if not nombre_equipo_valido(reporte.nombre_equipo):
+        recortes["nombre_saneado"] = 1
+    nombre = almacen.nombre_libre(
+        conexion, sanear_nombre_equipo(reporte.nombre_equipo, 0), equipo.id
+    )
+    almacen.guardar_reporte(
+        conexion,
+        equipo,
+        nombre,
+        reporte.agente_version,
+        reporte.so,
+        reporte.hardware,
+        reporte.postura,
+        recortes,
+        ahora,
+    )
+    guardado = json.dumps(
+        {"reporte": reporte.model_dump(mode="json"), "recortes": recortes}, ensure_ascii=False
+    )
+    almacen.guardar_reporte_pendiente(conexion, equipo.id, guardado)
+    return Recibido(equipo_id=equipo.id, nombre=nombre, recortes=recortes)
+
+
+class ErrorAprobacion(ValueError):
+    """El equipo no existe, está revocado o ya estaba aprobado."""
+
+
+def aprobar(
+    conexion: Any, equipo_id: str, por: str, ahora: datetime | None = None
+) -> Recibido | None:
+    """Una persona aprueba un equipo pendiente. Si ya había reportado, su último reporte
+    se procesa y se cruza en ese momento; si no, entra con el próximo reporte."""
+    if not por or not por.strip():
+        raise ValueError("La aprobación la hace una persona: falta quién aprueba ('por')")
+    guardado = almacen.leer_reporte_pendiente(conexion, equipo_id)
+    if not almacen.marcar_aprobado(conexion, equipo_id, por.strip()):
+        raise ErrorAprobacion(equipo_id)
+    if not guardado:
+        return None
+    datos = json.loads(guardado)
+    reporte = ReporteEquipo.model_validate(datos["reporte"])
+    equipo = almacen.leer_equipo(conexion, equipo_id)
+    return procesar(conexion, equipo, reporte, datos.get("recortes"), ahora)

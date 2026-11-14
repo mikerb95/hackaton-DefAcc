@@ -168,7 +168,7 @@ def test_consulta_por_lote_sigue_la_paginacion():
 
 def _equipo(conexion, distro="ubuntu", version="22.04") -> almacen.Equipo:
     bd.crear_esquema(conexion)
-    almacen.inscribir(conexion, EQUIPO_ID, "srv-ubuntu-01", "0.1.0")
+    almacen.inscribir(conexion, EQUIPO_ID, "srv-ubuntu-01", "0.1.0", aprobar=True)
     equipo = almacen.leer_equipo(conexion, EQUIPO_ID)
     so = SistemaReportado(familia="linux", nombre="Ubuntu", version=version, distro=distro)
     almacen.guardar_reporte(
