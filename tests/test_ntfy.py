@@ -224,3 +224,61 @@ def test_la_corrida_avisa_los_criticos_nuevos(base_temporal, monkeypatch):
 
 def test_la_corrida_sin_ntfy_sigue_igual(base_con_hallazgos):
     assert not ntfy._tabla_existe(base_con_hallazgos)
+
+
+# ---------------------------------------------------------------------------
+# Botón de prueba en Configuración (API)
+# ---------------------------------------------------------------------------
+
+
+def _cliente_api(monkeypatch, tmp_path, usuario: str, rol: str):
+    from radar.api import rutas
+    from tests.test_ajustes import _cliente, _sesion
+
+    monkeypatch.setattr(rutas, "_ultima_prueba_ntfy", 0.0)
+    cliente = _cliente(monkeypatch, tmp_path)
+    _sesion(cliente, usuario, rol)
+    return cliente
+
+
+def test_api_prueba_ntfy_admin(monkeypatch, tmp_path):
+    monkeypatch.setenv("NTFY_TOPICO", "radar-prueba-x9")
+    monkeypatch.setenv("NTFY_TOKEN", "tk_secreto")
+    enviados: list[dict] = []
+    monkeypatch.setattr(
+        ntfy, "enviar", lambda config, cuerpo, cliente=None: enviados.append(cuerpo)
+    )
+    cliente = _cliente_api(monkeypatch, tmp_path, "ana", "admin")
+
+    estado = cliente.get("/api/ajustes/ntfy").json()
+    assert estado["configurado"] and estado["topico"] == "radar-prueba-x9"
+    assert estado["con_token"] is True and "tk_secreto" not in json.dumps(estado)
+
+    r = cliente.post("/api/ajustes/ntfy/prueba")
+    assert r.status_code == 200 and r.json()["enviado"] is True
+    assert enviados[0]["title"] == "Radar: prueba de avisos"
+    # Una segunda prueba enseguida se rechaza.
+    assert cliente.post("/api/ajustes/ntfy/prueba").status_code == 429
+    assert len(enviados) == 1
+
+
+def test_api_prueba_ntfy_solo_admin(monkeypatch, tmp_path):
+    monkeypatch.setenv("NTFY_TOPICO", "radar-prueba-x9")
+    cliente = _cliente_api(monkeypatch, tmp_path, "luis", "analista")
+    assert cliente.get("/api/ajustes/ntfy").status_code == 403
+    assert cliente.post("/api/ajustes/ntfy/prueba").status_code == 403
+
+
+def test_api_prueba_ntfy_sin_configurar_y_caido(monkeypatch, tmp_path):
+    cliente = _cliente_api(monkeypatch, tmp_path, "ana", "admin")
+    assert cliente.get("/api/ajustes/ntfy").json()["configurado"] is False
+    assert cliente.post("/api/ajustes/ntfy/prueba").status_code == 409
+
+    monkeypatch.setenv("NTFY_TOPICO", "radar-prueba-x9")
+
+    def caido(config, cuerpo, cliente=None):
+        raise httpx.ConnectError("sin red")
+
+    monkeypatch.setattr(ntfy, "enviar", caido)
+    r = cliente.post("/api/ajustes/ntfy/prueba")
+    assert r.status_code == 502 and "ConnectError" in r.json()["detail"]
