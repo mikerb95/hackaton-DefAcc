@@ -96,12 +96,17 @@ main { max-width: 1280px; margin: 0 auto; padding: 24px; display: grid; gap: 20p
 /* Cifras */
 .cifras { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
 .cifra {
-  background: var(--ink-1); border: 1px solid var(--linea); border-radius: var(--radio);
-  padding: 16px 18px;
+  background: linear-gradient(180deg, var(--ink-2), var(--ink-1));
+  border: 1px solid var(--linea); border-radius: var(--radio);
+  padding: 16px 18px; display: grid; gap: 8px;
 }
-.cifra-valor { font: 500 32px/1.1 var(--mono); letter-spacing: -0.02em; }
-.cifra-etiqueta { color: var(--texto-2); font-size: 13px; margin-top: 6px; display: flex; align-items: center; gap: 8px; }
-.cifra.destacada { background: var(--acento-tinte); border-color: rgba(0, 242, 255, 0.25); }
+.cifra-valor { font: 500 34px/1 var(--mono); letter-spacing: -0.02em; }
+.cifra-etiqueta { color: var(--texto-2); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+.cifra-nota { color: var(--texto-3); font-size: 12px; }
+.cifra.destacada {
+  background: radial-gradient(120% 140% at 0% 0%, rgba(0, 242, 255, 0.14), transparent 60%), var(--ink-1);
+  border-color: rgba(0, 242, 255, 0.3);
+}
 .cifra.destacada .cifra-valor { color: var(--acento); }
 
 /* Paneles */
@@ -111,6 +116,11 @@ main { max-width: 1280px; margin: 0 auto; padding: 24px; display: grid; gap: 20p
   padding: 18px; min-width: 0;
 }
 .panel > h2, .panel-cabeza { margin-bottom: 14px; }
+.punto-acento { background: var(--acento); box-shadow: 0 0 8px rgba(0, 242, 255, 0.6); }
+.punto-rojo { background: var(--rojo); }
+.punto-ambar { background: var(--ambar); }
+.punto-gris { background: var(--gris); }
+.solo-lector { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .panel-cabeza { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
 .contador { font-family: var(--mono); color: var(--texto-3); margin-left: 6px; }
 .vacio { color: var(--texto-3); font-size: 13px; }
@@ -505,3 +515,74 @@ main { view-transition-name: contenido; }
   .entrar-caja { transition: none; }
   ::view-transition-old(contenido), ::view-transition-new(contenido) { animation: none; }
 }
+
+/* Resumen: tabla por producto con filas separadas, chips de versión y severidad */
+.rejilla { align-items: start; }
+.tabla-productos { border-collapse: separate; border-spacing: 0; }
+.tabla-productos thead th {
+  background: var(--ink-2); border-bottom: 1px solid var(--linea);
+  padding: 10px 12px; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase;
+}
+.tabla-productos thead th:first-child { border-top-left-radius: 8px; }
+.tabla-productos thead th:last-child { border-top-right-radius: 8px; }
+.tabla-productos td { padding: 14px 12px; border-bottom: 1px solid var(--linea); vertical-align: middle; }
+.tabla-productos tbody tr:nth-child(even) td { background: rgba(255, 255, 255, 0.015); }
+.tabla-productos tbody tr.clic:hover td, .tabla-productos tbody tr.activa td { background: var(--acento-tinte); }
+.tabla-productos tbody tr.clic:focus-visible { outline: 2px solid var(--acento); outline-offset: -2px; }
+.producto { min-width: 150px; }
+.producto-nombre { font-weight: 600; font-size: 14.5px; color: var(--texto); }
+.producto .etiquetas { margin-top: 6px; }
+
+.versiones { display: flex; flex-wrap: wrap; gap: 4px; max-width: 260px; }
+.version {
+  font: 12px/1.6 var(--mono); padding: 0 7px; border-radius: 6px; white-space: nowrap;
+  background: var(--ink-2); border: 1px solid var(--linea); color: var(--texto-2);
+}
+.version-mas { color: var(--texto-3); border-style: dashed; cursor: help; }
+
+.tabla-productos td.num { color: var(--texto); }
+.cero { color: var(--texto-3); }
+.kev-n {
+  display: inline-grid; place-items: center; min-width: 26px; padding: 1px 7px; border-radius: 999px;
+  background: rgba(255, 107, 61, 0.14); color: #ffb39b; font-weight: 500;
+}
+.sev {
+  display: inline-block; min-width: 42px; text-align: center; padding: 1px 8px; border-radius: 6px;
+  font-weight: 500; color: var(--sev); background: color-mix(in srgb, var(--sev) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--sev) 30%, transparent);
+}
+.sev-critica { --sev: #ff3d6e; }
+.sev-alta { --sev: var(--rojo); }
+.sev-media { --sev: var(--ambar); }
+.sev-baja { --sev: var(--gris); }
+
+.tabla-productos td.objetivo { white-space: nowrap; }
+.obj-etiqueta { display: block; font-size: 11px; color: var(--texto-3); margin-bottom: 3px; }
+.obj-version {
+  font: 500 12.5px/1.6 var(--mono); padding: 0 8px; border-radius: 6px;
+  background: var(--acento-tinte); color: var(--acento); border: 1px solid rgba(0, 242, 255, 0.22);
+}
+.obj-version.obj-incierta { background: rgba(251, 191, 36, 0.1); color: #fcd877; border-color: rgba(251, 191, 36, 0.28); }
+.tabla-productos .flecha { width: 28px; padding-left: 0; padding-right: 10px; color: var(--texto-3); font-size: 18px; text-align: right; }
+.tabla-productos tr.clic:hover .flecha, .tabla-productos tr.activa .flecha { color: var(--acento); }
+
+/* Cobertura */
+.cobertura-cabeza { display: flex; align-items: baseline; gap: 12px; }
+.cobertura-pct { font: 500 40px/1 var(--mono); letter-spacing: -0.03em; color: var(--acento); }
+.cobertura-pct small { font-size: 18px; color: var(--texto-3); margin-left: 2px; }
+.cobertura-detalle { color: var(--texto-2); font-size: 13px; line-height: 1.4; }
+.cobertura-detalle .mono { color: var(--texto); }
+.panel-cobertura .barra-cobertura { height: 8px; border-radius: 4px; margin-top: 14px; }
+.cobertura-sub {
+  display: flex; justify-content: space-between; margin: 20px 0 0; padding-top: 14px;
+  border-top: 1px solid var(--linea); font-size: 11px; font-weight: 500;
+  letter-spacing: 0.05em; text-transform: uppercase; color: var(--texto-3);
+}
+.cobertura-lista.motivos { gap: 0; margin-top: 6px; }
+.cobertura-lista.motivos li { display: block; padding: 10px 0; border-bottom: 1px solid var(--ink-3); }
+.cobertura-lista.motivos li:last-child { border-bottom: 0; }
+.motivo-fila { display: flex; justify-content: space-between; gap: 12px; color: var(--texto-2); }
+.motivo-fila .mono { color: var(--texto); }
+.motivo-barra { height: 4px; border-radius: 2px; background: var(--ink-3); margin-top: 6px; overflow: hidden; }
+.motivo-barra span { display: block; height: 100%; background: var(--gris); border-radius: inherit; }
+.cobertura-nota { margin-top: 12px; font-size: 12px; line-height: 1.5; }

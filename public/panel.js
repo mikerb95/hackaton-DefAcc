@@ -85,18 +85,19 @@ function pintarResumen(r) {
 
   const c = r.cifras || {};
   const cifras = [
-    ["exigen_accion", "Exigen acción", true],
-    ["explotadas", "Explotadas (KEV)", false],
-    ["semanal", "Al resumen semanal", false],
-    ["equipos_afectados", "Equipos afectados", false],
+    ["exigen_accion", "Exigen acción", true, "acento", "Prioridad inmediata"],
+    ["explotadas", "Explotadas (KEV)", false, "rojo", "Explotación confirmada por CISA"],
+    ["semanal", "Al resumen semanal", false, "ambar", "Van al boletín de la semana"],
+    ["equipos_afectados", "Equipos afectados", false, "gris", "Con al menos un hallazgo"],
   ];
   // Las cifras se arman una vez; después solo cambia el número, y si cambió, gira hasta el
   // valor nuevo (ej.: "Exigen acción" baja tras mitigar). Con movimiento reducido, salta.
   if (!$("#cifras").children.length) {
-    $("#cifras").innerHTML = cifras.map(([clave, etiqueta, destacada]) => `
+    $("#cifras").innerHTML = cifras.map(([clave, etiqueta, destacada, tono, nota]) => `
       <div class="cifra${destacada ? " destacada" : ""}">
+        <div class="cifra-etiqueta"><span class="punto punto-${tono}"></span>${esc(etiqueta)}</div>
         <div class="cifra-valor" data-clave="${clave}">-</div>
-        <div class="cifra-etiqueta">${esc(etiqueta)}</div>
+        <div class="cifra-nota">${esc(nota)}</div>
       </div>`).join("");
   }
   cifras.forEach(([clave]) => animarCifra($(`.cifra-valor[data-clave="${clave}"]`), c[clave]));
@@ -104,15 +105,21 @@ function pintarResumen(r) {
   const cob = r.cobertura || {};
   const total = (cob.cruzados || 0) + (cob.sin_evaluar || 0);
   const pct = total ? Math.round((cob.cruzados / total) * 100) : 0;
-  const motivos = Object.entries(cob.por_motivo || {}).map(([m, n]) =>
-    `<li><span>${esc(MOTIVOS[m] || m)}</span><span class="mono">${esc(n)}</span></li>`
-  ).join("");
+  const sinEvaluar = cob.sin_evaluar || 0;
+  const motivos = Object.entries(cob.por_motivo || {}).sort((a, b) => b[1] - a[1]).map(([m, n]) => {
+    const ancho = sinEvaluar ? Math.max(2, Math.round((n / sinEvaluar) * 100)) : 0;
+    return `<li><div class="motivo-fila"><span>${esc(MOTIVOS[m] || m)}</span><span class="mono">${esc(n)}</span></div>
+      <div class="motivo-barra"><span style="width:${ancho}%"></span></div></li>`;
+  }).join("");
   $("#cobertura").innerHTML = `
-    <div><span class="cobertura-cifra">${esc(cob.cruzados ?? 0)}</span>
-      <span class="mono" style="color:var(--texto-3)"> / ${esc(total)}</span>
-      <span style="color:var(--texto-2)"> programas cruzados</span></div>
+    <div class="cobertura-cabeza">
+      <span class="cobertura-pct">${esc(pct)}<small>%</small></span>
+      <span class="cobertura-detalle"><span class="mono">${esc(cob.cruzados ?? 0)}</span> de <span class="mono">${esc(total)}</span> programas se pudieron cruzar con NVD</span>
+    </div>
     <div class="barra-cobertura" role="img" aria-label="${pct} % cruzado"><span style="width:${pct}%"></span></div>
-    <ul class="cobertura-lista">${motivos || '<li class="vacio">Todo se pudo comparar.</li>'}</ul>`;
+    ${sinEvaluar ? `<h3 class="cobertura-sub">Sin evaluar <span class="mono">${esc(sinEvaluar)}</span></h3>` : ""}
+    <ul class="cobertura-lista motivos">${motivos || '<li class="vacio">Todo se pudo comparar.</li>'}</ul>
+    ${sinEvaluar ? '<p class="nota cobertura-nota">Sin comparación no hay hallazgo: estos programas no cuentan como sanos, quedan pendientes.</p>' : ""}`;
 }
 
 const MOVIMIENTO_REDUCIDO = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -154,18 +161,46 @@ const firmasEquipos = Object.assign(new Map(), { primera: true });
 
 let productoAbierto = null;
 
+// Versiones instaladas como chips; más de 4 se resumen en "+N" con la lista completa en el title.
+function chipsVersiones(versiones) {
+  const max = 4;
+  const vis = versiones.slice(0, max).map((v) => `<span class="version">${esc(v)}</span>`).join("");
+  const resto = versiones.length - max;
+  return `<div class="versiones">${vis}${resto > 0
+    ? `<span class="version version-mas" title="${esc(versiones.join(", "))}">+${resto}</span>` : ""}</div>`;
+}
+
+// Severidad por el peor CVSS. Sin dato no es cero (regla 2).
+function chipCvss(v) {
+  if (v == null) return '<span class="sin-dato">sin dato</span>';
+  const nivel = v >= 9 ? "critica" : v >= 7 ? "alta" : v >= 4 ? "media" : "baja";
+  return `<span class="sev sev-${nivel}">${esc(v.toFixed(1))}</span>`;
+}
+
+// Con versionEndIncluding no se sabe la versión corregida: "posterior a", nunca "actualizar a" (regla 5).
+function celdaObjetivo(g) {
+  if (g.tipo_objetivo === "exacta" && g.version_objetivo) {
+    return `<span class="obj-etiqueta">Actualizar a</span><span class="obj-version">${esc(g.version_objetivo)}</span>`;
+  }
+  if (g.tipo_objetivo === "posterior_a" && g.version_objetivo) {
+    return `<span class="obj-etiqueta">Posterior a</span><span class="obj-version obj-incierta">${esc(g.version_objetivo)}</span>`;
+  }
+  return `<span class="sin-dato">${esc(g.objetivo_texto || "sin versión objetivo conocida")}</span>`;
+}
+
 function pintarProductos(datos) {
   const filas = (datos.productos || []).map((g) => `
     <tr class="clic${g.producto === productoAbierto ? " activa" : ""}" data-producto="${esc(g.producto)}" tabindex="0">
-      <td><div>${esc(g.producto)}</div><div class="etiquetas">${pildoraPrioridad(g.prioridad)}${g.ransomware ? '<span class="pildora p-kev">ransomware</span>' : ""}</div></td>
-      <td class="mono">${esc(g.versiones.join(", "))}</td>
+      <td class="producto"><div class="producto-nombre">${esc(g.producto)}</div><div class="etiquetas">${pildoraPrioridad(g.prioridad)}${g.ransomware ? '<span class="pildora p-kev">ransomware</span>' : ""}</div></td>
+      <td>${chipsVersiones(g.versiones)}</td>
       <td class="num">${esc(g.n_equipos)}</td>
       <td class="num">${esc(g.n_cves)}</td>
-      <td class="num">${esc(g.en_kev.length)}</td>
-      <td class="num">${fmtCvss(g.peor_cvss)}</td>
-      <td class="mono objetivo">${esc(g.objetivo_texto)}</td>
+      <td class="num">${g.en_kev.length ? `<span class="kev-n">${esc(g.en_kev.length)}</span>` : '<span class="cero">0</span>'}</td>
+      <td class="num">${chipCvss(g.peor_cvss)}</td>
+      <td class="objetivo">${celdaObjetivo(g)}</td>
+      <td class="flecha" aria-hidden="true">›</td>
     </tr>`).join("");
-  $("#productos tbody").innerHTML = filas || '<tr><td colspan="7" class="vacio">Sin hallazgos.</td></tr>';
+  $("#productos tbody").innerHTML = filas || '<tr><td colspan="8" class="vacio">Sin hallazgos.</td></tr>';
 }
 
 // Con un inventario real son cientos de hallazgos: se pintan por tandas.
