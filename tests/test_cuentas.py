@@ -296,3 +296,15 @@ def test_paquete_publicado_al_dia_y_limpio(sistema):
     assert not [n for n in nombres if any(p in n.lower() for p in prohibidos)]
     instalador = "instalar.ps1" if sistema == "windows" else "instalar.sh"
     assert f"agente_local/instalacion/{instalador}" in nombres
+
+
+def test_admin_aprueba_equipo_con_su_nombre(con_base, monkeypatch):
+    monkeypatch.delenv("AGENTE_APROBACION", raising=False)
+    token = con_base.post("/api/tokens", json={}).json()["token"]
+    assert _inscribir(con_base, token).status_code == 200
+    equipo = con_base.get("/api/equipos").json()["equipos"][0]
+    assert equipo["pendiente"] is True
+    # Con sesión no se escribe quién aprueba: sale de la sesión.
+    r = con_base.post(f"/api/equipos/{equipo['id']}/aprobar", json={})
+    assert r.status_code == 200 and r.json()["aprobado"] is True
+    assert con_base.get("/api/equipos").json()["equipos"][0]["pendiente"] is False
