@@ -72,7 +72,13 @@ LEEME = {
    portapapeles). Escríbelo en el panel del radar, en la ficha del equipo.
 
 Si el paquete no trae configuracion.txt, el instalador pregunta la dirección del radar.
-El agente no abre puertos ni recibe órdenes del servidor: solo envía su reporte.
+
+Parcheo aprobado (opcional): si el zip viene del panel con "Permitir parcheo", ya lo trae.
+Si no, en una consola de administrador:
+   powershell -ExecutionPolicy Bypass -File agente_local\\instalacion\\instalar.ps1 -ClaveAprobacion <clave-base64>
+El agente solo aplica planes firmados con esa clave, revierte si algo falla y nunca reinicia.
+
+El agente no abre puertos ni acepta comandos del servidor.
 Para quitarlo: doble clic en agente_local\\instalacion\\desinstalar.cmd y "Retirar" en el panel.
 """,
     "linux": """Agente local del radar para Linux
