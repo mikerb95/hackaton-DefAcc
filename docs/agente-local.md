@@ -233,3 +233,42 @@ se inscribió desde él, mostró el código, envió 111 programas, el equipo que
 sin cruzarse, un código equivocado dio 404 y el correcto (escrito en minúsculas) lo activó y
 cruzó las 111 filas. `instalar.cmd` no se corrió completo: instala Python para todos los
 usuarios y registra una tarea como SYSTEM, y eso se prueba en una máquina virtual.
+
+## Parcheo aprobado (opcional)
+
+Diseño y garantías en [plan-parcheo.md](plan-parcheo.md). Resumen: el admin marca acciones en
+la ficha del equipo, las firma con su clave de aprobación (Ed25519, en su navegador) y el
+agente las aplica en su próxima consulta (cada 15 minutos). Verifica cada acción, revierte si
+falla, nunca reinicia y envía el resultado más un inventario nuevo. El informe queda en
+"Planes" > "Informe" y se guarda como PDF desde el navegador.
+
+1. **Clave de aprobación.** En el panel, ficha de cualquier equipo aprobado, "Crear clave
+   nueva". Se descarga `clave-aprobacion-radar-<huella>.json` (la privada: guárdala fuera del
+   equipo) y la pública queda registrada en el radar.
+2. **Instalar con parcheo.** La clave pública (base64, la muestra `GET /api/parcheo/claves`)
+   va al instalador:
+   - Windows: `powershell -ExecutionPolicy Bypass -File instalar.ps1 -ClaveAprobacion <base64>`
+     o la línea `clave_aprobacion=<base64>` en `configuracion.txt`. Registra la tarea
+     `RadarAgente-Parcheo` (SYSTEM, cada 15 minutos, hasta 6 horas).
+   - Linux: `sudo RADAR_CLAVE_APROBACION=<base64> sh instalar.sh https://radar`. Activa
+     `radar-agente-parcheo.timer`.
+   - En un agente ya instalado: `radar-agente parcheo habilitar --clave <base64>` como
+     administrador o root. Comprobar con `radar-agente parcheo estado`.
+3. **Aprobar.** En la ficha del equipo, "Parcheo aprobado": cargar la clave (.json), marcar
+   acciones y "Firmar y enviar plan".
+
+### Prueba en un PC con Windows 11 (paso a paso)
+
+1. Crear un punto de restauración a mano y comprobar que "Protección del sistema" está activa
+   en C: (sin ella, Windows Update se omite a propósito).
+2. Instalar a propósito una versión vieja de un programa de la lista blanca, por ejemplo
+   `winget install --id RARLab.WinRAR --version 6.22 --exact`.
+3. Instalar el agente con `-ClaveAprobacion`, activar el equipo en el panel y esperar su
+   primer cruce.
+4. Aprobar solo la acción de WinRAR. En una consola de administrador, ensayo sin cambios:
+   `python -I "C:\Program Files\RadarAgente\ejecutar.py" parchear --ensayo`.
+5. Ejecutar de verdad (o esperar la tarea):
+   `python -I "C:\Program Files\RadarAgente\ejecutar.py" parchear`. Muestra el resumen por
+   acción; el diario y el resultado quedan en `C:\ProgramData\RadarAgente\parcheo\`.
+6. Abrir el informe del plan en el panel: WinRAR "Aplicado" y, tras el inventario posterior,
+   "Confirmada por el radar".

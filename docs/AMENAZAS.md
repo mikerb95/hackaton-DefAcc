@@ -120,3 +120,17 @@ nombre traiga texto extra; la tabla muestra el estado vigente.
 - La información de vulnerabilidades ya es pública. Lo privado es el cruce.
 - La suite de inyección se publica como pruebas defensivas del propio sistema, no como
   herramienta de ataque: sus casos apuntan a este radar y a datos sintéticos.
+
+## Parcheo desde el agente
+
+El agente ya puede cambiar el equipo, así que el servidor pasa a ser un objetivo. Defensas
+(detalle en [plan-parcheo.md](plan-parcheo.md), sección 7):
+
+| Amenaza | Defensa |
+|---|---|
+| Tomar Vercel o Turso para ejecutar en los PC | El plan lo firma la clave del admin en su navegador; el agente verifica con la clave pública fijada al instalarlo y nunca con la que mande el servidor |
+| Repetir un plan viejo | `plan_id` anotado antes de ejecutar y vigencia de 72 horas |
+| Plan de otro equipo | `equipo_id` y plataforma dentro de lo firmado |
+| Plan firmado con algo dañino | Catálogo cerrado en el agente: sin comandos en texto, patrones estrictos, lista blanca de winget, ejecución sin shell |
+| Nombre de paquete o `DisplayName` envenenado | Patrones sin espacios ni signos de shell; la verificación de winget ignora entradas de `HKCU` |
+| Salida de un instalador con inyección | Se limpia con `limpieza.py`, se recorta, se escapa al pintar y nunca llega al modelo |

@@ -25,8 +25,11 @@ plan lo incluye, con las precauciones de la sección 7.
 
 ## 2. Principios de diseño
 
-1. **El agente solo recoge y envía.** No recibe órdenes, no ejecuta comandos remotos, no
-   aplica parches. Las instrucciones de remediación las lee y ejecuta una persona. Un canal
+1. **El agente recoge y envía; parchea solo con un plan firmado.** No acepta comandos ni
+   ejecuta texto del servidor. Desde el 14 nov 2026, si se habilita al instalar, aplica planes
+   de parcheo firmados con la clave del aprobador fijada en el equipo y solo con su catálogo
+   cerrado de acciones: ver [plan-parcheo.md](plan-parcheo.md). Texto original de este
+   principio: "no recibe órdenes, no ejecuta comandos remotos, no aplica parches". Las instrucciones de remediación las lee y ejecuta una persona. Un canal
    de ejecución remota convertiría al radar en un objetivo de alto valor y en una
    herramienta de ataque (riesgo dual).
 2. **Solo conexiones salientes.** Ningún puerto abierto en el equipo.

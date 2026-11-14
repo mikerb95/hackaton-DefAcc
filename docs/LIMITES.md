@@ -115,3 +115,12 @@ aunque el nombre traiga texto extra, y la tabla muestra el estado vigente.
 - Una versión falsa en el inventario no es inyección, es integridad de la fuente: hoy no se
   detecta. Se mitiga autenticando el origen y comparando fuentes.
 - No hay inicio de sesión ni permisos por usuario. Se documenta, no se construye.
+
+## Parcheo desde el agente (docs/plan-parcheo.md)
+
+- No promete cero fallas: promete no dejar el equipo peor y no mentir en el resultado. Una acción que falla y no se puede revertir queda como "falló sin revertir" y el informe pide intervención.
+- Windows Update no se revierte: solo corre si hay punto de restauración (Windows crea como máximo uno cada 24 horas; si ya hay uno reciente se usa ese y se dice).
+- winget corre como SYSTEM: no actualiza programas instalados solo para un usuario (se omiten con ese motivo). Los códigos de salida de reinicio de winget están por verificar.
+- La reversión de apt depende de que el repositorio conserve la versión previa; la de dnf, de `dnf history undo`.
+- Si un atacante controla el JavaScript del panel justo cuando el admin firma, puede hacerle firmar otro plan. Ese plan igual solo puede contener acciones del catálogo cerrado (actualizar y endurecer).
+- Probado con ejecutores simulados; la prueba real en Windows 11 la hace el usuario en su PC con un punto de restauración antes.

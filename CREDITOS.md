@@ -131,3 +131,9 @@ Fuentes de datos públicas de esta parte:
 
 Codex (OpenAI) corrigi? la recepci?n limitada por bloques, la programaci?n y los reintentos,
 la validaci?n del runtime de Windows y la integraci?n con main, con pruebas de regresi?n.
+
+## Parcheo desde el agente local
+
+Claude Code (Claude Opus 5.5, Anthropic) diseñó e implementó el parcheo aprobado: firma
+Ed25519 en Python puro, catálogo cerrado, ejecutores de Windows y Linux, rutas, panel e
+informe de remediación, con sus pruebas (`docs/plan-parcheo.md`).
