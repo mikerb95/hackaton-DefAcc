@@ -79,7 +79,9 @@ def _datos():
 
 class EntradaEstado(_Entrada):
     id_hallazgo: str = Field(
-        min_length=3, max_length=300, description="Id del hallazgo ('CVE|producto@versión'), sale de buscar_hallazgos."
+        min_length=3,
+        max_length=300,
+        description="Id del hallazgo ('CVE|producto@versión'), sale de buscar_hallazgos.",
     )
     estado: Literal["nuevo", "en_curso", "mitigado", "descartado"]
     comentario: str | None = Field(
@@ -103,7 +105,9 @@ def _preparar_estado(e: EntradaEstado, _ctx: Contexto) -> Preparada:
         vista=vista_cambio(
             "Hallazgo",
             f"{actual.cve} · {actual.producto} {actual.version_instalada}",
-            f"Prioridad {actual.prioridad}" + (", en KEV" if actual.kev else "") + f", {len(actual.equipos)} equipo(s)",
+            f"Prioridad {actual.prioridad}"
+            + (", en KEV" if actual.kev else "")
+            + f", {len(actual.equipos)} equipo(s)",
             cambios,
             [],
             "Aprobar y guardar",
@@ -129,7 +133,9 @@ def _escribir_estado(e: EntradaEstado, ctx: Contexto) -> Any:
 
 class EntradaComunicado(_Entrada):
     producto: str = Field(
-        min_length=1, max_length=200, description="Nombre exacto del producto, sale de productos_expuestos."
+        min_length=1,
+        max_length=200,
+        description="Nombre exacto del producto, sale de productos_expuestos.",
     )
 
 
@@ -137,13 +143,20 @@ def _preparar_comunicado(e: EntradaComunicado, ctx: Contexto) -> Preparada:
     datos = _datos()
     grupo = datos.grupo(e.producto)
     if grupo is None:
-        return Preparada(False, error="Ese producto no tiene hallazgos. Búscalo con productos_expuestos.")
+        return Preparada(
+            False, error="Ese producto no tiene hallazgos. Búscalo con productos_expuestos."
+        )
     aprobado = datos.aprobacion(e.producto)
     if aprobado:
-        return Preparada(False, error=f"El comunicado de {e.producto} ya está aprobado por {aprobado.get('por')}.")
+        return Preparada(
+            False,
+            error=f"El comunicado de {e.producto} ya está aprobado por {aprobado.get('por')}.",
+        )
     analisis = datos.analisis(e.producto)
     origen = (
-        "texto del agente" if analisis and analisis.origen == "agente" else "texto armado por código (respaldo)"
+        "texto del agente"
+        if analisis and analisis.origen == "agente"
+        else "texto armado por código (respaldo)"
     )
     return Preparada(
         True,
@@ -154,7 +167,9 @@ def _preparar_comunicado(e: EntradaComunicado, ctx: Contexto) -> Preparada:
             e.producto,
             f"Prioridad {grupo.prioridad}, {len(grupo.equipos)} equipo(s), {origen}",
             [("Comunicado", "Sin aprobar", f"Aprobado por {ctx.nombre}")],
-            ["El comunicado queda listo para enviarse. El envío sigue siendo manual, desde la sección Hallazgos."],
+            [
+                "El comunicado queda listo para enviarse. El envío sigue siendo manual, desde la sección Hallazgos."
+            ],
             "Aprobar comunicado",
             "Se aprueba el texto que se ve hoy en el detalle del producto.",
         ),
@@ -165,7 +180,11 @@ def _escribir_comunicado(e: EntradaComunicado, ctx: Contexto) -> Any:
     registro = _datos().aprobar(e.producto, ctx.nombre)
     if registro is None:
         return fallo("No hay comunicado para ese producto.")
-    return {"hecho": True, "resumen": f"Comunicado de {e.producto} aprobado.", "enlace": "/panel/#hallazgos"}
+    return {
+        "hecho": True,
+        "resumen": f"Comunicado de {e.producto} aprobado.",
+        "enlace": "/panel/#hallazgos",
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -204,7 +223,8 @@ def _preparar_equipo(e: EntradaEquipo, _ctx: Contexto) -> Preparada:
         vista=vista_cambio(
             "Equipo",
             equipo.nombre,
-            f"Inscrito {equipo.inscrito}" + (f", agente {equipo.agente_version}" if equipo.agente_version else ""),
+            f"Inscrito {equipo.inscrito}"
+            + (f", agente {equipo.agente_version}" if equipo.agente_version else ""),
             [("Estado", "Pendiente de aprobar", "Aprobado")],
             [
                 "El equipo empieza a reportar al radar y su inventario entra al cruce.",
@@ -229,7 +249,8 @@ def _escribir_equipo(e: EntradaEquipo, ctx: Contexto) -> Any:
         conexion.close()
     return {
         "hecho": True,
-        "resumen": "Equipo aprobado" + (" y su último reporte ya se cruzó." if recibido else "; entra con su próximo reporte."),
+        "resumen": "Equipo aprobado"
+        + (" y su último reporte ya se cruzó." if recibido else "; entra con su próximo reporte."),
         "enlace": "/panel/#equipos",
     }
 

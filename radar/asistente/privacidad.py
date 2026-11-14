@@ -57,13 +57,16 @@ _CORREO = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
 _TELEFONO = re.compile(r"(?<![\w.])(?:\+?57[\s-]?)?(?:3\d{2}|60\d)[\s-]?\d{3}[\s-]?\d{4}\b")
 _OCTETO = r"(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)"
 _IPV4 = re.compile(rf"(?<![\w.]){_OCTETO}(?:\.{_OCTETO}){{3}}(?![\w.])")
-# Usuario de Windows o de dominio: DOMINIO\usuario, o la carpeta C:\Users\usuario.
-_USUARIO_WIN = re.compile(r"\b(?:[A-Za-z0-9_-]{2,}\\[A-Za-z0-9._-]{2,}|[A-Za-z]:\\Users\\[^\\\s]+)", re.IGNORECASE)
+# Carpeta de usuario de Windows (C:\Users\nombre). "DOMINIO\usuario" no se busca: se confunde
+# con rutas de programas ("Files\WinRAR") que el asistente sí necesita.
+_USUARIO_WIN = re.compile(r"\b[A-Za-z]:\\Users\\[^\\\s]+", re.IGNORECASE)
 _USUARIO_HOME = re.compile(r"/home/[^/\s]+")
 
 
 def _es_version(clave: str | None) -> bool:
-    return bool(clave) and ("version" in clave or "objetivo" in clave or clave in {"versiones", "activo", "id"})
+    return bool(clave) and (
+        "version" in clave or "objetivo" in clave or clave in {"versiones", "activo", "id"}
+    )
 
 
 def ocultar(texto: str, clave: str | None = None) -> str:

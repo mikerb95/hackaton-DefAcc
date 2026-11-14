@@ -59,7 +59,10 @@ def turnos_de(mensajes: list[dict[str, Any]]) -> list[Turno]:
                 actual = Turno(contenido)
                 turnos.append(actual)
             elif isinstance(contenido, list):
-                texto = next((b.get("text") for b in contenido if b.get("type") == "text" and b.get("text")), None)
+                texto = next(
+                    (b.get("text") for b in contenido if b.get("type") == "text" and b.get("text")),
+                    None,
+                )
                 tiene_resultado = any(b.get("type") == "tool_result" for b in contenido)
                 cambio = _indicacion(contenido)
                 if texto and not tiene_resultado:

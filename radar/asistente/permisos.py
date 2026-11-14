@@ -42,7 +42,9 @@ def validar(rol: str, nombre: str, entrada: Any) -> str | None:
     try:
         modelo.model_validate(entrada or {})
     except ValidationError as error:
-        detalle = "; ".join(f"{'.'.join(map(str, x['loc']))}: {x['msg']}" for x in error.errors()[:3])
+        detalle = "; ".join(
+            f"{'.'.join(map(str, x['loc']))}: {x['msg']}" for x in error.errors()[:3]
+        )
         return f"Entrada no válida: {detalle}"
     return None
 

@@ -37,7 +37,9 @@ def _acciones(rol: str) -> str:
             "Con tu rol solo puedes consultar. Si te piden un cambio, di dónde se hace en el panel "
             "(usa buscar_en_panel) o qué rol puede hacerlo."
         )
-    lineas = "\n".join(f"- {a.nombre}: {a.descripcion.split(' No se ejecuta sola')[0]}" for a in acciones)
+    lineas = "\n".join(
+        f"- {a.nombre}: {a.descripcion.split(' No se ejecuta sola')[0]}" for a in acciones
+    )
     return f"""Acciones que puedes proponer (ninguna se ejecuta sola: la persona ve una tarjeta con el cambio y decide):
 {lineas}
 

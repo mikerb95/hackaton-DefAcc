@@ -110,7 +110,12 @@ def _a_resultado(tool_use_id: str, r: Resultado) -> dict[str, Any]:
             "tool_use_id": tool_use_id,
             "content": json.dumps(r.datos, ensure_ascii=False, default=str),
         }
-    return {"type": "tool_result", "tool_use_id": tool_use_id, "content": r.error or "Error.", "is_error": True}
+    return {
+        "type": "tool_result",
+        "tool_use_id": tool_use_id,
+        "content": r.error or "Error.",
+        "is_error": True,
+    }
 
 
 def _en_orden(orden: list[str], resultados: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -124,7 +129,13 @@ def _terminar(e: Ejecucion, deps: Dependencias, estado: Estado, error: str | Non
     e.propuesta = None
     deps.guardar(e)
     deps.emitir(
-        {"tipo": "fin", "estado": estado, "iteraciones": e.iteraciones, "costo_usd": round(e.costo_usd, 4), "error": error}
+        {
+            "tipo": "fin",
+            "estado": estado,
+            "iteraciones": e.iteraciones,
+            "costo_usd": round(e.costo_usd, 4),
+            "error": error,
+        }
     )
     return e
 
@@ -138,10 +149,18 @@ def avanzar(e: Ejecucion, deps: Dependencias) -> Ejecucion:
             restante = deps.presupuesto_restante()
         except Exception:  # noqa: BLE001 - falla cerrado
             return _terminar(
-                e, deps, "fallida", "No se pudo comprobar el gasto del día; por seguridad no se sigue gastando."
+                e,
+                deps,
+                "fallida",
+                "No se pudo comprobar el gasto del día; por seguridad no se sigue gastando.",
             )
         if restante <= 0:
-            return _terminar(e, deps, "fallida", "Se alcanzó el tope de gasto de hoy. Mañana vuelve a estar disponible.")
+            return _terminar(
+                e,
+                deps,
+                "fallida",
+                "Se alcanzó el tope de gasto de hoy. Mañana vuelve a estar disponible.",
+            )
 
         try:
             msg = deps.llamar_modelo(e.mensajes)
@@ -154,7 +173,11 @@ def avanzar(e: Ejecucion, deps: Dependencias) -> Ejecucion:
         contenido = list(msg.get("content") or [])
         e.mensajes.append({"role": "assistant", "content": contenido})
 
-        textos = [b["text"].strip() for b in contenido if b.get("type") == "text" and (b.get("text") or "").strip()]
+        textos = [
+            b["text"].strip()
+            for b in contenido
+            if b.get("type") == "text" and (b.get("text") or "").strip()
+        ]
         for t in textos:
             deps.emitir({"tipo": "texto", "texto": t})
 
@@ -170,11 +193,15 @@ def avanzar(e: Ejecucion, deps: Dependencias) -> Ejecucion:
         if motivo == "max_tokens":
             return _terminar(e, deps, "fallida", "La respuesta del modelo se cortó por longitud.")
         if motivo != "tool_use":
-            return _terminar(e, deps, "fallida", f"El modelo se detuvo de forma inesperada ({motivo}).")
+            return _terminar(
+                e, deps, "fallida", f"El modelo se detuvo de forma inesperada ({motivo})."
+            )
 
         usos = [b for b in contenido if b.get("type") == "tool_use"]
         if not usos:
-            return _terminar(e, deps, "fallida", "El modelo pidió herramientas sin nombrar ninguna.")
+            return _terminar(
+                e, deps, "fallida", "El modelo pidió herramientas sin nombrar ninguna."
+            )
 
         aprobacion = set(deps.herramientas_aprobacion)
         resultados: list[dict[str, Any]] = []
@@ -187,14 +214,18 @@ def avanzar(e: Ejecucion, deps: Dependencias) -> Ejecucion:
                 continue
             if nombre in aprobacion:
                 if propuesta is not None:
-                    resultados.append(_a_resultado(uid, fallo("Propón un cambio a la vez y espera la decisión.")))
+                    resultados.append(
+                        _a_resultado(uid, fallo("Propón un cambio a la vez y espera la decisión."))
+                    )
                     continue
                 try:
                     preparada = deps.preparar_propuesta(nombre, entrada)
                 except Exception as error:  # noqa: BLE001
                     preparada = Preparada(False, error=f"No se pudo preparar la propuesta: {error}")
                 if not preparada.ok:
-                    resultados.append(_a_resultado(uid, fallo(preparada.error or "No se pudo preparar.")))
+                    resultados.append(
+                        _a_resultado(uid, fallo(preparada.error or "No se pudo preparar."))
+                    )
                     continue
                 propuesta = Propuesta(
                     tool_use_id=uid,
@@ -227,11 +258,15 @@ def avanzar(e: Ejecucion, deps: Dependencias) -> Ejecucion:
             )
             return e
 
-        e.mensajes.append({"role": "user", "content": _en_orden([u.get("id", "") for u in usos], resultados)})
+        e.mensajes.append(
+            {"role": "user", "content": _en_orden([u.get("id", "") for u in usos], resultados)}
+        )
         deps.guardar(e)
 
 
-def decidir(e: Ejecucion, aprobado: bool, deps: Dependencias, comentario: str | None = None) -> Ejecucion:
+def decidir(
+    e: Ejecucion, aprobado: bool, deps: Dependencias, comentario: str | None = None
+) -> Ejecucion:
     """Aplica la decisión sobre la propuesta pendiente y retoma.
 
     Quien llama debe haber reclamado la conversación de forma atómica (dos clics no la
@@ -246,8 +281,12 @@ def decidir(e: Ejecucion, aprobado: bool, deps: Dependencias, comentario: str | 
         resultado = _a_resultado(p.tool_use_id, r)
     else:
         resultado = _a_resultado(p.tool_use_id, fallo(deps.rechazo(comentario)))
-    deps.emitir({"tipo": "decision", "origen": p.origen, "aprobado": aprobado, "herramienta": p.herramienta})
-    e.mensajes.append({"role": "user", "content": _en_orden(p.orden, [*p.resultados_previos, resultado])})
+    deps.emitir(
+        {"tipo": "decision", "origen": p.origen, "aprobado": aprobado, "herramienta": p.herramienta}
+    )
+    e.mensajes.append(
+        {"role": "user", "content": _en_orden(p.orden, [*p.resultados_previos, resultado])}
+    )
     e.propuesta = None
     e.estado = "corriendo"
     deps.guardar(e)

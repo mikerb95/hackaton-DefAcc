@@ -88,7 +88,9 @@ _listas: set[str] = set()
 
 
 def _destino() -> str:
-    return "|".join(os.environ.get(n, "") for n in ("TURSO_DATABASE_URL", "RADAR_SQLITE", "RADAR_DATOS"))
+    return "|".join(
+        os.environ.get(n, "") for n in ("TURSO_DATABASE_URL", "RADAR_SQLITE", "RADAR_DATOS")
+    )
 
 
 def conectar() -> Any:
@@ -130,7 +132,9 @@ def _a_fila(e: Ejecucion) -> dict[str, Any]:
     return {
         "estado": e.estado,
         "mensajes": json.dumps(e.mensajes, ensure_ascii=False, default=str),
-        "propuesta": json.dumps(asdict(e.propuesta), ensure_ascii=False, default=str) if e.propuesta else None,
+        "propuesta": json.dumps(asdict(e.propuesta), ensure_ascii=False, default=str)
+        if e.propuesta
+        else None,
         "respuesta": e.respuesta,
         "error": e.error,
         "iteraciones": e.iteraciones,
@@ -163,9 +167,21 @@ def crear(conexion: Any, e: Ejecucion, ctx: Contexto) -> None:
         "pregunta, mensajes, propuesta, respuesta, error, iteraciones, uso, costo_usd, creada, actualizada) "
         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         [
-            e.id, ctx.usuario_id, ctx.nombre, ctx.rol, fila["estado"], e.pregunta[:2000], fila["mensajes"],
-            fila["propuesta"], fila["respuesta"], fila["error"], fila["iteraciones"], fila["uso"],
-            fila["costo_usd"], momento, momento,
+            e.id,
+            ctx.usuario_id,
+            ctx.nombre,
+            ctx.rol,
+            fila["estado"],
+            e.pregunta[:2000],
+            fila["mensajes"],
+            fila["propuesta"],
+            fila["respuesta"],
+            fila["error"],
+            fila["iteraciones"],
+            fila["uso"],
+            fila["costo_usd"],
+            momento,
+            momento,
         ],
     )
     conexion.commit()
@@ -177,8 +193,16 @@ def guardar(conexion: Any, e: Ejecucion) -> None:
         "UPDATE asistente_conversaciones SET estado = ?, mensajes = ?, propuesta = ?, respuesta = ?, "
         "error = ?, iteraciones = ?, uso = ?, costo_usd = ?, actualizada = ? WHERE id = ?",
         [
-            fila["estado"], fila["mensajes"], fila["propuesta"], fila["respuesta"], fila["error"],
-            fila["iteraciones"], fila["uso"], fila["costo_usd"], _iso(ahora()), e.id,
+            fila["estado"],
+            fila["mensajes"],
+            fila["propuesta"],
+            fila["respuesta"],
+            fila["error"],
+            fila["iteraciones"],
+            fila["uso"],
+            fila["costo_usd"],
+            _iso(ahora()),
+            e.id,
         ],
     )
     conexion.commit()
@@ -192,10 +216,15 @@ def obtener(conexion: Any, id_: str) -> tuple[Ejecucion, dict[str, Any]] | None:
         return None
     f = filas[0]
     e = _de_fila(f)
-    if e.estado == "corriendo" and datetime.fromisoformat(f["actualizada"]) < ahora() - CORRIENDO_VENCE:
+    if (
+        e.estado == "corriendo"
+        and datetime.fromisoformat(f["actualizada"]) < ahora() - CORRIENDO_VENCE
+    ):
         e.estado = "fallida"
         e.error = e.error or "La conversación se interrumpió."
-    meta = {k: f[k] for k in ("usuario_id", "usuario_nombre", "usuario_rol", "creada", "actualizada")}
+    meta = {
+        k: f[k] for k in ("usuario_id", "usuario_nombre", "usuario_rol", "creada", "actualizada")
+    }
     return e, meta
 
 
@@ -241,7 +270,9 @@ def recientes(conexion: Any, usuario_id: str | None, limite: int = 8) -> list[di
 
 def purgar(conexion: Any, dias: int = RETENCION_DIAS) -> int:
     limite = _iso(ahora() - timedelta(days=dias))
-    cursor = conexion.execute("DELETE FROM asistente_conversaciones WHERE actualizada < ?", [limite])
+    cursor = conexion.execute(
+        "DELETE FROM asistente_conversaciones WHERE actualizada < ?", [limite]
+    )
     conexion.commit()
     return max(cursor.rowcount, 0)
 
@@ -260,8 +291,17 @@ def registrar_consumo(
         "tokens_entrada, tokens_salida, tokens_cache_lectura, tokens_cache_escritura, costo_usd) "
         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         [
-            _iso(momento), dia_colombia(momento), ctx.usuario_id, ctx.nombre, conversacion_id, modelo,
-            uso.entrada, uso.salida, uso.cache_lectura, uso.cache_escritura, costo,
+            _iso(momento),
+            dia_colombia(momento),
+            ctx.usuario_id,
+            ctx.nombre,
+            conversacion_id,
+            modelo,
+            uso.entrada,
+            uso.salida,
+            uso.cache_lectura,
+            uso.cache_escritura,
+            costo,
         ],
     )
     conexion.commit()
@@ -278,7 +318,9 @@ def gasto(conexion: Any, dia: str, usuario_id: str | None = None) -> float:
 
 def topes(conexion: Any) -> dict[str, float]:
     valores = dict(TOPES_POR_DEFECTO)
-    cursor = conexion.execute("SELECT clave, valor FROM ajustes WHERE clave LIKE 'asistente.tope_%'")
+    cursor = conexion.execute(
+        "SELECT clave, valor FROM ajustes WHERE clave LIKE 'asistente.tope_%'"
+    )
     for clave, valor in cursor.fetchall():
         nombre = clave.removeprefix("asistente.tope_")
         if nombre in valores:
@@ -356,11 +398,16 @@ def auditar(
         "INSERT INTO asistente_auditoria (fecha, conversacion_id, herramienta, pidio, decidio, decision, "
         "entrada, vista, resultado, ok) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         [
-            _iso(ahora()), conversacion_id, propuesta.herramienta, pidio, decidio,
+            _iso(ahora()),
+            conversacion_id,
+            propuesta.herramienta,
+            pidio,
+            decidio,
             "aprobada" if aprobado else "rechazada",
             json.dumps(propuesta.entrada, ensure_ascii=False, default=str),
             json.dumps(propuesta.vista, ensure_ascii=False, default=str),
-            json.dumps(resultado, ensure_ascii=False, default=str), 1 if ok else 0,
+            json.dumps(resultado, ensure_ascii=False, default=str),
+            1 if ok else 0,
         ],
     )
     conexion.commit()

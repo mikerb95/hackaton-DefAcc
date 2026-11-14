@@ -60,7 +60,9 @@ def modo_falso() -> bool:
 
 
 def disponible() -> bool:
-    return modo_falso() or bool(os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("ANTHROPIC_AUTH_TOKEN"))
+    return modo_falso() or bool(
+        os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("ANTHROPIC_AUTH_TOKEN")
+    )
 
 
 def modelo() -> str:
@@ -94,7 +96,9 @@ def _registrar(texto: str) -> None:
 # ---------------------------------------------------------------------------
 
 
-def _llamar_api(system: str, tools: list[dict[str, Any]], mensajes: list[dict[str, Any]], id_modelo: str) -> dict:
+def _llamar_api(
+    system: str, tools: list[dict[str, Any]], mensajes: list[dict[str, Any]], id_modelo: str
+) -> dict:
     import anthropic
 
     cliente = anthropic.Anthropic()
@@ -144,7 +148,12 @@ def modelo_simulado(mensajes: list[dict[str, Any]], ctx: Contexto) -> dict[str, 
         return {"content": [bloque], "stop_reason": "tool_use", "usage": {}, "model": MODELO_FALSO}
 
     def decir(texto: str) -> dict[str, Any]:
-        return {"content": [{"type": "text", "text": texto}], "stop_reason": "end_turn", "usage": {}, "model": MODELO_FALSO}
+        return {
+            "content": [{"type": "text", "text": texto}],
+            "stop_reason": "end_turn",
+            "usage": {},
+            "model": MODELO_FALSO,
+        }
 
     ultimo = mensajes[-1]
     pregunta = _ultima_pregunta(mensajes).casefold()
@@ -156,7 +165,9 @@ def modelo_simulado(mensajes: list[dict[str, Any]], ctx: Contexto) -> dict[str, 
         if quiere_cambio and permisos.puede(ctx.rol, "proponer_estado_hallazgo"):
             return usar("buscar_hallazgos", {"limite": 1, "estado": "nuevo"})
         if quiere_cambio:
-            return decir("Con tu rol solo puedes consultar. Ese cambio lo hace alguien con rol analista en [Hallazgos](/panel/#hallazgos).")
+            return decir(
+                "Con tu rol solo puedes consultar. Ese cambio lo hace alguien con rol analista en [Hallazgos](/panel/#hallazgos)."
+            )
         return usar("resumen_radar", {})
 
     resultados = [b for b in ultimo["content"] if b.get("type") == "tool_result"]
@@ -175,10 +186,16 @@ def modelo_simulado(mensajes: list[dict[str, Any]], ctx: Contexto) -> dict[str, 
                 datos = []
             if not datos:
                 return decir("No encontré hallazgos nuevos para cambiar.")
-            return usar("proponer_estado_hallazgo", {"id_hallazgo": datos[0]["id"], "estado": "en_curso"})
+            return usar(
+                "proponer_estado_hallazgo", {"id_hallazgo": datos[0]["id"], "estado": "en_curso"}
+            )
         if nombre == "mi_equipo":
-            return decir("Respuesta simulada: revisé tu equipo en el radar. Mira las tareas de hoy arriba.")
-    return decir("Respuesta simulada con datos del radar: revisé el resumen. [Ver resumen](/panel/#resumen)")
+            return decir(
+                "Respuesta simulada: revisé tu equipo en el radar. Mira las tareas de hoy arriba."
+            )
+    return decir(
+        "Respuesta simulada con datos del radar: revisé el resumen. [Ver resumen](/panel/#resumen)"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -212,7 +229,9 @@ def dependencias(ctx: Contexto, emitir: Emitir, decide: Contexto | None = None) 
         try:
             with base() as c:
                 e = conversacion["e"]
-                almacen.registrar_consumo(c, ctx, e.id if e else "", msg["model"], uso, costo_usd(uso, msg["model"]))
+                almacen.registrar_consumo(
+                    c, ctx, e.id if e else "", msg["model"], uso, costo_usd(uso, msg["model"])
+                )
         except Exception as error:  # noqa: BLE001 - se registra en stderr; el tope usa lo que haya
             _registrar(f"no se pudo registrar el consumo: {error}")
         return msg
@@ -242,7 +261,12 @@ def dependencias(ctx: Contexto, emitir: Emitir, decide: Contexto | None = None) 
     def emitir_limpio(evento: dict[str, Any]) -> None:
         if evento.get("tipo") == "texto":
             e = conversacion["e"]
-            evento = {**evento, "texto": guardia.revisar(evento["texto"], guardia.vistos_de(e.mensajes) if e else [])}
+            evento = {
+                **evento,
+                "texto": guardia.revisar(
+                    evento["texto"], guardia.vistos_de(e.mensajes) if e else []
+                ),
+            }
         elif evento.get("tipo") == "paso":
             evento = {**evento, "texto": pasos.get(evento["herramienta"], "Consultando el radar")}
         emitir(evento)
@@ -305,7 +329,11 @@ def preguntar(ctx: Contexto, pregunta: str, id_: str | None, emitir: Emitir) -> 
             raise Conflicto("Esa conversación se cortó. Empieza otra.", nueva=True)
         if previa.estado == "terminada" and contar_turnos(previa.mensajes) >= almacen.MAX_TURNOS:
             raise Conflicto("Esta conversación ya es muy larga. Empieza otra.", nueva=True)
-        e = almacen.reclamar(c, id_, [previa.estado], ctx.usuario_id) if previa.estado != "corriendo" else None
+        e = (
+            almacen.reclamar(c, id_, [previa.estado], ctx.usuario_id)
+            if previa.estado != "corriendo"
+            else None
+        )
     if e is None:
         raise Conflicto("La conversación está ocupada o ya cambió. Recarga para verla.")
     deps.conversacion["e"] = e  # type: ignore[attr-defined]
@@ -314,7 +342,16 @@ def preguntar(ctx: Contexto, pregunta: str, id_: str | None, emitir: Emitir) -> 
         e.estado = "esperando_aprobacion"
         e.propuesta = previa.propuesta
         with base() as c:
-            almacen.auditar(c, e.id, e.propuesta, ctx.usuario_id, ctx.usuario_id, False, {"comentario": pregunta}, True)
+            almacen.auditar(
+                c,
+                e.id,
+                e.propuesta,
+                ctx.usuario_id,
+                ctx.usuario_id,
+                False,
+                {"comentario": pregunta},
+                True,
+            )
         return decidir(e, False, deps, comentario=pregunta)
     e.mensajes.append({"role": "user", "content": pregunta})
     e.estado = "corriendo"
@@ -372,7 +409,9 @@ def decidir_propuesta(ctx: Contexto, id_: str, aprobado: bool, emitir: Emitir) -
     e.estado = "esperando_aprobacion"
     emitir({"tipo": "conversacion", "id": e.id})
 
-    def auditar_al_guardar(original_guardar: Callable[[Ejecucion], None]) -> Callable[[Ejecucion], None]:
+    def auditar_al_guardar(
+        original_guardar: Callable[[Ejecucion], None],
+    ) -> Callable[[Ejecucion], None]:
         hecho = {"si": False}
 
         def guardar(ej: Ejecucion) -> None:
@@ -412,7 +451,9 @@ def ver(ctx: Contexto, id_: str) -> dict[str, Any] | None:
     turnos = []
     for t in turnos_de(e.mensajes):
         datos = t.a_dict()
-        datos["respuesta"] = guardia.revisar(datos["respuesta"], vistos) if datos["respuesta"] else ""
+        datos["respuesta"] = (
+            guardia.revisar(datos["respuesta"], vistos) if datos["respuesta"] else ""
+        )
         datos["pasos"] = [_paso_legible(p) for p in datos["pasos"]]
         turnos.append(datos)
     return {

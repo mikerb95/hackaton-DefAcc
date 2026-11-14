@@ -53,7 +53,12 @@ class Uso:
     @classmethod
     def de_dict(cls, datos: dict[str, Any] | None) -> Uso:
         datos = datos or {}
-        return cls(**{k: int(datos.get(k) or 0) for k in ("entrada", "salida", "cache_lectura", "cache_escritura")})
+        return cls(
+            **{
+                k: int(datos.get(k) or 0)
+                for k in ("entrada", "salida", "cache_lectura", "cache_escritura")
+            }
+        )
 
 
 USO_CERO = Uso()
