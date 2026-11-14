@@ -29,6 +29,13 @@ test("pregunta y ve los pasos y la respuesta", async ({ page }) => {
   await page.screenshot({ path: "capturas/1-respuesta.png", fullPage: false });
 });
 
+test("el paso a paso de Agregar equipo sigue abriendo", async ({ page }) => {
+  await entrar(page, "jefa");
+  await page.goto("/panel/#equipos");
+  await page.getByRole("button", { name: /Agregar equipo/ }).first().click();
+  await expect(page.locator("dialog#asistente")).toBeVisible();
+});
+
 test("propone un cambio, se aprueba y queda en la base", async ({ page }) => {
   await entrar(page, "ana");
   const antes = (await estados(page)).filter((e) => e === "en_curso").length;
@@ -96,6 +103,7 @@ test("el admin ve los topes y la auditoría", async ({ page }) => {
   const topes = page.locator("#asistente-topes");
   await expect(topes.locator("input[name=dia]")).toHaveValue("3");
   await expect(topes).toContainText("Propuestas decididas");
-  await expect(topes).toContainText("proponer_estado_hallazgo: aprobada");
+  await expect(topes).toContainText("proponer_estado_hallazgo: aprobada, pidió Ana");
+  await page.waitForTimeout(700); // termina la transición entre secciones
   await page.screenshot({ path: "capturas/5-topes.png", fullPage: true });
 });
