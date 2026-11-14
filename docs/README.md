@@ -55,7 +55,8 @@ salida de pytest. Si un número no coincide entre páginas, es un error.
 
 ```bash
 uv sync --all-extras --group dev
-uv run python -m worker.descargar --desde-snapshot
+uv run python -m worker.descargar --en-linea --pares rarlab:winrar google:chrome
+# con el snapshot privado en resources/: uv run python -m worker.descargar --desde-snapshot
 uv run uvicorn app:app --port 8000   # panel en http://localhost:8000/
 uv run pytest
 ```

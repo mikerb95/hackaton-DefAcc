@@ -227,3 +227,46 @@ No se escribió nada en la base.
 
 Requerimientos: RF-701 a RF-704. Prueba: `tests/test_mcp.py`; de punta a punta con
 `claude --plugin-dir` (no corre en CI).
+## CU-02 · Cruce y priorización · Sistema (lo dispara el responsable de TI al cargar un inventario, o el worker tras una descarga)
+
+**Descripción.** El radar cruza los activos del inventario contra todas las CVE guardadas, decide cuáles afectan a cada versión instalada, las prioriza con KEV, EPSS y CVSS, y deja un grupo por producto listo para comunicar.
+
+**Precondición.** La base tiene CVE, KEV y EPSS descargados (`worker/descargar.py`, RF-108) y el normalizador entregó activos (`producto@versión` con sus pares de CPE) y la cobertura de lo que no pudo normalizar (RF-301).
+
+**Secuencia normal**
+
+| Paso | Acción |
+|---|---|
+| 1 | El radar lee de la base las CVE que tocan los pares de los activos, y sus señales KEV y EPSS (`bd.leer_cves`, `bd.leer_senales`). |
+| 2 | Por cada activo y cada CVE aplica la regla de afectación a cada rango de NVD: versión fija, límites inclusivos y excluyentes (RF-102). Si varios rangos emparejan, manda el más acotado. |
+| 3 | Si un rango no acota versión, el hallazgo se marca "no preciso" y queda informativo (RF-105). |
+| 4 | Prioriza cada hallazgo: inmediato si está en KEV, EPSS llega a 0,10 o CVSS a 9,0; semanal si CVSS llega a 7,0; informativo en otro caso. Guarda las razones en texto (RF-105). |
+| 5 | Guarda los hallazgos sin pisar el estado, el comentario ni quién lo decidió (RF-110). |
+| 6 | Agrupa por producto con los hallazgos precisos: versiones, equipos, CVE, KEV, ransomware, peor CVSS y EPSS, y versión objetivo (RF-104, RF-106). |
+| 7 | Marca como propuestos para cierre los hallazgos abiertos que ya no aparecen (RF-111). |
+| 8 | Devuelve hallazgos, cobertura, grupos y cierres propuestos; el panel los muestra y los grupos inmediatos sin avisar quedan en `pendientes_de_aviso` (RF-107, RF-111). |
+
+**Flujos alternos**
+
+*A1 · Primera corrida (línea base).* En el paso 7, si la base no tenía hallazgos, el radar marca como ya avisado todo lo acumulado salvo las CVE publicadas o agregadas a KEV en los últimos 7 días (RF-111).
+
+| Paso | Acción |
+|---|---|
+| A1.1 | Detecta que la base no tenía hallazgos antes de la corrida. |
+| A1.2 | Calcula las CVE recientes (publicadas o agregadas a KEV en la ventana). |
+| A1.3 | Marca como avisados los demás hallazgos y sigue en el paso 8. |
+
+*A2 · Un hallazgo sube a inmediato.* En el paso 5, si un hallazgo ya avisado pasa a inmediato (por ejemplo, su CVE entró a KEV), se vuelve a marcar como pendiente de aviso.
+
+*A3 · Un producto solo tiene hallazgos no precisos.* En el paso 6, el grupo se arma con ellos, queda informativo y sin versión objetivo.
+
+**Postcondición.** Las tablas `hallazgos` y `cobertura` reflejan el inventario cargado; el estado humano de cada hallazgo sigue igual; cada producto afectado tiene un grupo con una sola acción.
+
+**Excepciones**
+
+| Paso | Acción |
+|---|---|
+| 1 | La base no tiene CVE: el comando de carga termina con aviso y no cruza (`python -m radar.nucleo.corrida`). |
+| 1 | EPSS no se bajó: los hallazgos quedan con EPSS "sin dato" (nunca cero) y la ejecución lo registra con `epss: false` (RF-108). |
+| 2 | La versión instalada falta o no se puede leer: no hay hallazgo; la fila va a cobertura con su motivo (RF-103). |
+| 2 | Un límite del rango de NVD no se puede leer: ese rango no empareja; no se adivina (RF-101). |

@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS cobertura (
   equipo TEXT,
   programa TEXT,
   version TEXT,
-  motivo TEXT                    -- sin_version, no_comparable, sin_cpe, nombre_equipo_no_valido
+  motivo TEXT                    -- sin_version, no_comparable, sin_cpe
 );
 
 CREATE TABLE IF NOT EXISTS trabajos (
@@ -141,5 +141,5 @@ CREATE TABLE IF NOT EXISTS trazas (
   momento TEXT,
   herramienta TEXT,
   entrada TEXT,
-  decision TEXT                  -- permitida, negada, limpiada
+  decision TEXT                  -- permitida, negada, limpiada, aprobacion_pedida
 );

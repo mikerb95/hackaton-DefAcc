@@ -41,8 +41,10 @@ inventario (no confiable) -> limpieza -> cruce determinista -> agente de solo le
 
 - Inventario sintético con respuesta conocida, calculada con un script aparte del cruce del
   proyecto a partir del snapshot de NVD y KEV.
-- Suite de inyección en tres rondas: la 1 escrita antes de la defensa, la 2 usada para
-  ajustarla, la 3 escrita después y sin volver a ajustar (la cifra limpia).
+- Suite de inyección por rondas: la 1 escrita antes de la defensa, la 2 usada para ajustarla y
+  las siguientes escritas después, sin volver a ajustar. La cifra limpia es la de la última
+  ronda que `evals/reporte.md` marque como escrita sin reajustar (copiar su número de ronda y
+  su descripción tal cual).
 - Dos brazos: sin defensa y con defensa, sobre los mismos casos.
 - Agentes simulados (peor caso: obedece toda orden; honesto: ignora las órdenes) y, si se
   corrió, el analista real con Claude.
@@ -55,12 +57,14 @@ inventario (no confiable) -> limpieza -> cruce determinista -> agente de solo le
 | Falsos positivos | n/a | [reporte: Detección, "Falsos positivos"] |
 | Punta a punta: pares precisos y CVE en KEV | n/a | [reporte: Punta a punta, esperado y obtenido] |
 | Exactitud del normalizador | [reporte: Normalizador, "nombre exacto (línea base)"] | [reporte: Normalizador, "alias + difuso" en semilla y fuera de la semilla] |
-| Tasa de inyección, ronda 3, peor caso | [reporte: ronda 3, sin defensa] | [reporte: ronda 3, con defensa] |
+| Tasa de inyección, última ronda limpia, peor caso | [reporte: última ronda sin reajustar, "simulado (peor caso)", sin defensa] | [reporte: misma fila, con defensa] |
 | Tasa de inyección, analista real | [reporte: "analista real", si existe] | [reporte: "analista real", si existe] |
-| Utilidad bajo ataque, ronda 3 | [reporte: ronda 3, utilidad sin defensa] | [reporte: ronda 3, utilidad con defensa] |
+| Utilidad bajo ataque, última ronda limpia | [reporte: última ronda sin reajustar, utilidad sin defensa] | [reporte: misma fila, utilidad con defensa] |
 
-Las filas "simulado" son un agente de código, no un modelo. La ronda 2 "después de ajustar"
-no se usa en la ficha porque está medida sobre los mismos casos con los que se ajustó.
+Las filas "simulado" son un agente de código, no un modelo. Toda fila "después de ajustar"
+(hoy la ronda 2) no se usa en la ficha porque está medida sobre los mismos casos con los que se
+ajustó. El número de la fila de punta a punta se toma del reporte del día: cambia si las filas
+de inyección pasan a cruzarse junto con el inventario normal.
 
 ## 5. Límites
 

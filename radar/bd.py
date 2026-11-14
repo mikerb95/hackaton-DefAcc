@@ -866,3 +866,100 @@ def pares_asignados(conexion: Any) -> list[str]:
             pares.add(f"{vendor}:{producto}")
         pares.update((_de_json(candidatos, {}) or {}).get("pares", []))
     return sorted(pares)
+
+
+# ---------------------------------------------------------------------------
+# Trazas de la guarda del plugin (traza.jsonl en ${CLAUDE_PLUGIN_DATA})
+# ---------------------------------------------------------------------------
+
+LARGO_ENTRADA_TRAZA = 300
+_CLAVES_FIJAS = {"hora", "evento", "herramienta", "decision"}
+
+
+def decision_de_traza(registro: dict[str, Any]) -> str:
+    """Traduce una línea de traza.jsonl a la decisión de la tabla `trazas`.
+
+    PreToolUse: deny -> negada, ask -> aprobacion_pedida, allow -> permitida.
+    PostToolUse: retenido -> negada, con señales -> limpiada, sin señales -> permitida.
+    """
+    if registro.get("evento") == "PreToolUse":
+        return {"deny": "negada", "ask": "aprobacion_pedida", "allow": "permitida"}.get(
+            str(registro.get("decision")), "negada"
+        )
+    if registro.get("retenido"):
+        return "negada"
+    return "limpiada" if registro.get("senales") else "permitida"
+
+
+def importar_trazas(conexion: Any, ruta: Path | str) -> int:
+    """Carga las trazas de la guarda del plugin en la tabla `trazas`. Devuelve cuántas agregó.
+
+    Cada línea es JSON con `hora`, `evento`, `herramienta` y, según el evento, `decision` o
+    `largo`, `sha256`, `senales`, `retenido`, `error`. La entrada guardada es el evento y esos
+    datos (nunca el texto crudo de la herramienta), limpia y recortada. Las líneas ilegibles se
+    saltan, y reimportar el mismo archivo no duplica filas.
+    """
+    from radar.seguridad.limpieza import limpiar_texto
+
+    crear_esquema(conexion)
+    existentes = {
+        tuple(f)
+        for f in conexion.execute("SELECT momento, herramienta, entrada FROM trazas").fetchall()
+    }
+    nuevas = []
+    with open(ruta, encoding="utf-8") as archivo:
+        for linea in archivo:
+            try:
+                registro = json.loads(linea)
+            except ValueError:
+                continue
+            if not isinstance(registro, dict):
+                continue
+            extra = {k: v for k, v in registro.items() if k not in _CLAVES_FIJAS}
+            entrada = limpiar_texto(
+                f"{registro.get('evento', '?')} {json.dumps(extra, ensure_ascii=False)}",
+                LARGO_ENTRADA_TRAZA,
+            )
+            fila = (
+                limpiar_texto(str(registro.get("hora") or ""), 40),
+                limpiar_texto(str(registro.get("herramienta") or "(desconocida)"), 120),
+                entrada,
+            )
+            if fila in existentes:
+                continue
+            existentes.add(fila)
+            nuevas.append((*fila, decision_de_traza(registro)))
+    if nuevas:
+        _en_lotes(
+            conexion,
+            "INSERT INTO trazas (momento, herramienta, entrada, decision) VALUES (?,?,?,?)",
+            nuevas,
+        )
+    conexion.commit()
+    return len(nuevas)
+
+
+def principal(argv: list[str] | None = None) -> int:
+    import argparse
+
+    p = argparse.ArgumentParser(prog="python -m radar.bd", description="Utilidades de la base")
+    sub = p.add_subparsers(dest="orden", required=True)
+    trazas = sub.add_parser("importar-trazas", help="Carga traza.jsonl de la guarda del plugin")
+    trazas.add_argument("ruta", type=Path)
+    trazas.add_argument("--sqlite", type=Path, help="Fuerza un sqlite local en esta ruta")
+    args = p.parse_args(argv)
+
+    conexion = conectar(ruta_sqlite=args.sqlite)
+    try:
+        n = importar_trazas(conexion, args.ruta)
+        total = contar(conexion, "trazas")
+    finally:
+        conexion.close()
+    print(f"[bd] {n} trazas nuevas importadas de {args.ruta} ({total} en la tabla)", flush=True)
+    return 0
+
+
+if __name__ == "__main__":
+    import sys
+
+    sys.exit(principal())

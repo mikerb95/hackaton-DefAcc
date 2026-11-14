@@ -49,6 +49,8 @@ packages = ["radar"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# Las pruebas que llaman a Claude no corren por defecto; `-m agente` reemplaza este filtro.
+addopts = "-m 'not agente'"
 markers = [
     "agente: pruebas que llaman a Claude (gastan créditos, no corren en CI)",
 ]

@@ -222,3 +222,57 @@ def test_barrido_excluye_cerrados_y_no_precisos():
     assert b["celdas"][0]["hallazgos"] == 0  # EPSS ausente no cruza ni el umbral 0
     assert b["sin_epss"] == 1
 
+
+def test_importar_trazas_del_plugin(conexion, tmp_path):
+    import json
+
+    lineas = [
+        {
+            "hora": "2026-11-14T15:11:38Z",
+            "evento": "PreToolUse",
+            "herramienta": "mcp__plugin_radar_radar__cargar_inventario",
+            "decision": "ask",
+        },
+        {
+            "hora": "2026-11-14T15:11:40Z",
+            "evento": "PreToolUse",
+            "decision": "deny",
+            "error": "TypeError",
+        },
+        {
+            "hora": "2026-11-14T15:12:23Z",
+            "evento": "PostToolUse",
+            "herramienta": "mcp__plugin_radar_radar__equipos_expuestos",
+            "largo": 11119,
+            "senales": ["ignora_instrucciones"],
+            "retenido": False,
+        },
+        {
+            "hora": "2026-11-14T15:12:24Z",
+            "evento": "PostToolUse",
+            "herramienta": "x",
+            "senales": [],
+            "retenido": False,
+        },
+        {
+            "hora": "2026-11-14T15:12:25Z",
+            "evento": "PostToolUse",
+            "herramienta": "x",
+            "retenido": True,
+            "error": "ValueError",
+        },
+    ]
+    ruta = tmp_path / "traza.jsonl"
+    texto = "\n".join(json.dumps(x) for x in lineas)
+    ruta.write_text(
+        texto
+        + "\nesto no es json\n"
+        + json.dumps({"hora": "z", "nota": "\x1b[31m" + "a" * 900})
+        + "\n"
+    )
+    assert bd.importar_trazas(conexion, ruta) == 6
+    assert bd.importar_trazas(conexion, ruta) == 0  # reimportar no duplica
+    decisiones = [t["decision"] for t in reversed(bd.leer_trazas(conexion, 10))]
+    assert decisiones[:5] == ["aprobacion_pedida", "negada", "limpiada", "permitida", "negada"]
+    ultima = bd.leer_trazas(conexion, 1)[0]
+    assert len(ultima["entrada"]) <= 300 and "\x1b" not in ultima["entrada"]

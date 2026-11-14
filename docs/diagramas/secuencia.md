@@ -121,3 +121,41 @@ sequenceDiagram
 **Si algo falla:** el modelo que no responde o devuelve algo inválido va directo al
 respaldo (regla 6). Los hooks atrapan sus propios errores y responden lo seguro: negar en
 `PreToolUse`, retener en `PostToolUse`.
+## CU-02 · Carga de inventario y cruce
+
+Del archivo a los grupos por producto. El modelo no participa en este flujo: todo es código determinista. Ver también el caso de uso en [casos-de-uso.md](../casos-de-uso.md#cu-02--cruce-y-priorización--sistema-lo-dispara-el-responsable-de-ti-al-cargar-un-inventario-o-el-worker-tras-una-descarga).
+
+```mermaid
+sequenceDiagram
+    actor TI as Responsable de TI
+    participant API as API (radar/api)
+    participant LEC as Lector (ingesta/archivos.py)
+    participant NOR as Normalizador
+    participant COR as Corrida (nucleo/corrida.py)
+    participant CRU as Cruce y prioridad
+    participant BD as Base (Turso o sqlite)
+
+    TI->>API: POST /api/inventario (CSV o Excel)
+    API->>LEC: leer_inventario(bytes, nombre)
+    LEC-->>API: filas, descartadas, duplicadas
+    API->>NOR: normalizar(filas)
+    NOR-->>API: activos (producto@versión, pares CPE) y cobertura
+    API->>BD: guardar inventario
+    API->>COR: correr(activos, cobertura)
+    COR->>BD: leer_cves(pares) y leer_senales(cves)
+    BD-->>COR: CVE con rangos, KEV, EPSS
+    loop cada activo
+        COR->>CRU: cruzar_activo(activo, cves)
+        CRU-->>COR: coincidencias (rango más acotado, preciso o no) o cobertura
+        COR->>CRU: priorizar(cve, kev, epss, umbrales)
+        CRU-->>COR: prioridad y razones
+    end
+    COR->>BD: guardar_hallazgos (sin pisar estado ni comentario)
+    COR->>BD: marcar_propuestos (ya no aparecen)
+    alt primera corrida
+        COR->>BD: marcar_avisados (todo menos lo de los últimos 7 días)
+    end
+    COR->>COR: agrupar por producto (hallazgos precisos)
+    COR-->>API: hallazgos, cobertura, grupos, cierres propuestos
+    API-->>TI: resumen; el panel muestra grupos y pendientes de aviso
+```
