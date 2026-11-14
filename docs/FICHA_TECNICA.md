@@ -7,7 +7,7 @@ recalcular; el tiempo de carga es la medición en la preview de Vercel.
 | Dato | Valor |
 |---|---|
 | Extensión máxima | 2 páginas |
-| Secciones | 7 |
+| Secciones | 6 |
 | Cifras escritas a mano | 0 |
 
 ## 1. Amenaza
@@ -132,10 +132,6 @@ Resumen de [AMENAZAS.md](AMENAZAS.md):
 - La información de vulnerabilidades ya es pública; lo privado es el cruce.
 - La suite de inyección se publica como pruebas defensivas del propio radar, con datos
   sintéticos, no como herramienta de ataque.
-
-## 7. Respuestas a las preguntas probables
-
-Si cabe. Se llena con el equipo a partir de las preguntas preparadas para el pitch.
 
 ---
 
