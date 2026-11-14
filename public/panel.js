@@ -310,9 +310,9 @@ function bloqueAprobacion(e) {
       inventario no entra al cruce hasta que alguien de TI lo apruebe. Revisa la ficha antes:
       si no reconoces el equipo, recházalo.</p>
       <form id="aprobar-equipo" class="aprobar">
-        <input name="por" placeholder="Quién aprueba" maxlength="100" required aria-label="Quién aprueba" value="${esc(leerAprobador())}">
         <button type="submit">Aprobar equipo</button>
-        <button type="button" class="boton-texto" id="rechazar-equipo">Rechazar</button>
+        <button type="button" class="boton-texto texto-peligro" id="rechazar-equipo">Rechazar</button>
+        <span class="nota">como ${esc(SESION.nombre)}</span>
       </form>
     </div>`;
 }
@@ -323,15 +323,12 @@ function conectarAprobacion(e) {
   const avisar = (error) => formulario.insertAdjacentHTML("beforeend", ` <span class="clave-error">${esc(error.message)}</span>`);
   formulario.addEventListener("submit", async (ev) => {
     ev.preventDefault();
-    const por = formulario.elements.por.value.trim();
-    if (!por) return;
     const boton = formulario.querySelector("button");
     boton.disabled = true;
     try {
       await api(`/api/equipos/${encodeURIComponent(e.id)}/aprobar`, {
-        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ por }),
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({}),
       });
-      guardarAprobador(por);
       await abrirEquipo(e.id);
       refrescar();
       refrescarAuxiliares();
@@ -358,7 +355,7 @@ function pintarEquipos(datos) {
   const vacio = $("#equipos-vacio");
   $("#equipos").closest(".tabla-envoltura").hidden = !hay;
   $("#total-equipos").textContent = hay
-    ? (datos.pendientes ? `${datos.total} · ${datos.pendientes} por aprobar` : datos.total) : "";
+    ? (datos.pendientes ? `${datos.total}, ${datos.pendientes} por aprobar` : datos.total) : "";
   $("#nav-equipos").textContent = hay ? datos.total : "";
   vacio.hidden = hay;
   if (!hay) {

@@ -228,8 +228,9 @@ function esperarEquipo() {
       detenerEspera();
       caja.innerHTML = `<div class="espera-ok" aria-hidden="true"></div>
         <p>${nuevos.map((eq) => `<strong class="mono">${esc(eq.nombre)}</strong>`).join(", ")} ${nuevos.length > 1 ? "se inscribieron" : "se inscribió"}.</p>
-        <p class="nota">${nuevos[0].ultimo_reporte ? "Ya envió su primer reporte." : "Su primer reporte llega en unos minutos."}</p>
-        <button type="button" class="boton-texto" id="ver-nuevo">Ver el equipo</button>`;
+        <p class="nota">${nuevos[0].ultimo_reporte ? "Ya envió su primer reporte." : "Su primer reporte llega en unos minutos."}
+          ${nuevos.some((eq) => eq.pendiente) ? "Queda por aprobar: su inventario entra al cruce cuando lo apruebes en su ficha." : ""}</p>
+        <button type="button" class="boton-texto" id="ver-nuevo">${nuevos.some((eq) => eq.pendiente) ? "Revisar y aprobar" : "Ver el equipo"}</button>`;
       $("#ver-nuevo").addEventListener("click", () => {
         $("#asistente").close();
         location.hash = "#equipos";

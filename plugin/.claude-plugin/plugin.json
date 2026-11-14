@@ -13,7 +13,7 @@
     "turso_url": {
       "type": "string",
       "title": "URL de la base Turso",
-      "description": "TURSO_DATABASE_URL, la misma base que usa el panel (libsql://...). Vacío: base local en la carpeta de datos del plugin.",
+      "description": "TURSO_DATABASE_URL, la misma base que usa el panel (libsql://...). Obligatorio: sin la base el radar no tiene datos que mostrar.",
       "sensitive": false
     },
     "turso_token": {

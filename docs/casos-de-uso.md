@@ -415,8 +415,8 @@ con los datos de la misma base que ve el panel.
 - El plugin está instalado (`/plugin install radar --marketplace <dueño>/<repo>`, o
   `claude --plugin-dir` en local) y `uv` está en el `PATH`.
 - Al instalar se dieron `turso_url` y `turso_token` (el token queda en el almacén
-  seguro del sistema). Sin ellos el servidor usa una base local en la carpeta de datos
-  del plugin.
+  seguro del sistema). Sin ellos no hay base que leer y cada consulta responde con un
+  error de herramienta (nunca con datos vacíos).
 - Hay al menos un cruce guardado.
 
 **Secuencia normal.**

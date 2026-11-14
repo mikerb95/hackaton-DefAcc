@@ -116,7 +116,7 @@ Resumen de [LIMITES.md](LIMITES.md):
 - La validación es sobre datos sintéticos; falta un piloto con una flota real.
 - No detecta vulnerabilidades que NVD aún no asocia a un producto, ni el sistema operativo, ni
   dependencias de código. No es tiempo real.
-- Usuarios con contraseña y tres roles (lector, analista, administrador); sin inicio de sesión único (SSO) ni segundo factor. La clave compartida sigue valiendo para scripts.
+- Usuarios con roles, pero sin inicio de sesión único (SSO) ni segundo factor.
 - Agente local de inventario para Windows y Linux: construido y probado en un PC con Windows 11;
   faltan el agente empaquetado y firmado y un piloto con flota real ([estado](agente-local.md)).
 
@@ -125,7 +125,7 @@ Resumen de [LIMITES.md](LIMITES.md):
 Resumen de [AMENAZAS.md](AMENAZAS.md):
 
 - El mapa de exposición (qué equipo tiene qué vulnerabilidad explotable) le sirve a un
-  atacante. Solo debe verlo la organización dueña del inventario; la API pide una clave.
+  atacante. Solo debe verlo la organización dueña del inventario; la API pide sesión con rol.
 - Los avisos a canales abiertos dicen cuántos equipos, nunca cuáles: el comunicado para
   usuarios y gerencia va sin nombres de equipos ni CVE, y el verificador descarta el que
   nombre equipos.

@@ -12,7 +12,7 @@ Dos grupos, con credenciales distintas:
 El servidor nunca devuelve órdenes: la respuesta a un reporte es `202` con el intervalo
 deseado y nada más. Tomar el servidor no da ejecución en los PC.
 
-Aprobación en la consola (como Acronis): un equipo recién inscrito queda pendiente. Reporta
+Aprobación en la consola: un equipo recién inscrito queda pendiente. Reporta
 y se ve en el panel, pero su inventario no entra al cruce hasta que una persona lo aprueba
 (`POST /api/equipos/{id}/aprobar`). Rechazar es retirarlo. `AGENTE_APROBACION=automatica`
 quita ese paso.
@@ -26,7 +26,7 @@ import os
 from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
 from pydantic import BaseModel, Field
 
-from radar.api.acceso import exigir_clave, exigir_rol
+from radar.api.acceso import exigir_clave, exigir_rol, quien
 from radar.api.datos import obtener_datos
 from radar.equipos.contratos import TAMANO_MAXIMO_REPORTE
 
@@ -245,21 +245,25 @@ ADMIN = [Depends(exigir_rol("admin"))]
 
 
 class Aprobacion(BaseModel):
-    # La aprobación la hace una persona con nombre: sin "por" no se aprueba.
-    por: str = Field(min_length=1, max_length=100, pattern=r"\S")
+    # La aprobación la hace una persona con nombre. Con sesión sale de la sesión; con la
+    # clave compartida o en local hay que decir quién aprueba.
+    por: str | None = Field(default=None, min_length=1, max_length=100, pattern=r"\S")
 
 
 @router_equipos.post("/equipos/{equipo_id}/aprobar", dependencies=ADMIN)
-def aprobar(equipo_id: str, cuerpo: Aprobacion) -> dict:
+def aprobar(equipo_id: str, cuerpo: Aprobacion, request: Request) -> dict:
     """TI aprueba un equipo pendiente desde la consola. Desde ese momento su inventario
     entra al cruce. Rechazar es retirarlo (DELETE)."""
     from radar.equipos import recepcion
     from radar.seguridad.limpieza import limpiar_texto
 
+    por = quien(request, cuerpo.por.strip() if cuerpo.por else None)
+    if not por:
+        raise HTTPException(422, "Falta quién aprueba el equipo.")
     _exigir_base()
     conexion = _conexion()
     try:
-        recibido = recepcion.aprobar(conexion, equipo_id, limpiar_texto(cuerpo.por, 100))
+        recibido = recepcion.aprobar(conexion, equipo_id, limpiar_texto(por, 100))
     except recepcion.ErrorAprobacion as error:
         raise HTTPException(
             status.HTTP_409_CONFLICT,
