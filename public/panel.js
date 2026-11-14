@@ -294,6 +294,93 @@ function nombreSistema(so) {
 
 let equipoAbierto = null;
 
+// ---- termómetro de exposición ------------------------------------------------
+// La lectura la calcula la API (radar/api/termometro.py) con las acciones abiertas del
+// equipo. Aquí solo se dibuja. Sin lectura (pendiente o sin reporte) no se pinta un 0.
+
+const BANDAS_TERMOMETRO = [
+  { clave: "bajo", desde: 0, hasta: 24, etiqueta: "bajo" },
+  { clave: "medio", desde: 25, hasta: 59, etiqueta: "medio" },
+  { clave: "alto", desde: 60, hasta: 84, etiqueta: "alto" },
+  { clave: "critico", desde: 85, hasta: 100, etiqueta: "crítico" },
+];
+
+function svgTermometro(t) {
+  // Escala: 0 en y=232 y 100 en y=28 dentro del tubo.
+  const y = (v) => 232 - (204 * v) / 100;
+  const medido = t.medido && t.nivel != null;
+  const clase = medido ? `t-${t.banda}` : "t-sin";
+  const tope = medido ? y(Math.max(t.nivel, 1)) : 232;
+  const marcas = [];
+  for (let v = 0; v <= 100; v += 5) {
+    const mayor = v % 25 === 0;
+    marcas.push(`<line x1="86" x2="${mayor ? 98 : 92}" y1="${y(v)}" y2="${y(v)}" class="t-marca${mayor ? " mayor" : ""}"/>`);
+    if (mayor) marcas.push(`<text x="104" y="${y(v) + 4}" class="t-numero">${v}</text>`);
+  }
+  const franjas = BANDAS_TERMOMETRO.map((b) =>
+    `<line x1="40" x2="40" y1="${y(b.hasta) + 1}" y2="${y(b.desde) - 1}" class="t-franja t-${b.clave}"/>`).join("");
+  return `
+    <svg class="termometro-svg ${clase}" viewBox="0 0 130 290" role="img"
+      aria-label="${medido ? `Exposición ${esc(t.nivel)} de 100, ${esc(t.etiqueta)}` : esc(t.etiqueta)}">
+      <defs><clipPath id="tubo-interior"><rect x="57" y="20" width="16" height="230" rx="8"/></clipPath></defs>
+      ${franjas}
+      <rect x="51" y="12" width="28" height="236" rx="14" class="t-vidrio"/>
+      <circle cx="65" cy="254" r="28" class="t-vidrio"/>
+      <rect x="57" y="20" width="16" height="230" rx="8" class="t-fondo"/>
+      <g clip-path="url(#tubo-interior)">
+        <rect x="57" y="${tope}" width="16" height="${252 - tope}" class="t-liquido"/>
+      </g>
+      <circle cx="65" cy="254" r="21" class="t-bulbo"/>
+      <circle cx="58" cy="247" r="4" class="t-brillo"/>
+      ${marcas.join("")}
+    </svg>`;
+}
+
+function bloqueTermometro(d) {
+  const t = d.equipo.termometro;
+  if (!t) return "";
+  const a = t.acciones;
+  const total = a.inmediato + a.semanal + a.informativo;
+  const kev = d.productos.reduce((n, p) => n + p.en_kev.length, 0);
+  const leyenda = BANDAS_TERMOMETRO.map((b) =>
+    `<span class="pildora mono${t.banda === b.clave ? " activa" : ""}"><span class="punto t-${b.clave}"></span>${b.desde}-${b.hasta} ${b.etiqueta}</span>`).join("");
+  const lectura = t.medido
+    ? `<div class="termometro-valor">${esc(t.nivel)}<span>/100</span></div>
+       <span class="pildora termometro-banda t-${esc(t.banda)}"><span class="punto"></span>${esc(t.nivel === 0 ? "Sin acciones pendientes" : `Exposición ${t.etiqueta.toLowerCase()}`)}</span>
+       <p class="termometro-texto">${total
+         ? `Sale de ${esc(total)} ${total === 1 ? "acción abierta" : "acciones abiertas"} en este equipo. La peor prioridad fija el tramo y la cantidad lo sube dentro de él: con una sola acción inmediata ya marca alto.`
+         : "Con lo que se pudo revisar no queda nada por hacer en este equipo."}</p>`
+    : `<div class="termometro-valor sin">sin lectura</div>
+       <span class="pildora termometro-banda"><span class="punto"></span>${esc(t.etiqueta)}</span>
+       <p class="termometro-texto">${esc(t.motivo)} Un equipo sin revisar no se cuenta como sano.</p>`;
+  const sinEvaluar = d.cobertura.sin_evaluar
+    ? `<p class="termometro-nota">${esc(d.cobertura.sin_evaluar)} programas sin evaluar no suman: están en "Sin revisar".</p>` : "";
+  return `
+    <div class="termometro">
+      <div class="termometro-dibujo">${svgTermometro(t)}</div>
+      <div class="termometro-cuerpo">
+        <div class="termometro-titulo">Exposición del equipo</div>
+        ${lectura}
+        <div class="termometro-leyenda">${leyenda}</div>
+        <div class="termometro-cifras">
+          <div><strong>${esc(a.inmediato)}</strong><span>Inmediatas</span></div>
+          <div><strong>${esc(a.semanal)}</strong><span>Semanales</span></div>
+          <div><strong>${esc(a.informativo)}</strong><span>Informativas</span></div>
+          <div><strong>${esc(kev)}</strong><span>CVE en KEV</span></div>
+        </div>
+        ${sinEvaluar}
+      </div>
+    </div>`;
+}
+
+function miniTermometro(t) {
+  if (!t) return "";
+  if (!t.medido) return `<span class="sin-dato">${esc(t.etiqueta.toLowerCase())}</span>`;
+  return `<div class="mini-termometro t-${esc(t.banda)}" title="Exposición ${esc(t.nivel)} de 100: ${esc(t.etiqueta)}">
+      <span class="mini-tubo"><span style="width:${Math.max(t.nivel, 2)}%"></span></span>
+      <span class="mono">${esc(t.nivel)}</span></div>`;
+}
+
 function pildoraEstadoEquipo(e) {
   if (e.revocado) return '<span class="pildora p-caida"><span class="punto"></span>revocado</span>';
   if (e.pendiente) return '<span class="pildora p-semanal"><span class="punto"></span>por aprobar</span>';
@@ -369,6 +456,7 @@ function pintarEquipos(datos) {
   $("#equipos tbody").innerHTML = datos.equipos.map((e) => `
     <tr class="clic${e.id === equipoAbierto ? " activa" : ""}" data-equipo="${esc(e.id)}" tabindex="0">
       <td><div class="mono">${esc(e.nombre)}</div><div class="etiquetas">${pildoraPrioridad(e.peor_prioridad)}${pildoraEstadoEquipo(e)}</div></td>
+      <td>${miniTermometro(e.termometro)}</td>
       <td>${nombreSistema(e.so)}</td>
       <td class="mono">${esc(e.ultimo_reporte ? fmtHora(e.ultimo_reporte) : "sin reporte")}</td>
       <td class="num">${esc(e.acciones.inmediato)}</td>
@@ -442,6 +530,7 @@ function pintarEquipo(d) {
     : "Nada que hacer con lo que se pudo revisar.";
   $("#detalle-equipo-cuerpo").innerHTML = `
     ${bloqueAprobacion(e)}
+    ${bloqueTermometro(d)}
     <div class="datos-clave">${pildoraPrioridad(e.peor_prioridad)}${pildoraEstadoEquipo(e)}${pildorasPostura(e.postura)}
       ${e.revocado ? '<span class="pildora p-caida">revocado</span>' : (puede("admin") ? '<button type="button" class="boton-texto" id="revocar-equipo">Revocar credencial</button>' : "")}
       ${puede("admin") ? '<button type="button" class="boton-texto texto-peligro" id="retirar-equipo">Retirar equipo</button>' : ""}</div>
