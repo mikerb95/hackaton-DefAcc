@@ -40,6 +40,8 @@ RADAR_AGENTE_TOKEN=un-token-largo python -m agente_local inscribir --url http://
 # 4. Enviar el reporte
 python -m agente_local enviar
 
+# 4b. Aprobar el equipo en el panel (sección "Equipos con agente", botón "Aprobar equipo")
+
 # 5. Si el PC es Linux, cruzar sus paquetes contra OSV
 uv run python -m worker.equipos
 ```
@@ -98,7 +100,7 @@ operativo). Sin agentes, la carga se comporta como antes.
 | Nombre de equipo envenenado | Se sanea a un hostname (RFC 1123) y el equipo se cruza igual |
 | Comando malicioso en las instrucciones (`curl ... \| sh`) | Los comandos salen de plantillas cerradas del código y cada pieza variable se valida. El verificador extrae del texto todo lo que parezca un comando y descarta el texto si alguno no lo armó el código |
 | Robo de la credencial de un equipo | Solo sirve para enviar reportes de ese equipo. En la base se guarda su SHA-256, no la credencial. Se revoca sin tocar a los demás |
-| Alguien con el token de inscripción | Puede inscribir equipos nuevos, pero no reemplazar la credencial de uno ya inscrito |
+| Alguien con el token de inscripción | Puede inscribir equipos nuevos, pero quedan pendientes: su inventario no entra al cruce hasta que TI los aprueba en la consola, y hay un tope de 200 pendientes. No puede reemplazar la credencial de un equipo ya inscrito |
 | El servidor como objetivo | No hay canal de órdenes. La respuesta a un reporte es `202` y el intervalo; el agente no lee nada más |
 | Redirección que se lleva la credencial | El agente no sigue redirecciones y solo envía por HTTPS |
 | Reporte enorme | 1 MB y 5000 programas por reporte; lo que excede se recorta y se cuenta |
@@ -154,32 +156,52 @@ quedan en la base de la organización. Las instrucciones de remediación son de 
 es corto y solo usa la librería estándar, para que cualquiera lo lea antes de instalarlo.
 
 
-## Correcciones de la revisi?n del agente
+## Correcciones de la revisión del agente
 
 Los instaladores despiertan al agente cada cinco minutos. Con `enviar --programado`,
-el agente solo recoge y env?a cuando vence el intervalo recibido del servidor (1 a 168
+el agente solo recoge y envía cuando vence el intervalo recibido del servidor (1 a 168
 horas, 12 por defecto). El retraso aleatorio y el siguiente despertar pueden demorar el
-env?o; no es una hora exacta. `enviar` manual fuerza el env?o. Ante una falla de red se
+envío; no es una hora exacta. `enviar` manual fuerza el envío. Ante una falla de red se
 reintenta primero el reporte pendiente y luego se recoge el inventario actual. Un rechazo
 4xx descarta el reporte rechazado; las fallas de red y 5xx lo conservan.
 
 Windows exige Python instalado para todos los usuarios dentro de Program Files, con
 propietarios y permisos de escritura reservados a SYSTEM, Administradores o TrustedInstaller.
-Verifica el ?rbol del runtime y sus directorios antecesores, rechaza enlaces y ejecuta Python
-con `-I` para ignorar PYTHONPATH y paquetes del perfil. Una instalaci?n de Python en AppData
+Verifica el árbol del runtime y sus directorios antecesores, rechaza enlaces y ejecuta Python
+con `-I` para ignorar PYTHONPATH y paquetes del perfil. Una instalación de Python en AppData
 se rechaza antes de inscribir o crear la tarea. El instalador necesita Python 3.10 o superior.
 
-La API autentica antes de leer el cuerpo y aplica el l?mite de 1 MB durante la lectura,
+La API autentica antes de leer el cuerpo y aplica el límite de 1 MB durante la lectura,
 incluso sin Content-Length o con una longitud declarada incorrecta. En agentes, el saneado
 usa la fila reservada 0 (`~f0`); los conflictos entre equipos se resuelven con su UUID.
 
-Validaci?n disponible: pruebas automatizadas de reintentos, intervalos y recepci?n por
+Validación disponible: pruebas automatizadas de reintentos, intervalos y recepción por
 bloques; `powershell -NoProfile -ExecutionPolicy Bypass -File tests/test_instalador_seguridad.ps1`
 prueba ACL simuladas (runtime protegido, escritura por usuarios, propietario y enlaces).
-La prueba de instalaci?n real requiere una VM Windows con Python protegido y una VM Linux
-con systemd, un servidor de prueba y token de inscripci?n. Comprobar inscripci?n, primer
-env?o, reinicio, cambio de intervalo y recuperaci?n tras desconexi?n antes del piloto.
+La prueba de instalación real requiere una VM Windows con Python protegido y una VM Linux
+con systemd, un servidor de prueba y token de inscripción. Comprobar inscripción, primer
+envío, reinicio, cambio de intervalo y recuperación tras desconexión antes del piloto.
 
 Los instaladores siguen siendo de desarrollo. Los artefactos MSI/deb/rpm firmados requieren
 la infraestructura de empaquetado y las claves/certificados de firma del proyecto; no se
 presentan como construidos ni validados por estas pruebas.
+
+
+## Aprobación en la consola
+
+Como en Acronis, la consola es la que activa al equipo. El flujo es este:
+
+1. Se instala el agente con el token de la organización y el equipo se inscribe solo.
+2. El equipo aparece en el panel, arriba de la lista, como **por aprobar**. Ya reporta, y TI
+   ve su nombre, sistema, hardware y postura para reconocerlo.
+3. Mientras está pendiente, su software no entra a `inventario`, no se cruza y no genera
+   hallazgos. El radar guarda su último reporte.
+4. TI lo aprueba con su nombre (`POST /api/equipos/{id}/aprobar`). En ese momento se cruza el
+   último reporte guardado; si todavía no había reportado, entra con el próximo.
+5. Si TI no reconoce el equipo, lo rechaza: se borra y su credencial deja de servir.
+
+La consola activa al equipo, pero no le da órdenes: aprobar cambia lo que el radar hace con
+los datos del equipo, no lo que el equipo ejecuta. El agente sigue sin canal de órdenes.
+
+`AGENTE_APROBACION=automatica` quita el paso de aprobación (útil en pruebas). Por defecto es
+manual. Los equipos que ya estaban inscritos cuando apareció la aprobación quedan aprobados.

@@ -291,14 +291,73 @@ function nombreSistema(so) {
 
 let equipoAbierto = null;
 
+function pildoraEstadoEquipo(e) {
+  if (e.revocado) return '<span class="pildora p-caida"><span class="punto"></span>revocado</span>';
+  if (e.pendiente) return '<span class="pildora p-semanal"><span class="punto"></span>por aprobar</span>';
+  return "";
+}
+
+// Aprobación en la consola: hasta que TI lo aprueba, el inventario del equipo no se cruza.
+function bloqueAprobacion(e) {
+  if (e.revocado || !e.pendiente) return "";
+  return `
+    <div class="aprobacion-equipo">
+      <p><strong>Pendiente de aprobación.</strong> El equipo se inscribió y ya reporta, pero su
+      inventario no entra al cruce hasta que alguien de TI lo apruebe. Revisa la ficha antes:
+      si no reconoces el equipo, recházalo.</p>
+      <form id="aprobar-equipo" class="aprobar">
+        <input name="por" placeholder="Quién aprueba" maxlength="100" required aria-label="Quién aprueba" value="${esc(leerAprobador())}">
+        <button type="submit">Aprobar equipo</button>
+        <button type="button" class="boton-texto" id="rechazar-equipo">Rechazar</button>
+      </form>
+    </div>`;
+}
+
+function conectarAprobacion(e) {
+  const formulario = $("#aprobar-equipo");
+  if (!formulario) return;
+  const avisar = (error) => formulario.insertAdjacentHTML("beforeend", ` <span class="clave-error">${esc(error.message)}</span>`);
+  formulario.addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const por = formulario.elements.por.value.trim();
+    if (!por) return;
+    const boton = formulario.querySelector("button");
+    boton.disabled = true;
+    try {
+      await api(`/api/equipos/${encodeURIComponent(e.id)}/aprobar`, {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ por }),
+      });
+      guardarAprobador(por);
+      await abrirEquipo(e.id);
+      refrescar();
+      refrescarAuxiliares();
+    } catch (error) {
+      boton.disabled = false;
+      avisar(error);
+    }
+  });
+  $("#rechazar-equipo").addEventListener("click", async () => {
+    if (!confirm(`¿Rechazar ${e.nombre}? Se borra el equipo y su credencial deja de servir.`)) return;
+    try {
+      await api(`/api/equipos/${encodeURIComponent(e.id)}`, { method: "DELETE" });
+      equipoAbierto = null;
+      $("#detalle-equipo").hidden = true;
+      refrescarAuxiliares();
+    } catch (error) {
+      avisar(error);
+    }
+  });
+}
+
 function pintarEquipos(datos) {
   const hay = datos.disponible && datos.equipos.length > 0;
   $("#panel-equipos").hidden = !hay;
   if (!hay) return;
-  $("#total-equipos").textContent = datos.total;
+  $("#total-equipos").textContent = datos.pendientes
+    ? `${datos.total} · ${datos.pendientes} por aprobar` : datos.total;
   $("#equipos tbody").innerHTML = datos.equipos.map((e) => `
     <tr class="clic${e.id === equipoAbierto ? " activa" : ""}" data-equipo="${esc(e.id)}" tabindex="0">
-      <td><div class="mono">${esc(e.nombre)}</div><div class="etiquetas">${pildoraPrioridad(e.peor_prioridad)}${e.revocado ? '<span class="pildora p-caida">revocado</span>' : ""}</div></td>
+      <td><div class="mono">${esc(e.nombre)}</div><div class="etiquetas">${pildoraPrioridad(e.peor_prioridad)}${pildoraEstadoEquipo(e)}</div></td>
       <td>${nombreSistema(e.so)}</td>
       <td class="mono">${esc(e.ultimo_reporte ? fmtHora(e.ultimo_reporte) : "sin reporte")}</td>
       <td class="num">${esc(e.acciones.inmediato)}</td>
@@ -367,13 +426,17 @@ function pintarEquipo(d) {
     ...(d.cobertura.sin_evaluar ? [`${d.cobertura.sin_evaluar} programas sin evaluar (${Object.entries(d.cobertura.por_motivo).map(([m, n]) => `${MOTIVOS[m] || m}: ${n}`).join(", ")})`] : []),
     ...(recortes ? [`Recortado del último reporte: ${recortes}`] : []),
   ];
+  const vacio = e.pendiente
+    ? "Se cruza cuando el equipo esté aprobado."
+    : "Nada que hacer con lo que se pudo revisar.";
   $("#detalle-equipo-cuerpo").innerHTML = `
-    <div class="datos-clave">${pildoraPrioridad(e.peor_prioridad)}${pildorasPostura(e.postura)}
-      ${e.revocado ? '<span class="pildora p-caida">revocado</span>' : `<button type="button" class="boton-texto" id="revocar-equipo">Revocar credencial</button>`}</div>
+    ${bloqueAprobacion(e)}
+    <div class="datos-clave">${pildoraPrioridad(e.peor_prioridad)}${pildoraEstadoEquipo(e)}${pildorasPostura(e.postura)}
+      ${e.revocado ? "" : `<button type="button" class="boton-texto" id="revocar-equipo">Revocar credencial</button>`}</div>
     <div class="detalle-rejilla">
       <div class="bloque">
         <h3>Qué hacer en este equipo</h3>
-        <ul class="acciones">${acciones || '<li class="vacio">Nada que hacer con lo que se pudo revisar.</li>'}</ul>
+        <ul class="acciones">${acciones || `<li class="vacio">${esc(vacio)}</li>`}</ul>
       </div>
       <div class="bloque">
         <h3>Ficha</h3><ul class="cobertura-lista">${ficha || '<li class="vacio">El equipo todavía no ha reportado.</li>'}</ul>
@@ -381,6 +444,7 @@ function pintarEquipo(d) {
         <ul class="cobertura-lista">${sinRevisar.map((s) => `<li><span>${esc(s)}</span></li>`).join("") || '<li class="vacio">Todo se pudo revisar.</li>'}</ul>
       </div>
     </div>`;
+  conectarAprobacion(e);
   const revocar = $("#revocar-equipo");
   if (revocar) {
     revocar.addEventListener("click", async () => {

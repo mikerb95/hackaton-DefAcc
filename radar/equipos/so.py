@@ -123,7 +123,8 @@ def activos_de_so(equipos: Iterable[Equipo]) -> list[Activo]:
     """Un activo por cada Windows y build distintos, con los equipos que lo tienen."""
     grupos: dict[tuple[str, str, str], list[str]] = defaultdict(list)
     for equipo in equipos:
-        if equipo.revocado or equipo.so is None:
+        # Un equipo pendiente de aprobación no entra al cruce.
+        if equipo.revocado or equipo.pendiente or equipo.so is None:
             continue
         windows = reconocer_windows(equipo.so)
         if windows is not None:

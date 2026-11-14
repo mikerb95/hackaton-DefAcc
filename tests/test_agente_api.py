@@ -86,6 +86,9 @@ def cliente(monkeypatch, tmp_path, base_temporal):
     monkeypatch.setenv("RADAR_DATOS", "base")
     monkeypatch.setenv("RADAR_SQLITE", str(tmp_path / "base_temporal.db"))
     monkeypatch.setenv("AGENTE_TOKEN_INSCRIPCION", TOKEN)
+    # Estas pruebas miden el cruce: los equipos entran aprobados. El flujo de aprobación
+    # en la consola se prueba aparte, con el modo manual por defecto.
+    monkeypatch.setenv("AGENTE_APROBACION", "automatica")
     monkeypatch.setattr(modulo_datos, "_datos", None)
     import app
 
@@ -371,7 +374,7 @@ def test_reporte_stream_se_corta_sin_confiar_en_content_length(cliente, longitud
     async def recibir():
         llamadas.append(1)
         if len(llamadas) > 2:
-            pytest.fail("El servidor sigui? leyendo despu?s del l?mite")
+            pytest.fail("El servidor siguió leyendo después del límite")
         return {
             "type": "http.request",
             "body": b"x" * (TAMANO_MAXIMO_REPORTE // 2 + 1),
@@ -400,3 +403,98 @@ def test_reporte_no_lee_cuerpo_con_credencial_invalida(cliente):
     with pytest.raises(HTTPException) as error:
         asyncio.run(reporte(Request({"type": "http", "headers": []}, recibir), "invalida"))
     assert error.value.status_code == 401
+
+
+# -- aprobación en la consola (RF-816) -----------------------------------------
+
+
+@pytest.fixture
+def manual(cliente, monkeypatch):
+    monkeypatch.delenv("AGENTE_APROBACION")
+    return cliente
+
+
+def test_un_equipo_nuevo_queda_pendiente_y_no_se_cruza(manual, base_temporal):
+    equipo_id, credencial = _inscribir(manual)
+    assert _enviar(manual, credencial, _reporte(equipo_id)).json() == {
+        "recibido": True,
+        "intervalo_horas": 12,
+    }
+    # TI ve qué equipo es, pero su inventario no entra al cruce.
+    equipo = almacen.leer_equipo(base_temporal, equipo_id)
+    assert equipo.pendiente and equipo.so.nombre == "Windows 11 Pro"
+    assert bd.leer_inventario(base_temporal) == [] and bd.leer_hallazgos(base_temporal) == []
+    assert almacen.leer_hallazgos(base_temporal, equipo_id) == []
+    lista = manual.get("/api/equipos").json()
+    assert lista["aprobacion"] == "manual" and lista["pendientes"] == 1
+    assert lista["equipos"][0]["pendiente"] is True
+
+
+def test_aprobar_cruza_el_ultimo_reporte(manual, base_temporal):
+    equipo_id, credencial = _inscribir(manual)
+    _enviar(manual, credencial, _reporte(equipo_id))
+    assert manual.post(f"/api/equipos/{equipo_id}/aprobar", json={}).status_code == 422
+    r = manual.post(f"/api/equipos/{equipo_id}/aprobar", json={"por": "ti"})
+    assert r.json() == {"aprobado": True, "cruzado": True}
+    equipo = almacen.leer_equipo(base_temporal, equipo_id)
+    assert not equipo.pendiente and equipo.aprobado_por == "ti"
+    assert {h.producto for h in bd.leer_hallazgos(base_temporal)} == {"WinRAR", "Windows 11 23H2"}
+    # Windows 11 23H2 en edición Pro perdió soporte el 11 de noviembre de 2025.
+    assert {h.clave for h in almacen.leer_hallazgos(base_temporal, equipo_id)} == {
+        "firewall",
+        "cifrado_disco",
+        "soporte",
+    }
+    # Aprobar dos veces no repite nada.
+    assert manual.post(f"/api/equipos/{equipo_id}/aprobar", json={"por": "ti"}).status_code == 409
+    # Ya aprobado, el siguiente reporte se cruza directo.
+    assert _enviar(manual, credencial, _reporte(equipo_id)).status_code == 202
+    assert len(bd.leer_inventario(base_temporal)) == 2
+
+
+def test_aprobar_antes_del_primer_reporte(manual, base_temporal):
+    equipo_id, credencial = _inscribir(manual)
+    r = manual.post(f"/api/equipos/{equipo_id}/aprobar", json={"por": "ti"})
+    assert r.json() == {"aprobado": True, "cruzado": False}
+    _enviar(manual, credencial, _reporte(equipo_id))
+    assert any(h.producto == "WinRAR" for h in bd.leer_hallazgos(base_temporal))
+
+
+def test_rechazar_borra_el_equipo_pendiente(manual, base_temporal):
+    equipo_id, credencial = _inscribir(manual)
+    _enviar(manual, credencial, _reporte(equipo_id))
+    assert manual.delete(f"/api/equipos/{equipo_id}").json() == {"retirado": True}
+    assert _enviar(manual, credencial, _reporte(equipo_id)).status_code == 401
+    assert manual.post(f"/api/equipos/{equipo_id}/aprobar", json={"por": "ti"}).status_code == 409
+
+
+def test_un_equipo_revocado_no_se_aprueba(manual):
+    equipo_id, _ = _inscribir(manual)
+    manual.post(f"/api/equipos/{equipo_id}/revocar")
+    assert manual.post(f"/api/equipos/{equipo_id}/aprobar", json={"por": "ti"}).status_code == 409
+
+
+def test_tope_de_equipos_pendientes(manual, monkeypatch):
+    from radar.api import agente
+
+    monkeypatch.setattr(agente, "MAX_PENDIENTES", 2)
+    _inscribir(manual, nombre="PC-1")
+    _inscribir(manual, nombre="PC-2")
+    cuerpo = {"token": TOKEN, "equipo_id": str(uuid.uuid4()), "nombre_equipo": "PC-3"}
+    assert manual.post("/api/agente/inscribir", json=cuerpo).status_code == 429
+
+
+def test_los_equipos_inscritos_antes_quedan_aprobados(tmp_path):
+    from radar import bd as base
+
+    c = base.conectar(ruta_sqlite=tmp_path / "vieja.db")
+    c.execute(
+        "CREATE TABLE equipos (id TEXT PRIMARY KEY, nombre TEXT NOT NULL, credencial TEXT NOT NULL,"
+        " inscrito TEXT NOT NULL, ultimo_reporte TEXT, agente_version TEXT, revocado INTEGER"
+        " DEFAULT 0, so TEXT, hardware TEXT, postura TEXT, recortes TEXT)"
+    )
+    c.execute("INSERT INTO equipos (id, nombre, credencial, inscrito) VALUES ('a','PC1','x','t')")
+    base.crear_esquema(c)
+    equipo = almacen.leer_equipo(c, "a")
+    assert not equipo.pendiente and equipo.aprobado == "t"
+    c.close()
