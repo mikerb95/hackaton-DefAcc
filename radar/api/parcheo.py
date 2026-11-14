@@ -52,7 +52,7 @@ def _quien_o_422(request: Request, declarado: str | None = None) -> str:
 # ---------------------------------------------------------------------------
 
 
-@router_agente_parcheo.get("/plan")
+@router_agente_parcheo.get("/plan", response_model=None)
 def plan_del_agente(
     x_credencial_equipo: str | None = Header(default=None),
 ) -> Response | dict:

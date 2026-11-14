@@ -268,9 +268,10 @@ def informe(conexion: Any, plan_id: str) -> dict[str, Any] | None:
     equipo = almacen.leer_equipo(conexion, plan["equipo_id"])
     resultado = plan.get("resultado")
     por_id = {a["id"]: a for a in (resultado or {}).get("acciones", [])}
-    fin = _momento((resultado or {}).get("fin"))
+    # Las dos horas son del servidor: el reloj del equipo no es confiable.
+    recibido = _momento(plan.get("recibido"))
     ultimo = _momento(equipo.ultimo_reporte) if equipo else None
-    verificable = bool(resultado and fin and ultimo and ultimo > fin)
+    verificable = bool(resultado and recibido and ultimo and ultimo >= recibido)
     abiertas = _cves_abiertas(conexion, equipo) if equipo else set()
     postura = equipo.postura.model_dump() if equipo and equipo.postura else None
 
