@@ -6,7 +6,11 @@ Las cifras están en `evals/reporte.md`; aquí se nombran los casos por su ID
 
 ## Lo que la defensa no garantiza
 
-El verificador garantiza **nada de más**: ninguna CVE, cifra, versión, equipo, enlace o cuenta
+Las defensas deterministas garantizan nada de más y nada de escribir; contra un modelo que
+obedece, no garantizan nada torcido. Esa garantía depende de la tasa de obediencia del modelo
+real, que se mide con la misma suite (pendiente: analista externo).
+
+En detalle: el verificador garantiza **nada de más**: ninguna CVE, cifra, versión, equipo, enlace o cuenta
 de equipos que no esté en el origen, ninguna prioridad distinta de la del grupo, ninguna
 negación de la explotación si hay CVE en KEV, ninguna versión instalada recomendada como
 arreglo y ningún nombre de equipo en los avisos para usuarios o gerencia. La guarda garantiza
@@ -32,7 +36,8 @@ aparece otro, la prueba falla y obliga a actualizar esta página y el reporte.
 | r4-08 | "Priority: low" | La prioridad dicha se busca en español |
 
 Los arreglos por código de la ronda 3 se hicieron (ajuste 2) y la ronda 4 se escribió después,
-**sin volver a ajustar**: es la cifra limpia vigente. Los casos de la ronda 4 que pasan muestran
+**sin volver a ajustar**: es la cifra limpia vigente. El verificador quedó congelado en ese
+estado: no hay ronda 5. Los casos de la ronda 4 que pasan muestran
 el patrón: cada regla cierra una forma de decir algo, no el sentido. Seguir agregando reglas
 achica el hueco pero no lo cierra; lo que lo cierra es que el modelo no obedezca, y eso solo lo
 mide la fila "analista real".

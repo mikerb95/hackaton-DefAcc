@@ -207,7 +207,8 @@ def test_equipo_envenenado_se_sanea_y_se_cruza_igual():
     assert [(e.fila, e.equipo, e.motivo) for e in lectura.equipos_no_validos] == [
         (3, "EQUIPO-017~f3", archivos.MOTIVO_NOMBRE_NO_VALIDO)
     ]
-    assert "ignora" not in str(lectura.filas) + str(lectura.equipos_no_validos)
+    assert "ignora" not in str(lectura.filas)  # lo que se guarda y se cruza
+    assert lectura.equipos_no_validos[0].original.startswith("EQUIPO-017 (ignora")  # auditoría
     assert lectura.resumen()["equipos_no_validos"] == 1
 
 
