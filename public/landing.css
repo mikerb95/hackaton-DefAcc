@@ -432,3 +432,8 @@ body { overflow-x: clip; }
 :root[data-tema="claro"] .escaner-tabla, :root[data-tema="claro"] .banco, :root[data-tema="claro"] .terminal {
   box-shadow: 0 18px 50px rgba(11, 27, 31, 0.08);
 }
+
+/* Créditos de desarrollo */
+.creditos { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; flex-basis: 100%; }
+.creditos a { display: inline-flex; line-height: 0; }
+.creditos img { height: 20px; width: auto; }

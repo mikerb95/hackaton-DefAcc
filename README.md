@@ -79,3 +79,9 @@ claude plugin install radar@radar
 ## Licencia
 
 MIT. Lo generado con IA se cita en [`CREDITOS.md`](CREDITOS.md).
+
+## Créditos de desarrollo
+
+[![Desarrollado por codebymike](https://img.shields.io/badge/desarrollado%20por-codebymike-0b7285?style=for-the-badge)](https://codebymike.net)
+[![GitHub mikerb95](https://img.shields.io/badge/GitHub-mikerb95-181717?style=for-the-badge&logo=github)](https://github.com/mikerb95)
+[![GitHub MiguelAriza77](https://img.shields.io/badge/GitHub-MiguelAriza77-181717?style=for-the-badge&logo=github)](https://github.com/MiguelAriza77)

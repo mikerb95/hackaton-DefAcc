@@ -888,3 +888,10 @@ tr.abierta .chevron { transform: rotate(90deg); color: var(--acento); }
 .ntfy-datos { display: grid; grid-template-columns: max-content 1fr; gap: 6px 18px; margin: 0 0 12px; font-size: 14px; }
 .ntfy-datos dt { color: var(--texto-3); }
 .ntfy-datos dd { margin: 0; overflow-wrap: anywhere; }
+
+/* Créditos de desarrollo al pie del panel */
+.pie-panel { max-width: 1280px; margin: 0 auto; padding: 16px 24px 28px; border-top: 1px solid var(--linea); }
+.pie-panel .creditos { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.pie-panel .creditos a { display: inline-flex; line-height: 0; opacity: 0.85; transition: opacity 0.15s; }
+.pie-panel .creditos a:hover, .pie-panel .creditos a:focus-visible { opacity: 1; }
+.pie-panel .creditos img { height: 20px; width: auto; }
