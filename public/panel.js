@@ -897,8 +897,11 @@ function pintarEquipo(d) {
         <h3 style="margin-top:16px">Sin revisar</h3>
         <ul class="cobertura-lista">${sinRevisar.map((s) => `<li><span>${esc(s)}</span></li>`).join("") || '<li class="vacio">Todo se pudo revisar.</li>'}</ul>
       </div>
-    </div>`;
+    </div>
+    <div class="bloque parcheo" id="parcheo-equipo"></div>`;
   conectarAprobacion(e);
+  // Parcheo aprobado (public/parcheo.js, docs/plan-parcheo.md).
+  if (window.pintarParcheo) window.pintarParcheo(e);
   const revocar = $("#revocar-equipo");
   if (revocar) {
     revocar.addEventListener("click", async () => {
