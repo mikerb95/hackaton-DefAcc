@@ -87,6 +87,12 @@ aunque el nombre traiga texto extra, y la tabla muestra el estado vigente.
 - **El proveedor también sobrevive al normalizador.** No cambia el producto, así que la fila se
   cruza y el texto puede llegar al modelo si una herramienta lo devuelve. Las herramientas del
   analista no deben devolver proveedor ni nombre de programa crudos (`docs/contrato-analista.md`).
+- **Un comando permitido habilita sus cifras y enlaces en todo el texto.** La regla
+  `comando_ajeno` (agente local, PR #2) descarta cualquier comando que no haya armado el
+  código. Pero los comandos permitidos entran como origen del verificador: sus cifras, versiones
+  y URL quedan permitidas en cualquier parte del comunicado, no solo dentro del comando. Con
+  comandos en producción, el "nada de más" se afloja en esa medida. La suite no pasa comandos,
+  así que no lo mide.
 - **Texto plano de herramienta.** Las herramientas devuelven JSON y cada campo se recorta por
   su clave. Un resultado en texto plano se trata como un solo campo y se recorta a 20 000
   caracteres.
