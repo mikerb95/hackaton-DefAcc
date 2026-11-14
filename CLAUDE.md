@@ -1,6 +1,6 @@
 # Radar de vulnerabilidades (hackatón def/acc, 14 nov 2026)
 
-Contexto compartido por las 6 sesiones de Claude Code que desarrollan el proyecto en
+Contexto compartido por las sesiones de Claude Code que desarrollan el proyecto en
 paralelo, una por frente, todas en este mismo directorio (no son piezas del producto:
 el "analista" del producto es otra cosa). Es estable a propósito: no lo edites para
 anotar avances (eso invalida la caché de prompt de todos). Los avances van en
@@ -51,7 +51,7 @@ rapidfuzz, `claude-agent-sdk` (solo worker, nunca en `requirements.txt`), SDK de
 pytest, ruff. Modelo: `claude-opus-5-5`. Desempate del normalizador con `anthropic`
 directo y `effort: low`.
 
-## Los 6 frentes y sus carpetas
+## Los frentes y sus carpetas
 
 Cada agente escribe solo en sus carpetas. Si necesitas algo de otro frente, déjalo
 pedido en su archivo de coordinación, no lo edites tú.
@@ -62,7 +62,8 @@ pedido en su archivo de coordinación, no lo edites tú.
 | `normalizador` | `radar/ingesta/normalizador.py`, `datos_prueba/` (salvo `casos_inyeccion.py`), `tests/test_normalizador.py` | 3, 4 |
 | `analista` (**externo**: otra persona en otro PC; contrato en `docs/contrato-analista.md`) | `radar/agente/analista.py`, `herramientas.py`, `instrucciones.py`, `worker/principal.py`, `worker/analizar.py` | 7, 15 |
 | `guarda` | `radar/seguridad/`, `radar/agente/hooks.py`, `verificador.py`, `respaldo.py`, `datos_prueba/casos_inyeccion.py`, `evals/`, `plugin/hooks/`, `plugin/scripts/`, `docs/AMENAZAS.md`, `docs/LIMITES.md`, tests de verificador, inyección y plugin, `.github/workflows/pruebas.yml` | 5, 6, 8, 12 |
-| `panel` | `app.py`, `vercel.json`, `requirements.txt`, `radar/api/`, `public/`, `README.md`, `docs/` (consolida), `CREDITOS.md` | 2, 9, 11, 14, 16 |
+| `panel` | `app.py`, `requirements.txt`, `radar/api/`, `public/`, `README.md`, `docs/` (consolida), `CREDITOS.md` | 2, 9, 11, 14, 16 |
+| `vercel` | Infraestructura: `.vercel/`, `vercel.json`, `.vercelignore`, variables en Vercel, base y tokens de Turso, despliegues. No toca código de la app | 2 |
 | `plugin` | `radar/ingesta/archivos.py`, `radar/mcp/`, `plugin/` (salvo hooks y scripts), `.claude-plugin/marketplace.json`, `tests/test_ingesta.py` | 10 |
 
 Las 6 sesiones comparten directorio y `.venv`. Solo `nucleo` toca `pyproject.toml` y

@@ -1,0 +1,48 @@
+name: Pruebas
+
+# ruff, pytest sin las pruebas que llaman a Claude (marcador "agente") y el reporte de
+# validación. CI no tiene resources/ ni datos_locales/ (material privado): las pruebas que
+# los necesitan se saltan solas y el reporte marca esas secciones como pendientes. La suite
+# de inyección corre completa con los grupos congelados en evals/grupos_reales.json.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Instalar Python y dependencias
+        run: |
+          uv python install 3.12
+          uv sync --all-extras --group dev
+
+      - name: ruff
+        run: uv run ruff check .
+
+      - name: pytest (sin marcador agente)
+        run: uv run pytest -m "not agente" -q
+
+      - name: Copia exacta de limpieza.py en el plugin
+        run: cmp radar/seguridad/limpieza.py plugin/scripts/limpieza.py
+
+      - name: Reporte de validación
+        run: uv run python -m evals.medir
+
+      - name: Guardar el reporte
+        uses: actions/upload-artifact@v4
+        with:
+          name: reporte-validacion
+          path: evals/reporte.md

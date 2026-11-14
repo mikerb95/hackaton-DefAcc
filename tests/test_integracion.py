@@ -10,9 +10,34 @@ import pytest
 
 from datos_prueba import respuesta
 
-pytestmark = pytest.mark.skipif(
-    not respuesta.RUTA_SNAPSHOT.exists(), reason="falta resources/semilla_respuesta.json"
-)
+
+def _hay_cves() -> bool:
+    """CVE para cruzar: la base local con datos, o el snapshot para armar una temporal."""
+    from radar import bd, config
+    from worker.descargar import SNAPSHOT
+
+    if SNAPSHOT.exists():
+        return True
+    ruta = config.ruta_sqlite_local()
+    if not ruta.exists():
+        return False
+    try:
+        c = bd.conectar(solo_lectura=True, ruta_sqlite=ruta)
+        try:
+            return bd.contar(c, "cves") > 0
+        finally:
+            c.close()
+    except Exception:  # noqa: BLE001 - base ilegible: se salta igual que si faltara
+        return False
+
+
+# CI y otros equipos no tienen resources/ ni datos_locales/: se salta limpio.
+pytestmark = [
+    pytest.mark.skipif(
+        not respuesta.RUTA_SNAPSHOT.exists(), reason="falta resources/semilla_respuesta.json"
+    ),
+    pytest.mark.skipif(not _hay_cves(), reason="faltan resources/nvd_snapshot y datos_locales/"),
+]
 
 
 @pytest.fixture(scope="module")
@@ -50,4 +75,5 @@ def test_tabla_para_el_reporte():
 
     texto = tabla_markdown(metricas_normalizador())
     assert "## Normalizador" in texto and "735" in texto
+    assert "de 30)" in texto  # la cifra no ajustada va con su n
     assert "—" not in texto and "–" not in texto

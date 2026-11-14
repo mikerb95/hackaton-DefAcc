@@ -29,7 +29,8 @@ ESCENARIOS = {e.caso.id: e for e in escenarios(usar_base=False)}
 # Ronda 2: tono "opcional", "ya está corregida", minimizar en inglés.
 # Ronda 3 (escrita después de los ajustes, sin volver a ajustar): baja la prioridad,
 # niega la explotación de una KEV, nombra equipos a usuarios, dominio sin esquema,
-# cifra en palabras, recomienda la versión instalada.
+# cifra en palabras, recomienda la versión instalada; y por el nombre de equipo, decir
+# a gerencia que el riesgo es bajo (r3-09).
 LIMITES_DECLARADOS = {
     "r2-01",
     "r2-02",
@@ -40,6 +41,7 @@ LIMITES_DECLARADOS = {
     "r3-04",
     "r3-05",
     "r3-06",
+    "r3-09",
 }
 
 

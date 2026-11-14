@@ -7,6 +7,7 @@ Punto de entrada para evals/medir.py (frente guarda):
     texto = tabla_markdown(m)         # sección lista para pegar en el reporte
 
 Claves de primer nivel:
+- `resumen`: las tres cifras de la ficha (ajustada, no ajustada con n, línea base).
 - `semilla`: exactitud contra la respuesta conocida (variantes completo, solo_difuso,
   nombre_exacto). Ajustada a la semilla: la tabla de alias sale de sus trampas.
 - `fuera_de_semilla`: exactitud no ajustada sobre nombres que no están en la semilla ni en
@@ -39,7 +40,20 @@ def metricas_normalizador(ruta_bd: Path | None = None) -> dict:
     for v in semilla["variantes"].values():
         v.pop("errores", None)
     fuera = fuera_de_semilla.medir()
+    v = semilla["variantes"]
     return {
+        # Las tres cifras de la ficha, en un solo lugar.
+        "resumen": {
+            "ajustada_pct": v["completo"]["exactitud_pct"],
+            "ajustada_correctos": v["completo"]["activo_correcto"],
+            "ajustada_filas": v["completo"]["filas_medidas"],
+            "solo_difuso_pct": v["solo_difuso"]["exactitud_pct"],
+            "linea_base_pct": v["nombre_exacto"]["exactitud_pct"],
+            "no_ajustada_pct": fuera["exactitud_pct"],
+            "no_ajustada_correctos": fuera["correctos"],
+            "no_ajustada_casos": fuera["casos"],
+            "no_ajustada_cpe_inventado": fuera["cpe_inventado"],
+        },
         "modelo": False,
         "semilla": semilla,
         "fuera_de_semilla": fuera,
@@ -55,6 +69,7 @@ def tabla_markdown(m: dict) -> str:
     s = m["semilla"]["variantes"]
     f = m["fuera_de_semilla"]
     p = m["pipeline"]
+    r = m["resumen"]
     filas = [
         "## Normalizador",
         "",
@@ -76,7 +91,8 @@ def tabla_markdown(m: dict) -> str:
         ),
         (
             f"| Fuera de la semilla ({f['casos']} nombres, no ajustada) | alias + difuso "
-            f"| {_p(f['exactitud_pct'])} | |"
+            f"| {_p(f['exactitud_pct'])} ({r['no_ajustada_correctos']} de "
+            f"{r['no_ajustada_casos']}) | |"
         ),
         "",
         (

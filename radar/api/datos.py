@@ -155,6 +155,11 @@ class DatosEjemplo:
     def trazas(self) -> list[dict] | None:
         return None
 
+    def umbrales(self) -> dict:
+        from radar.nucleo.umbrales import barrido
+
+        return barrido(self._hallazgos.values())
+
     def encolar(self, tipo: str, detalle: str | None = None) -> int | None:
         return None
 
@@ -165,11 +170,6 @@ class DatosBase:
 
     persistente = True
     origen = "base"
-
-    def __init__(self) -> None:
-        # El esquema no tiene dónde guardar la aprobación del comunicado: pedido en
-        # .coordinacion/nucleo.md. Mientras tanto vive en memoria y se dice.
-        self._aprobados: dict[str, dict] = {}
 
     def _conexion(self, solo_lectura: bool = True):
         from radar import bd
@@ -215,7 +215,14 @@ class DatosBase:
         return lista[0] if lista else None
 
     def aprobacion(self, producto: str) -> dict | None:
-        return self._aprobados.get(producto)
+        bd, c = self._conexion()
+        try:
+            fila = bd.leer_aprobacion(c, producto)
+        finally:
+            c.close()
+        if not fila:
+            return None
+        return {"producto": producto, "por": fila["aprobado_por"], "aprobado": fila["aprobado"]}
 
     def cambiar_estado(
         self, id_hallazgo: str, estado: EstadoHallazgo, comentario: str | None, por: str | None
@@ -228,21 +235,37 @@ class DatosBase:
         finally:
             c.close()
 
-    def aprobar(self, producto: str, por: str | None) -> dict | None:
-        if self.grupo(producto) is None:
+    def aprobar(self, producto: str, por: str) -> dict | None:
+        grupo = self.grupo(producto)
+        if grupo is None:
             return None
-        self._aprobados[producto] = _registro_aprobacion(producto, por)
-        return self._aprobados[producto]
+        bd, c = self._conexion(solo_lectura=False)
+        try:
+            if not bd.leer_analisis(c, producto):
+                # Sin análisis del agente se aprueba el texto de respaldo que se mostró: se
+                # guarda primero para que quede constancia de qué se aprobó.
+                from radar.agente.respaldo import armar_respaldo
+
+                bd.guardar_analisis(c, armar_respaldo(grupo))
+            if not bd.aprobar_comunicado(c, producto, por):
+                return None
+        finally:
+            c.close()
+        return self.aprobacion(producto)
 
     def trazas(self, limite: int = 100) -> list[dict]:
         bd, c = self._conexion()
         try:
-            return bd._consultar(
-                c,
-                "SELECT momento, herramienta, entrada, decision FROM trazas "
-                "ORDER BY id DESC LIMIT ?",
-                [limite],
-            )
+            return bd.leer_trazas(c, limite)
+        finally:
+            c.close()
+
+    def umbrales(self) -> dict:
+        from radar.nucleo.umbrales import barrido_guardado
+
+        _bd, c = self._conexion()
+        try:
+            return barrido_guardado(c)
         finally:
             c.close()
 

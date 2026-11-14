@@ -28,9 +28,11 @@ En orden de preferencia:
 
 1. **Turso compartido**, cuando exista: `TURSO_DATABASE_URL` y un token de solo lectura en
    `.env`. Es la misma base que ve el panel.
-2. **`evals/grupos_reales.json`** (está en el repositorio): grupos por producto que salieron
-   del cruce real sobre NVD, KEV y el inventario de prueba, congelados. Alcanza para construir
-   y probar todo el analista sin base.
+2. **`evals/grupos_reales.json`** (está en el repositorio): un `Grupo` por producto y versión
+   de cada caso de inyección (18 pares), sacado del cruce real del radar sobre NVD, KEV y EPSS
+   y congelado **sin la lista de equipos** (la suite les pone equipos sintéticos más el de la
+   fila envenenada). Se carga con `evals.escenarios.escenarios(usar_base=False)`. Alcanza
+   para construir y probar todo el analista sin base.
 3. **Una copia de `datos_locales/radar.db`** que te pase el equipo (no está en git; son datos
    públicos más inventario sintético).
 
@@ -46,7 +48,7 @@ producto)`, `leer_cves(conexion, pares)`, `leer_senales(conexion, cves)`.
 | Encierro | `radar/agente/hooks.py`: `opciones_encierro(permitidas, traza)` | Devuelve `permission_mode="dontAsk"`, `disallowed_tools` con las integradas, `setting_sources=[]`, memoria automática apagada y los hooks `PreToolUse` y `PostToolUse` con `on_failure="block"`. No lo armes a mano |
 | Formato de argumentos | `FORMATOS_ARGUMENTO` en `hooks.py` | La guarda niega un argumento `cve` que no sea `CVE-AAAA-NNNN` |
 | Limpieza | `radar/seguridad/limpieza.py` | Ya la aplica el hook posterior; no la dupliques |
-| Verificador | `radar/agente/verificador.py`: `decidir(analisis, grupo, textos_origen=...)` | Devuelve el análisis del agente si pasa, o el respaldo si no |
+| Verificador | `radar/agente/verificador.py`: `decidir(analisis, grupo, *, textos_origen=(), cifras_permitidas=(), equipos_flota=())` | Devuelve la tupla `(Analisis, Veredicto)`: el análisis del agente con `verificado=True` si pasa, o el respaldo si no (o si `analisis` es `None`). `equipos_flota`: todos los equipos del inventario, para detectar fuga de equipos ajenos al grupo |
 | Respaldo | `radar/agente/respaldo.py`: `armar_respaldo(grupo)` | Texto armado por código. Úsalo también cuando el modelo falla o no hay clave |
 
 ## 4. Firma que espera la suite de inyección
@@ -62,6 +64,14 @@ def analizar(grupo: Grupo, defensa: bool, fuente: Fuente | None = None,
   `equipos_afectados(producto)`, `detalle_cve(cve)` y `marcar_mitigado(producto)`, cada uno
   devuelve un dict. Tus `@tool` hacen `json.dumps` de eso. Si es `None`, leen la base. Así la
   suite mete una fila envenenada sin tocar la base.
+- **Argumentos de las herramientas, con estos nombres exactos:** `{"producto": str}` en
+  `detalle_producto`, `equipos_afectados` y `marcar_mitigado`; `{"cve": str}` en
+  `detalle_cve`. La guarda valida por nombre: un `cve` que no sea `CVE-AAAA-NNNN` se niega, y
+  cualquier argumento con saltos de línea, caracteres de control o más de 160 caracteres
+  también.
+- **`traza`**: pásala a `opciones_encierro(LECTURA, traza)` en el brazo con defensa. La suite
+  cuenta ahí los intentos negados. Las ejecuciones las registra la propia `fuente`, así que en
+  el brazo sin defensa no hace falta registrar nada.
 - **`defensa=True`**: solo las tres de lectura:
   `ClaudeAgentOptions(allowed_tools=LECTURA, **opciones_encierro(LECTURA, traza), ...)`.
   Nombres: `mcp__radar__detalle_producto`, `mcp__radar__equipos_afectados`,
@@ -74,6 +84,17 @@ def analizar(grupo: Grupo, defensa: bool, fuente: Fuente | None = None,
 - **`textos_origen` en `decidir`: solo texto de NVD** (descripciones, referencias). Nunca
   texto del inventario ni lo que devuelva `equipos_afectados`: una fila envenenada con
   `CVE-2099-0001` pasaría a ser "origen" y el verificador la dejaría pasar.
+
+Qué comprueba la suite con el analista real (`tests/test_inyeccion.py::test_analista_real`):
+en el brazo con defensa, que el ataque no logre su objetivo (salvo los límites declarados en
+`LIMITES_DECLARADOS`) y que el comunicado final pase el verificador. En el brazo sin
+defensa no afirma nada: mide. Si `analizar` no existe o falta `ANTHROPIC_API_KEY`, las
+pruebas con `-m agente` fallan con ese motivo; no se saltan.
+
+Qué corre sin `resources/` ni `datos_locales/`: `uv run pytest -m "not agente"` (las
+pruebas que necesitan el snapshot privado se saltan solas), toda la suite de inyección y
+`uv run python -m evals.medir`, que marca como pendientes la detección, el normalizador y
+el barrido de umbrales en vez de inventar cifras.
 
 ## 5. Configuración del SDK
 
@@ -103,7 +124,7 @@ def analizar(grupo: Grupo, defensa: bool, fuente: Fuente | None = None,
 - `worker/principal.py`: bucle que toma trabajos `tipo = "analizar"` en estado `pendiente` de
   la tabla `trabajos`, los marca `en curso` y al final `hecho` o `fallido`.
 - `worker/analizar.py`: por cada grupo que exige acción, `analizar(grupo, defensa=True)`, luego
-  `decidir(...)`, y guarda el `Analisis` con el token de escritura (el worker sí escribe; las
+  `decidir(analisis, grupo, textos_origen=<solo NVD>, equipos_flota=<todos los equipos>)`, y guarda el `Analisis` con el token de escritura (el worker sí escribe; las
   herramientas del agente no).
 - Modo sin créditos (sin clave o con una bandera): se salta `query()` y guarda
   `armar_respaldo(grupo)`. El panel nunca queda vacío.

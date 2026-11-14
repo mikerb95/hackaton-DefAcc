@@ -156,6 +156,13 @@ def test_inventario_cruza_contra_la_base(monkeypatch, tmp_path):
     assert [g["producto"] for g in productos] == ["WinRAR"]
     assert c.get("/api/resumen").json()["persistente"] is True
     assert c.post("/api/revisar").json()["encolado"] is True
+    # Aprobación persistente: sin análisis guardado se guarda y aprueba el respaldo.
+    assert c.post("/api/comunicado/WinRAR/aprobar", json={"por": "ti"}).status_code == 200
+    detalle = c.get("/api/analisis/WinRAR").json()
+    assert detalle["aprobacion"]["por"] == "ti" and detalle["guardado"] is True
+    assert detalle["analisis"]["origen"] == "respaldo"
+    assert c.get("/api/trazas").json() == {"disponible": True, "trazas": []}
+    assert c.get("/api/umbrales").json()["solo_kev"]["productos"] == 1
 
 
 # -- respaldo cuando no hay análisis del agente (RF-607) ------------------------
@@ -168,5 +175,20 @@ def test_detalle_sin_analisis_muestra_respaldo(cliente):
     assert r["pendiente"] is False and r["guardado"] is False
     assert r["analisis"]["origen"] == "respaldo"
     assert "Docker Desktop" in r["analisis"]["resumen"]
-    assert cliente.post("/api/comunicado/Docker Desktop/aprobar", json={}).status_code == 200
-    assert cliente.post("/api/comunicado/NoExiste/aprobar", json={}).status_code == 404
+    aprobar = "/api/comunicado/Docker Desktop/aprobar"
+    assert cliente.post(aprobar, json={"por": "ti"}).status_code == 200
+    assert cliente.post("/api/comunicado/NoExiste/aprobar", json={"por": "ti"}).status_code == 404
+
+
+def test_aprobar_exige_quien(cliente):
+    for cuerpo in ({}, {"por": ""}, {"por": "   "}):
+        assert cliente.post("/api/comunicado/WinRAR/aprobar", json=cuerpo).status_code == 422
+
+
+def test_umbrales_con_celda_vigente_y_piso_kev(cliente):
+    r = cliente.get("/api/umbrales").json()
+    assert r["disponible"] is True
+    assert len(r["celdas"]) == len(r["rejilla_epss"]) * len(r["rejilla_cvss"])
+    # KEV es inmediato con cualquier umbral: ninguna celda baja del piso.
+    assert all(c["productos"] >= r["solo_kev"]["productos"] for c in r["celdas"])
+    assert r["actual"]["epss"] == 0.10 and r["actual"]["cvss"] == 9.0

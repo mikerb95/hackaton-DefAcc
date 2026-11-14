@@ -173,3 +173,21 @@ def test_insercion_por_lotes_de_varias_filas(conexion):
     bd._en_lotes(contador, "INSERT INTO epss (cve, epss, percentil, fecha) VALUES (?,?,?,?)", filas)
     assert contador.llamadas == 5  # 225 filas por sentencia (900 parámetros / 4)
     assert bd.contar(conexion, "epss") == 1000
+
+
+def test_aislamiento_de_pruebas():
+    """Ninguna prueba llega a la base compartida, a Turso ni a NVD con la clave real."""
+    import os
+
+    from radar import config
+
+    assert config.turso() is None
+    assert "NVD_API_KEY" not in os.environ
+    assert "datos_locales" not in str(config.ruta_sqlite_local())
+
+
+def test_base_con_hallazgos(base_con_hallazgos):
+    hallazgos = {h.producto: h for h in bd.leer_hallazgos(base_con_hallazgos)}
+    assert set(hallazgos) == {"WinRAR", "Google Chrome", "Docker Desktop"}
+    assert hallazgos["Docker Desktop"].prioridad == "semanal"
+    assert bd.contar(base_con_hallazgos, "inventario") == len(ejemplos.FILAS)

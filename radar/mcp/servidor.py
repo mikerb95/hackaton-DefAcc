@@ -30,7 +30,11 @@ from radar.contratos import ORDEN_PRIORIDAD, Prioridad
 from radar.ingesta import archivos
 from radar.ingesta.archivos import ErrorLectura
 from radar.mcp import datos
-from radar.seguridad.limpieza import limpiar_estructura, limpiar_texto
+from radar.seguridad.limpieza import (
+    limpiar_estructura,
+    limpiar_texto,
+    senales_de_instruccion,
+)
 
 EXTENSIONES_PERMITIDAS = archivos.EXTENSIONES_CSV | archivos.EXTENSIONES_EXCEL
 DESCARTADAS_MOSTRADAS = 20
@@ -200,6 +204,9 @@ SOLO_LECTURA = ToolAnnotations(
 )
 CERRADOS = {"mitigado", "descartado"}
 FUENTES_ESPERADAS = {"nvd", "kev", "epss"}
+SOSPECHOSAS_MOSTRADAS = 10
+# "asistente" sola salta con nombres legítimos ("Asistente de Respaldo Local"): no basta.
+SENALES_DEBILES = {"asistente"}
 EQUIPOS_MOSTRADOS = 10
 HALLAZGOS_DETALLE = 15
 LARGO_DESCRIPCION = 400  # la guarda permite 2000 en "descripcion"; aquí se ahorra espacio
@@ -250,9 +257,16 @@ def _estado_fuentes() -> tuple[dict[str, Any], str]:
 
 def _resumen_cobertura(cobertura: list) -> dict[str, Any]:
     por_motivo: dict[str, int] = {}
+    sospechosas: list[dict[str, Any]] = []
     for fila in cobertura:
         por_motivo[fila.motivo] = por_motivo.get(fila.motivo, 0) + 1
-    return {
+        senales = sorted(
+            set(senales_de_instruccion(fila.programa)) | set(senales_de_instruccion(fila.version))
+        )
+        if set(senales) - SENALES_DEBILES:
+            # Sin el texto del programa: solo equipo, motivo y qué señales disparó.
+            sospechosas.append({"equipo": fila.equipo, "motivo": fila.motivo, "senales": senales})
+    resumen: dict[str, Any] = {
         "sin_evaluar": len(cobertura),
         "por_motivo": por_motivo,
         "nota": (
@@ -260,6 +274,16 @@ def _resumen_cobertura(cobertura: list) -> dict[str, Any]:
             "CPE). No están sanos: no se sabe."
         ),
     }
+    if sospechosas:
+        resumen["posible_inyeccion"] = {
+            "filas": len(sospechosas),
+            "detalle": sospechosas[:SOSPECHOSAS_MOSTRADAS],
+            "nota": (
+                "Filas fuera del cruce cuyo programa o versión trae texto con forma de "
+                "instrucción. Pueden ocultar un equipo vulnerable: revisar el inventario."
+            ),
+        }
+    return resumen
 
 
 def _orden_hallazgo(h) -> tuple:

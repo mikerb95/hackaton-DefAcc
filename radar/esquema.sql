@@ -114,7 +114,7 @@ CREATE TABLE IF NOT EXISTS cobertura (
   equipo TEXT,
   programa TEXT,
   version TEXT,
-  motivo TEXT                    -- sin_version, no_comparable, sin_cpe
+  motivo TEXT                    -- sin_version, no_comparable, sin_cpe, nombre_equipo_no_valido
 );
 
 CREATE TABLE IF NOT EXISTS trabajos (

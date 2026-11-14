@@ -180,6 +180,31 @@ button:disabled { opacity: 0.5; cursor: default; }
 .carga-resultado { margin-top: 12px; font-size: 13px; color: var(--texto-2); }
 .carga-resultado .error { color: #ffb39b; }
 
+.tabla td.objetivo { white-space: nowrap; }
+.boton-mas { margin-top: 10px; width: 100%; border: 1px solid var(--linea); }
+
+.lista-cves { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; margin-bottom: 14px; }
+.cve-item { white-space: nowrap; color: var(--texto-2); }
+.cve-resto { color: var(--texto-3); font-family: var(--sans); font-size: 13px; }
+
+/* Umbrales */
+.umbrales-cabeza { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.umbrales-leyenda { display: inline-flex; align-items: center; gap: 6px; color: var(--texto-2); font-size: 12px; }
+.muestra-linea { display: inline-block; width: 18px; border-top: 2px solid var(--acento); margin-left: 6px; }
+.muestra-linea.punteada { border-top: 2px dashed var(--texto-3); }
+.grafica-caja { position: relative; height: 220px; }
+.umbrales-resumen { color: var(--texto-2); font-size: 13px; margin: 12px 0 0; }
+
+/* Trazas */
+.traza { display: block !important; }
+.traza > div { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.traza-hora { color: var(--texto-3); margin-left: auto; }
+.traza-entrada { color: var(--texto-3); font-size: 12px; margin-top: 4px; overflow-wrap: anywhere; }
+
+/* Aprobación */
+.aprobar { display: inline-flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.aprobar input { background: var(--ink-2); color: var(--texto); border: 1px solid var(--linea); border-radius: 8px; padding: 7px 10px; font: inherit; }
+
 @media (max-width: 900px) {
   .cifras { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .rejilla, .detalle-rejilla { grid-template-columns: minmax(0, 1fr); }

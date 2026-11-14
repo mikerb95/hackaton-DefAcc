@@ -30,8 +30,11 @@ salida de pytest. Si un número no coincide entre páginas, es un error.
 | [reportes-pruebas.md](reportes-pruebas.md) | Resultados de los evals con defensa y sin defensa | tasa de inyección |
 | [verificacion-validacion.md](verificacion-validacion.md) | Decisiones que cambian cifras y por qué | decisiones con prueba |
 | [contrato-analista.md](contrato-analista.md) | Contrato autocontenido del analista con Agent SDK (frente externo): archivos, funciones disponibles, firma que espera la suite de inyección y reglas | 1 frente externo |
+| [guion-demo.md](guion-demo.md) | Guion de la demo de 3 minutos: preparación, seis pasos con lo que se dice, lámina de números y qué hacer si algo falla | 3 minutos |
 | [AMENAZAS.md](AMENAZAS.md) | Modelo de amenazas del agente y del inventario | vectores |
 | [LIMITES.md](LIMITES.md) | Lo que el radar no detecta y el riesgo de uso dual | límites conocidos |
+| [../CREDITOS.md](../CREDITOS.md) | Lo generado con IA y las fuentes de datos usadas | se completa al cierre |
+| [../LICENSE](../LICENSE) | Licencia del proyecto | MIT |
 | [roles.md](roles.md) | Roles del equipo y matriz RACI | si alcanza |
 | [FICHA_TECNICA.md](FICHA_TECNICA.md) | Ficha de dos páginas para los jueces | 2 páginas |
 | [RESUMEN.md](RESUMEN.md) | Resumen de 150 a 250 palabras | se escribe de último |

@@ -48,7 +48,12 @@ Prioridad alta. Pruebas: `tests/test_ingesta.py`, `tests/test_mcp.py`.
 
 - **RF-607** Si el agente no entregó análisis para un producto, el detalle muestra el texto armado por código (`radar/agente/respaldo.py`) con una píldora neutra "Texto armado por código", y ese comunicado también se puede aprobar. La demo funciona con o sin agente. `radar/api/rutas.py`, `public/panel.js`.
 
-Prioridad alta para RF-601 a RF-605 y RF-607, media para RF-606. Prueba: `tests/test_api.py`.
+- **RF-608** El responsable de TI ve una gráfica de cuántas alertas inmediatas saldrían según el umbral de EPSS, para cada umbral de CVSS, contando comunicados, hallazgos o equipos, con la celda vigente marcada y el piso de KEV (que no baja con ningún umbral). `radar/nucleo/umbrales.py::barrido_guardado`, `radar/api/rutas.py`, `public/panel.js`. Tabla `hallazgos`.
+- **RF-609** El responsable de TI ve las últimas llamadas del agente a herramientas con su decisión (permitida, negada, limpiada) y la entrada recortada y escapada. `bd.leer_trazas`, `radar/api/rutas.py`, `public/panel.js`. Tabla `trazas`.
+
+La aprobación (RF-604) queda guardada con quién y cuándo (`bd.aprobar_comunicado`, columnas `analisis.aprobado` y `aprobado_por`) y exige un nombre; si no había análisis guardado, se guarda el respaldo que se aprobó.
+
+Prioridad alta para RF-601 a RF-605, RF-607 y RF-609, media para RF-606 y RF-608. Prueba: `tests/test_api.py`.
 
 
 ## Plugin de Claude Code

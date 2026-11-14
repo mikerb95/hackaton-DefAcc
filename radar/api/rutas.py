@@ -103,13 +103,14 @@ def cambiar_estado(id_hallazgo: str, cambio: CambioEstado) -> dict:
 
 
 class Aprobacion(BaseModel):
-    por: str | None = Field(default=None, max_length=100)
+    # La aprobación la hace una persona con nombre: sin "por" no se aprueba.
+    por: str = Field(min_length=1, max_length=100, pattern=r"\S")
 
 
 @router.post("/comunicado/{producto}/aprobar")
-def aprobar(producto: str, cuerpo: Aprobacion | None = None) -> dict:
+def aprobar(producto: str, cuerpo: Aprobacion) -> dict:
     datos = obtener_datos()
-    registro = datos.aprobar(producto, cuerpo.por if cuerpo else None)
+    registro = datos.aprobar(producto, cuerpo.por.strip())
     if registro is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "No hay comunicado para ese producto.")
     return {"aprobacion": registro, "persistente": datos.persistente}
@@ -179,7 +180,9 @@ def revisar() -> dict:
 
 @router.get("/umbrales")
 def umbrales() -> dict:
-    return {"disponible": False, "puntos": [], "motivo": "El barrido sale de evals/."}
+    """Barrido de umbrales (radar/nucleo/umbrales.py): alertas inmediatas por cada par de
+    umbrales EPSS y CVSS, con la celda vigente y el piso de KEV."""
+    return {"disponible": True} | obtener_datos().umbrales()
 
 
 @router.get("/trazas")

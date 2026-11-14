@@ -23,6 +23,13 @@ function guardarClave(valor) {
   try { localStorage.setItem(CLAVE_LOCAL, valor); } catch { /* sin almacenamiento */ }
 }
 
+function leerAprobador() {
+  try { return localStorage.getItem("radar.aprobador") || ""; } catch { return ""; }
+}
+function guardarAprobador(valor) {
+  try { localStorage.setItem("radar.aprobador", valor); } catch { /* sin almacenamiento */ }
+}
+
 class SinClave extends Error {}
 
 async function api(ruta, opciones = {}) {
@@ -32,7 +39,10 @@ async function api(ruta, opciones = {}) {
   const respuesta = await fetch(ruta, { ...opciones, headers: cabeceras });
   if (respuesta.status === 401) throw new SinClave();
   const cuerpo = await respuesta.json().catch(() => ({}));
-  if (!respuesta.ok) throw new Error(cuerpo.detail || `Error ${respuesta.status}`);
+  if (!respuesta.ok) {
+    const detalle = typeof cuerpo.detail === "string" ? cuerpo.detail : "Datos inválidos.";
+    throw new Error(respuesta.status === 422 ? detalle : (cuerpo.detail ? detalle : `Error ${respuesta.status}`));
+  }
   return cuerpo;
 }
 
@@ -109,14 +119,21 @@ function pintarProductos(datos) {
       <td class="num">${esc(g.n_cves)}</td>
       <td class="num">${esc(g.en_kev.length)}</td>
       <td class="num">${fmtCvss(g.peor_cvss)}</td>
-      <td class="mono">${esc(g.objetivo_texto)}</td>
+      <td class="mono objetivo">${esc(g.objetivo_texto)}</td>
     </tr>`).join("");
   $("#productos tbody").innerHTML = filas || '<tr><td colspan="7" class="vacio">Sin hallazgos.</td></tr>';
 }
 
+// Con un inventario real son cientos de hallazgos: se pintan por tandas.
+const TANDA = 50;
+let visibles = TANDA;
+let ultimosHallazgos = null;
+
 function pintarHallazgos(datos) {
+  ultimosHallazgos = datos;
   $("#total-hallazgos").textContent = datos.total ?? "";
-  const filas = (datos.hallazgos || []).map((h) => {
+  const lista = datos.hallazgos || [];
+  const filas = lista.slice(0, visibles).map((h) => {
     const opciones = Object.entries(ESTADOS).map(([v, t]) =>
       `<option value="${v}"${v === h.estado ? " selected" : ""}>${t}</option>`).join("");
     const etiquetas = [
@@ -138,6 +155,9 @@ function pintarHallazgos(datos) {
     </tr>`;
   }).join("");
   $("#hallazgos tbody").innerHTML = filas || '<tr><td colspan="8" class="vacio">Ningún hallazgo con esos filtros.</td></tr>';
+  const resto = lista.length - visibles;
+  $("#mas-hallazgos").hidden = resto <= 0;
+  $("#mas-hallazgos").textContent = `Mostrar ${Math.min(resto, TANDA)} más (quedan ${resto})`;
 }
 
 async function abrirDetalle(producto) {
@@ -152,6 +172,17 @@ async function abrirDetalle(producto) {
   } catch (error) {
     $("#detalle-cuerpo").innerHTML = `<p class="vacio">${esc(error.message)}</p>`;
   }
+}
+
+// KEV primero; con cientos de CVE (Chrome) se muestran unas pocas y el total.
+const MAX_CVES = 24;
+function listaCves(g) {
+  const kev = new Set(g.en_kev);
+  const orden = [...g.en_kev, ...g.cves.filter((c) => !kev.has(c))];
+  const visibles = orden.slice(0, MAX_CVES).map((c) =>
+    kev.has(c) ? `<span class="pildora p-kev">${esc(c)}</span>` : `<span class="cve-item">${esc(c)}</span>`).join("");
+  const resto = orden.length - MAX_CVES;
+  return `<div class="lista-cves mono">${visibles}${resto > 0 ? `<span class="cve-resto">y ${esc(resto)} más</span>` : ""}</div>`;
 }
 
 function pintarDetalle(d) {
@@ -174,8 +205,11 @@ function pintarDetalle(d) {
     ? '<span class="pildora p-agente"><span class="punto"></span>Redactado por el agente</span>'
     : `<span class="pildora p-respaldo" title="${d.guardado ? "El verificador no aceptó el texto del agente o el agente falló" : "El agente todavía no entregó análisis para este producto"}"><span class="punto"></span>Texto armado por código</span>`;
   const aprobado = d.aprobacion
-    ? `<span class="aprobado">Aprobado ${esc(fmtHora(d.aprobacion.aprobado))}</span>`
-    : '<button type="button" id="aprobar">Aprobar comunicado</button>';
+    ? `<span class="aprobado">Aprobado por ${esc(d.aprobacion.por)} · ${esc(fmtHora(d.aprobacion.aprobado))}</span>`
+    : `<form id="aprobar" class="aprobar">
+        <input name="por" placeholder="Quién aprueba" maxlength="100" required aria-label="Quién aprueba" value="${esc(leerAprobador())}">
+        <button type="submit">Aprobar comunicado</button>
+      </form>`;
   $("#detalle-cuerpo").innerHTML = datos + `
     <div class="detalle-rejilla">
       <div class="bloque">
@@ -183,7 +217,7 @@ function pintarDetalle(d) {
         <h3>Cómo se explota</h3><p>${esc(a.como_se_explota)}</p>
         <h3>Remediación</h3><p>${esc(a.remediacion)}</p>
         ${a.mitigacion_temporal ? `<h3>Mitigación temporal</h3><p>${esc(a.mitigacion_temporal)}</p>` : ""}
-        <h3>CVE</h3><p class="mono">${g.cves.map((c) => esc(c)).join(", ")}</p>
+        <h3>CVE</h3>${listaCves(g)}
       </div>
       <div class="bloque">
         <h3>Comunicado para TI</h3><div class="comunicado">${esc(a.comunicado_ti)}</div>
@@ -196,18 +230,23 @@ function pintarDetalle(d) {
         </div>
       </div>
     </div>`;
-  const boton = $("#aprobar");
-  if (boton) {
-    boton.addEventListener("click", async () => {
+  const formulario = $("#aprobar");
+  if (formulario) {
+    formulario.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const boton = formulario.querySelector("button");
+      const por = formulario.elements.por.value.trim();
+      if (!por) return;
       boton.disabled = true;
       try {
         await api(`/api/comunicado/${encodeURIComponent(g.producto)}/aprobar`, {
-          method: "POST", headers: { "Content-Type": "application/json" }, body: "{}",
+          method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ por }),
         });
+        guardarAprobador(por);
         await abrirDetalle(g.producto);
       } catch (error) {
         boton.disabled = false;
-        boton.insertAdjacentHTML("afterend", ` <span class="clave-error">${esc(error.message)}</span>`);
+        formulario.insertAdjacentHTML("beforeend", ` <span class="clave-error">${esc(error.message)}</span>`);
       }
     });
   }
@@ -226,9 +265,129 @@ function pintarTrazas(datos) {
   const clase = { permitida: "p-ok", negada: "p-caida", limpiada: "p-semanal" };
   $("#trazas").classList.remove("vacio");
   $("#trazas").innerHTML = `<ul class="cobertura-lista">${datos.trazas.slice(0, 30).map((t) => `
-    <li><span><span class="mono">${esc(t.herramienta)}</span>
-      <span class="pildora ${clase[t.decision] || ""}"><span class="punto"></span>${esc(t.decision)}</span></span>
-      <span class="mono">${esc(fmtHora(t.momento))}</span></li>`).join("")}</ul>`;
+    <li class="traza"><div><span class="pildora ${clase[t.decision] || ""}"><span class="punto"></span>${esc(t.decision)}</span>
+      <span class="mono">${esc(t.herramienta)}</span>
+      <span class="mono traza-hora">${esc(fmtHora(t.momento))}</span></div>
+      ${t.entrada ? `<div class="traza-entrada mono">${esc(String(t.entrada).slice(0, 160))}</div>` : ""}</li>`).join("")}</ul>`;
+}
+
+// ---- umbrales --------------------------------------------------------------
+// Una sola serie (comunicados que saldrían según el umbral de EPSS, con el CVSS elegido) y el
+// piso de KEV como referencia punteada. La celda vigente va marcada.
+
+let barridoActual = null;
+let grafica = null;
+
+const fmtUmbralEpss = (v) => (v > 1 ? "apagado" : `${Math.round(v * 100)} %`);
+const fmtUmbralCvss = (v) => (v > 10 ? "apagado" : v.toFixed(1));
+const color = (nombre) => getComputedStyle(document.documentElement).getPropertyValue(nombre).trim();
+
+function pintarUmbrales(datos) {
+  const caja = $("#umbrales");
+  if (!datos.disponible || !datos.celdas || !datos.celdas.length) {
+    caja.className = "vacio";
+    caja.textContent = datos.motivo || "Sin hallazgos para barrer.";
+    return;
+  }
+  const primeraVez = !barridoActual;
+  barridoActual = datos;
+  if (primeraVez) {
+    caja.className = "";
+    const opciones = datos.rejilla_cvss.map((v) =>
+      `<option value="${v}"${v === datos.actual.cvss ? " selected" : ""}>CVSS ≥ ${esc(fmtUmbralCvss(v))}</option>`).join("");
+    caja.innerHTML = `
+      <div class="umbrales-cabeza">
+        <span class="filtros">
+          <select id="umbral-cvss" aria-label="Umbral de CVSS">${opciones}</select>
+          <select id="umbral-medida" aria-label="Qué contar">
+            <option value="productos">Comunicados</option>
+            <option value="hallazgos">Hallazgos</option>
+            <option value="equipos">Equipos</option>
+          </select>
+        </span>
+        <span class="umbrales-leyenda"><span class="muestra-linea"></span><span id="umbral-nombre">comunicados</span> inmediatos
+          <span class="muestra-linea punteada"></span>piso por KEV</span>
+      </div>
+      <div class="grafica-caja"><canvas id="grafica-umbrales" role="img" aria-label="Comunicados inmediatos según el umbral de EPSS"></canvas></div>
+      <p class="umbrales-resumen" id="umbrales-resumen"></p>`;
+    $("#umbral-cvss").addEventListener("change", dibujarUmbrales);
+    $("#umbral-medida").addEventListener("change", dibujarUmbrales);
+  }
+  dibujarUmbrales();
+}
+
+function dibujarUmbrales() {
+  const d = barridoActual;
+  const cvss = Number($("#umbral-cvss").value);
+  const celdas = d.rejilla_epss.map((e) => d.celdas.find((c) => c.epss === e && c.cvss === cvss));
+  const vigenteCvss = cvss === d.actual.cvss;
+  const medida = $("#umbral-medida").value;
+  const nombre = { productos: "comunicados", hallazgos: "hallazgos", equipos: "equipos" }[medida];
+  $("#umbral-nombre").textContent = nombre;
+  const piso = d.solo_kev[medida];
+  const acento = color("--acento");
+  const tenue = color("--texto-3");
+
+  $("#umbrales-resumen").innerHTML = `Con los umbrales vigentes (EPSS ≥ <span class="mono">${esc(fmtUmbralEpss(d.actual.epss))}</span>,
+    CVSS ≥ <span class="mono">${esc(fmtUmbralCvss(d.actual.cvss))}</span>) salen
+    <span class="mono">${esc(d.actual.productos)}</span> comunicados inmediatos
+    (<span class="mono">${esc(d.actual.hallazgos)}</span> hallazgos, <span class="mono">${esc(d.actual.equipos)}</span> equipos).
+    El piso por KEV es <span class="mono">${esc(d.solo_kev.productos)}</span> comunicados: no baja con ningún umbral.
+    ${d.sin_epss ? `<span class="mono">${esc(d.sin_epss)}</span> hallazgos sin EPSS no cruzan ese umbral.` : ""}`;
+
+  const radios = d.rejilla_epss.map((e) => (vigenteCvss && e === d.actual.epss ? 7 : 4));
+  const datos = {
+    labels: d.rejilla_epss.map(fmtUmbralEpss),
+    datasets: [
+      {
+        label: `${nombre} inmediatos`,
+        data: celdas.map((c) => c[medida]),
+        borderColor: acento, backgroundColor: acento, borderWidth: 2,
+        pointRadius: radios, pointHoverRadius: 8,
+        pointBorderColor: color("--ink-1"), pointBorderWidth: 2, tension: 0,
+      },
+      {
+        label: "Piso por KEV",
+        data: d.rejilla_epss.map(() => piso),
+        borderColor: tenue, borderDash: [5, 4], borderWidth: 1.5, pointRadius: 0, pointHoverRadius: 0,
+      },
+    ],
+  };
+  if (grafica) {
+    grafica.data = datos;
+    grafica.update("none");
+    return;
+  }
+  if (typeof Chart === "undefined") {
+    $(".grafica-caja").innerHTML = '<p class="vacio">No cargó la librería de gráficas; el resumen de abajo tiene las cifras.</p>';
+    return;
+  }
+  grafica = new Chart($("#grafica-umbrales"), {
+    type: "line",
+    data: datos,
+    options: {
+      responsive: true, maintainAspectRatio: false, animation: false,
+      interaction: { mode: "index", intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          filter: (item) => item.datasetIndex === 0,
+          callbacks: {
+            title: (items) => `EPSS ≥ ${items[0].label}`,
+            label: (item) => {
+              const cv = Number($("#umbral-cvss").value);
+              const c = barridoActual.celdas.find((x) => x.epss === barridoActual.rejilla_epss[item.dataIndex] && x.cvss === cv);
+              return [`${c.productos} comunicados`, `${c.hallazgos} hallazgos · ${c.cves} CVE`, `${c.equipos} equipos`];
+            },
+          },
+        },
+      },
+      scales: {
+        x: { title: { display: true, text: "Umbral de EPSS", color: tenue }, ticks: { color: tenue }, grid: { display: false } },
+        y: { beginAtZero: true, ticks: { color: tenue, precision: 0 }, grid: { color: color("--ink-3") } },
+      },
+    },
+  });
 }
 
 // ---- ciclo -----------------------------------------------------------------
@@ -272,7 +431,7 @@ async function refrescar() {
 async function refrescarAuxiliares() {
   try {
     const [umbrales, trazas] = await Promise.all([api("/api/umbrales"), api("/api/trazas")]);
-    pintarAuxiliar("#umbrales", umbrales);
+    pintarUmbrales(umbrales);
     pintarTrazas(trazas);
   } catch { /* se reintenta en el próximo ciclo */ }
 }
@@ -287,8 +446,14 @@ $("#clave").addEventListener("submit", (e) => {
   refrescarAuxiliares();
 });
 
+$("#mas-hallazgos").addEventListener("click", () => {
+  visibles += TANDA;
+  if (ultimosHallazgos) pintarHallazgos(ultimosHallazgos);
+});
+
 let pausaFiltro;
 $("#filtros").addEventListener("input", () => {
+  visibles = TANDA;
   clearTimeout(pausaFiltro);
   pausaFiltro = setTimeout(refrescar, 250);
 });
@@ -364,3 +529,4 @@ $("#carga").addEventListener("submit", async (e) => {
 refrescar();
 refrescarAuxiliares();
 setInterval(refrescar, INTERVALO_MS);
+setInterval(refrescarAuxiliares, INTERVALO_MS * 2);

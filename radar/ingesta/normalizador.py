@@ -192,7 +192,7 @@ class Diccionario:
             vendor, producto = k.replace("\\", "").split(":", 1)
             prod = producto.replace("_", " ")
             for t in {pares[k]["t"], prod, f"{vendor.replace('_', ' ')} {prod}"}:
-                textos.append(utils.default_process(t))
+                textos.append(_ordenar_palabras(utils.default_process(t)))
                 indice.append(i)
         return cls(pares, claves, textos, indice)
 
@@ -201,12 +201,19 @@ class Diccionario:
     ) -> list[Candidato]:
         from rapidfuzz import fuzz, process, utils
 
-        consulta = utils.default_process(nombre)
+        consulta = _ordenar_palabras(utils.default_process(nombre))
         if not consulta:
             return []
         prov = re.sub(r"[^a-z0-9]", "", (proveedor or "").lower())
+        # Solo cuentan los candidatos que superan el mínimo: score_cutoff descarta el resto
+        # temprano sin cambiar la decisión.
         crudos = process.extract(
-            consulta, self.textos, scorer=fuzz.token_sort_ratio, limit=60, processor=None
+            consulta,
+            self.textos,
+            scorer=fuzz.ratio,  # sobre palabras ya ordenadas = token_sort_ratio
+            limit=60,
+            processor=None,
+            score_cutoff=PUNTAJE_MINIMO,
         )
         mejor: dict[str, float] = {}
         for _, puntaje, j in crudos:
@@ -250,6 +257,12 @@ def _proveedor_coincide(vendor: str, proveedor_compacto: str) -> bool:
     if not v or not proveedor_compacto:
         return False
     return proveedor_compacto.startswith(v) if len(v) < 3 else v in proveedor_compacto
+
+
+def _ordenar_palabras(texto: str) -> str:
+    """token_sort_ratio(a, b) es ratio sobre las palabras ordenadas de a y b. Ordenar el
+    diccionario una vez al cargarlo evita reordenar 150 000 textos en cada consulta."""
+    return " ".join(sorted(texto.split()))
 
 
 @lru_cache(maxsize=1)
