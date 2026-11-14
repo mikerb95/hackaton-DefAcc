@@ -86,6 +86,10 @@ class Traza:
     intentos de herramientas no permitidas; el worker puede volcarlo a la base."""
 
     eventos: list[Evento] = field(default_factory=list)
+    # Los anota el analista al terminar (ResultMessage.total_cost_usd y num_turns), para que
+    # la suite mida el costo real por corrida. None si no hubo modelo.
+    costo_usd: float | None = None
+    turnos: int | None = None
 
     def registrar(self, evento: Evento) -> None:
         self.eventos.append(evento)

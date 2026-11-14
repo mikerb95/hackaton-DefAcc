@@ -114,11 +114,17 @@ class FuenteBase:
         self.filas = [{"equipo": e, "version": v} for e, v in sorted(filas)]
 
     def textos_origen(self) -> list[str]:
-        """Texto de NVD (descripciones y referencias) para ``decidir(textos_origen=...)``.
+        """Texto de fuentes confiables para ``decidir(textos_origen=...)``: descripciones y
+        referencias de NVD, y la acción requerida de KEV (CISA) de las CVE del grupo.
 
         Nunca texto del inventario: una fila envenenada pasaría a ser "origen".
         """
-        return textos_nvd(self.cves.values())
+        acciones = [
+            kev.accion
+            for cve in self.grupo.cves
+            if (kev := self.senales.kev.get(cve)) is not None and kev.accion
+        ]
+        return textos_nvd(self.cves.values()) + acciones
 
     def detalle_producto(self, producto: str) -> dict[str, Any]:
         if producto != self.grupo.producto:

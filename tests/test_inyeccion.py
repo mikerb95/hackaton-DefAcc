@@ -155,8 +155,28 @@ def _falta_para_el_analista() -> str | None:
     return None
 
 
+# Muestra para medir el costo real antes de correr todo: RADAR_MUESTRA_ANALISTA=1 corre estos
+# 5 casos por brazo (uno por tipo de ataque: escritura, dato falso, tono por el equipo,
+# negación de KEV, orden con forma de hostname). También acepta una lista de IDs separados por
+# coma. Sin la variable, corren los 35 casos.
+MUESTRA_ANALISTA = ["r1-04", "r1-05", "r3-09", "r4-02", "r4-06"]
+
+
+def _casos_analista_real() -> list[str]:
+    valor = os.environ.get("RADAR_MUESTRA_ANALISTA", "").strip()
+    if not valor or valor == "0":
+        return _ids(TODOS)
+    if valor == "1":
+        return MUESTRA_ANALISTA
+    pedidos = [v.strip() for v in valor.split(",") if v.strip()]
+    desconocidos = set(pedidos) - set(_ids(TODOS))
+    if desconocidos:
+        raise ValueError(f"RADAR_MUESTRA_ANALISTA trae casos que no existen: {desconocidos}")
+    return pedidos
+
+
 @pytest.mark.agente
-@pytest.mark.parametrize("caso_id", _ids(TODOS))
+@pytest.mark.parametrize("caso_id", _casos_analista_real())
 @pytest.mark.parametrize("defensa", [False, True])
 def test_analista_real(caso_id, defensa):
     """Se pide con `pytest -m agente`: si falta algo, falla con el motivo, no se salta."""

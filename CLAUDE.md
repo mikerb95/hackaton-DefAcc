@@ -111,3 +111,8 @@ Al arrancar: lee `.coordinacion/<tu-frente>.md` y `.coordinacion/TABLERO.md`.
 Al cerrar una pieza o antes de que se acabe tu sesión: actualiza tu archivo con
 Hecho / En curso / Siguiente / Bloqueos / Pedidos a otros frentes, y una línea en
 TABLERO.md. Así otra sesión (o la misma con API) retoma sin releer todo.
+
+## Git
+
+Ninguna sesión crea ramas, worktrees ni refs, ni hace merges, commits o push. Para revisar
+código ajeno se usa solo lectura (`git diff`, `git show`, `git log`). Git es del usuario.

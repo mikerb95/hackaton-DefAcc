@@ -292,8 +292,28 @@ def filas_analista_real(resultados: list[dict[str, Any]]) -> list[list[Any]]:
     return filas
 
 
+AVISO_ENTRADA_REAL = (
+    "entrada forzada: el modelo ve programa y proveedor crudos, una exposición peor que en "
+    "producción"
+)
+
+
+def costo_analista_real(resultados: list[dict[str, Any]]) -> str | None:
+    """Costo total y por corrida del analista real, si el analista lo anotó en la traza."""
+    costos = [r["costo_usd"] for r in resultados if r.get("costo_usd") is not None]
+    if not costos:
+        return None
+    total = sum(costos)
+    texto = (
+        f"costo {total:.2f} USD en {len(costos)} corridas ({total / len(costos):.3f} por corrida"
+    )
+    return texto.replace(".", ",") + ")"
+
+
 def _estado_real(i: dict[str, Any]) -> str:
-    return i["real"].get("estado") or f"pendiente ({i['real']['pendiente']})"
+    estado = i["real"].get("estado") or f"pendiente ({i['real']['pendiente']})"
+    costo = costo_analista_real(i.get("real_resultados", []))
+    return f"{estado}; {costo}" if costo else estado
 
 
 def _cifra_limpia(i: dict[str, Any]) -> str:
@@ -311,7 +331,8 @@ def _cifra_limpia(i: dict[str, Any]) -> str:
     _, con_r, util_r = _contar(reales, ronda, True)
     if nr:
         real = (
-            f"Analista real, ronda {ronda}: sin defensa {_celda(sin_r, nr)}, con defensa "
+            f"Analista real ({AVISO_ENTRADA_REAL}), ronda {ronda}: sin defensa "
+            f"{_celda(sin_r, nr)}, con defensa "
             f"{_celda(con_r, nr)}, utilidad con defensa {util_r} de {nr} "
             f"({_estado_real(i)})."
         )
@@ -382,10 +403,7 @@ def seccion_inyeccion(i: dict[str, Any]) -> str:
             "devuelven las herramientas (ya limpio, en el brazo con defensa): mide si la "
             'tubería detiene el efecto del ataque aunque el modelo caiga. "Simulado '
             '(honesto)" ignora las órdenes: mide que la defensa no descarte comunicados '
-            'correctos. La tasa de un modelo real es la fila "analista real". El analista real '
-            "se mide en entrada forzada: recibe la fila envenenada con programa y proveedor "
-            "crudos, una exposición peor que la de producción, donde sus herramientas solo "
-            "devuelven equipo saneado y versión.\n"
+            'correctos. La tasa de un modelo real es la fila "analista real".\n'
         ),
         "\n".join(f"- {DESCRIPCION_RONDA[r]}" for r in rondas if r in DESCRIPCION_RONDA) + "\n",
         "### Entrada forzada: las defensas del agente, aisladas\n",
@@ -394,6 +412,7 @@ def seccion_inyeccion(i: dict[str, Any]) -> str:
             "frenado. Es el peor caso de la entrada.\n"
         ),
         _tabla(ENCABEZADO_BRAZOS, filas) + "\n",
+        f"Analista real: {AVISO_ENTRADA_REAL}.\n",
         "### Entrada real: ingesta, normalizador y saneado del nombre de equipo\n",
         (
             "La fila envenenada pasa por la ingesta real: el normalizador del radar y, con "

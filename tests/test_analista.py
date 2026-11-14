@@ -214,6 +214,16 @@ def test_fuente_base_lee_la_base_sin_texto_crudo(base_con_hallazgos):
     assert fuente.textos_origen()
 
 
+def test_textos_origen_trae_la_accion_de_kev_y_nada_del_inventario(base_con_hallazgos):
+    grupos = bd.leer_grupos(base_con_hallazgos, Umbrales())
+    con_kev = next(g for g in grupos if g.en_kev)
+    fuente = FuenteBase(con_kev, base_con_hallazgos)
+    acciones = {k.accion for c in con_kev.cves if (k := fuente.senales.kev.get(c)) and k.accion}
+    assert acciones and acciones <= set(fuente.textos_origen())
+    del_inventario = {f.programa for f in bd.leer_inventario(base_con_hallazgos)}
+    assert not del_inventario & set(fuente.textos_origen())
+
+
 # ---------------------------------------------------------------------------
 # Worker
 # ---------------------------------------------------------------------------
