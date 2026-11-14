@@ -1,0 +1,11 @@
+{
+  "name": "radar-e2e",
+  "private": true,
+  "description": "Pruebas en navegador del asistente (Playwright, modelo simulado, sin costo). Solo desarrollo.",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.0"
+  }
+}

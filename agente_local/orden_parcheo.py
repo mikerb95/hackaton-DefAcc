@@ -151,6 +151,8 @@ def orden_parchear(args: argparse.Namespace, abrir: Any = None) -> int:
         _decir("El parcheo no está habilitado en este equipo (radar-agente parcheo habilitar).")
         return SALIDA_ERROR
     if not estado.inscrito and entrega_local is None:
+        if args.programado:
+            return SALIDA_OK
         _decir("El equipo no está inscrito: corre primero `inscribir`.")
         return SALIDA_ERROR
     plataforma = plataforma_local()

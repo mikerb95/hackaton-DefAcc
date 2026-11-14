@@ -18,3 +18,9 @@ datos_locales/
 .vercel
 .env*
 !.env.example
+
+# Playwright (tests/e2e)
+tests/e2e/node_modules/
+tests/e2e/test-results/
+tests/e2e/capturas/
+tests/e2e/playwright-report/

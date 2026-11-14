@@ -140,3 +140,33 @@ p { margin: 0; }
   .resumen-frase { font-size: 18px; }
   .cabecera-nota { display: none; }
 }
+
+/* Caja de preguntas (public/mi-equipo/asistente.js). */
+.asis-equipo { display: grid; gap: 12px; }
+.asis-atajos { display: flex; flex-wrap: wrap; gap: 8px; }
+.asis-atajo, .asis-form button {
+  font: 600 14px var(--sans); border-radius: 999px; cursor: pointer; padding: 8px 14px;
+}
+.asis-atajo { background: var(--ink-2); color: var(--texto); border: 1px solid var(--linea); }
+.asis-atajo:hover { background: var(--acento-tinte); }
+.asis-form { display: flex; gap: 8px; }
+.asis-form input {
+  flex: 1; min-width: 0; font: 16px var(--sans); color: var(--texto); background: var(--ink-2);
+  border: 1px solid var(--linea); border-radius: 12px; padding: 12px 14px;
+}
+.asis-form button { background: var(--acento); color: var(--ink-0); border: 0; }
+.asis-form button:disabled, .asis-form input:disabled { opacity: 0.55; cursor: default; }
+.asis-hilo { display: grid; gap: 14px; }
+.asis-hilo:empty { display: none; }
+.asis-turno { display: grid; gap: 8px; }
+.asis-pregunta {
+  justify-self: end; max-width: 85%; padding: 8px 12px; border-radius: 14px 14px 4px 14px;
+  background: var(--acento-tinte);
+}
+.asis-pasos { list-style: none; margin: 0; padding: 0; display: flex; gap: 6px; flex-wrap: wrap; }
+.asis-pasos li { font-size: 13px; color: var(--texto-2); background: var(--ink-2); padding: 3px 10px; border-radius: 999px; }
+.asis-pensando .asis-respuesta:empty::after { content: "Pensando..."; color: var(--texto-3); font-size: 14px; }
+.asis-texto p { margin: 0 0 8px; }
+.asis-texto ul { margin: 0 0 8px; padding-left: 20px; }
+.asis-texto a { color: var(--acento); }
+.asis-error { color: var(--rojo); margin: 0; }

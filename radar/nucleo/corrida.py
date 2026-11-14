@@ -19,6 +19,8 @@ Reglas de corrida:
   producto (una acción por producto). Se marca con `marcar_avisado()` o al aprobar el
   comunicado (`bd.aprobar_comunicado`). Un hallazgo que sube a "inmediato" (por ejemplo, entra a
   KEV) se vuelve a avisar.
+- **Aviso push:** al final de cada corrida guardada, `radar.avisos.ntfy.notificar` manda por
+  ntfy los críticos nuevos (solo si `NTFY_TOPICO` está configurado).
 """
 
 from __future__ import annotations
@@ -141,6 +143,11 @@ def correr(
     guardados = {h.id: h for h in bd.leer_hallazgos(conexion) if h.id in nuevos}
     resultado.hallazgos = ordenar(guardados.values())
     resultado.grupos = agrupar(resultado.hallazgos, umbrales)
+
+    # Aviso push de críticos nuevos. Sin NTFY_TOPICO no hace nada; nunca lanza.
+    from radar.avisos import ntfy
+
+    ntfy.notificar(conexion, resultado.hallazgos)
     return resultado
 
 

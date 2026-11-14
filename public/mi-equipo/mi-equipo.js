@@ -190,6 +190,7 @@
       partes.push(a);
     }
     hoja.replaceChildren(...partes, tareas(d.tareas));
+    if (window.cajaAsistenteEquipo && !d.equipo.pendiente) hoja.append(window.cajaAsistenteEquipo(enlace()));
     if (d.sin_revisar && d.sin_revisar.length) {
       const s = el("section", "tarjeta sin-revisar");
       s.append(el("h2", "", "Lo que no se pudo revisar"));
