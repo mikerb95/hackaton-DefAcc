@@ -98,12 +98,34 @@ Qué falta resolver antes de presentar:
 
 | Tema | Estado |
 |---|---|
-| Ensayo con landing, sesión y aprobación de equipo | Pendiente: el ensayo de arriba es anterior a la landing y al inicio de sesión. Repetirlo en producción con el usuario de la demo, sin aprobar Chrome ni el equipo pendiente |
+| Ensayo con landing, sesión y aprobación de equipo | Hecho en producción en solo lectura (sección siguiente). Falta: el inicio de sesión real con el admin (lo prueba vercel) y un equipo inscrito y pendiente para el paso 4b |
 | Ver el panel en el navegador | Decidido: clip grabado en el pitch más despliegue de producción sin protección, después de rotar el token de Turso. La API sigue pidiendo la clave de acceso. Revisión visual del panel en producción: pendiente de la URL |
 | Paso 1 "panel vacío" | Resuelto: Turso se vacía entero antes de grabar (decisión del usuario) |
 | Fecha de alta en KEV en la razón | Resuelto: comprobado en la preview vigente por API |
 | Análisis en cola | Comprobado en la preview vigente: el resumen trae los trabajos y `panel.js` desplegado trae la píldora. El trabajo de análisis queda pendiente porque el analista no corre: el panel lo muestra con una píldora neutra "Análisis en cola" y el detalle usa el texto armado por código. Cada carga de ensayo suma un trabajo. Decisión del usuario: Turso se vacía entero antes de grabar, cuando él lo diga |
 | No aprobar Chrome en ensayos | Una aprobación queda guardada en Turso y el botón ya no aparece en la demo |
+
+## Ensayo en producción (14 de noviembre, solo lectura)
+
+`hackaton-defacc.vercel.app`, sin Deployment Protection, contra Turso. Solo lecturas: no se
+aprobó nada, no se cargó inventario ni se cambiaron estados. La API se leyó con la clave
+compartida; el inicio de sesión real con el admin lo prueba la sesión vercel.
+
+| Paso | Ruta | Tiempo real | Resultado |
+|---|---|---|---|
+| 1 | `GET /` (landing) | 0,4 s | 200. Se ve bien en escritorio y en móvil; "Entrar al panel" lleva a `/entrar/` |
+| 1 | `GET /entrar/` | 0,3 s | 200. Formulario de usuario y contraseña |
+| 1 | `GET /panel/` sin sesión | 0,4 s | Redirige a `/entrar/`, como debe |
+| 1 | `GET /api/resumen` sin credencial | inmediato | 401 |
+| 1 | `GET /api/resumen` | 0,6 s | Fuentes NVD, KEV y EPSS en verde, base persistente, 4 análisis en cola (de los ensayos) |
+| 3 | `GET /api/hallazgos?kev=true&texto=chrome` | 0,4 s | CVE-2026-125350 con "Agregada a KEV el 10 de noviembre de 2026 (plazo CISA 24 de noviembre de 2026)" |
+| 4 | `GET /api/productos` y `GET /api/analisis/Google Chrome` | 0,5 y 0,6 s | "actualizar a 157.0.8103.78"; texto armado por código, sin aprobar, con un comando de remediación de plantilla |
+| 4b | `GET /api/equipos` | 0,5 s | 0 equipos inscritos: **falta preparar** el PC pendiente antes de grabar |
+| 5 | `GET /api/trazas` | 0,3 s | 27 trazas reales de la guarda del plugin |
+| 6 | `GET /api/umbrales` | 0,5 s | Barrido con celda vigente y piso de KEV |
+| Panel | `panel.js`, `estilo.css`, `admin.js`, descargas del agente | 0,3 a 0,4 s | 200 |
+
+No se midió `POST /api/inventario` (escribe en Turso); vale la última medición, 9,6 s.
 
 ## Si algo falla
 
