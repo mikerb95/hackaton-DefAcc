@@ -1,6 +1,7 @@
 // Usuario robot del asistente: entra al panel, pregunta, ve la tarjeta, aprueba o descarta.
 // Modelo simulado (radar/asistente/motor.py, modelo_simulado): no gasta IA.
 import { test, expect } from "@playwright/test";
+import { readFileSync } from "node:fs";
 
 const CLAVE = "clave-de-prueba-e2e";
 
@@ -106,4 +107,32 @@ test("el admin ve los topes y la auditoría", async ({ page }) => {
   await expect(topes).toContainText("proponer_estado_hallazgo: aprobada, pidió Ana");
   await page.waitForTimeout(700); // termina la transición entre secciones
   await page.screenshot({ path: "capturas/5-topes.png", fullPage: true });
+});
+
+test("el admin aprueba un equipo y su usuario pregunta en Mi equipo", async ({ page }) => {
+  // Antes de aprobar, Mi equipo no ofrece la caja (el equipo espera a TI).
+  const enlace = readFileSync("/tmp/radar-e2e-enlace.txt", "utf8").trim();
+  await page.goto(`/mi-equipo/#t=${enlace}`);
+  await expect(page.locator("#hoja")).toContainText("espera la aprobación");
+  await expect(page.locator(".asis-equipo")).toHaveCount(0);
+
+  await entrar(page, "jefa");
+  await page.fill("#asistente-pregunta", "aprueba el equipo pendiente");
+  await page.press("#asistente-pregunta", "Enter");
+  const tarjeta = page.locator(".asis-tarjeta");
+  await expect(tarjeta).toContainText("PC-CONTA-03");
+  await expect(tarjeta.locator(".asis-avisos")).toContainText("empieza a reportar");
+  await page.screenshot({ path: "capturas/6-equipo.png" });
+  await tarjeta.getByRole("button", { name: "Aprobar equipo" }).click();
+  await expect(page.locator(".asis-respuesta").last()).toContainText("quedó aprobado");
+
+  await page.goto(`/mi-equipo/#t=${enlace}`);
+  const caja = page.locator(".asis-equipo");
+  await expect(caja).toBeVisible();
+  await caja.getByRole("button", { name: "¿Qué tengo que hacer hoy?" }).click();
+  await expect(caja.locator(".asis-pasos li")).toContainText("Revisando tu equipo");
+  await expect(caja.locator(".asis-respuesta")).toContainText("Respuesta simulada");
+  await expect(caja.locator(".asis-tarjeta")).toHaveCount(0);
+  await caja.scrollIntoViewIfNeeded();
+  await page.screenshot({ path: "capturas/7-mi-equipo.png", fullPage: true });
 });

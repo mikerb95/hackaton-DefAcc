@@ -158,10 +158,13 @@ def modelo_simulado(mensajes: list[dict[str, Any]], ctx: Contexto) -> dict[str, 
     ultimo = mensajes[-1]
     pregunta = _ultima_pregunta(mensajes).casefold()
     quiere_cambio = any(p in pregunta for p in ("marca", "pasa ", "cambia", "aprueba"))
+    quiere_equipo = quiere_cambio and "equipo" in pregunta
 
     if isinstance(ultimo["content"], str):
         if ctx.rol == "equipo":
             return usar("mi_equipo", {})
+        if quiere_equipo and permisos.puede(ctx.rol, "proponer_aprobar_equipo"):
+            return usar("equipos", {"solo_pendientes": True})
         if quiere_cambio and permisos.puede(ctx.rol, "proponer_estado_hallazgo"):
             return usar("buscar_hallazgos", {"limite": 1, "estado": "nuevo"})
         if quiere_cambio:
@@ -179,6 +182,18 @@ def modelo_simulado(mensajes: list[dict[str, Any]], ctx: Contexto) -> dict[str, 
             if r.get("is_error"):
                 return decir("Entendido, no cambio nada. ¿Qué quieres ajustar?")
             return decir("Listo, el hallazgo quedó en curso. [Ver hallazgos](/panel/#hallazgos)")
+        if nombre == "proponer_aprobar_equipo":
+            if r.get("is_error"):
+                return decir("Entendido, el equipo sigue pendiente.")
+            return decir("Listo, el equipo quedó aprobado. [Ver equipos](/panel/#equipos)")
+        if nombre == "equipos" and quiere_equipo:
+            try:
+                lista = json.loads(contenido)["datos"]["equipos"]
+            except (ValueError, KeyError, TypeError):
+                lista = []
+            if not lista:
+                return decir("No hay equipos esperando aprobación.")
+            return usar("proponer_aprobar_equipo", {"equipo_id": lista[0]["equipo_id"]})
         if nombre == "buscar_hallazgos" and quiere_cambio:
             try:
                 datos = json.loads(contenido)["datos"]["hallazgos"]

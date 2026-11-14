@@ -15,9 +15,9 @@ export default defineConfig({
     command:
       `cd ../.. && env -u TURSO_DATABASE_URL -u TURSO_AUTH_TOKEN -u VERCEL ` +
       `RADAR_SQLITE=${BASE} RADAR_DATOS=base RADAR_ASISTENTE_FALSO=1 CLAVE_ACCESO=clave-e2e ` +
-      `TURSO_DATABASE_URL= .venv/bin/python tests/e2e/sembrar.py && ` +
+      `TURSO_DATABASE_URL= AGENTE_TOKEN_INSCRIPCION= AGENTE_APROBACION= .venv/bin/python tests/e2e/sembrar.py && ` +
       `env -u VERCEL RADAR_SQLITE=${BASE} RADAR_DATOS=base RADAR_ASISTENTE_FALSO=1 CLAVE_ACCESO=clave-e2e ` +
-      `TURSO_DATABASE_URL= .venv/bin/uvicorn app:app --port ${PUERTO}`,
+      `TURSO_DATABASE_URL= AGENTE_TOKEN_INSCRIPCION= AGENTE_APROBACION= .venv/bin/uvicorn app:app --port ${PUERTO}`,
     url: `http://127.0.0.1:${PUERTO}/api/sesion`,
     reuseExistingServer: false,
     timeout: 60_000,

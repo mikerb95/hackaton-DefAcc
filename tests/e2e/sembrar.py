@@ -63,7 +63,12 @@ def sembrar_equipo() -> None:
     credencial = secrets.token_urlsafe(32)
     r = cliente.post(
         "/api/agente/inscribir",
-        json={"equipo_id": equipo_id, "nombre_equipo": "PC-CONTA-03", "credencial": credencial, "codigo": nuevo_codigo()},
+        json={
+            "equipo_id": equipo_id,
+            "nombre_equipo": "PC-CONTA-03",
+            "credencial": credencial,
+            "codigo": nuevo_codigo(),
+        },
     )
     r.raise_for_status()
     reporte = {
@@ -71,8 +76,22 @@ def sembrar_equipo() -> None:
         "equipo_id": equipo_id,
         "nombre_equipo": "PC-CONTA-03",
         "recogido": "2026-11-14T15:00:00Z",
-        "so": {"familia": "windows", "nombre": "Windows 11 Pro", "version": "23H2", "build": "10.0.22631.4317", "arquitectura": "x64"},
-        "software": [{"programa": "WinRAR 5.61 (64-bit)", "version": "5.61", "proveedor": "win.rar GmbH", "fuente": "registro", "ambito": "maquina"}],
+        "so": {
+            "familia": "windows",
+            "nombre": "Windows 11 Pro",
+            "version": "23H2",
+            "build": "10.0.22631.4317",
+            "arquitectura": "x64",
+        },
+        "software": [
+            {
+                "programa": "WinRAR 5.61 (64-bit)",
+                "version": "5.61",
+                "proveedor": "win.rar GmbH",
+                "fuente": "registro",
+                "ambito": "maquina",
+            }
+        ],
     }
     r = cliente.post("/api/agente/reporte", json=reporte, headers={CABECERA_CREDENCIAL: credencial})
     r.raise_for_status()
