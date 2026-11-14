@@ -318,7 +318,9 @@ def test_cargar_archivo_con_agentes_no_propone_cerrar_lo_de_los_agentes(conexion
     from radar.nucleo.corrida import cargar_inventario
 
     # Un equipo con agente local reporta WinRAR 5.61 (afectado por CVE-2018-20250, KEV).
-    almacen.inscribir(conexion, "equipo-uuid-1", "PC-AGENTE", "0.1.0")
+    almacen.inscribir(
+        conexion, "equipo-uuid-1", "PC-AGENTE", "0.1.0", "c" * 43, "ABCD-EFGH", aprobar=True
+    )
     fila = FilaInventario(
         equipo="PC-AGENTE",
         programa="WinRAR 5.61 (64-bit)",
@@ -361,6 +363,6 @@ def test_hay_equipos_sin_tabla_no_falla(tmp_path):
     c = bd.conectar(ruta_sqlite=ruta)
     bd.crear_esquema(c)
     assert almacen.hay_equipos(c) is False
-    almacen.inscribir(c, "uuid-1", "PC-1", "0.1.0")
+    almacen.inscribir(c, "uuid-1", "PC-1", "0.1.0", "c" * 43, "ABCD-EFGH")
     assert almacen.hay_equipos(c) is True
     c.close()

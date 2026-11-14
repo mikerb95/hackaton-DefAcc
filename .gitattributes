@@ -1,3 +1,5 @@
 agente_local/instalacion/*.sh text eol=lf
 agente_local/instalacion/*.service text eol=lf
 agente_local/instalacion/*.timer text eol=lf
+agente_local/instalacion/*.cmd text eol=crlf
+agente_local/instalacion/*.ps1 text eol=crlf

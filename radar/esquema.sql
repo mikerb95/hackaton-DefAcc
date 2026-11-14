@@ -162,7 +162,8 @@ CREATE TABLE IF NOT EXISTS equipos (
   recortes TEXT,                 -- JSON: qué se recortó o descartó del último reporte
   aprobado TEXT,                 -- fecha de aprobación en la consola (NULL: pendiente)
   aprobado_por TEXT,
-  reporte_pendiente TEXT         -- JSON del último reporte mientras está pendiente
+  reporte_pendiente TEXT,        -- JSON del último reporte mientras está pendiente
+  codigo TEXT                    -- SHA-256 del código de activación que mostró el agente
 );
 CREATE UNIQUE INDEX IF NOT EXISTS idx_equipos_credencial ON equipos (credencial);
 

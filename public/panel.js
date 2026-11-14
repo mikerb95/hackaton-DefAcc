@@ -428,21 +428,23 @@ function miniTermometro(t) {
 
 function pildoraEstadoEquipo(e) {
   if (e.revocado) return '<span class="pildora p-caida"><span class="punto"></span>revocado</span>';
-  if (e.pendiente) return '<span class="pildora p-semanal"><span class="punto"></span>por aprobar</span>';
+  if (e.pendiente) return '<span class="pildora p-semanal"><span class="punto"></span>por activar</span>';
   return "";
 }
 
-// Aprobación en la consola: hasta que TI lo aprueba, el inventario del equipo no se cruza.
+// Activación en la consola: hasta que TI escribe el código que mostró el instalador en la
+// pantalla del equipo, su inventario no se cruza. El código prueba que alguien vio ese equipo.
 function bloqueAprobacion(e) {
   if (e.revocado || !e.pendiente) return "";
-  if (!puede("admin")) return '<div class="aprobacion-equipo"><p><strong>Pendiente de aprobación.</strong> Un administrador tiene que aprobar este equipo antes de que su inventario entre al cruce.</p></div>';
+  if (!puede("admin")) return '<div class="aprobacion-equipo"><p><strong>Por activar.</strong> Un administrador tiene que activar este equipo con su código antes de que su inventario entre al cruce.</p></div>';
   return `
     <div class="aprobacion-equipo">
-      <p><strong>Pendiente de aprobación.</strong> El equipo se inscribió y ya reporta, pero su
-      inventario no entra al cruce hasta que alguien de TI lo apruebe. Revisa la ficha antes:
-      si no reconoces el equipo, recházalo.</p>
+      <p><strong>Por activar.</strong> El equipo se instaló y ya reporta, pero su inventario no
+      entra al cruce hasta que escribas el código de activación que el instalador mostró en su
+      pantalla. Si no reconoces el equipo, recházalo.</p>
       <form id="aprobar-equipo" class="aprobar">
-        <button type="submit">Aprobar equipo</button>
+        <input name="codigo" class="mono" placeholder="XXXX-XXXX" maxlength="9" autocomplete="off" required aria-label="Código de activación">
+        <button type="submit">Activar equipo</button>
         <button type="button" class="boton-texto texto-peligro" id="rechazar-equipo">Rechazar</button>
         <span class="nota">como ${esc(SESION.nombre)}</span>
       </form>
@@ -456,11 +458,20 @@ function conectarAprobacion(e) {
   formulario.addEventListener("submit", async (ev) => {
     ev.preventDefault();
     const boton = formulario.querySelector("button");
+    const codigo = formulario.elements.codigo.value.trim().toUpperCase();
+    if (!codigo) return;
     boton.disabled = true;
     try {
-      await api(`/api/equipos/${encodeURIComponent(e.id)}/aprobar`, {
-        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({}),
+      const r = await api("/api/equipos/activar", {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ codigo }),
       });
+      if (r.equipo.id !== e.id) {
+        // El código era de otro equipo pendiente: se activó ese, se abre su ficha.
+        await abrirEquipo(r.equipo.id);
+        refrescar();
+        refrescarAuxiliares();
+        return;
+      }
       await abrirEquipo(e.id);
       refrescar();
       refrescarAuxiliares();
@@ -487,7 +498,7 @@ function pintarEquipos(datos) {
   const vacio = $("#equipos-vacio");
   $("#equipos").closest(".tabla-envoltura").hidden = !hay;
   $("#total-equipos").textContent = hay
-    ? (datos.pendientes ? `${datos.total}, ${datos.pendientes} por aprobar` : datos.total) : "";
+    ? (datos.pendientes ? `${datos.total}, ${datos.pendientes} por activar` : datos.total) : "";
   $("#nav-equipos").textContent = hay ? datos.total : "";
   vacio.hidden = hay;
   if (!hay) {

@@ -505,3 +505,13 @@ main { view-transition-name: contenido; }
   .entrar-caja { transition: none; }
   ::view-transition-old(contenido), ::view-transition-new(contenido) { animation: none; }
 }
+
+/* Activar un equipo con su código y descargar el instalador */
+.activar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 14px; }
+.activar label { color: var(--texto-2); font-size: 13px; width: 100%; }
+.activar input { background: var(--ink-2); color: var(--texto); border: 1px solid var(--linea); border-radius: 8px; padding: 7px 10px; font: inherit; }
+.activar input[name="codigo"] { width: 130px; letter-spacing: 0.08em; text-transform: uppercase; }
+.activar-resultado { font-size: 13px; }
+.activar-resultado.ok { color: var(--lima); }
+.aprobar input[name="codigo"] { width: 130px; letter-spacing: 0.08em; text-transform: uppercase; font-family: var(--mono); }
+.aprobar input[name="codigo"] { background: var(--ink-2); color: var(--texto); border: 1px solid var(--linea); border-radius: 8px; padding: 7px 10px; }
