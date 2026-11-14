@@ -14,6 +14,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from radar.api.agente import router_agente, router_equipos
+from radar.api.mi_equipo import router_aviso, router_mi_equipo
 from radar.api.parcheo import router_agente_parcheo, router_parcheo
 from radar.api.rutas import router
 from radar.api.sesion import router_admin, router_sesion
@@ -28,6 +29,8 @@ app.include_router(router_agente)
 app.include_router(router_equipos)
 app.include_router(router_agente_parcheo)
 app.include_router(router_parcheo)
+app.include_router(router_aviso)
+app.include_router(router_mi_equipo)
 
 PUBLICO = Path(__file__).parent / "public"
 if not os.environ.get("VERCEL") and PUBLICO.is_dir():
