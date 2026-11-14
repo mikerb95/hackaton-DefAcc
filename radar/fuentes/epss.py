@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import csv
 import gzip
-import io
 from collections.abc import Iterable
 from datetime import date
 

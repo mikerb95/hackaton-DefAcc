@@ -13,6 +13,7 @@ Reglas que se cumplen aquí:
 
 from __future__ import annotations
 
+import functools
 import json
 import re
 import sqlite3
@@ -28,11 +29,12 @@ from radar.contratos import (
     Cobertura,
     Ejecucion,
     FilaInventario,
+    Grupo,
     Hallazgo,
     Rango,
     Referencia,
-    Senales,
     SenalEpss,
+    Senales,
     SenalKev,
     Trabajo,
 )
@@ -86,6 +88,29 @@ def conectar(solo_lectura: bool = False, ruta_sqlite: Path | None = None) -> Any
         return ConexionSoloLectura(conexion)
     ruta.parent.mkdir(parents=True, exist_ok=True)
     return sqlite3.connect(ruta)
+
+
+def conexion_opcional(solo_lectura: bool = True):
+    """Permite llamar a una función de lectura sin conexión: abre una, la usa y la cierra.
+
+    `leer_hallazgos()` y `leer_hallazgos(conexion)` hacen lo mismo. Sin conexión se usa la de
+    solo lectura (Turso si está configurado, si no el sqlite local).
+    """
+
+    def decorador(funcion):
+        @functools.wraps(funcion)
+        def envoltura(conexion: Any = None, *args: Any, **kwargs: Any) -> Any:
+            if conexion is not None:
+                return funcion(conexion, *args, **kwargs)
+            propia = conectar(solo_lectura=solo_lectura)
+            try:
+                return funcion(propia, *args, **kwargs)
+            finally:
+                propia.close()
+
+        return envoltura
+
+    return decorador
 
 
 def crear_esquema(conexion: Any) -> None:
@@ -184,6 +209,7 @@ def _fecha(texto: str | None) -> datetime | None:
     return datetime.fromisoformat(texto) if texto else None
 
 
+@conexion_opcional()
 def leer_cves(conexion: Any, pares: Iterable[str] | None = None) -> list[CVE]:
     """CVE con sus rangos. Con `pares` ('vendor:producto'), solo las que tocan esos pares.
 
@@ -290,6 +316,7 @@ def guardar_epss(conexion: Any, epss: dict[str, SenalEpss]) -> int:
     return len(epss)
 
 
+@conexion_opcional()
 def leer_senales(conexion: Any, cves: Iterable[str] | None = None) -> Senales:
     """KEV y EPSS indexados por CVE. Con `cves`, solo esas."""
     if cves is None:
@@ -330,7 +357,9 @@ def leer_senales(conexion: Any, cves: Iterable[str] | None = None) -> Senales:
 # ---------------------------------------------------------------------------
 
 
-def guardar_inventario(conexion: Any, filas: Iterable[FilaInventario], reemplazar: bool = True) -> int:
+def guardar_inventario(
+    conexion: Any, filas: Iterable[FilaInventario], reemplazar: bool = True
+) -> int:
     lista = list(filas)
     if reemplazar:
         conexion.execute("DELETE FROM inventario")
@@ -339,8 +368,15 @@ def guardar_inventario(conexion: Any, filas: Iterable[FilaInventario], reemplaza
         "INSERT INTO inventario (equipo, programa, version, proveedor, sistema, fuente, cargado) "
         "VALUES (?,?,?,?,?,?,?)",
         [
-            (f.equipo, f.programa, f.version, f.proveedor, f.sistema, f.fuente,
-             f.cargado.isoformat())
+            (
+                f.equipo,
+                f.programa,
+                f.version,
+                f.proveedor,
+                f.sistema,
+                f.fuente,
+                f.cargado.isoformat(),
+            )
             for f in lista
         ],
     )
@@ -348,6 +384,7 @@ def guardar_inventario(conexion: Any, filas: Iterable[FilaInventario], reemplaza
     return len(lista)
 
 
+@conexion_opcional()
 def leer_inventario(conexion: Any) -> list[FilaInventario]:
     return [
         FilaInventario(**{k: v for k, v in f.items() if k != "id"})
@@ -368,6 +405,7 @@ def guardar_cobertura(conexion: Any, cobertura: Iterable[Cobertura]) -> int:
     return len(lista)
 
 
+@conexion_opcional()
 def leer_cobertura(conexion: Any) -> list[Cobertura]:
     return [Cobertura(**f) for f in _consultar(conexion, "SELECT * FROM cobertura")]
 
@@ -377,8 +415,19 @@ def leer_cobertura(conexion: Any) -> list[Cobertura]:
 # ---------------------------------------------------------------------------
 
 _COLUMNAS_DATOS = (
-    "cve", "activo", "producto", "version_instalada", "equipos", "prioridad", "por_que",
-    "preciso", "rango", "kev", "ransomware", "epss", "cvss",
+    "cve",
+    "activo",
+    "producto",
+    "version_instalada",
+    "equipos",
+    "prioridad",
+    "por_que",
+    "preciso",
+    "rango",
+    "kev",
+    "ransomware",
+    "epss",
+    "cvss",
 )
 
 
@@ -396,12 +445,25 @@ def guardar_hallazgos(conexion: Any, hallazgos: Iterable[Hallazgo]) -> int:
         f"ON CONFLICT(id) DO UPDATE SET {asignar}",
         [
             (
-                h.id, h.cve, h.activo, h.producto, h.version_instalada, _json(h.equipos),
-                h.prioridad, _json(h.por_que), int(h.preciso),
+                h.id,
+                h.cve,
+                h.activo,
+                h.producto,
+                h.version_instalada,
+                _json(h.equipos),
+                h.prioridad,
+                _json(h.por_que),
+                int(h.preciso),
                 _json(h.rango.model_dump()) if h.rango else None,
-                int(h.kev), int(h.ransomware), h.epss, h.cvss,
-                h.estado, h.comentario, h.por,
-                (h.detectado or datetime.now(UTC)).isoformat(), int(h.avisado),
+                int(h.kev),
+                int(h.ransomware),
+                h.epss,
+                h.cvss,
+                h.estado,
+                h.comentario,
+                h.por,
+                (h.detectado or datetime.now(UTC)).isoformat(),
+                int(h.avisado),
             )
             for h in lista
         ],
@@ -435,6 +497,7 @@ def _hallazgo(f: dict[str, Any]) -> Hallazgo:
     )
 
 
+@conexion_opcional()
 def leer_hallazgos(conexion: Any, producto: str | None = None) -> list[Hallazgo]:
     if producto is None:
         filas = _consultar(conexion, "SELECT * FROM hallazgos")
@@ -480,9 +543,16 @@ def guardar_analisis(conexion: Any, analisis: Analisis) -> None:
     conexion.commit()
 
 
-def leer_analisis(conexion: Any, producto: str) -> Analisis | None:
-    filas = _consultar(conexion, "SELECT contenido FROM analisis WHERE producto = ?", [producto])
-    return Analisis.model_validate_json(filas[0]["contenido"]) if filas else None
+@conexion_opcional()
+def leer_analisis(conexion: Any, producto: str | None = None) -> list[Analisis]:
+    """Análisis guardados (uno por producto). Con `producto`, solo ese (lista de 0 o 1)."""
+    if producto is None:
+        filas = _consultar(conexion, "SELECT contenido FROM analisis ORDER BY producto")
+    else:
+        filas = _consultar(
+            conexion, "SELECT contenido FROM analisis WHERE producto = ?", [producto]
+        )
+    return [Analisis.model_validate_json(f["contenido"]) for f in filas]
 
 
 # ---------------------------------------------------------------------------
@@ -529,6 +599,7 @@ def terminar_trabajo(conexion: Any, trabajo_id: int, ok: bool, detalle: str | No
     conexion.commit()
 
 
+@conexion_opcional()
 def leer_trabajos(conexion: Any, limite: int = 50) -> list[Trabajo]:
     return [
         Trabajo(**f)
@@ -538,8 +609,7 @@ def leer_trabajos(conexion: Any, limite: int = 50) -> list[Trabajo]:
 
 def guardar_ejecucion(conexion: Any, ejecucion: Ejecucion) -> int:
     cursor = conexion.execute(
-        "INSERT INTO ejecuciones (inicio, fin, tipo, fuentes, resumen, error) "
-        "VALUES (?,?,?,?,?,?)",
+        "INSERT INTO ejecuciones (inicio, fin, tipo, fuentes, resumen, error) VALUES (?,?,?,?,?,?)",
         [
             ejecucion.inicio.isoformat(),
             ejecucion.fin.isoformat() if ejecucion.fin else None,
@@ -553,6 +623,7 @@ def guardar_ejecucion(conexion: Any, ejecucion: Ejecucion) -> int:
     return cursor.lastrowid
 
 
+@conexion_opcional()
 def ultima_ejecucion(conexion: Any, tipo: str | None = None) -> Ejecucion | None:
     sql = "SELECT * FROM ejecuciones"
     parametros: list[Any] = []
@@ -574,3 +645,38 @@ def guardar_traza(conexion: Any, herramienta: str, entrada: str, decision: str) 
         [ahora(), herramienta, entrada, decision],
     )
     conexion.commit()
+
+
+@conexion_opcional()
+def leer_ejecuciones(conexion: Any, limite: int = 20) -> list[Ejecucion]:
+    filas = _consultar(conexion, "SELECT * FROM ejecuciones ORDER BY id DESC LIMIT ?", [limite])
+    for f in filas:
+        f["fuentes"] = _de_json(f["fuentes"], {})
+    return [Ejecucion(**f) for f in filas]
+
+
+# ---------------------------------------------------------------------------
+# Atajos que pidió el frente plugin (servidor MCP)
+# ---------------------------------------------------------------------------
+
+
+@conexion_opcional()
+def leer_grupos(conexion: Any, umbrales: Any = None) -> list[Grupo]:
+    """Grupos por producto calculados desde los hallazgos guardados (no hay tabla de grupos)."""
+    from radar.nucleo.agrupar import agrupar
+
+    return agrupar(leer_hallazgos(conexion), umbrales)
+
+
+def insertar_inventario(
+    filas: Iterable[FilaInventario], reemplazar: bool = True, conexion: Any = None
+) -> int:
+    """Guarda filas de inventario. Sin conexión abre una de escritura y la cierra."""
+    if conexion is not None:
+        return guardar_inventario(conexion, filas, reemplazar)
+    propia = conectar()
+    try:
+        crear_esquema(propia)
+        return guardar_inventario(propia, filas, reemplazar)
+    finally:
+        propia.close()
