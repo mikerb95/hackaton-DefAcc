@@ -185,7 +185,7 @@ function celdaObjetivo(g) {
   if (g.tipo_objetivo === "posterior_a" && g.version_objetivo) {
     return `<span class="obj-etiqueta">Posterior a</span><span class="obj-version obj-incierta">${esc(g.version_objetivo)}</span>`;
   }
-  return `<span class="sin-dato">${esc(g.objetivo_texto || "sin versión objetivo conocida")}</span>`;
+  return '<span class="sin-dato">Sin versión objetivo conocida</span>';
 }
 
 function pintarProductos(datos) {
