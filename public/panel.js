@@ -221,6 +221,7 @@ function pintarDetalle(d) {
         <h3>Resumen</h3><p>${esc(a.resumen)}</p>
         <h3>Cómo se explota</h3><p>${esc(a.como_se_explota)}</p>
         <h3>Remediación</h3><p>${esc(a.remediacion)}</p>
+        ${bloqueComandos(d.comandos)}
         ${a.mitigacion_temporal ? `<h3>Mitigación temporal</h3><p>${esc(a.mitigacion_temporal)}</p>` : ""}
         <h3>CVE</h3>${listaCves(g)}
       </div>
@@ -252,6 +253,151 @@ function pintarDetalle(d) {
       } catch (error) {
         boton.disabled = false;
         formulario.insertAdjacentHTML("beforeend", ` <span class="clave-error">${esc(error.message)}</span>`);
+      }
+    });
+  }
+}
+
+// ---- equipos con agente local ------------------------------------------------
+// Los comandos salen de plantillas del código del radar, nunca de un modelo ni del
+// inventario. Igual se escapan: van a pantalla.
+
+const PLATAFORMAS = { windows: "Windows", debian: "Debian y Ubuntu", rhel: "RHEL y derivados" };
+const POSTURA = {
+  firewall: "Firewall", antivirus: "Antimalware", firmas_al_dia: "Firmas",
+  cifrado_disco: "Cifrado", secure_boot: "Secure Boot", actualizaciones_automaticas: "Actualizaciones",
+};
+const TIPOS_EQUIPO = { postura: "Postura", so_sin_soporte: "Sistema", paquete: "Paquete" };
+
+function bloqueComandos(comandos) {
+  if (!comandos || !comandos.length) return "";
+  return comandos.map((c) => {
+    const texto = typeof c === "string" ? c : c.texto;
+    const donde = typeof c === "string" ? "" : ` <span class="comando-donde">${esc(PLATAFORMAS[c.plataforma] || c.plataforma)}</span>`;
+    return `<div class="comando"><code>${esc(texto)}</code>${donde}</div>`;
+  }).join("") + '<p class="comando-nota">Comando armado por el radar a partir de una plantilla. Lo ejecuta una persona.</p>';
+}
+
+function pildorasPostura(postura) {
+  if (!postura) return '<span class="sin-dato">sin reporte</span>';
+  return Object.entries(POSTURA).map(([clave, etiqueta]) => {
+    const valor = postura[clave];
+    const clase = valor === "si" ? "p-ok" : (valor === "no" ? "p-caida" : "");
+    const titulo = valor === "si" ? "bien" : (valor === "no" ? "falla" : "no se pudo revisar");
+    return `<span class="pildora ${clase}" title="${esc(etiqueta)}: ${esc(titulo)}"><span class="punto"></span>${esc(etiqueta)}</span>`;
+  }).join("");
+}
+
+function nombreSistema(so) {
+  if (!so) return '<span class="sin-dato">sin reporte</span>';
+  const version = [so.version, so.build || so.kernel].filter(Boolean).join(" · ");
+  return `${esc(so.nombre)} <span class="mono" style="color:var(--texto-3)">${esc(version)}</span>`;
+}
+
+let equipoAbierto = null;
+
+function pintarEquipos(datos) {
+  const hay = datos.disponible && datos.equipos.length > 0;
+  $("#panel-equipos").hidden = !hay;
+  if (!hay) return;
+  $("#total-equipos").textContent = datos.total;
+  $("#equipos tbody").innerHTML = datos.equipos.map((e) => `
+    <tr class="clic${e.id === equipoAbierto ? " activa" : ""}" data-equipo="${esc(e.id)}" tabindex="0">
+      <td><div class="mono">${esc(e.nombre)}</div><div class="etiquetas">${pildoraPrioridad(e.peor_prioridad)}${e.revocado ? '<span class="pildora p-caida">revocado</span>' : ""}</div></td>
+      <td>${nombreSistema(e.so)}</td>
+      <td class="mono">${esc(e.ultimo_reporte ? fmtHora(e.ultimo_reporte) : "sin reporte")}</td>
+      <td class="num">${esc(e.acciones.inmediato)}</td>
+      <td class="num">${esc(e.acciones.semanal)}</td>
+      <td><div class="etiquetas" style="margin-top:0">${pildorasPostura(e.postura)}</div></td>
+    </tr>`).join("");
+}
+
+async function abrirEquipo(id) {
+  equipoAbierto = id;
+  document.querySelectorAll("#equipos tr[data-equipo]").forEach((tr) =>
+    tr.classList.toggle("activa", tr.dataset.equipo === id));
+  $("#detalle-equipo").hidden = false;
+  try {
+    pintarEquipo(await api(`/api/equipos/${encodeURIComponent(id)}`));
+  } catch (error) {
+    $("#detalle-equipo-cuerpo").innerHTML = `<p class="vacio">${esc(error.message)}</p>`;
+  }
+}
+
+function accionDeProducto(p) {
+  const kev = p.en_kev.length ? `<span class="pildora p-kev">${esc(p.en_kev.length)} en KEV</span>` : "";
+  return `
+    <li class="accion">
+      <div class="accion-cabeza">${pildoraPrioridad(p.prioridad)}
+        <strong>${esc(p.producto)}</strong> <span class="mono" style="color:var(--texto-3)">${esc(p.versiones.join(", "))}</span>
+        <span class="pildora mono">${esc(p.n_cves)} CVE</span>${kev}${p.ransomware ? '<span class="pildora p-kev">ransomware</span>' : ""}</div>
+      <div class="por-que">${esc(p.por_que.join(" · "))}</div>
+      <p>${esc(p.pasos)}</p>
+      ${bloqueComandos(p.comandos)}
+    </li>`;
+}
+
+function accionDeEquipo(h) {
+  const d = h.detalle || {};
+  const kev = (d.en_kev || []).length ? `<span class="pildora p-kev">${esc(d.en_kev.length)} en KEV</span>` : "";
+  const cves = d.n_cves ? `<span class="pildora mono">${esc(d.n_cves)} CVE</span>` : "";
+  const arreglo = d.version_arreglo ? `<span class="pildora mono">arreglo ${esc(d.version_arreglo)}</span>` : "";
+  return `
+    <li class="accion">
+      <div class="accion-cabeza">${pildoraPrioridad(h.prioridad)}
+        <span class="pildora">${esc(TIPOS_EQUIPO[h.tipo] || h.tipo)}</span>
+        <strong>${esc(h.titulo)}</strong>${cves}${kev}${arreglo}</div>
+      <div class="por-que">${esc(h.por_que.join(" · "))}</div>
+      <p>${esc(h.pasos)}</p>
+      ${bloqueComandos(h.comandos)}
+    </li>`;
+}
+
+function pintarEquipo(d) {
+  const e = d.equipo;
+  $("#t-detalle-equipo").textContent = e.nombre;
+  const hw = d.equipo.hardware || {};
+  const ficha = [
+    ["Sistema", e.so ? [e.so.nombre, e.so.version, e.so.build || e.so.kernel].filter(Boolean).join(" · ") : null],
+    ["Equipo", [hw.fabricante, hw.modelo].filter(Boolean).join(" ") || null],
+    ["BIOS", hw.bios], ["Procesador", hw.cpu],
+    ["Memoria", hw.ram_gb != null ? `${hw.ram_gb} GB` : null], ["TPM", hw.tpm],
+    ["Agente", e.agente_version], ["Último reporte", e.ultimo_reporte ? fmtHora(e.ultimo_reporte) : null],
+  ].filter(([, valor]) => valor).map(([nombre, valor]) =>
+    `<li><span>${esc(nombre)}</span><span class="mono">${esc(valor)}</span></li>`).join("");
+  const acciones = d.productos.map(accionDeProducto).join("") + d.hallazgos_equipo.map(accionDeEquipo).join("");
+  const recortes = Object.entries(e.recortes || {}).map(([clave, n]) => `${clave.replace(/_/g, " ")}: ${n}`).join(", ");
+  const sinRevisar = [
+    ...d.sin_revisar,
+    ...(d.cobertura.sin_evaluar ? [`${d.cobertura.sin_evaluar} programas sin evaluar (${Object.entries(d.cobertura.por_motivo).map(([m, n]) => `${MOTIVOS[m] || m}: ${n}`).join(", ")})`] : []),
+    ...(recortes ? [`Recortado del último reporte: ${recortes}`] : []),
+  ];
+  $("#detalle-equipo-cuerpo").innerHTML = `
+    <div class="datos-clave">${pildoraPrioridad(e.peor_prioridad)}${pildorasPostura(e.postura)}
+      ${e.revocado ? '<span class="pildora p-caida">revocado</span>' : `<button type="button" class="boton-texto" id="revocar-equipo">Revocar credencial</button>`}</div>
+    <div class="detalle-rejilla">
+      <div class="bloque">
+        <h3>Qué hacer en este equipo</h3>
+        <ul class="acciones">${acciones || '<li class="vacio">Nada que hacer con lo que se pudo revisar.</li>'}</ul>
+      </div>
+      <div class="bloque">
+        <h3>Ficha</h3><ul class="cobertura-lista">${ficha || '<li class="vacio">El equipo todavía no ha reportado.</li>'}</ul>
+        <h3 style="margin-top:16px">Sin revisar</h3>
+        <ul class="cobertura-lista">${sinRevisar.map((s) => `<li><span>${esc(s)}</span></li>`).join("") || '<li class="vacio">Todo se pudo revisar.</li>'}</ul>
+      </div>
+    </div>`;
+  const revocar = $("#revocar-equipo");
+  if (revocar) {
+    revocar.addEventListener("click", async () => {
+      if (!confirm(`¿Dejar de aceptar reportes de ${e.nombre}?`)) return;
+      revocar.disabled = true;
+      try {
+        await api(`/api/equipos/${encodeURIComponent(e.id)}/revocar`, { method: "POST" });
+        await abrirEquipo(e.id);
+        refrescarAuxiliares();
+      } catch (error) {
+        revocar.disabled = false;
+        revocar.insertAdjacentHTML("afterend", ` <span class="clave-error">${esc(error.message)}</span>`);
       }
     });
   }
@@ -436,9 +582,12 @@ async function refrescar() {
 
 async function refrescarAuxiliares() {
   try {
-    const [umbrales, trazas] = await Promise.all([api("/api/umbrales"), api("/api/trazas")]);
+    const [umbrales, trazas, equipos] = await Promise.all([
+      api("/api/umbrales"), api("/api/trazas"), api("/api/equipos"),
+    ]);
     pintarUmbrales(umbrales);
     pintarTrazas(trazas);
+    pintarEquipos(equipos);
   } catch { /* se reintenta en el próximo ciclo */ }
 }
 
@@ -494,6 +643,23 @@ function abrirDesdeFila(e) {
 }
 $("#productos").addEventListener("click", abrirDesdeFila);
 $("#productos").addEventListener("keydown", abrirDesdeFila);
+
+function abrirEquipoDesdeFila(e) {
+  const fila = e.target.closest("tr[data-equipo]");
+  if (!fila) return;
+  if (e.type === "keydown" && e.key !== "Enter" && e.key !== " ") return;
+  e.preventDefault();
+  abrirEquipo(fila.dataset.equipo);
+  $("#detalle-equipo").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+$("#equipos").addEventListener("click", abrirEquipoDesdeFila);
+$("#equipos").addEventListener("keydown", abrirEquipoDesdeFila);
+
+$("#cerrar-equipo").addEventListener("click", () => {
+  equipoAbierto = null;
+  $("#detalle-equipo").hidden = true;
+  document.querySelectorAll("#equipos tr.activa").forEach((tr) => tr.classList.remove("activa"));
+});
 
 $("#cerrar-detalle").addEventListener("click", () => {
   productoAbierto = null;

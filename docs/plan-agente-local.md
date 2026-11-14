@@ -1,7 +1,8 @@
 # Agente local de inventario: plan
 
-Creado el 14 de noviembre de 2026, durante la hackatón. Es un plan, no código: nada de esto
-se ha construido ni probado.
+Creado el 14 de noviembre de 2026, durante la hackatón. Este documento es el plan tal como se
+escribió. Lo que se construyó después, cómo probarlo y qué falta está en
+[agente-local.md](agente-local.md).
 
 Convención: **Verificado** (probado o leído en documentación oficial), **Propuesto** (diseño
 ajustable), **Por verificar** (dato de memoria o sin probar), **Estimado** (horas a ojo).

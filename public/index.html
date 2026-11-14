@@ -59,6 +59,29 @@
       </section>
     </div>
 
+    <section class="panel" id="panel-equipos" aria-labelledby="t-equipos" hidden>
+      <h2 id="t-equipos">Equipos con agente <span class="contador" id="total-equipos"></span></h2>
+      <div class="tabla-envoltura">
+        <table class="tabla" id="equipos">
+          <thead>
+            <tr>
+              <th>Equipo</th><th>Sistema</th><th>Último reporte</th>
+              <th class="num">Inmediatas</th><th class="num">Semanales</th><th>Postura</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel" id="detalle-equipo" aria-labelledby="t-detalle-equipo" hidden>
+      <div class="panel-cabeza">
+        <h2 id="t-detalle-equipo"></h2>
+        <button type="button" class="boton-texto" id="cerrar-equipo">Cerrar</button>
+      </div>
+      <div id="detalle-equipo-cuerpo"></div>
+    </section>
+
     <section class="panel" aria-labelledby="t-hallazgos">
       <div class="panel-cabeza">
         <h2 id="t-hallazgos">Hallazgos <span class="contador" id="total-hallazgos"></span></h2>

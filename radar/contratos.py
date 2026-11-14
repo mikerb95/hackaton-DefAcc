@@ -19,14 +19,14 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 # Valores cerrados. Se exportan para que la API, el panel y el agente usen los mismos.
-Fuente = Literal["csv", "excel", "mcp", "rmm"]
+Fuente = Literal["csv", "excel", "mcp", "rmm", "agente"]
 Prioridad = Literal["inmediato", "semanal", "informativo", "boletin"]
 EstadoHallazgo = Literal["nuevo", "en_curso", "mitigado", "descartado"]
 MetodoCpe = Literal["exacto", "difuso", "modelo", "ninguno"]
 MotivoCobertura = Literal["sin_version", "no_comparable", "sin_cpe"]
 TipoObjetivo = Literal["exacta", "posterior_a", "ninguna"]
 OrigenAnalisis = Literal["agente", "respaldo"]
-TipoTrabajo = Literal["descargar", "analizar"]
+TipoTrabajo = Literal["descargar", "analizar", "cruzar_so"]
 EstadoTrabajo = Literal["pendiente", "en_curso", "hecho", "fallido"]
 
 # Orden de la lista de hallazgos: prioridad, luego KEV, luego CVSS (PLAN, sección 8).
@@ -45,7 +45,7 @@ class Contrato(BaseModel):
 
 
 class FilaInventario(Contrato):
-    """Una fila del inventario tal como llega (CSV, Excel, MCP o RMM).
+    """Una fila del inventario tal como llega (CSV, Excel, MCP, RMM o agente local).
 
     Todo texto de aquí es no confiable: antes de llegar al modelo pasa por
     radar/seguridad/limpieza.py.

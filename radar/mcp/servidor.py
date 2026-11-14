@@ -102,8 +102,17 @@ def _guardar(filas: list, reemplazar: bool) -> dict[str, Any]:
         bd.crear_esquema(conexion)
         guardadas = bd.guardar_inventario(conexion, filas, reemplazar)
         normalizacion = normalizar(filas)
-        activos, cobertura = normalizacion
-        resultado = corrida.correr(conexion, activos, cobertura)
+        from radar.equipos import almacen as equipos
+
+        if equipos.hay_equipos(conexion):
+            # Con agentes locales se cruza todo el inventario guardado: cruzar solo estas
+            # filas propondría como resueltos los hallazgos que vienen de los agentes.
+            from radar.equipos.cruce import recruzar
+
+            resultado = recruzar(conexion).resultado
+        else:
+            activos, cobertura = normalizacion
+            resultado = corrida.correr(conexion, activos, cobertura)
         trabajo = bd.crear_trabajo(conexion, "analizar", DETALLE_TRABAJO)
     finally:
         conexion.close()

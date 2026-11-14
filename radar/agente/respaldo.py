@@ -9,6 +9,8 @@ avisos.
 
 from __future__ import annotations
 
+from collections.abc import Iterable
+
 from radar.agente.verificador import porcentaje
 from radar.contratos import Analisis, Grupo
 from radar.seguridad.limpieza import limpiar_texto
@@ -92,7 +94,9 @@ def _gerencia(grupo: Grupo, producto: str, n_equipos: str, n_cves: str, n_kev: i
     return texto + f" Decisión que se pide: {decision}."
 
 
-def armar_respaldo(grupo: Grupo) -> Analisis:
+def armar_respaldo(grupo: Grupo, comandos: Iterable[str] = ()) -> Analisis:
+    """``comandos``: comandos de remediación armados por código
+    (``radar/equipos/remediacion.py``). Van solo en el comunicado de TI, uno por línea."""
     producto = limpiar_texto(grupo.producto)
     versiones = _versiones(grupo)
     n_equipos = _plural(grupo.n_equipos, "equipo")
@@ -137,6 +141,8 @@ def armar_respaldo(grupo: Grupo) -> Analisis:
         partes_ti.append("EPSS sin dato.")
     partes_ti.append(f"Acción: {accion}")
     comunicado_ti = " ".join(partes_ti)
+    for comando in comandos:
+        comunicado_ti += f"\nComando: {comando}"
 
     plazo = _PLAZO_USUARIOS.get(grupo.prioridad or "", "pronto")
     usuarios = f"Vamos a actualizar {producto} en tu equipo {plazo}."

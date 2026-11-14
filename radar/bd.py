@@ -470,7 +470,9 @@ def guardar_inventario(
 ) -> int:
     lista = list(filas)
     if reemplazar:
-        conexion.execute("DELETE FROM inventario")
+        # Una carga de archivo reemplaza lo cargado por archivo. Lo que reportan los agentes
+        # locales lo reemplaza cada equipo con su propio reporte (radar/equipos/almacen.py).
+        conexion.execute("DELETE FROM inventario WHERE fuente <> 'agente'")
     _en_lotes(
         conexion,
         "INSERT INTO inventario (equipo, programa, version, proveedor, sistema, fuente, cargado) "
