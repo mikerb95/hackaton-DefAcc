@@ -97,11 +97,14 @@ LANZADOR_WINDOWS = (
 )
 
 
-def configuracion(url: str, token: str | None = None) -> str:
-    """Lo que el instalador lee para no pedir nada: la URL del radar y, si hay, el token."""
+def configuracion(url: str, token: str | None = None, clave: str | None = None) -> str:
+    """Lo que el instalador lee para no pedir nada: la URL del radar, el token si hay y, si se
+    habilita el parcheo, la clave pública del aprobador (docs/plan-parcheo.md)."""
     lineas = ["# Lo armó el panel del radar al descargar este paquete.", f"url={url}"]
     if token:
         lineas.append(f"token={token}")
+    if clave:
+        lineas.append(f"clave_aprobacion={clave}")
     return "\r\n".join(lineas) + "\r\n"
 
 
@@ -115,7 +118,9 @@ def archivos(sistema: str) -> list[tuple[str, Path]]:
     return sorted(lista)
 
 
-def armar(sistema: str, url: str | None = None, token: str | None = None) -> bytes:
+def armar(
+    sistema: str, url: str | None = None, token: str | None = None, clave: str | None = None
+) -> bytes:
     """El zip del sistema. Con `url`, lleva además `configuracion.txt` para no preguntar nada.
 
     Los archivos van tal cual están: los `.cmd` en CRLF, los `.ps1` con BOM (tildes en
@@ -127,7 +132,7 @@ def armar(sistema: str, url: str | None = None, token: str | None = None) -> byt
         if sistema == "windows":
             entradas.append(("INSTALAR.cmd", LANZADOR_WINDOWS.encode()))
         if url:
-            entradas.append(("configuracion.txt", configuracion(url, token).encode()))
+            entradas.append(("configuracion.txt", configuracion(url, token, clave).encode()))
         entradas += [(nombre, origen.read_bytes()) for nombre, origen in archivos(sistema)]
         for nombre, contenido in entradas:
             info = zipfile.ZipInfo(nombre, FECHA_FIJA)

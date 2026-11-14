@@ -304,6 +304,9 @@ class PedidoInstalador(BaseModel):
     # El token recién creado en el asistente. Va por POST, no en la URL, para que no quede
     # en registros de acceso.
     token: str | None = Field(default=None, max_length=200)
+    # Huella de una clave de aprobación registrada: el equipo queda con el parcheo habilitado
+    # y fija esa clave pública (docs/plan-parcheo.md). Sin ella, el agente no parchea.
+    clave_aprobacion: str | None = Field(default=None, pattern=r"^[0-9a-f]{16}$")
 
 
 @router_equipos.post("/agente-instalador", dependencies=ADMIN)
@@ -313,7 +316,21 @@ def instalador(cuerpo: PedidoInstalador, peticion: Request) -> Response:
     from radar.api import paquetes
 
     token = cuerpo.token or os.environ.get("AGENTE_TOKEN_INSCRIPCION") or None
-    datos = paquetes.armar(cuerpo.sistema, url_publica(peticion), token)
+    clave = None
+    if cuerpo.clave_aprobacion:
+        from radar.equipos import parcheo_almacen
+
+        conexion = _conexion()
+        try:
+            fila = parcheo_almacen.clave(conexion, cuerpo.clave_aprobacion)
+        finally:
+            conexion.close()
+        if fila is None or fila["revocada"]:
+            raise HTTPException(
+                status.HTTP_409_CONFLICT, "Esa clave de aprobación no está vigente."
+            )
+        clave = fila["publica"]
+    datos = paquetes.armar(cuerpo.sistema, url_publica(peticion), token, clave)
     nombre = paquetes.nombre_zip(cuerpo.sistema)
     return Response(
         datos,

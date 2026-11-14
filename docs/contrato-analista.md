@@ -119,7 +119,7 @@ el barrido de umbrales en vez de inventar cifras.
 
 ## 5. Configuración del SDK
 
-- Modelo `claude-opus-5-5`.
+- Modelo `claude-opus-5-5` por defecto; se cambia desde la consola o con `RADAR_MODELO_ANALISTA` / `RADAR_MODELO` (`radar/ajustes.py`, RF-617).
 - `output_format={"type": "json_schema", "schema": ESQUEMA_ANALISIS}`, con el esquema sacado de
   `Analisis.model_json_schema()` en `instrucciones.py`. El resultado llega en
   `ResultMessage.structured_output`.

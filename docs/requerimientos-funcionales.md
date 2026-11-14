@@ -88,7 +88,9 @@ Prioridad alta para RF-601 a RF-605, RF-607 y RF-609, media para RF-606 y RF-608
 
 - **RF-616** Cada equipo con agente muestra un termómetro de exposición de 0 a 100 en su detalle y una barra corta en la tabla. Sale solo de sus acciones abiertas por prioridad: la peor fija el tramo (inmediata 60 a 100, semanal 25 a 59, informativa 5 a 24, ninguna 0) y la cantidad lo sube dentro de él; bandas bajo, medio, alto y crítico (desde 85). Un equipo pendiente de aprobación o sin reporte queda sin lectura, nunca en 0. Lo calcula código, sin modelo. `radar/api/termometro.py`, `radar/api/agente.py`, `public/panel.js`.
 
-Prioridad alta para RF-610 a RF-613, media para RF-614 a RF-616. Prueba: `tests/test_cuentas.py`. Las tablas de cuentas las crea `radar/api/cuentas.py` (no están en `radar/esquema.sql`).
+- **RF-617** El modelo de Claude se elige sin tocar código, por separado para el analista y para el desempate del normalizador. Orden: lo guardado en la consola (sección Configuración, solo administrador, entre los modelos conocidos) > `RADAR_MODELO_ANALISTA` o `RADAR_MODELO_DESEMPATE` > `RADAR_MODELO` > `claude-opus-5-5`. Un ID mal formado en la variable se ignora; si la base no responde manda el entorno, nunca se detiene el worker. El worker toma el cambio en menos de un minuto. `radar/ajustes.py`, `radar/api/rutas.py`, `public/admin.js`.
+
+Prioridad alta para RF-610 a RF-613, media para RF-614 a RF-617. Prueba: `tests/test_cuentas.py` (RF-617: `tests/test_ajustes.py`). Las tablas de cuentas las crea `radar/api/cuentas.py` (no están en `radar/esquema.sql`).
 
 
 ## Plugin de Claude Code
