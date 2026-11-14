@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import json
 import tempfile
+import time
 from collections import Counter
 from pathlib import Path
 
@@ -57,21 +58,46 @@ def _base(ruta: Path | None) -> tuple[object, str]:
     return bd.conectar(solo_lectura=True, ruta_sqlite=temporal), f"snapshot -> {temporal}"
 
 
+def _contar_cves(ruta_bd: Path | None) -> int | None:
+    try:
+        conexion, _ = _base(ruta_bd)
+    except Exception:  # noqa: BLE001 - es solo un dato de contexto para el reporte
+        return None
+    try:
+        return bd.contar(conexion, "cves")
+    finally:
+        conexion.close()
+
+
 def medir_pipeline(ruta_bd: Path | None = None, con_inyeccion: bool = False) -> dict:
     """Corre el pipeline completo y compara contra la respuesta conocida."""
+    from radar.ingesta.normalizador import Diccionario, diccionario_por_defecto
+
     filas_gen, resp = generar.generar(con_inyeccion=con_inyeccion)
+    tiempos: dict[str, float] = {}
     with tempfile.TemporaryDirectory() as tmp:
         csv = Path(tmp) / "inventario.csv"
         generar.escribir_csv(filas_gen, csv)
+        t = time.perf_counter()
         lectura = leer_inventario(csv)
-    filas = [a_contrato(f) for f in lectura.filas]
+        filas = [a_contrato(f) for f in lectura.filas]
+        tiempos["lectura_s"] = time.perf_counter() - t
+    t = time.perf_counter()
+    Diccionario.cargar()  # desde disco, aunque el del proceso ya esté en memoria
+    tiempos["diccionario_s"] = time.perf_counter() - t
+    diccionario_por_defecto()
+    t = time.perf_counter()
     activos, cobertura_normalizador = normalizar(filas)
+    tiempos["normalizar_s"] = time.perf_counter() - t
 
     conexion, origen_bd = _base(ruta_bd)
     try:
+        t = time.perf_counter()
         r = correr(conexion, activos, cobertura_normalizador, guardar=False)
+        tiempos["cruce_s"] = time.perf_counter() - t
     finally:
         conexion.close()
+    tiempos = {k: round(v, 2) for k, v in tiempos.items()}
 
     # Lo esperado, por (CVE, equipo) y por (CVE, producto y versión).
     medidas = [f for f in resp["filas"] if f["tipo"] in MEDIDOS]
@@ -155,6 +181,10 @@ def medir_pipeline(ruta_bd: Path | None = None, con_inyeccion: bool = False) -> 
         "cobertura_obtenida_por_motivo": dict(sorted(cob_medible.items())),
         "cobertura_total_por_motivo": dict(sorted(cob_obtenida.items())),
         "productos": len(r.grupos),
+        # Tiempos de esta máquina (sqlite local salvo que ruta_bd diga otra cosa). La carga
+        # del diccionario se mide desde disco; en la API ocurre una vez por proceso.
+        "tiempos": tiempos,
+        "cves_en_base": None if not origen_bd else _contar_cves(ruta_bd),
         "muestra_falsos_positivos": sorted(fp_eq)[:10],
         "muestra_falsos_negativos": sorted(fn_eq)[:10],
     }

@@ -86,16 +86,29 @@ def orden_enviar(args: argparse.Namespace) -> int:
     if not estado.inscrito:
         _decir("El equipo no está inscrito: corre primero `inscribir`.")
         return SALIDA_ERROR
+    if args.programado and not estado.ruta_pendiente.exists():
+        intervalo = envio.intervalo_de(estado.datos) or args.intervalo_horas
+        ultimo = estado.datos.get("ultimo_envio", 0)
+        if 0 <= time.time() - ultimo < intervalo * 3600:
+            return SALIDA_OK
     if args.retraso_maximo > 0:
         # Retraso aleatorio para que toda la flota no llegue al radar al mismo tiempo.
         time.sleep(random.uniform(0, args.retraso_maximo))
-    datos = reporte.armar_reporte(estado.equipo_id)
     try:
+        if estado.ruta_pendiente.exists():
+            try:
+                pendiente = json.loads(estado.ruta_pendiente.read_text(encoding="utf-8"))
+            except (OSError, ValueError) as error:
+                raise envio.ErrorEnvio("No se pudo leer el reporte pendiente.") from error
+            envio.enviar(estado, pendiente)
+        datos = reporte.armar_reporte(estado.equipo_id)
         intervalo = envio.enviar(estado, datos)
     except envio.ErrorEnvio as error:
         pendiente = estado.ruta_pendiente.exists()
         _decir(f"No se envió: {error}" + (" Queda pendiente." if pendiente else ""))
         return SALIDA_PENDIENTE if pendiente else SALIDA_ERROR
+    estado.datos["ultimo_envio"] = time.time()
+    estado.guardar()
     _decir(
         f"Reporte enviado: {len(datos['software'])} programas."
         + (f" Próximo en {intervalo} horas." if intervalo else "")
@@ -143,6 +156,8 @@ def analizador() -> argparse.ArgumentParser:
 
     enviar = sub.add_parser("enviar", help="Recoge y envía el reporte")
     enviar.add_argument("--retraso-maximo", type=float, default=0, metavar="SEGUNDOS")
+    enviar.add_argument("--programado", action="store_true", help="Respeta el intervalo guardado")
+    enviar.add_argument("--intervalo-horas", type=int, choices=range(1, 169), default=12)
     enviar.set_defaults(funcion=orden_enviar)
 
     sub.add_parser("estado", help="Muestra si el equipo está inscrito").set_defaults(

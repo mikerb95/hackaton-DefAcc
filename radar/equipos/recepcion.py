@@ -148,7 +148,9 @@ def procesar(
     recortes = dict(recortes or {})
     if not nombre_equipo_valido(reporte.nombre_equipo):
         recortes["nombre_saneado"] = 1
-    nombre = almacen.nombre_libre(conexion, sanear_nombre_equipo(reporte.nombre_equipo), equipo.id)
+    nombre = almacen.nombre_libre(
+        conexion, sanear_nombre_equipo(reporte.nombre_equipo, 0), equipo.id
+    )
 
     almacen.guardar_reporte(
         conexion,

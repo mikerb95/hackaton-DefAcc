@@ -14,16 +14,17 @@ set -eu
 URL="${1:?Uso: sudo RADAR_AGENTE_TOKEN=<token> sh instalar.sh <url del radar>}"
 : "${RADAR_AGENTE_TOKEN:?Falta RADAR_AGENTE_TOKEN en el entorno}"
 [ "$(id -u)" -eq 0 ] || { echo "Hay que correr este guion como root." >&2; exit 1; }
-command -v python3 >/dev/null || { echo "No se encontró python3." >&2; exit 1; }
+[ -x /usr/bin/python3 ] || { echo "No se encontró python3." >&2; exit 1; }
 
 AQUI="$(cd "$(dirname "$0")" && pwd)"
 DESTINO=/opt/radar-agente
 
 install -d -m 0755 "$DESTINO/agente_local"
 install -m 0644 "$AQUI"/../*.py "$DESTINO/agente_local/"
+install -m 0644 "$AQUI/ejecutar.py" "$DESTINO/ejecutar.py"
 install -d -m 0700 /var/lib/radar-agente
 
-(cd "$DESTINO" && python3 -m agente_local inscribir --url "$URL")
+/usr/bin/python3 -I "$DESTINO/ejecutar.py" inscribir --url "$URL"
 
 install -m 0644 "$AQUI/radar-agente.service" /etc/systemd/system/radar-agente.service
 install -m 0644 "$AQUI/radar-agente.timer" /etc/systemd/system/radar-agente.timer

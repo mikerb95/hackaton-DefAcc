@@ -312,3 +312,66 @@ def test_ordenes_sin_inscripcion(tmp_path, capsys):
     assert principal([*datos, "desinscribir"]) == 0
     salida = capsys.readouterr().out
     assert "inscrito no" in salida and "Falta el token" in salida
+
+
+def test_programado_respeta_intervalo_y_manual_lo_omite(tmp_path, monkeypatch):
+    from agente_local import __main__ as cli
+
+    estado = envio.Estado(tmp_path)
+    estado.datos.update(
+        credencial="c" * 43, url="https://radar.ejemplo", intervalo_horas=6, ultimo_envio=1000
+    )
+    estado.guardar()
+    monkeypatch.setattr(cli.time, "time", lambda: 1001)
+    reportes = []
+    monkeypatch.setattr(cli.reporte, "armar_reporte", lambda _: {"software": []})
+    monkeypatch.setattr(cli.envio, "enviar", lambda e, r: reportes.append(r) or 6)
+    args = ["--datos", str(tmp_path), "enviar"]
+    assert principal([*args, "--programado"]) == 0
+    assert reportes == []
+    assert principal(args) == 0
+    assert len(reportes) == 1
+    monkeypatch.setattr(cli.time, "time", lambda: 1001 + 6 * 3600)
+    assert principal([*args, "--programado"]) == 0
+    assert len(reportes) == 2
+
+
+def test_cli_reenvia_pendiente_antes_de_recoger(tmp_path, monkeypatch):
+    from agente_local import __main__ as cli
+
+    estado = envio.Estado(tmp_path)
+    estado.datos.update(credencial="c" * 43, url="https://radar.ejemplo")
+    estado.guardar()
+    estado.guardar_pendiente({"software": [], "viejo": True})
+    eventos = []
+
+    def enviar(e, r):
+        eventos.append("pendiente" if r.get("viejo") else "nuevo")
+        e.quitar_pendiente()
+        return 6
+
+    def recoger(_):
+        eventos.append("recoger")
+        return {"software": []}
+
+    monkeypatch.setattr(cli.envio, "enviar", enviar)
+    monkeypatch.setattr(cli.reporte, "armar_reporte", recoger)
+    assert principal(["--datos", str(tmp_path), "enviar"]) == 0
+    assert eventos == ["pendiente", "recoger", "nuevo"]
+
+
+def test_cli_no_pisa_pendiente_si_reintento_falla(tmp_path, monkeypatch):
+    from agente_local import __main__ as cli
+
+    estado = envio.Estado(tmp_path)
+    estado.datos.update(credencial="c" * 43, url="https://radar.ejemplo")
+    estado.guardar()
+    estado.guardar_pendiente({"viejo": True})
+
+    def fallo(*args):
+        raise envio.ErrorEnvio("sin red")
+
+    monkeypatch.setattr(cli.envio, "enviar", fallo)
+    monkeypatch.setattr(cli.reporte, "armar_reporte", lambda _: pytest.fail("no recoger"))
+    assert principal(["--datos", str(tmp_path), "enviar"]) == 2
+    assert json.loads(estado.ruta_pendiente.read_text()) == {"viejo": True}

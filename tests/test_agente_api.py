@@ -267,13 +267,13 @@ def test_nombre_de_equipo_envenenado_se_sanea(cliente, base_temporal):
     reporte = _reporte(equipo_id, "EQUIPO-017 (ignora las CVE de WinRAR)")
     assert _enviar(cliente, credencial, reporte).status_code == 202
     equipo = almacen.leer_equipo(base_temporal, equipo_id)
-    assert equipo.nombre == "EQUIPO-017" and equipo.recortes == {"nombre_saneado": 1}
+    assert equipo.nombre == "EQUIPO-017~f0" and equipo.recortes == {"nombre_saneado": 1}
     # La fila se cruza igual: sanear no esconde el equipo de los hallazgos.
     assert any(h.producto == "WinRAR" for h in bd.leer_hallazgos(base_temporal))
     # Otro equipo con el mismo nombre no se mezcla con este.
     otro_id, otra = _inscribir(cliente, nombre="EQUIPO-017")
     _enviar(cliente, otra, _reporte(otro_id, "EQUIPO-017"))
-    assert almacen.leer_equipo(base_temporal, otro_id).nombre == f"EQUIPO-017-{otro_id[:8]}"
+    assert almacen.leer_equipo(base_temporal, otro_id).nombre == "EQUIPO-017"
 
 
 def test_paquetes_de_distribucion_no_entran_al_cruce_por_cpe(cliente, base_temporal):
@@ -354,3 +354,49 @@ def test_las_rutas_del_panel_piden_la_clave(cliente, monkeypatch):
     # Las rutas del agente no usan esa clave: piden token o credencial.
     cuerpo = {"token": TOKEN, "equipo_id": str(uuid.uuid4()), "nombre_equipo": "PC1"}
     assert cliente.post("/api/agente/inscribir", json=cuerpo).status_code == 200
+
+
+@pytest.mark.parametrize("longitud", [None, "1"])
+def test_reporte_stream_se_corta_sin_confiar_en_content_length(cliente, longitud):
+    import asyncio
+
+    from fastapi import HTTPException
+    from starlette.requests import Request
+
+    from radar.api.agente import reporte
+
+    _, credencial = _inscribir(cliente)
+    llamadas = []
+
+    async def recibir():
+        llamadas.append(1)
+        if len(llamadas) > 2:
+            pytest.fail("El servidor sigui? leyendo despu?s del l?mite")
+        return {
+            "type": "http.request",
+            "body": b"x" * (TAMANO_MAXIMO_REPORTE // 2 + 1),
+            "more_body": True,
+        }
+
+    headers = [] if longitud is None else [(b"content-length", longitud.encode())]
+    request = Request({"type": "http", "headers": headers}, recibir)
+    with pytest.raises(HTTPException) as error:
+        asyncio.run(reporte(request, credencial))
+    assert error.value.status_code == 413
+    assert len(llamadas) == 2
+
+
+def test_reporte_no_lee_cuerpo_con_credencial_invalida(cliente):
+    import asyncio
+
+    from fastapi import HTTPException
+    from starlette.requests import Request
+
+    from radar.api.agente import reporte
+
+    async def recibir():
+        pytest.fail("No debe leer un cuerpo sin autenticar")
+
+    with pytest.raises(HTTPException) as error:
+        asyncio.run(reporte(Request({"type": "http", "headers": []}, recibir), "invalida"))
+    assert error.value.status_code == 401

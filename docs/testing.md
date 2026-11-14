@@ -24,7 +24,7 @@ Córrelo tú mismo: `uv run pytest tests/test_ingesta.py`.
 
 | Prueba | Qué cubre | Requiere |
 |---|---|---|
-| `tests/test_normalizador.py` | Versión comparable, nombre limpio, alias de trampas, nombres fuera de la semilla, producto ausente de NVD, plugins de Jenkins, empate de Python, desempate con modelo sustituido (sin API), agrupación y nombre canónico, nombre enorme (RF-301 a RF-305). Medición contra la respuesta conocida (RF-307) | `resources/` para la medición |
+| `tests/test_normalizador.py` | Filas envenenadas de las cuatro rondas (`casos_inyeccion.TODOS`): ninguna saca al equipo de los hallazgos, quedan marcadas y sin el texto inyectado en el nombre; versión con instrucción; nombres legítimos sin marca (RF-311). Además: versión comparable, nombre limpio, alias de trampas, nombres fuera de la semilla, producto ausente de NVD, plugins de Jenkins, empate de Python, desempate con modelo sustituido (sin API), agrupación y nombre canónico, nombre enorme (RF-301 a RF-305). Medición contra la respuesta conocida (RF-307) | `resources/` para la medición |
 | `tests/test_integracion.py` | Pipeline real de punta a punta: 735 pares CVE y versión, 6500 por equipo, detección y precisión 100 %, 0 falsos positivos, 12 KEV, 1098 no precisos por activo, cobertura por motivo; tabla para el reporte (RF-309, RF-310) | `resources/`; usa `datos_locales/radar.db` en solo lectura o arma una base temporal desde el snapshot |
 | `tests/test_datos_prueba.py` | Semilla fija, totales de SEMILLA.md (735 y 12 KEV), distribución, fronteras, cobertura con motivos del contrato, inyección aparte, bytes idénticos entre corridas, la ingesta lee CSV y xlsx completos (RF-306) | `resources/` (se salta si falta) |
 
@@ -59,3 +59,17 @@ Córrelo tú mismo: `uv run pytest tests/test_mcp.py`. De punta a punta con Clau
 | `tests/test_versiones_paquete.py` | Orden de dpkg y de rpm en los dos sentidos, mayor de una lista, CVSS 3.x desde el vector y vectores sin puntaje (RF-821, RF-822) | nada |
 
 Córrelo tú mismo: `uv run pytest tests/test_agente_local.py tests/test_agente_api.py tests/test_postura.py tests/test_osv.py tests/test_versiones_paquete.py`. De punta a punta en local, los cinco pasos de [agente-local.md](agente-local.md). RF-804 (instaladores) no tiene prueba automática.
+
+## Seguridad (limpieza, equipos, hooks, verificador, plugin, suite de inyección)
+
+| Prueba | Qué cubre | Requiere |
+|---|---|---|
+| `tests/test_limpieza.py` | Recorte por campo (160 para el inventario, 2000 para textos largos, claves desconocidas al tope corto), saltos, control e invisibles, `<` `>` neutralizados, marca de datos, forma MCP, los casos de inyección | nada |
+| `tests/test_equipos.py` | Nombre de equipo RFC 1123, saneado `prefijo~fNNN` igual al de la ingesta, sin fusionarse con el equipo real | nada |
+| `tests/test_hooks.py` | Guarda previa por lista exacta, argumentos con saltos, largo o formato de `cve` inválido, ante error niega; limpieza posterior con la misma forma, ante error retiene; `opciones_encierro` arma un cliente válido | nada |
+| `tests/test_verificador.py` | Nada de más (CVE, cifras, versiones, equipos, enlaces y dominios, cuentas en dígitos y palabras), prioridad del origen, KEV no negada, versión instalada no recomendada, equipos fuera de canales abiertos, regla 5, homoglifos, respaldo que siempre pasa, decidir | nada |
+| `tests/test_plugin.py` | hooks.json, limpiar_salida que nunca falla y retiene, aprobar_escritura con "ask" y "deny" ante error, copia exacta de limpieza.py | nada |
+| `tests/test_inyeccion.py` | Suite de dos brazos y 4 rondas con agentes simulados (peor caso y honesto), entrada forzada y real, equipo oculto, límites declarados, tubería del analista real con un analizar falso; con `-m agente`, el analista real | nada (`-m agente`: clave y `analizar`) |
+
+Las cifras salen de `uv run python -m evals.medir` -> `evals/reporte.md`. Córrelo tú mismo:
+`uv run pytest tests/test_limpieza.py tests/test_equipos.py tests/test_hooks.py tests/test_verificador.py tests/test_plugin.py tests/test_inyeccion.py`.

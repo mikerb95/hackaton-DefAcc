@@ -87,7 +87,7 @@ def inscribir(cuerpo: Inscripcion) -> dict:
         credencial = almacen.inscribir(
             conexion,
             cuerpo.equipo_id.lower(),
-            sanear_nombre_equipo(cuerpo.nombre_equipo),
+            sanear_nombre_equipo(cuerpo.nombre_equipo, 0),
             limpiar_texto(cuerpo.agente_version, 40) or None,
         )
     except almacen.EquipoYaInscrito as error:
@@ -113,7 +113,6 @@ async def reporte(
     declarado = peticion.headers.get("content-length", "")
     if declarado.isdigit() and int(declarado) > TAMANO_MAXIMO_REPORTE:
         raise HTTPException(413, "Reporte muy grande.")
-    cuerpo = await peticion.body()
 
     conexion = _conexion()
     try:
@@ -122,6 +121,11 @@ async def reporte(
             raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Credencial no reconocida.")
         if equipo.revocado:
             raise HTTPException(status.HTTP_403_FORBIDDEN, "El equipo fue revocado.")
+        cuerpo = bytearray()
+        async for bloque in peticion.stream():
+            if len(cuerpo) + len(bloque) > TAMANO_MAXIMO_REPORTE:
+                raise HTTPException(413, "Reporte muy grande.")
+            cuerpo.extend(bloque)
         try:
             datos, recortes = recepcion.leer_reporte(cuerpo)
         except recepcion.ErrorReporte as error:

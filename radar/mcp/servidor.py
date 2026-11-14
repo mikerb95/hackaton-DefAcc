@@ -101,6 +101,7 @@ def _guardar(filas: list, reemplazar: bool) -> dict[str, Any]:
     try:
         bd.crear_esquema(conexion)
         guardadas = bd.guardar_inventario(conexion, filas, reemplazar)
+        normalizacion = normalizar(filas)
         from radar.equipos import almacen as equipos
 
         if equipos.hay_equipos(conexion):
@@ -110,7 +111,7 @@ def _guardar(filas: list, reemplazar: bool) -> dict[str, Any]:
 
             resultado = recruzar(conexion).resultado
         else:
-            activos, cobertura = normalizar(filas)
+            activos, cobertura = normalizacion
             resultado = corrida.correr(conexion, activos, cobertura)
         trabajo = bd.crear_trabajo(conexion, "analizar", DETALLE_TRABAJO)
     finally:
@@ -120,6 +121,12 @@ def _guardar(filas: list, reemplazar: bool) -> dict[str, Any]:
         "resultado": resultado.resumen,
         "propuestos_resueltos": resultado.propuestos_resueltos[:DESCARTADAS_MOSTRADAS],
         "trabajo": trabajo,
+        # Filas con posible texto inyectado que el normalizador cruzó por su prefijo o mandó
+        # a cobertura con motivo visible. Sin el texto: equipo, campos y señales.
+        "sospechas": [
+            {"equipo": s.equipo, "campos": s.campos, "senales": s.senales}
+            for s in getattr(normalizacion, "sospechas", [])
+        ],
     }
 
 
@@ -149,6 +156,7 @@ def _cargar(
             "guardadas": cruce["guardadas"] if cruce else 0,
             "cruce": cruce["resultado"] if cruce else None,
             "propuestos_resueltos": cruce["propuestos_resueltos"] if cruce else [],
+            "sospechas_normalizador": (cruce or {}).get("sospechas", [])[:SOSPECHOSAS_MOSTRADAS],
             "equipos": len({f.equipo for f in contratos}),
             "programas": len({f.programa.lower() for f in contratos}),
             "equipos_no_validos_detalle": [
@@ -219,6 +227,7 @@ CERRADOS = {"mitigado", "descartado"}
 FUENTES_ESPERADAS = {"nvd", "kev", "epss"}
 SOSPECHOSAS_MOSTRADAS = 10
 MARCA_SANEADO = "~f"
+TEXTO_RETENIDO = "[texto retenido: forma de instrucción, ver posible_inyeccion]"
 # "asistente" sola salta con nombres legítimos ("Asistente de Respaldo Local"): no basta.
 SENALES_DEBILES = {"asistente"}
 EQUIPOS_MOSTRADOS = 10
@@ -281,6 +290,23 @@ def _resumen_cobertura(cobertura: list) -> dict[str, Any]:
             "CPE). No están sanos: no se sabe."
         ),
     }
+
+
+def _sospechosa(texto: str | None) -> bool:
+    return bool(set(senales_de_instruccion(texto)) - SENALES_DEBILES)
+
+
+def _programa_seguro(fila) -> str:
+    """Nombre del programa de una fila de cobertura, salvo que traiga texto de instrucción.
+
+    Las filas de cobertura no pasaron por el normalizador: su nombre es el del inventario.
+    Si tiene forma de instrucción, no se devuelve (se cuenta en ``posible_inyeccion``).
+    """
+    return TEXTO_RETENIDO if _sospechosa(fila.programa) else fila.programa
+
+
+def _version_segura(fila) -> str | None:
+    return TEXTO_RETENIDO if _sospechosa(fila.version) else fila.version
 
 
 def _posible_inyeccion(hallazgos: list, cobertura: list) -> dict[str, Any] | None:
@@ -498,7 +524,7 @@ def equipos_expuestos(
     for fila in cobertura:
         if equipo and not _coincide(fila.equipo, equipo):
             continue
-        sin_evaluar.setdefault(fila.equipo, []).append(f"{fila.programa} ({fila.motivo})")
+        sin_evaluar.setdefault(fila.equipo, []).append(f"{_programa_seguro(fila)} ({fila.motivo})")
 
     nombres_prioridad = {v: k for k, v in ORDEN_PRIORIDAD.items()}
     fichas = sorted(
@@ -679,7 +705,12 @@ def _resolver_producto(buscado: str, grupos: list, hallazgos: list) -> str | Non
 
 def _sin_evaluar(cobertura: list, producto: str) -> list[dict[str, Any]]:
     return [
-        {"equipo": c.equipo, "programa": c.programa, "version": c.version, "motivo": c.motivo}
+        {
+            "equipo": c.equipo,
+            "programa": _programa_seguro(c),
+            "version": _version_segura(c),
+            "motivo": c.motivo,
+        }
         for c in cobertura
         if _coincide(c.programa, producto)
     ]

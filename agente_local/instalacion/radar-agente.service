@@ -7,7 +7,7 @@ After=network-online.target
 [Service]
 Type=oneshot
 WorkingDirectory=/opt/radar-agente
-ExecStart=/usr/bin/python3 -m agente_local enviar
+ExecStart=/usr/bin/python3 -I /opt/radar-agente/ejecutar.py enviar --programado
 # El agente solo lee el sistema y escribe en su carpeta de datos.
 ProtectSystem=strict
 ReadWritePaths=/var/lib/radar-agente

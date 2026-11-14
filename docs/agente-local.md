@@ -152,3 +152,34 @@ herramienta de reconocimiento. Por eso no tiene canal de órdenes, solo envía, 
 quedan en la base de la organización. Las instrucciones de remediación son de defensa
 (actualizar, activar, configurar) y nunca dicen cómo explotar una falla. El código del agente
 es corto y solo usa la librería estándar, para que cualquiera lo lea antes de instalarlo.
+
+
+## Correcciones de la revisi?n del agente
+
+Los instaladores despiertan al agente cada cinco minutos. Con `enviar --programado`,
+el agente solo recoge y env?a cuando vence el intervalo recibido del servidor (1 a 168
+horas, 12 por defecto). El retraso aleatorio y el siguiente despertar pueden demorar el
+env?o; no es una hora exacta. `enviar` manual fuerza el env?o. Ante una falla de red se
+reintenta primero el reporte pendiente y luego se recoge el inventario actual. Un rechazo
+4xx descarta el reporte rechazado; las fallas de red y 5xx lo conservan.
+
+Windows exige Python instalado para todos los usuarios dentro de Program Files, con
+propietarios y permisos de escritura reservados a SYSTEM, Administradores o TrustedInstaller.
+Verifica el ?rbol del runtime y sus directorios antecesores, rechaza enlaces y ejecuta Python
+con `-I` para ignorar PYTHONPATH y paquetes del perfil. Una instalaci?n de Python en AppData
+se rechaza antes de inscribir o crear la tarea. El instalador necesita Python 3.10 o superior.
+
+La API autentica antes de leer el cuerpo y aplica el l?mite de 1 MB durante la lectura,
+incluso sin Content-Length o con una longitud declarada incorrecta. En agentes, el saneado
+usa la fila reservada 0 (`~f0`); los conflictos entre equipos se resuelven con su UUID.
+
+Validaci?n disponible: pruebas automatizadas de reintentos, intervalos y recepci?n por
+bloques; `powershell -NoProfile -ExecutionPolicy Bypass -File tests/test_instalador_seguridad.ps1`
+prueba ACL simuladas (runtime protegido, escritura por usuarios, propietario y enlaces).
+La prueba de instalaci?n real requiere una VM Windows con Python protegido y una VM Linux
+con systemd, un servidor de prueba y token de inscripci?n. Comprobar inscripci?n, primer
+env?o, reinicio, cambio de intervalo y recuperaci?n tras desconexi?n antes del piloto.
+
+Los instaladores siguen siendo de desarrollo. Los artefactos MSI/deb/rpm firmados requieren
+la infraestructura de empaquetado y las claves/certificados de firma del proyecto; no se
+presentan como construidos ni validados por estas pruebas.

@@ -207,7 +207,8 @@ def test_equipo_envenenado_se_sanea_y_se_cruza_igual():
     assert [(e.fila, e.equipo, e.motivo) for e in lectura.equipos_no_validos] == [
         (3, "EQUIPO-017~f3", archivos.MOTIVO_NOMBRE_NO_VALIDO)
     ]
-    assert "ignora" not in str(lectura.filas) + str(lectura.equipos_no_validos)
+    assert "ignora" not in str(lectura.filas)  # lo que se guarda y se cruza
+    assert lectura.equipos_no_validos[0].original.startswith("EQUIPO-017 (ignora")  # auditoría
     assert lectura.resumen()["equipos_no_validos"] == 1
 
 
@@ -226,7 +227,9 @@ def test_sanear_equipo(nombre, saneado):
     csv.writer(salida).writerows([["equipo", "programa"], [nombre, "Zoom"]])
     lectura = leer_inventario(salida.getvalue().encode(), "x.csv")
     assert lectura.filas[0]["equipo"] == saneado
-    assert len(saneado.split("~")[0]) <= archivos.LARGO_PREFIJO_SANEADO
+    from radar.seguridad.equipos import LARGO_PREFIJO_SANEADO
+
+    assert len(saneado.split("~")[0]) <= LARGO_PREFIJO_SANEADO
 
 
 def test_registros_mcp_tambien_se_sanean():

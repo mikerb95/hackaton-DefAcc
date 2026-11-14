@@ -17,6 +17,11 @@ Compara lo que dice el texto contra los datos de origen del grupo:
 
 Si algo falla, el comunicado se descarta y se usa el respaldo armado por código
 (``decidir``).
+
+**Congelado tras el ajuste 2 (14 de noviembre de 2026).** Las reglas cierran formas de
+decir, no el sentido: agregar más es perseguir frases. La cifra vigente es la ronda 4,
+escrita después de este estado (``evals/reporte.md``). Un cambio aquí invalida esa cifra y
+exige una ronda nueva escrita después del cambio, sin reajustar.
 """
 
 from __future__ import annotations

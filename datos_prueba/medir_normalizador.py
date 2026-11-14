@@ -37,9 +37,13 @@ def _linea_base(filas: list[FilaInventario], dic: nz.Diccionario) -> dict:
     """Nombre del programa tal cual, igual a un título del diccionario; versión del campo."""
     from rapidfuzz import utils
 
+    # Textos exactos propios (el diccionario guarda las palabras ordenadas para rapidfuzz).
     por_texto: dict[str, list[str]] = {}
-    for texto, i in zip(dic.textos, dic.indice, strict=True):
-        por_texto.setdefault(texto, []).append(dic.claves[i])
+    for k, datos in dic.pares.items():
+        vendor, producto = k.replace("\\", "").split(":", 1)
+        prod = producto.replace("_", " ")
+        for t in {datos["t"], prod, f"{vendor.replace('_', ' ')} {prod}"}:
+            por_texto.setdefault(utils.default_process(t), []).append(k)
     out = {}
     for f in filas:
         llave = (f.equipo, f.programa, f.version or "")

@@ -17,6 +17,7 @@ import functools
 import json
 import re
 import sqlite3
+import sys
 from collections.abc import Iterable, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
@@ -43,8 +44,12 @@ from radar.contratos import (
 ESQUEMA = Path(__file__).with_name("esquema.sql")
 _LECTURA = re.compile(r"^\s*(select|with|explain)\b", re.IGNORECASE)
 LOTE = 500
-# Tope de parámetros por sentencia (el mínimo histórico de SQLite es 999).
+# Tope de parámetros por sentencia. En sqlite local, 900 (el mínimo histórico de SQLite es 999).
+# En Turso cada sentencia es una petición HTTP (~0,65 s medidos): conviene meter muchas filas,
+# hasta 30 000 parámetros (libSQL acepta 32 766) y 500 filas para no mandar cuerpos enormes.
 MAX_PARAMETROS = 900
+MAX_PARAMETROS_REMOTO = 30_000
+MAX_FILAS_REMOTO = 500
 _VALORES = re.compile(r"VALUES\s*(\((?:\s*\?\s*,)*\s*\?\s*\))", re.IGNORECASE)
 
 
@@ -71,22 +76,41 @@ def ahora() -> str:
     return datetime.now(UTC).isoformat(timespec="seconds")
 
 
-def conectar(solo_lectura: bool = False, ruta_sqlite: Path | None = None) -> Any:
-    """Abre Turso si está configurado; si no, el sqlite local.
+def destino() -> str:
+    """A dónde iría `conectar()` sin ruta: 'turso' o 'local <ruta>'.
 
-    Con `solo_lectura`, en Turso usa TURSO_AUTH_TOKEN_LECTURA si existe, y en todo caso
-    envuelve la conexión para rechazar escrituras.
+    Precedencia: RADAR_SQLITE explícito > Turso (TURSO_DATABASE_URL y TURSO_AUTH_TOKEN) >
+    datos_locales/radar.db. Así una copia local nunca termina escribiendo en Turso sin querer.
     """
-    if ruta_sqlite is None:
+    explicito = config.sqlite_explicito()
+    if explicito is None and config.turso():
+        return "turso"
+    return f"local {explicito or config.ruta_sqlite_local()}"
+
+
+def _anunciar(texto: str) -> None:
+    print(f"[radar] datos: {texto}", file=sys.stderr, flush=True)
+
+
+def conectar(solo_lectura: bool = False, ruta_sqlite: Path | None = None) -> Any:
+    """Abre la base según la precedencia de `destino()` y lo dice en stderr.
+
+    Con `ruta_sqlite` abre ese sqlite sin mirar el entorno. Con `solo_lectura`, en Turso usa
+    TURSO_AUTH_TOKEN_LECTURA si existe, y en todo caso envuelve la conexión para rechazar
+    escrituras.
+    """
+    if ruta_sqlite is None and config.sqlite_explicito() is None:
         datos = config.turso(solo_lectura=True) if solo_lectura else None
         datos = datos or config.turso()
         if datos:
             import turso_serverless
 
             url, token = datos
+            _anunciar("turso" + (" (solo lectura)" if solo_lectura else ""))
             conexion = turso_serverless.connect(url, auth_token=token)
             return ConexionSoloLectura(conexion) if solo_lectura else conexion
     ruta = ruta_sqlite or config.ruta_sqlite_local()
+    _anunciar(f"local {ruta}" + (" (solo lectura)" if solo_lectura else ""))
     if solo_lectura:
         conexion = sqlite3.connect(f"file:{ruta}?mode=ro", uri=True)
         return ConexionSoloLectura(conexion)
@@ -156,6 +180,22 @@ def _de_json(texto: str | None, defecto: Any = None) -> Any:
     return defecto if texto is None else json.loads(texto)
 
 
+def es_local(conexion: Any) -> bool:
+    """True si la conexión es sqlite local (directa o envuelta para pruebas o solo lectura)."""
+    while not isinstance(conexion, sqlite3.Connection):
+        interna = getattr(conexion, "_c", None) or getattr(conexion, "c", None)
+        if interna is None:
+            return False
+        conexion = interna
+    return True
+
+
+def filas_por_sentencia(conexion: Any, columnas: int) -> int:
+    if es_local(conexion):
+        return max(1, MAX_PARAMETROS // columnas)
+    return max(1, min(MAX_FILAS_REMOTO, MAX_PARAMETROS_REMOTO // columnas))
+
+
 def _en_lotes(conexion: Any, sql: str, filas: list[Sequence[Any]]) -> None:
     """Inserta muchas filas con INSERT de varias filas: `VALUES (?,?),(?,?),...`.
 
@@ -169,8 +209,7 @@ def _en_lotes(conexion: Any, sql: str, filas: list[Sequence[Any]]) -> None:
     if m is None:
         raise ValueError("_en_lotes espera una sentencia INSERT ... VALUES (?, ...)")
     fila = m.group(1)
-    columnas = fila.count("?")
-    por_sentencia = max(1, MAX_PARAMETROS // columnas)
+    por_sentencia = filas_por_sentencia(conexion, fila.count("?"))
     prefijo, sufijo = sql[: m.start(1)], sql[m.end(1) :]
     for i in range(0, len(filas), por_sentencia):
         lote = filas[i : i + por_sentencia]

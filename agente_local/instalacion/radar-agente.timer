@@ -1,12 +1,11 @@
-# Cada 12 horas y poco despues de arrancar, con retraso aleatorio para que toda la flota
-# no llegue al radar al mismo tiempo.
+# Despierta cada cinco minutos; el agente decide si vence el intervalo del servidor.
 [Unit]
 Description=Reporte periodico del agente local del radar
 
 [Timer]
 OnBootSec=5min
-OnUnitActiveSec=12h
-RandomizedDelaySec=15min
+OnUnitActiveSec=5min
+RandomizedDelaySec=1min
 Persistent=true
 
 [Install]

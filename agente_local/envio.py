@@ -302,6 +302,8 @@ def enviar(estado: Estado, reporte: dict[str, Any], abrir: Any = None) -> int | 
         # Un rechazo del servidor (4xx) no se reintenta con el mismo reporte.
         if error.codigo is None or error.codigo >= 500:
             estado.guardar_pendiente(reporte)
+        else:
+            estado.quitar_pendiente()
         raise
     estado.quitar_pendiente()
     intervalo = intervalo_de(respuesta)
