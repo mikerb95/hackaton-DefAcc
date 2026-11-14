@@ -28,6 +28,18 @@ En orden de preferencia:
 
 1. **Turso compartido**, cuando exista: `TURSO_DATABASE_URL` y un token de solo lectura en
    `.env`. Es la misma base que ve el panel.
+   La base ya existe y está cargada (14 582 CVE, KEV, EPSS del día, inventario generado y
+   831 hallazgos). Variables que necesitas en tu `.env` (los valores te los pasa el equipo
+   por un canal seguro, nunca por git ni por chat):
+
+   | Variable | Para qué |
+   |---|---|
+   | `TURSO_DATABASE_URL` | Dirección de la base compartida |
+   | `TURSO_AUTH_TOKEN_LECTURA` | Token de solo lectura: lo usa `conectar(solo_lectura=True)`, es decir, las herramientas del agente |
+   | `TURSO_AUTH_TOKEN` | Token de escritura: solo para el código del worker que guarda análisis y toma trabajos, nunca para las herramientas |
+   | `ANTHROPIC_API_KEY` | El analista con Claude Agent SDK |
+
+   No definas `RADAR_SQLITE`: si está definida, gana siempre sobre Turso.
 2. **`evals/grupos_reales.json`** (está en el repositorio): un `Grupo` por producto y versión
    de cada caso de inyección (18 pares), sacado del cruce real del radar sobre NVD, KEV y EPSS
    y congelado **sin la lista de equipos** (la suite les pone equipos sintéticos más el de la
