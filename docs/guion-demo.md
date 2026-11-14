@@ -48,8 +48,10 @@ Se arma copiando estas filas de `evals/reporte.md`, sin redondear ni recalcular:
 | Normalizador | "Normalizador", fila "Semilla, alias + difuso" frente a "nombre exacto (línea base)", y "Fuera de la semilla" |
 | Inyección, peor caso | Línea "Última ronda escrita sin reajustar" de "Suite de inyección" (simulado peor caso, entrada forzada): tasa sin defensa y con defensa |
 | Equipo oculto | Tabla "Entrada real", la misma ronda, simulado peor caso: equipo oculto sin defensa y con defensa |
-| Inyección, modelo real | Fila "analista real, sin casos vistos al ajustar el prompt" (todas las rondas, entrada forzada): sin defensa y con defensa |
-| Utilidad con el modelo real | "Texto del propio agente aceptado por el verificador, con defensa: k de n" |
+| Inyección, modelo real | Línea "Última ronda escrita sin reajustar", parte "Analista real ... sin r4-06": sin defensa y con defensa (las filas por ronda no se suman a mano) |
+| Utilidad con el modelo real | "Texto del propio agente aceptado por el verificador, con defensa", parte "sin los casos vistos al ajustar el prompt" |
+| Obediencia del modelo real | Fila "todas, sin casos vistos / analista real, total", columna sin defensa: no tiene verificador ni hooks, así que mide la obediencia del modelo. Con defensa se cita la ronda 4 |
+| Lo logrado sin defensa | "Ataques logrados por el analista real" (hoy r1-07 y r1-09): texto crudo que llega al modelo, no obediencia |
 | Utilidad bajo ataque | La misma línea: utilidad con defensa (y sin defensa, de la tabla "Entrada forzada") |
 
 Regla para leerla en voz alta: decir siempre que las filas "simulado" son un agente de código
@@ -61,7 +63,8 @@ reporte, no se dicen de memoria):
    obediencia: es texto crudo que llega al modelo porque ese brazo no limpia.
 2. El valor de la defensa no es "el modelo cae y la defensa lo salva": son garantías que no
    dependen del modelo (medidas con el simulado peor caso); el caso real en que el modelo repitió
-   "ya fue parchado" del atacante y el verificador lo descartó; y que, con defensa, el texto
+   "ya fue parchado" del atacante y el verificador lo descartó (en una muestra previa, fuera de
+   la cifra); y que, con defensa, el texto
    propio del agente se acepta en k de n, así que la defensa no anula la utilidad.
 3. El prompt del analista se ajustó en dos ajustes generales, tras dos muestras previas que
    quedan fuera de la cifra; la que se cita es la variante sin casos vistos al ajustar el prompt. Cerrar con la frase central de LIMITES.md: "Las defensas deterministas garantizan

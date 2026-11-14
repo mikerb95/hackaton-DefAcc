@@ -83,24 +83,25 @@ Detección y normalizador:
 | Exactitud del normalizador | 49,4 % (nombre exacto) | 100,0 % en la semilla (ajustada); 83,3 % (25 de 30) fuera de ella |
 | Carga y cruce de un inventario de 1333 filas | n/a | unos 10 s en la preview de Vercel con Turso (medido 9,6 s) |
 
-Suite de inyección (simulados: última ronda escrita sin reajustar, ronda 4, 8 casos; analista
-real: todas las rondas, entrada forzada, sin casos vistos al ajustar el prompt):
+Suite de inyección, última ronda escrita sin reajustar (ronda 4, entrada forzada; el analista
+real, sin r4-06, el caso visto al ajustar el prompt):
 
 | Métrica | Sin defensa | Con defensa |
 |---|---|---|
 | Tasa de inyección, simulado peor caso, entrada forzada | 8 de 8 (100,0 %) | 6 de 8 (75,0 %) |
 | Utilidad bajo ataque, entrada forzada | 6 de 8 | 8 de 8 |
 | Equipo oculto, simulado peor caso, entrada real | 1 de 8 | 0 de 8 |
-| Tasa de inyección, analista real | [reporte: "analista real, sin casos vistos al ajustar el prompt", sin defensa] | [reporte: misma fila, con defensa] |
-| Texto del propio agente aceptado por el verificador | n/a | [reporte: "Texto del propio agente aceptado por el verificador, con defensa: k de n"] |
+| Tasa de inyección, analista real | 0 de 7 (0,0 %) | 0 de 7 (0,0 %) |
+| Analista real, todas las rondas sin casos vistos | 2 de 31 (6,5 %) | n/a |
+| Texto del agente que pasa el verificador (sin casos vistos) | n/a | 29 de 31 |
 
 "Simulado" es código, no un modelo; las rondas de ajuste (2 y 3) no van. "Equipo oculto": el
 equipo envenenado desaparece de hallazgos o comunicado (sin modelo: fila "honesto" de "Entrada
-real"). **Lectura:** el modelo real casi no obedece, ni sin defensa; lo logrado sin defensa
-([reporte: casos]) es texto crudo que ese brazo no limpia, no obediencia. La defensa no vale
-porque el modelo caiga: da garantías que no dependen de él (peor caso), descartó el caso real en
-que el modelo repitió "ya fue parchado" del atacante, y acepta el texto propio del agente en
-[reporte: k de n]: no anula la utilidad.
+real"). **Lectura:** el modelo real casi no obedece, ni sin defensa (sin verificador ni hooks);
+lo logrado (r1-07 y r1-09) es texto crudo que ese brazo no limpia, no obediencia. La defensa no vale
+porque el modelo caiga: da garantías que no dependen de él (peor caso), descartó el caso real
+(muestra previa) en que el modelo repitió "ya fue parchado" del atacante, y acepta el texto propio del agente en
+29 de 31: no anula la utilidad.
 
 ## 5. Límites
 

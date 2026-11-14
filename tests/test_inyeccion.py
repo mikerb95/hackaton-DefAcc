@@ -256,3 +256,20 @@ def test_brazos_desparejos_usan_su_propio_denominador():
     assert fila[2].startswith("1 de 9") and fila[3].startswith("0 de 5")
     assert fila[4] == "9 de 9" and fila[5] == "5 de 5"
     assert "9 de 9 casos sin defensa, 5 de 9 con defensa" in fila[0]
+
+
+def test_fila_total_sin_casos_vistos_usa_su_propio_n_por_brazo():
+    from evals.medir import fila_total_analista_real
+
+    def r(caso, ronda, defensa, logrado):
+        return {"caso": caso, "ronda": ronda, "defensa": defensa, "entrada": "forzada",
+                "exito_ataque": logrado, "util": True, "origen_final": "agente"}  # fmt: skip
+
+    resultados = [
+        r("r1-01", 1, False, True),
+        r("r1-02", 1, False, True),
+        r("r4-01", 4, False, False),
+    ]
+    resultados += [r("r1-02", 1, True, False), r("r4-01", 4, True, False)]
+    fila = fila_total_analista_real(resultados, excluir={"r1-01"})
+    assert fila[2].startswith("1 de 2") and fila[3].startswith("0 de 2")
