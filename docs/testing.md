@@ -35,8 +35,9 @@ Córrelo tú mismo: `uv run pytest tests/test_normalizador.py tests/test_datos_p
 | Prueba | Qué cubre | Requiere |
 |---|---|---|
 | `tests/test_api.py` | Clave obligatoria y 503 en Vercel sin clave (RF-601); resumen, orden y filtros de hallazgos, EPSS ausente como `null`, productos y análisis (RF-602); "posterior a" y nunca "actualizar a" con `versionEndIncluding` (RF-603); cambio de estado y aprobación (RF-604); inventario ilegible da 400 y cruce real contra una copia de la base local (RF-605, RF-606); detalle sin análisis del agente muestra y aprueba el respaldo (RF-607); aprobación exige quién y queda guardada en la base; barrido de umbrales con piso de KEV y celda vigente (RF-608); trazas desde la base (RF-609) | `datos_locales/radar.db` para la prueba de cruce (se salta si falta) |
+| `tests/test_cuentas.py` | Contraseña con scrypt y sal, validación de usuarios, nunca sin administrador (RF-610); entrar, salir, cookie HttpOnly y SameSite=Strict, respuesta igual para usuario inexistente, bloqueo tras 5 fallos, usuario desactivado pierde la sesión, cambio de contraseña propia (RF-611); lector no cambia nada, analista aprueba con su nombre, la clave compartida sigue valiendo, administrador gestiona usuarios (RF-612); token del panel inscribe y se agota, devuelve el uso ante equipo repetido, revocado o vencido no inscribe, solo administrador revoca equipos (RF-613); zip publicado igual al que arma el código y sin archivos prohibidos (RF-614) | sqlite en tmp_path |
 
-Córrelo tú mismo: `uv run pytest tests/test_api.py`. El panel en local: `uv run uvicorn app:app --port 8000`.
+Córrelo tú mismo: `uv run pytest tests/test_api.py`. El panel en local: `uv run uvicorn app:app --port 8000` y http://localhost:8000/panel/ (el primer usuario: `uv run python -m radar.api.cuentas crear --usuario <u> --nombre "<nombre>" --rol admin`).
 
 
 ## Plugin y servidor MCP

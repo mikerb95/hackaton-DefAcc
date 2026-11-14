@@ -42,7 +42,8 @@ uv run python -m worker.descargar --en-linea --pares rarlab:winrar google:chrome
 uv run python -m radar.nucleo.corrida ruta/al/inventario.csv
 
 # Panel y API
-uv run uvicorn app:app --port 8000      # panel en http://localhost:8000/
+uv run python -m radar.api.cuentas crear --usuario admin --nombre "Admin" --rol admin
+uv run uvicorn app:app --port 8000      # landing en http://localhost:8000/, panel en /panel/
 vercel dev                              # o igual que en Vercel (requiere el proyecto linkeado)
 
 # Pruebas (las que llaman a Claude llevan el marcador "agente" y no corren por defecto)

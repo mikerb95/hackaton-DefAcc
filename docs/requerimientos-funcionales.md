@@ -41,7 +41,7 @@ Prioridad alta. Pruebas: `tests/test_ingesta.py`, `tests/test_mcp.py`.
 
 ## API y panel
 
-- **RF-601** Toda ruta de la API pide la clave compartida en `X-Clave-Acceso`; en Vercel, si `CLAVE_ACCESO` no está configurada, la API responde 503 en vez de quedar abierta. `radar/api/acceso.py`.
+- **RF-601** Toda ruta de la API pide una sesión de usuario (RF-611) o la clave compartida en `X-Clave-Acceso` (scripts, agente local en `subir-csv`, pruebas; cuenta como administrador); en Vercel, sin sesión y sin `CLAVE_ACCESO` configurada, la API responde 503 en vez de quedar abierta. `radar/api/acceso.py`.
 - **RF-602** El responsable de TI ve el estado de la última revisión y qué fuentes respondieron (si alguna falló se dice arriba), las cifras de cabecera, la cobertura con su motivo, los productos afectados y los hallazgos con filtros por prioridad, KEV y texto. EPSS ausente se muestra "sin dato". `radar/api/rutas.py`, `radar/api/datos.py`, `public/`. Tablas `hallazgos`, `cobertura`, `inventario`, `ejecuciones`.
 - **RF-603** La versión objetivo de un producto se dice según su tipo: "actualizar a X" solo con versión exacta, "posterior a X" con `versionEndIncluding`, y nada si alguna CVE no acota versión (RF-104). `radar/api/rutas.py::texto_objetivo`.
 - **RF-604** El responsable de TI cambia el estado de un hallazgo con comentario y aprueba el comunicado de un producto desde el detalle, donde ve análisis, remediación, comunicados, si el texto fue verificado y si lo redactó el agente o el respaldo. `radar/api/rutas.py`, `public/panel.js`. Tablas `hallazgos`, `analisis`.
@@ -56,6 +56,15 @@ Prioridad alta. Pruebas: `tests/test_ingesta.py`, `tests/test_mcp.py`.
 La aprobación (RF-604) queda guardada con quién y cuándo (`bd.aprobar_comunicado`, columnas `analisis.aprobado` y `aprobado_por`) y exige un nombre; si no había análisis guardado, se guarda el respaldo que se aprobó.
 
 Prioridad alta para RF-601 a RF-605, RF-607 y RF-609, media para RF-606 y RF-608. Prueba: `tests/test_api.py`.
+
+- **RF-610** Un administrador crea usuarios con rol lector, analista o administrador, cambia su rol, los desactiva y les pone contraseña nueva; la base nunca queda sin un administrador activo. Contraseñas con scrypt y sal propia, mínimo 10 caracteres. El primer administrador se crea por terminal (`uv run python -m radar.api.cuentas crear`). `radar/api/cuentas.py`, `radar/api/sesion.py`, `public/admin.js`. Tabla `usuarios`.
+- **RF-611** Una persona entra al panel en `/entrar/` con usuario y contraseña; la sesión dura 12 horas en una cookie HttpOnly, SameSite=Strict y Secure fuera de localhost, y en la base solo queda su SHA-256. Cinco fallos seguidos bloquean el usuario cinco minutos; usuario inexistente y contraseña equivocada responden igual. Desactivar a alguien o cambiarle la contraseña cierra sus sesiones. `radar/api/sesion.py`, `public/entrar/`. Tabla `sesiones`.
+- **RF-612** El rol decide qué se puede cambiar: lector solo mira; analista además cambia estados, aprueba comunicados y carga inventarios; administrador además gestiona usuarios, tokens y equipos. Con sesión, quien aprueba o cambia un estado sale de la sesión, no de un campo escrito a mano. `radar/api/acceso.py`, `radar/api/rutas.py`, `radar/api/agente.py`.
+- **RF-613** Un administrador agrega un equipo desde el panel en cuatro pasos: elige Windows o Linux, crea un token de inscripción con vencimiento (1 hora a 30 días) y tope de equipos, descarga el agente y copia el comando de instalación con el token, y el panel avisa cuando el equipo se inscribe. El token se muestra una sola vez y se guarda como huella; se revoca desde el panel. `POST /api/agente/inscribir` acepta estos tokens además de `AGENTE_TOKEN_INSCRIPCION`, y devuelve el uso si el equipo ya estaba inscrito. `radar/api/cuentas.py`, `radar/api/agente.py`, `public/admin.js`. Tabla `tokens_inscripcion`.
+- **RF-614** Los paquetes `.zip` del agente para Windows y Linux se arman desde `agente_local/` con una lista cerrada de archivos y fechas fijas (`uv run python -m radar.api.paquetes`), así el mismo código da el mismo zip; nunca llevan `.env`, tokens ni `resources/`. `radar/api/paquetes.py`, `public/descargas/`.
+- **RF-615** La raíz `/` es una página pública que explica el radar (sin cifras de evaluación) y lleva a `/entrar/`; el panel vive en `/panel/` con navegación por secciones (resumen, hallazgos, equipos, inventario, umbrales, actividad del agente y usuarios) y confirmaciones dentro de la página. `public/index.html`, `public/panel/index.html`.
+
+Prioridad alta para RF-610 a RF-613, media para RF-614 y RF-615. Prueba: `tests/test_cuentas.py`. Las tablas de cuentas las crea `radar/api/cuentas.py` (no están en `radar/esquema.sql`).
 
 
 ## Plugin de Claude Code

@@ -116,7 +116,7 @@ Resumen de [LIMITES.md](LIMITES.md):
 - La validación es sobre datos sintéticos; falta un piloto con una flota real.
 - No detecta vulnerabilidades que NVD aún no asocia a un producto, ni el sistema operativo, ni
   dependencias de código. No es tiempo real.
-- No hay inicio de sesión ni permisos por usuario: una clave compartida protege la API.
+- Usuarios con contraseña y tres roles (lector, analista, administrador); sin inicio de sesión único (SSO) ni segundo factor. La clave compartida sigue valiendo para scripts.
 - Agente local de inventario para Windows y Linux: construido y probado en un PC con Windows 11;
   faltan el agente empaquetado y firmado y un piloto con flota real ([estado](agente-local.md)).
 

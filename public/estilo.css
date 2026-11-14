@@ -388,5 +388,5 @@ button:disabled { opacity: 0.5; cursor: default; }
   background: var(--ink-2); border: 1px solid var(--linea); color: var(--texto-2); font-size: 13px;
 }
 .entrar-aviso code { color: var(--acento); overflow-wrap: anywhere; }
-.entrar-pie { margin-top: 26px; font-size: 13px; }
+.entrar-caja > .entrar-pie { margin: 26px 0 0; font-size: 13px; }
 .entrar-pie a { color: var(--texto-3); }
