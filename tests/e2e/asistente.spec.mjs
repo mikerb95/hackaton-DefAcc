@@ -25,7 +25,7 @@ test("pregunta y ve los pasos y la respuesta", async ({ page }) => {
   await expect(page.locator(".asis-pasos li")).toContainText("Revisando el resumen del radar");
   await expect(page.locator(".asis-respuesta")).toContainText("Respuesta simulada");
   await expect(page.locator(".asis-respuesta a")).toHaveAttribute("href", "/panel/#resumen");
-  await expect(page.locator("#asistente")).toHaveClass(/is-chat/);
+  await expect(page.locator("#asistente-ia")).toHaveClass(/is-chat/);
   await page.screenshot({ path: "capturas/1-respuesta.png", fullPage: false });
 });
 

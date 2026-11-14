@@ -3,8 +3,8 @@
 - Marcador `agente` (declarado en pyproject.toml): pruebas que llaman a Claude. No corren en CI;
   se piden con `pytest -m agente`.
 - Aislamiento automático (`_aislar_bases`, en todas las pruebas): ninguna prueba toca la base
-  compartida `datos_locales/radar.db`, Turso ni NVD con credenciales reales. `RADAR_SQLITE`
-  apunta a un sqlite vacío en tmp_path y se quitan `TURSO_*` y `NVD_API_KEY` del entorno.
+  compartida `datos_locales/radar.db`, Turso, NVD ni ntfy con credenciales reales. `RADAR_SQLITE`
+  apunta a un sqlite vacío en tmp_path y se quitan `TURSO_*`, `NVD_API_KEY` y `NTFY_*` del entorno.
   `ANTHROPIC_API_KEY` se deja: la usan las pruebas marcadas `agente`.
 - `base_temporal`: sqlite en tmp_path con el esquema, las CVE reales de radar/ejemplos.py
   (WinRAR, Chrome, Docker Desktop), KEV y EPSS. `base_con_hallazgos`: además, el cruce corrido.

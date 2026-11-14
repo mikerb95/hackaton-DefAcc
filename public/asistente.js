@@ -11,7 +11,7 @@
 
 (function () {
   const { el, leerSSE, tarjeta, turno, hora } = window.AsistenteNucleo;
-  const caja = () => document.getElementById("asistente");
+  const caja = () => document.getElementById("asistente-ia");
 
   let conversacionId = null;
   let ocupado = false;

@@ -787,7 +787,7 @@ tr.abierta .chevron { transform: rotate(90deg); color: var(--acento); }
 /* ---- Asistente (caja de la pantalla principal) ----------------------------------------
    Pantalla vacía: saludo, atajos, caja, recientes. Con conversación (.is-chat): hilo, caja,
    nota y recientes; la caja queda pegada abajo mientras se lee hacia arriba. */
-.asistente { display: flex; flex-direction: column; gap: 14px; }
+.caja-ia { display: flex; flex-direction: column; gap: 14px; }
 .asis-cabeza { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
 .asis-cabeza h2 { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; }
 .asis-cabeza .nota { margin-top: 4px; max-width: 70ch; }
@@ -803,20 +803,20 @@ tr.abierta .chevron { transform: rotate(90deg); color: var(--acento); }
   background: var(--ink-2); border: 1px solid var(--linea-fuerte); border-radius: 10px; padding: 12px 14px;
 }
 .asis-form input:focus { outline: 2px solid rgba(var(--acento-rgb), 0.5); outline-offset: 1px; }
-.asistente.is-chat .asis-form {
+.caja-ia.is-chat .asis-form {
   order: 2; position: sticky; bottom: 16px; z-index: 2;
   background: var(--ink-1); padding: 6px; border-radius: 12px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
 }
-.asistente.is-chat .asis-hilo { order: 1; }
-.asistente.is-chat .asis-nota { order: 3; }
-.asistente.is-chat .asis-recientes { order: 4; }
-.asistente.is-chat .asis-cabeza { order: 0; }
+.caja-ia.is-chat .asis-hilo { order: 1; }
+.caja-ia.is-chat .asis-nota { order: 3; }
+.caja-ia.is-chat .asis-recientes { order: 4; }
+.caja-ia.is-chat .asis-cabeza { order: 0; }
 .asis-busqueda {
   position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 5; margin: 0; padding: 6px;
   list-style: none; background: var(--ink-2); border: 1px solid var(--linea-fuerte); border-radius: 10px;
   box-shadow: var(--sombra-dialogo);
 }
-.asistente.is-chat .asis-busqueda { top: auto; bottom: calc(100% + 6px); }
+.caja-ia.is-chat .asis-busqueda { top: auto; bottom: calc(100% + 6px); }
 .asis-busqueda a {
   display: flex; gap: 10px; align-items: baseline; padding: 8px 10px; border-radius: 8px;
   color: var(--texto); text-decoration: none;

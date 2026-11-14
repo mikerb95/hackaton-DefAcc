@@ -212,7 +212,11 @@
   function tachados() {
     const lista = document.querySelector(".reglas-lista");
     if (!lista) return;
-    const marcas = [...lista.querySelectorAll(".tachable")];
-    alVerse(lista, () => marcas.forEach((m, i) => setTimeout(() => m.classList.add("visto"), 250 + i * 220)), 0.25);
+    // Primero se tacha el atajo y después aparece lo que sí hace, tarjeta por tarjeta.
+    const tarjetas = [...lista.querySelectorAll(".regla")];
+    alVerse(lista, () => tarjetas.forEach((t, i) => setTimeout(() => {
+      t.classList.add("visto");
+      t.querySelector(".tachable")?.classList.add("visto");
+    }, 250 + i * 220)), 0.25);
   }
 })();
