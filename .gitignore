@@ -1,0 +1,14 @@
+# Secretos y material privado: nunca se suben
+.env
+.env.*
+!.env.example
+resources/
+.coordinacion/
+
+# Entorno y cachés
+.vercel/
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+datos_prueba/salida/
