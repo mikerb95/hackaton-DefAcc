@@ -1,9 +1,8 @@
 # Ficha técnica: Radar de vulnerabilidades
 
-Ficha de dos páginas para los jueces, en el orden que pide la guía. **Plantilla:** los textos
-están escritos y las cifras se copian de `evals/reporte.md` donde dice `[reporte: ...]`, sin
-redondear ni recalcular. Antes de exportar a PDF se revisa que cada número coincida con
-`docs/`, la lámina de la demo y el pitch.
+Ficha de dos páginas para los jueces, en el orden que pide la guía. Las cifras se copian de
+`evals/reporte.md` (generado el 14 de noviembre de 2026 a las 11:33), sin redondear ni
+recalcular; el tiempo de carga es la medición en la preview de Vercel.
 
 | Dato | Valor |
 |---|---|
@@ -78,19 +77,20 @@ Detección y normalizador:
 
 | Métrica | Línea base | Radar |
 |---|---|---|
-| Detección (pares CVE y versión) | n/a | [reporte: Detección, "Detección (pares CVE y versión encontrados)"] |
-| Falsos positivos | n/a | [reporte: Detección, "Falsos positivos"] |
-| Punta a punta: pares precisos y CVE en KEV | n/a | [reporte: Punta a punta, esperado y obtenido] |
-| Exactitud del normalizador | [reporte: Normalizador, "nombre exacto (línea base)"] | [reporte: Normalizador, "alias + difuso" en semilla y fuera de la semilla] |
+| Detección (pares CVE y versión) | n/a | 1500 de 1500 (100,0 %) |
+| Falsos positivos | n/a | 0 |
+| Punta a punta: pares precisos y CVE en KEV | n/a | 735 de 735 pares; 12 de 12 CVE en KEV |
+| Exactitud del normalizador | 49,4 % (nombre exacto) | 100,0 % en la semilla (ajustada); 83,3 % (25 de 30) fuera de ella |
+| Carga y cruce de un inventario de 1333 filas | n/a | unos 10 s en la preview de Vercel con Turso (medido 9,6 s) |
 
-Suite de inyección, última ronda escrita sin reajustar:
+Suite de inyección, última ronda escrita sin reajustar (ronda 4, 8 casos):
 
 | Métrica | Sin defensa | Con defensa |
 |---|---|---|
-| Tasa de inyección, simulado peor caso, entrada forzada | [reporte: línea "Última ronda escrita sin reajustar", sin defensa] | [reporte: misma línea, con defensa] |
-| Utilidad bajo ataque, entrada forzada | [reporte: misma línea o tabla "Entrada forzada", utilidad sin defensa] | [reporte: misma línea, utilidad con defensa] |
-| Equipo oculto, simulado peor caso, entrada real | [reporte: tabla "Entrada real", misma ronda, "Equipo oculto sin defensa"] | [reporte: misma fila, "Equipo oculto con defensa"] |
-| Tasa de inyección, analista real | [reporte: "analista real", si existe] | [reporte: "analista real", si existe] |
+| Tasa de inyección, simulado peor caso, entrada forzada | 8 de 8 (100,0 %) | 6 de 8 (75,0 %) |
+| Utilidad bajo ataque, entrada forzada | 6 de 8 | 8 de 8 |
+| Equipo oculto, simulado peor caso, entrada real | 1 de 8 | 0 de 8 |
+| Tasa de inyección, analista real | pendiente | pendiente |
 
 Las filas "simulado" son un agente de código, no un modelo. Las rondas que se usaron para
 ajustar (2 y 3 con el código actual) no van en la ficha: están medidas sobre los mismos casos
